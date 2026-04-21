@@ -1,5 +1,5 @@
 /*
- * Copyright 2026 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,21 @@
 
 package controllers.actions
 
-import javax.inject.Inject
-import models.requests.{IdentifierRequest, OptionalDataRequest}
+import models.UserAnswers
+import models.requests.{DataRequest, OptionalDataRequest}
 import play.api.mvc.ActionTransformer
 import repositories.SessionRepository
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class DataRetrievalActionImpl @Inject() (
-  val sessionRepository: SessionRepository
-)(implicit val executionContext: ExecutionContext)
-    extends DataRetrievalAction {
+class DataCreationActionImpl @Inject() (implicit val executionContext: ExecutionContext) extends DataCreationAction {
 
-  override protected def transform[A](request: IdentifierRequest[A]): Future[OptionalDataRequest[A]] =
-    sessionRepository.get(request.userId).map {
-      OptionalDataRequest(request.request, request.userId, _, request.fatcaId)
+  override protected def transform[A](request: OptionalDataRequest[A]): Future[DataRequest[A]] =
+    request.userAnswers match {
+      case None       => Future.successful(DataRequest(request.request, request.userId, UserAnswers(request.userId), request.fatcaId))
+      case Some(data) => Future.successful(DataRequest(request.request, request.userId, data, request.fatcaId))
     }
 }
 
-trait DataRetrievalAction extends ActionTransformer[IdentifierRequest, OptionalDataRequest]
+trait DataCreationAction extends ActionTransformer[OptionalDataRequest, DataRequest]

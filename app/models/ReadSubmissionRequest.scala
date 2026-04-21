@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package models.requests
+package models
 
-import play.api.mvc.{Request, WrappedRequest}
-import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment}
+import play.api.libs.json.{Json, OFormat}
 
-case class IdentifierRequest[A](request: Request[A], userId: String, fatcaId: String,
-                                userType: AffinityGroup,
-                                enrolments: Set[Enrolment] = Set.empty) extends WrappedRequest[A](request)
+case class ReadSubmissionRequest (shouldCache:Boolean, fiId: Option[String], subscriptionId: String)
+
+object ReadSubmissionRequest {
+  implicit val format: OFormat[ReadSubmissionRequest] = Json.format[ReadSubmissionRequest]
+}
