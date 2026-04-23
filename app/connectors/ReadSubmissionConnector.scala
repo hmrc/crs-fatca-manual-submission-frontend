@@ -29,7 +29,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException, S
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ReadSubmissionConnector @Inject()(http: HttpClientV2, config: FrontendAppConfig) extends Logging {
+class ReadSubmissionConnector @Inject() (http: HttpClientV2, config: FrontendAppConfig) extends Logging {
 
   def submissionList(requestBody: ReadSubmissionRequest)(using
     hc: HeaderCarrier,

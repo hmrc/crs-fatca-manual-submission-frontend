@@ -16,7 +16,11 @@
 
 package controllers
 
+import connectors.ReadSubmissionConnector
+import controllers.Execution.trampoline
 import controllers.actions.*
+import models.ReadSubmissionRequest
+import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -24,17 +28,26 @@ import views.html.ReadSubmissionDataView
 
 import javax.inject.Inject
 
-class ReadSubmissionDataController @Inject()(
-                                       override val messagesApi: MessagesApi,
-                                       identify: IdentifierAction,
-                                       getData: DataRetrievalAction,
-                                       setData: DataCreationAction,
-                                       val controllerComponents: MessagesControllerComponents,
-                                       view: ReadSubmissionDataView
-                                     ) extends FrontendBaseController with I18nSupport {
+class ReadSubmissionDataController @Inject() (
+  override val messagesApi: MessagesApi,
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  setData: DataCreationAction,
+  connector: ReadSubmissionConnector,
+  val controllerComponents: MessagesControllerComponents,
+  view: ReadSubmissionDataView
+) extends FrontendBaseController
+    with I18nSupport
+    with Logging {
 
-  def onPageLoad(fiid: Option[String]): Action[AnyContent] = (identify andThen getData andThen setData) {
+  def onPageLoad(fiid: Option[String]): Action[AnyContent] = (identify andThen getData andThen setData).async {
     implicit request =>
-      Ok(view())
+      connector
+        .submissionList(ReadSubmissionRequest(true, fiid))
+        .map {
+          _ =>
+            Ok(view())
+        }
   }
+
 }

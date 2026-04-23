@@ -1,6 +1,5 @@
 import play.sbt.routes.RoutesKeys
 import sbt.Def
-import scoverage.ScoverageKeys
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
 lazy val appName: String = "crs-fatca-manual-submission-frontend"
@@ -35,9 +34,11 @@ lazy val microservice = (project in file("."))
     PlayKeys.playDefaultPort := 10039,
     scalacOptions ++= Seq(
       "-feature",
-      "-Wconf:cat=deprecation:ws,cat=feature:ws,cat=optimizer:ws,src=target/.*:s"
+      "-Wconf:cat=deprecation:w",
+      "-Wconf:cat=feature:w",
+      "-Wconf:src=target/.*:s"
     ),
-    libraryDependencies ++= AppDependencies(),
+      libraryDependencies ++= AppDependencies(),
     retrieveManaged := true,
     pipelineStages := Seq(digest),
     Assets / pipelineStages := Seq(concat)

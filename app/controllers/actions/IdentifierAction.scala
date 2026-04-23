@@ -22,13 +22,13 @@ import controllers.routes
 import models.IdentifierType
 import models.requests.IdentifierRequest
 import play.api.Logging
-import play.api.mvc.Results.*
 import play.api.mvc.*
+import play.api.mvc.Results.*
 import uk.gov.hmrc.auth.core.*
 import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.retrieve.~
-import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -42,7 +42,7 @@ class AuthenticatedIdentifierAction @Inject() (
 )(implicit val executionContext: ExecutionContext)
     extends IdentifierAction
     with AuthorisedFunctions
-      with Logging {
+    with Logging {
 
   override def invokeBlock[A](request: Request[A], block: IdentifierRequest[A] => Future[Result]): Future[Result] = {
 
@@ -67,10 +67,10 @@ class AuthenticatedIdentifierAction @Inject() (
                                    internalId: String,
                                    affinityGroup: AffinityGroup,
                                    block: IdentifierRequest[A] => Future[Result]
-                                  ): Future[Result] = {
+  ): Future[Result] = {
     val subscriptionId: Option[String] = for {
-      enrolment <- enrolments.getEnrolment(config.enrolmentKey)
-      id <- enrolment.getIdentifier(IdentifierType.FATCAID)
+      enrolment      <- enrolments.getEnrolment(config.enrolmentKey)
+      id             <- enrolment.getIdentifier(IdentifierType.FATCAID)
       subscriptionId <- if (id.value.nonEmpty) Some(id.value) else None
     } yield subscriptionId
 

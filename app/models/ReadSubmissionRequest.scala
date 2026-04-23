@@ -18,7 +18,7 @@ package models
 
 import play.api.libs.json.{Json, OFormat}
 
-case class ReadSubmissionRequest (shouldCache:Boolean, fiId: Option[String], subscriptionId: String)
+case class ReadSubmissionRequest(shouldCache: Boolean, fiId: Option[String])
 
 object ReadSubmissionRequest {
   implicit val format: OFormat[ReadSubmissionRequest] = Json.format[ReadSubmissionRequest]
