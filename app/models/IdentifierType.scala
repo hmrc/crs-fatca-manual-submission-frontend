@@ -1,5 +1,5 @@
 /*
- * Copyright 2026 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package models.requests
+package models
 
-import play.api.mvc.{Request, WrappedRequest}
-import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment}
+object IdentifierType {
+  val UTR     = "UTR"
+  val FATCAID = "FATCAID"
 
-case class IdentifierRequest[A](request: Request[A], userId: String, fatcaId: String, userType: AffinityGroup, enrolments: Set[Enrolment] = Set.empty)
-    extends WrappedRequest[A](request)
+}

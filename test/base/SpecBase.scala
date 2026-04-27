@@ -16,19 +16,28 @@
 
 package base
 
-import controllers.actions._
+import controllers.actions.*
 import models.UserAnswers
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
-import org.scalatest.{OptionValues, TryValues}
+import org.scalatest.{BeforeAndAfterEach, OptionValues, TryValues}
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.Application
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
 
-trait SpecBase extends AnyFreeSpec with Matchers with TryValues with OptionValues with ScalaFutures with IntegrationPatience {
+trait SpecBase
+    extends AnyFreeSpec
+    with Matchers
+    with TryValues
+    with OptionValues
+    with ScalaFutures
+    with IntegrationPatience
+    with MockitoSugar
+    with BeforeAndAfterEach {
 
   val userAnswersId: String = "id"
 

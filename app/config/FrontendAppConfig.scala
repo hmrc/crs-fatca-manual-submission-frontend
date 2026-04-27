@@ -20,9 +20,10 @@ import com.google.inject.{Inject, Singleton}
 import play.api.Configuration
 import play.api.i18n.Lang
 import play.api.mvc.RequestHeader
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 @Singleton
-class FrontendAppConfig @Inject() (configuration: Configuration) {
+class FrontendAppConfig @Inject() (configuration: Configuration, servicesConfig: ServicesConfig) {
 
   val host: String    = configuration.get[String]("host")
   val appName: String = configuration.get[String]("appName")
@@ -51,5 +52,8 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
   val timeout: Int   = configuration.get[Int]("timeout-dialog.timeout")
   val countdown: Int = configuration.get[Int]("timeout-dialog.countdown")
 
-  val cacheTtl: Long = configuration.get[Int]("mongodb.timeToLiveInSeconds")
+  val cacheTtl: Long                   = configuration.get[Int]("mongodb.timeToLiveInSeconds")
+  val enrolmentKey: String             = configuration.get[String]("keys.enrolmentKey.crsFatca")
+  lazy val registerUrl: String         = configuration.get[String]("urls.register")
+  val crsFatcaManualBackendUrl: String = servicesConfig.baseUrl("crs-fatca-manual-submission")
 }

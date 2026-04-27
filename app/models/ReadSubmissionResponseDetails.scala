@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-package controllers.actions
+package models
 
-import models.UserAnswers
-import models.requests.{IdentifierRequest, OptionalDataRequest}
+import play.api.libs.json.{Json, OFormat}
 
-import scala.concurrent.{ExecutionContext, Future}
+case class ReadSubmissionResponseDetails(
+  submissionsList: List[SubmittedReport]
+)
 
-class FakeDataRetrievalAction(dataToReturn: Option[UserAnswers]) extends DataRetrievalAction {
-
-  override protected def transform[A](request: IdentifierRequest[A]): Future[OptionalDataRequest[A]] =
-    Future(OptionalDataRequest(request.request, request.userId, dataToReturn, request.fatcaId))
-
-  implicit override protected val executionContext: ExecutionContext =
-    scala.concurrent.ExecutionContext.Implicits.global
+object ReadSubmissionResponseDetails {
+  implicit val format: OFormat[ReadSubmissionResponseDetails] = Json.format[ReadSubmissionResponseDetails]
 }
