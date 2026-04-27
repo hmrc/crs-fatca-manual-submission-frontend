@@ -62,6 +62,9 @@ object SubmissionsConstants:
   case object FATCA2 extends SubmissionFileType:
     def value = "FATCA2"
 
+  case object FATCA3 extends SubmissionFileType:
+    def value = "FATCA3"
+
   case object FATCA4 extends SubmissionFileType:
     def value = "FATCA4"
 
@@ -115,6 +118,7 @@ object SubmissionsConstants:
         s.toUpperCase match
           case "FATCA1" => JsSuccess(FATCA1)
           case "FATCA2" => JsSuccess(FATCA2)
+          case "FATCA3" => JsSuccess(FATCA3)
           case "FATCA4" => JsSuccess(FATCA4)
           case "CRS701" => JsSuccess(CRS701)
           case "CRS702" => JsSuccess(CRS702)

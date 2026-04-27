@@ -21,3 +21,5 @@ GET         /account/signed-out                          controllers.auth.Signed
 GET         /unauthorised                                controllers.UnauthorisedController.onPageLoad()
 
 GET        /read-submission-data                       controllers.ReadSubmissionDataController.onPageLoad(fiid: Option[String])
+
+GET        /viewSubmissions                       controllers.ViewSubmissionsController.onPageLoad()
