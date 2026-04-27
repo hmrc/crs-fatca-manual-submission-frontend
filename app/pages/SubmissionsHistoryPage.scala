@@ -16,13 +16,12 @@
 
 package pages
 
-import models.submission.GiinAndElectionDBStatus
+import models.{ReadSubmissionResponseDetails, SubmittedReport}
 import play.api.libs.json.JsPath
 
-case object SubmissionHistoryPage extends QuestionPage[GiinAndElectionDBStatus] {
+case object SubmissionsHistoryPage extends QuestionPage[List[SubmittedReport]] {
 
   override def path: JsPath = JsPath \ toString
 
-  override def toString: String = "giinAndElectionStatus"
-
+  override def toString: String = "submissionsList"
 }

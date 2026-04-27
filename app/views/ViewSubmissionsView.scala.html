@@ -19,7 +19,7 @@
         govukButton: GovukButton
 )
 
-@()(implicit request: Request[_], messages: Messages)
+@(cards: Map[String, List[SubmissionCard]])(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("viewSubmissions.title"))) {
 

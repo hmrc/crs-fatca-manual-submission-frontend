@@ -16,25 +16,44 @@
 
 package controllers
 
-import controllers.actions._
+import controllers.actions.*
+import pages.SubmissionsHistoryPage
+import play.api.Logging
+
 import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.SubmissionHistoryService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.ViewSubmissionsView
+import java.time.Year
+import play.api.mvc.PathBindable
+import java.time.Year
 
-class ViewSubmissionsController @Inject()(
-                                       override val messagesApi: MessagesApi,
-                                       identify: IdentifierAction,
-                                       getData: DataRetrievalAction,
-                                       requireData: DataRequiredAction,
-                                       val controllerComponents: MessagesControllerComponents,
-                                       view: ViewSubmissionsView
-                                     ) extends FrontendBaseController with I18nSupport {
+class ViewSubmissionsController @Inject() (
+  override val messagesApi: MessagesApi,
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
+  service: SubmissionHistoryService,
+  val controllerComponents: MessagesControllerComponents,
+  view: ViewSubmissionsView
+) extends FrontendBaseController
+    with I18nSupport
+    with Logging {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      request.userAnswers.get()
-      Ok(view())
+      request.userAnswers
+        .get(SubmissionsHistoryPage)
+        .map(
+          submissions => service.prepareSubmissionHistoryCards(submissions, year)
+        )
+        .map(
+          cards => Ok(view(cards))
+        )
+        .getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+
   }
+  
 }
