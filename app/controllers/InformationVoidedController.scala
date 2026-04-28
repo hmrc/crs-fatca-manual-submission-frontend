@@ -34,6 +34,11 @@ class InformationVoidedController @Inject()(
 
   def onPageLoad: Action[AnyContent] = (identify andThen getData) {
     implicit request =>
-      Ok(view())
+      
+      val fiName = "[fiName]"
+      val dateTime = "[on 28 April 2026 at 3:36pm]"
+      val mris = Seq("[GB2026GB-ABC1234567890-FATCA_003]","[GB2026GB-ABC1234567890-FATCA_004]")
+      val emails = Seq("email1@test.com","email2@test.com")
+      Ok(view(fiName, dateTime, mris, emails))
   }
 }

@@ -19,7 +19,7 @@
 @(href: String, key: String, id: Option[String] = None, openInNewWindow: Boolean = false, classes: String = "govuk-link", asPara: Boolean = true)(implicit messages: Messages)
 
 @link = {
-    <a class="@classes" @id.map{i => id="@i"} href="@href" @if(openInNewWindow){target="_blank" rel="noopener noreferrer"}>@messages(key)</a>
+    <a class="@classes" @id.map{i => id="@id"} href="@href" @if(openInNewWindow){target="_blank" rel="noopener noreferrer"}>@messages(key)</a>
 }
 
 @if(asPara) {

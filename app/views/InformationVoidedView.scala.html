@@ -20,11 +20,11 @@
         govukPanel: GovukPanel,
         para: components.Paragraph,
         heading: components.Heading,
-        link: components.Link
-
+        link: components.Link,
+        appConfig: config.FrontendAppConfig
 )
 
-@()(implicit request: Request[_], messages: Messages)
+@(fiName: String, dateTime: String, messageRefIds:Seq[String], emails: Seq[String])(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("informationVoided.title")), showBackLink = false) {
 
@@ -32,17 +32,21 @@
 
     @govukPanel(Panel(
         title = Text(messages("informationVoided.heading")),
-        content = HtmlContent("<b>on 28 April 2026 at 8:34am</b>")
+        content = HtmlContent(s"<b>$dateTime</b>")
         )
     )
-    @para("informationVoided.para.1", args = Seq("email1","email2"))
+<!--Check which emails should be used here - fisuser -->
+    @para("informationVoided.para.1", args = emails)
+
     @heading(messages("informationVoided.subheading"), "m", "h2")
-    @para("informationVoided.para.2",classes ="govuk-!-margin-bottom-2", args = Seq("THE FI?"))
-      <ol class="govuk-list govuk-list--bullet">
-        <li>@messages("placeholder GB2026GB-ABC1234567890-FATCA_003")</li>
-        <li>@messages("placeholder GB2026GB-ABC1234567890-FATCA_003_2")</li>
-      </ol>
+    @para("informationVoided.para.2",classes ="govuk-!-margin-bottom-2", args = Seq(fiName))
+
+    <ol class="govuk-list govuk-list--bullet">
+        @for(messageRefId <- messageRefIds) {
+            <li>@messageRefId</li>
+        }
+    </ol>
 
     @link("#","Back to manage submitted reports for ABC Bank plc", id = Some("submitted-reports-link"))
-    @link("#","Back to manage your CRS and FATCA reports", id = Some("manage-reports-link"))
+    @link(appConfig.manageReportsLink,"Back to manage your CRS and FATCA reports", id = Some("manage-reports-link"))
 }
