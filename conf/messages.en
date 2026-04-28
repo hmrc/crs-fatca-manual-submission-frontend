@@ -47,3 +47,10 @@ signedOut.guidance = We did not save your answers.
 
 unauthorised.title = You can’t access this service with this account
 unauthorised.heading = You can’t access this service with this account
+
+informationVoided.title = FATCA information voided
+informationVoided.heading = FATCA information voided
+
+voidingFatcaInformation.title = Voiding FATCA information for the financial institution
+voidingFatcaInformation.heading = Voiding FATCA information for {0}
+voidingFatcaInformation.error.required = Select yes if voidingFatcaInformation
