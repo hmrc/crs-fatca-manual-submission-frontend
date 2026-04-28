@@ -50,6 +50,10 @@ unauthorised.heading = You can’t access this service with this account
 
 informationVoided.title = FATCA information voided
 informationVoided.heading = FATCA information voided
+informationVoided.para.1 = We have sent a confirmation email to {0} and {1}.
+informationVoided.subheading = What you have voided
+informationVoided.para.2 = You have permanently deleted the following information for {0} with the MessageRefId values:
+
 
 voidingFatcaInformation.title = Voiding FATCA information for the financial institution
 voidingFatcaInformation.heading = Voiding FATCA information for {0}

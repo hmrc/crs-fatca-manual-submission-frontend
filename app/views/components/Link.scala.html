@@ -1,5 +1,5 @@
-/*
- * Copyright 2026 HM Revenue & Customs
+@*
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,15 +12,18 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *@
 
-package pages
+@this()
 
-import play.api.libs.json.JsPath
+@(href: String, key: String, id: Option[String] = None, openInNewWindow: Boolean = false, classes: String = "govuk-link", asPara: Boolean = true)(implicit messages: Messages)
 
-case object VoidingFatcaInformationPage extends QuestionPage[Boolean] {
+@link = {
+    <a class="@classes" @id.map{i => id="@i"} href="@href" @if(openInNewWindow){target="_blank" rel="noopener noreferrer"}>@messages(key)</a>
+}
 
-  override def path: JsPath = JsPath \ toString
-
-  override def toString: String = "voidingFatcaInformation"
+@if(asPara) {
+    <p class="govuk-body">@link</p>
+} else {
+    @link
 }
