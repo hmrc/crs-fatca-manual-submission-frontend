@@ -48,6 +48,9 @@ signedOut.guidance = We did not save your answers.
 unauthorised.title = You can’t access this service with this account
 unauthorised.heading = You can’t access this service with this account
 
+readSubmissionData.title = readSubmissionData
+readSubmissionData.heading = readSubmissionData
+
 informationVoided.title = FATCA information voided
 informationVoided.heading = FATCA information voided
 informationVoided.para.1 = We have sent a confirmation email to {0}.

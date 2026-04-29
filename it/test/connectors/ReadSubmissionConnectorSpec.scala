@@ -1,0 +1,64 @@
+/*
+ * Copyright 2025 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package connectors
+
+import models.{ReadSubmissionRequest, ReadSubmissionResponseDetails}
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.must.Matchers.{a, include, must, mustBe}
+import play.api.http.Status.*
+import play.api.libs.json.Json
+import uk.gov.hmrc.http.InternalServerException
+import utils.ISpecBase
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.DurationInt
+import scala.concurrent.{Await, Future}
+
+class ReadSubmissionConnectorSpec extends AnyFreeSpec with ISpecBase {
+
+  lazy val connector: ReadSubmissionConnector = app.injector.instanceOf[ReadSubmissionConnector]
+
+  "ReadSubmissionConnector" - {
+
+    "submissionList" - {
+      val readSubmissionUrl = "/crs-fatca-manual-submission/read-submission-history"
+
+      val request = ReadSubmissionRequest(true,None)
+      val response = ReadSubmissionResponseDetails(submissionsList = List.empty)
+
+      "should return the Response when EIS return successful Response" in {
+        stubPostResponse(readSubmissionUrl, OK, Json.toJson(response).toString)
+
+        val result = Await.result(connector.submissionList(request), 2.seconds)
+
+        result mustBe response
+      }
+
+      "should return Future Failure When EIS return INTERNAL_SERVER_ERROR" in {
+        stubPostResponse(readSubmissionUrl, INTERNAL_SERVER_ERROR)
+
+        val result: Future[ReadSubmissionResponseDetails] = connector.submissionList(request)
+
+        val exception = result.failed.futureValue
+
+        exception mustBe a[InternalServerException]
+        exception.getMessage must include("Unable to retrieve submission history")
+
+      }
+    }
+  }
+}

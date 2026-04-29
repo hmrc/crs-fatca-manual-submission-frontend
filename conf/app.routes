@@ -18,7 +18,9 @@ GET         /account/signed-out                          controllers.auth.Signed
 
 GET         /unauthorised                                controllers.UnauthorisedController.onPageLoad()
 
-GET        /fatca-void/information-voided                        controllers.InformationVoidedController.onPageLoad()
+GET        /read-submission-data                         controllers.ReadSubmissionDataController.onPageLoad(fiid: Option[String])
 
-GET        /fatca-void/voiding-fatca-information                        controllers.VoidingFatcaInformationController.onPageLoad()
-POST       /fatca-void/voiding-fatca-information                        controllers.VoidingFatcaInformationController.onSubmit()
+GET        /fatca-void/information-voided                controllers.InformationVoidedController.onPageLoad()
+
+GET        /fatca-void/voiding-fatca-information         controllers.VoidingFatcaInformationController.onPageLoad()
+POST       /fatca-void/voiding-fatca-information         controllers.VoidingFatcaInformationController.onSubmit()
