@@ -48,8 +48,13 @@ signedOut.guidance = We did not save your answers.
 unauthorised.title = You can’t access this service with this account
 unauthorised.heading = You can’t access this service with this account
 
-viewSubmissions.title = viewSubmissions
-viewSubmissions.heading = viewSubmissions
+viewSubmissions.title = Submitted reports for {0} for 2026
+viewSubmissions.fatca.submit = FATCA reports for {0}
+viewSubmissions.crs.submit = CRS reports for {0}
+viewSubmissions.voidThisReport.link = Void this information
+viewSubmissions.voided = Voided
+viewSubmissions.noReport.text = You have not sent any reports
+viewSubmissions.heading = Submitted reports for {0} for 2026
 
 readSubmissionData.title = readSubmissionData
 readSubmissionData.heading = readSubmissionData

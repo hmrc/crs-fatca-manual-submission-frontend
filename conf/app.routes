@@ -22,4 +22,4 @@ GET         /unauthorised                                controllers.Unauthorise
 
 GET        /read-submission-data                       controllers.ReadSubmissionDataController.onPageLoad(fiid: Option[String])
 
-GET        /manage-reports-for-:year                      controllers.ViewSubmissionsController.onPageLoad(year: Int)
+GET        /manage-reports-for-:year                      controllers.ViewSubmissionsController.onPageLoad(year: Int, fiId: Option[String])

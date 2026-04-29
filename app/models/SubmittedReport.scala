@@ -20,25 +20,22 @@ import models.SubmissionsConstants.{RegimeType, SubmissionFileType, SubmissionSt
 import play.api.libs.json.{Json, OFormat}
 
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 case class SubmittedReport(
-                            fiId: String,
-                            fiName: String,
-                            fileName: String,
-                            submissionStatus: SubmissionStatus,
-                            uploadDateTime: LocalDateTime,
-                            regime: RegimeType,
-                            reportingYear: String,
-                            submissionCaseId: String,
-                            submissionType: SubmissionType,
-                            submissionFileType: SubmissionFileType,
-                            messageRefId: String,
-                            submissionDeleteStatus: Option[Boolean] = None,
-                            originalMessageRefId: Option[String] = None
-) {
-  Ensuring(uploadDateTime.format(DateTimeFormatter.ISO_DATE_TIME))
-}
+  fiId: String,
+  fiName: String,
+  fileName: String,
+  submissionStatus: SubmissionStatus,
+  uploadDateTime: LocalDateTime,
+  regime: RegimeType,
+  reportingYear: String,
+  submissionCaseId: String,
+  submissionType: SubmissionType,
+  submissionFileType: SubmissionFileType,
+  messageRefId: String,
+  submissionDeleteStatus: Option[Boolean] = None,
+  originalMessageRefId: Option[String] = None
+)
 
 object SubmittedReport {
   implicit val format: OFormat[SubmittedReport] = Json.format[SubmittedReport]

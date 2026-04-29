@@ -28,19 +28,15 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, Future}
 
-class ReadSubmissionConnectorSpec extends AnyFreeSpec with ISpecBase {
+class DatabaseConnectorSpec extends AnyFreeSpec with ISpecBase {
 
-  lazy val connector: ReadSubmissionConnector = app.injector.instanceOf[ReadSubmissionConnector]
-  val readSubmissionUrl = "/crs-fatca-manual-submission/read-submission-history"
-  val request = ReadSubmissionRequest(true, None)
-  val response = ReadSubmissionResponseDetails(submissionsList = List.empty)
-  
-  "ReadSubmissionConnector" - {
+  lazy val connector: DatabaseConnector = app.injector.instanceOf[DatabaseConnector]
+  val url = "/crs-fatca-manual-submission/submissionList"
+  "DatabaseConnector" - {
 
-    "submissionList" - {
-
+    "get" - {
       "should return the Response when EIS return successful Response" in {
-        stubPostResponse(readSubmissionUrl, OK, Json.toJson(response).toString)
+        stubGetResponse(url, OK, Json.toJson(response).toString)
 
         val result = Await.result(connector.submissionList(request), 2.seconds)
 

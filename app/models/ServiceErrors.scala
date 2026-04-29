@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package pages
+package models
 
-import models.SubmittedReport
-import play.api.libs.json.JsPath
+sealed abstract class ServiceErrors extends Throwable {
+  override def toString: String = getClass.getSimpleName.replace("$", "")
+}
 
-case object SubmissionsHistoryPage extends QuestionPage[List[SubmittedReport]] {
-
-  override def path: JsPath     = JsPath \ toString
-  override def toString: String = "submissionsList"
+object ServiceErrors {
+  case object Downstream_Error extends ServiceErrors
 }

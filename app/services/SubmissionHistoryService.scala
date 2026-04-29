@@ -18,31 +18,29 @@ package services
 
 import com.google.inject.Inject
 import connectors.ReadSubmissionConnector
-import models.SubmissionsConstants.PASSED
-import models.{ReadSubmissionRequest, ReadSubmissionResponseDetails, SubmissionCard, SubmittedReport, UserAnswers}
-import play.api.libs.json.{JsObject, Json}
-import repositories.SessionRepository
+import models.SubmissionsConstants.{CRS701, CRSAdditional701, PASSED}
+import models.{ReadSubmissionRequest, SubmissionCard, SubmittedReport}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class SubmissionHistoryService @Inject() (connector: ReadSubmissionConnector, sessionRepo: SessionRepository)(implicit ec: ExecutionContext) {
+class SubmissionHistoryService @Inject() (readSubmissionConnector: ReadSubmissionConnector)(implicit ec: ExecutionContext) {
 
-  def getSubmissionHistory(id: String, submissionRequest: ReadSubmissionRequest)(implicit hc: HeaderCarrier): Future[Boolean] =
-    connector
+  def getAndMaybeCacheSubmissionHistory(id: String, submissionRequest: ReadSubmissionRequest)(implicit hc: HeaderCarrier): Future[Boolean] =
+    readSubmissionConnector
       .submissionList(submissionRequest)
-      .flatMap(
-        items => sessionRepo.set(UserAnswers(id, Json.toJson(items).as[JsObject]))
+      .map(
+        _ => true
       )
 
-  def prepareSubmissionHistoryCards(submissions: List[SubmittedReport], submissionYear: Int): Map[String, List[SubmissionCard]] = {
+  def prepareSubmissionHistoryCards(submissions: List[SubmittedReport], submissionYear: Int): Map[String, List[SubmissionCard]] =
     submissions
       .filter(_.submissionStatus == PASSED)
       .filter(_.uploadDateTime.getYear == submissionYear)
       .map(submissionToCardConverter)
       .sortBy(_.timeSent)
+      .reverse
       .groupBy(_.originalMessageRefId)
-  }
 
   private def submissionToCardConverter(report: SubmittedReport) =
     SubmissionCard(
@@ -50,6 +48,7 @@ class SubmissionHistoryService @Inject() (connector: ReadSubmissionConnector, se
       messageRefId = report.messageRefId,
       originalMessageRefId = report.originalMessageRefId.getOrElse(report.messageRefId),
       timeSent = report.uploadDateTime,
-      messageType = report.submissionFileType
+      fileType = if report.originalMessageRefId.isDefined & report.submissionFileType == CRS701 then CRSAdditional701 else report.submissionFileType,
+      submissionType = report.submissionType
     )
 }

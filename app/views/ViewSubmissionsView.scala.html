@@ -19,9 +19,81 @@
         govukButton: GovukButton
 )
 
-@(cards: Map[String, List[SubmissionCard]])(implicit request: Request[_], messages: Messages)
+@(cards: Map[String, List[SubmissionCard]], year: Int, fiId: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("viewSubmissions.title"))) {
+@layout(pageTitle = titleNoForm(messages("viewSubmissions.title", fiId))) {
+    <h1 class="govuk-heading-l" style="font-weight: bold;
+        margin-top: 2rem;">@messages("viewSubmissions.crs.submit", year)</h1>
+    @if(cards.values.flatten.exists(_.fileType.value.contains("CRS"))) {
+        @for((originalMessageRefId, cardList) <- cards) {
+            @if(cardList.exists(_.fileType.value.contains("CRS"))) {
+                <div class="govuk-summary-card">
+                    <div class="govuk-summary-card__title-wrapper">
+                        <h2 class="govuk-summary-card__title">
+                        @cardList.head.title
+                        </h2>
+                    </div>
+                    <div class="govuk-summary-card__content">
+                        <dl class="govuk-summary-list">
+                        @for(card <- cardList) {
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                @card.summaryKey
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                @card.summaryValue
+                                </dd>
+                            </div>
+                        }
+                        </dl>
+                    </div>
+                </div>
+            }
+        }} else {
+    <h2  class="govuk-body">@messages("viewSubmissions.noReport.text")</h2>
+    }
+    <h2 class="govuk-heading-l" style="font-weight: bold;
+        margin-top: 2rem;"> @messages("viewSubmissions.fatca.submit", year)</h2>
+    @if(cards.values.flatten.exists(_.fileType.value.contains("FATCA"))) {
+    @for((originalMessageRefId, cardList) <- cards) {
+        @if(cardList.exists(_.fileType.value.contains("FATCA"))) {
 
-    <h1 class="govuk-heading-xl">@messages("viewSubmissions.heading")</h1>
+            <div class="govuk-summary-card">
+                <div class="govuk-summary-card__title-wrapper">
+                @if(cardList.exists(_.fileType.value.contains("FATCA3"))) {
+                    <h2 class="govuk-summary-card__title">
+                        @cardList.head.title
+                        <strong class="govuk-tag govuk-tag--grey">@messages("viewSubmissions.voided")</strong>
+                    </h2>
+                } else {
+                    <h2 class="govuk-summary-card__title">
+                    @cardList.head.title
+                    </h2>
+                    <div class="govuk-summary-card__actions">
+                        <a class="govuk-link" href="@routes.JourneyRecoveryController.onPageLoad()" class="govuk-link govuk-link--no-visited-state">@messages("viewSubmissions.voidThisReport.link")</a>
+                        <span class="govuk-visually-hidden"> (@originalMessageRefId)</span>
+                        </a>
+                    </div>
+                }
+                </div>
+                <div class="govuk-summary-card__content">
+                    <dl class="govuk-summary-list">
+                    @for(card <- cardList) {
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                            @card.summaryKey
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                            @card.summaryValue
+                            </dd>
+                        </div>
+                    }
+                    </dl>
+                </div>
+            </div>
+        }
+    }
+    } else {
+        <h2  class="govuk-body">@messages("viewSubmissions.noReport.text")</h2>
+    }
 }

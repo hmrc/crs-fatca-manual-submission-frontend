@@ -24,6 +24,7 @@ import org.mockito.Mockito.{reset, when}
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
+import services.SubmissionHistoryService
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import views.html.ReadSubmissionDataView
 
@@ -31,25 +32,22 @@ import scala.concurrent.Future
 
 class ReadSubmissionDataControllerSpec extends SpecBase {
 
-  val mockConnector                             = mock[ReadSubmissionConnector]
+  val mockService                               = mock[SubmissionHistoryService]
   implicit val mockHeaderCarrier: HeaderCarrier = mock[HeaderCarrier]
 
   override def beforeEach(): Unit =
     super.beforeEach()
-    reset(mockConnector)
 
   "ReadSubmissionData Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(
-          bind[ReadSubmissionConnector].toInstance(mockConnector)
-        )
         .build()
 
       running(application) {
-        when(mockConnector.submissionList(any)(using any, any)).thenReturn(Future.successful(ReadSubmissionResponseDetails(submissionsList = List.empty)))
+        when(mockService.getAndMaybeCacheSubmissionHistory(any)(using any, any))
+          .thenReturn(Future.successful(ReadSubmissionResponseDetails(submissionsList = List.empty)))
         val request = FakeRequest(GET, routes.ReadSubmissionDataController.onPageLoad(None).url)
 
         val result = route(application, request).value

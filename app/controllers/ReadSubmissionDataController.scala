@@ -16,7 +16,6 @@
 
 package controllers
 
-import connectors.ReadSubmissionConnector
 import controllers.Execution.trampoline
 import controllers.actions.*
 import models.ReadSubmissionRequest
@@ -25,30 +24,28 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SubmissionHistoryService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.ReadSubmissionDataView
-
-import java.time.{LocalDate, Year, ZoneOffset}
+import java.time.{Year, ZoneOffset}
 import javax.inject.Inject
 
 class ReadSubmissionDataController @Inject() (
-                                               override val messagesApi: MessagesApi,
-                                               identify: IdentifierAction,
-                                               getData: DataRetrievalAction,
-                                               setData: DataCreationAction,
-                                               service: SubmissionHistoryService,
-                                               val controllerComponents: MessagesControllerComponents
+  override val messagesApi: MessagesApi,
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  setData: DataCreationAction,
+  service: SubmissionHistoryService,
+  val controllerComponents: MessagesControllerComponents
 ) extends FrontendBaseController
     with I18nSupport
     with Logging {
 
-  def onPageLoad(fiid: Option[String]): Action[AnyContent] = (identify andThen getData andThen setData).async {
+  def onPageLoad(fiId: Option[String]): Action[AnyContent] = (identify andThen getData andThen setData).async {
     implicit request =>
       val defaultYear = Year.now(ZoneOffset.UTC).getValue - 1
       service
-        .getSubmissionHistory(request.fatcaId, ReadSubmissionRequest(true, fiid))
+        .getAndMaybeCacheSubmissionHistory(request.fatcaId, ReadSubmissionRequest(true, fiId))
         .map {
           _ =>
-            Redirect(controllers.routes.ViewSubmissionsController.onPageLoad(defaultYear))
+            Redirect(controllers.routes.ViewSubmissionsController.onPageLoad(defaultYear, fiId))
         }
   }
 

@@ -19,16 +19,13 @@ package controllers
 import controllers.actions.*
 import pages.SubmissionsHistoryPage
 import play.api.Logging
-
-import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SubmissionHistoryService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.ViewSubmissionsView
-import java.time.Year
-import play.api.mvc.PathBindable
-import java.time.Year
+
+import javax.inject.Inject
 
 class ViewSubmissionsController @Inject() (
   override val messagesApi: MessagesApi,
@@ -42,18 +39,15 @@ class ViewSubmissionsController @Inject() (
     with I18nSupport
     with Logging {
 
-  def onPageLoad(year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(year: Int, fiId: Option[String]): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      request.userAnswers
-        .get(SubmissionsHistoryPage)
-        .map(
-          submissions => service.prepareSubmissionHistoryCards(submissions, year)
-        )
-        .map(
-          cards => Ok(view(cards))
-        )
+      (for {
+        submissions                  <- request.userAnswers.get(SubmissionsHistoryPage)
+        financialInstituteIdentifier <- fiId
+        cards = service.prepareSubmissionHistoryCards(submissions, year)
+      } yield Ok(view(cards, year, financialInstituteIdentifier)))
         .getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
 
   }
-  
+
 }

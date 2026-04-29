@@ -16,22 +16,34 @@
 
 package controllers.actions
 
-import javax.inject.Inject
+import connectors.DatabaseConnector
+import models.UserAnswers
 import models.requests.{IdentifierRequest, OptionalDataRequest}
+import play.api.Logging
+import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.ActionTransformer
-import repositories.SessionRepository
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class DataRetrievalActionImpl @Inject() (
-  val sessionRepository: SessionRepository
+  val userDataConnector: DatabaseConnector
 )(implicit val executionContext: ExecutionContext)
     extends DataRetrievalAction {
 
   override protected def transform[A](request: IdentifierRequest[A]): Future[OptionalDataRequest[A]] =
-    sessionRepository.get(request.fatcaId).map {
-      OptionalDataRequest(request.request, request.userId, _, request.fatcaId)
+    given hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
+    userDataConnector.get().map {
+      data =>
+        OptionalDataRequest(request.request,
+                            request.userId,
+                            Some(UserAnswers(id = request.fatcaId, data = data.getOrElse(Json.obj()).as[JsObject])),
+                            request.fatcaId
+        )
     }
+
 }
 
 trait DataRetrievalAction extends ActionTransformer[IdentifierRequest, OptionalDataRequest]
