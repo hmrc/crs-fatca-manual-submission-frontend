@@ -22,9 +22,9 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
   def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new VoidingFatcaInformationFormProvider()
-  val form = formProvider()
+  val form         = formProvider()
 
-  lazy val voidingFatcaInformationRoute = routes.VoidingFatcaInformationController.onPageLoad(NormalMode).url
+  lazy val voidingFatcaInformationRoute = routes.VoidingFatcaInformationController.onPageLoad().url
 
   "VoidingFatcaInformation Controller" - {
 
@@ -40,7 +40,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[VoidingFatcaInformationView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form)(request, messages(application)).toString
       }
     }
 
@@ -58,7 +58,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true))(request, messages(application)).toString
       }
     }
 
@@ -104,7 +104,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm)(request, messages(application)).toString
       }
     }
 

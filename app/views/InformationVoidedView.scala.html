@@ -24,7 +24,7 @@
         appConfig: config.FrontendAppConfig
 )
 
-@(fiName: String, dateTime: String, messageRefIds:Seq[String], emails: Seq[String])(implicit request: Request[_], messages: Messages)
+@(fiName: String, dateTime: String, messageRefIds:Seq[String], emailString: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("informationVoided.title")), showBackLink = false) {
 
@@ -36,11 +36,14 @@
         )
     )
 <!--Check which emails should be used here - fisuser -->
-    @para("informationVoided.para.1", args = emails)
+    @para("informationVoided.para.1", Seq(emailString))
 
     @heading(messages("informationVoided.subheading"), "m", "h2")
-    @para("informationVoided.para.2",classes ="govuk-!-margin-bottom-2", args = Seq(fiName))
-
+    @{if(messageRefIds.size > 1) {
+        para("informationVoided.para.3",classes ="govuk-!-margin-bottom-2", args = Seq(fiName))
+    }else{
+        para("informationVoided.para.2",classes ="govuk-!-margin-bottom-2", args = Seq(fiName))
+    }}
     <ol class="govuk-list govuk-list--bullet">
         @for(messageRefId <- messageRefIds) {
             <li>@messageRefId</li>

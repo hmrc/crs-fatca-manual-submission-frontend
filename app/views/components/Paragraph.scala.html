@@ -16,6 +16,6 @@
 
 @this()
 
-@(messageKey: String, classes: String = "", id: Option[String] = None, args: Seq[Any] = Seq.empty)(implicit messages: Messages)
+@(messageKey: String, args: Seq[Any] = Seq.empty, classes: String = "", id: Option[String] = None)(implicit messages: Messages)
 
 <p class="@classes govuk-body wrappable" @id.map{id => id="@id"}>@messages(messageKey, args.map(_.asInstanceOf[AnyRef]): _*)</p>
