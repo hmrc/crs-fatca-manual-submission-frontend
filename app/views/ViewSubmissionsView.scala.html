@@ -14,16 +14,27 @@
  * limitations under the License.
  *@
 
+@import views.html.components.{Heading, ParagraphMessageWithLink}
+@import config.FrontendAppConfig
 @this(
         layout: templates.Layout,
-        govukButton: GovukButton
+        govukButton: GovukButton,
+        paragraphMessageWithLink: ParagraphMessageWithLink,
+        heading: components.Heading
 )
 
-@(cards: Map[String, List[SubmissionCard]], year: Int, fiId: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("viewSubmissions.title", fiId))) {
-    <h1 class="govuk-heading-l" style="font-weight: bold;
-        margin-top: 2rem;">@messages("viewSubmissions.crs.submit", year)</h1>
+@(cards: Map[String, List[SubmissionCard]], year: Int, fiId: String)(implicit request: Request[_], messages: Messages, config:FrontendAppConfig)
+
+
+@layout(pageTitle = titleNoForm(title = messages("viewSubmissions.title", fiId, year.toString))) {
+@heading(messages("viewSubmissions.title", fiId, year.toString))
+@paragraphMessageWithLink(message1 = Some(messages("viewSubmissions.body.1")),
+    linkMessage = messages("viewSubmissions.body.link.1"),
+    message2 = Some(messages("viewSubmissions.body.2")),
+    linkUrl = config.fileUploadUrl, secondaryLinkUrl = Some(controllers.routes.JourneyRecoveryController.onPageLoad().url),
+    secondaryLinkMessage = Some(messages("viewSubmissions.body.link.2")), linkFullStop = true)
+<h1 class="govuk-heading-l" style="font-weight: bold;  margin-top: 2rem;"> @messages("viewSubmissions.crs.submit", year.toString)</h1>
     @if(cards.values.flatten.exists(_.fileType.value.contains("CRS"))) {
         @for((originalMessageRefId, cardList) <- cards) {
             @if(cardList.exists(_.fileType.value.contains("CRS"))) {
@@ -49,50 +60,51 @@
                     </div>
                 </div>
             }
-        }} else {
-    <h2  class="govuk-body">@messages("viewSubmissions.noReport.text")</h2>
+        }
+    } else {
+        <h2  class="govuk-body">@messages("viewSubmissions.noReport.text")</h2>
     }
     <h2 class="govuk-heading-l" style="font-weight: bold;
-        margin-top: 2rem;"> @messages("viewSubmissions.fatca.submit", year)</h2>
+        margin-top: 2rem;"> @messages("viewSubmissions.fatca.submit", year.toString)</h2>
     @if(cards.values.flatten.exists(_.fileType.value.contains("FATCA"))) {
-    @for((originalMessageRefId, cardList) <- cards) {
-        @if(cardList.exists(_.fileType.value.contains("FATCA"))) {
+        @for((originalMessageRefId, cardList) <- cards) {
+            @if(cardList.exists(_.fileType.value.contains("FATCA"))) {
 
-            <div class="govuk-summary-card">
-                <div class="govuk-summary-card__title-wrapper">
-                @if(cardList.exists(_.fileType.value.contains("FATCA3"))) {
-                    <h2 class="govuk-summary-card__title">
+                <div class="govuk-summary-card">
+                    <div class="govuk-summary-card__title-wrapper">
+                    @if(cardList.exists(_.fileType.value.contains("FATCA3"))) {
+                        <h2 class="govuk-summary-card__title">
+                            @cardList.head.title
+                            <strong class="govuk-tag govuk-tag--grey">@messages("viewSubmissions.voided")</strong>
+                        </h2>
+                    } else {
+                        <h2 class="govuk-summary-card__title">
                         @cardList.head.title
-                        <strong class="govuk-tag govuk-tag--grey">@messages("viewSubmissions.voided")</strong>
-                    </h2>
-                } else {
-                    <h2 class="govuk-summary-card__title">
-                    @cardList.head.title
-                    </h2>
-                    <div class="govuk-summary-card__actions">
-                        <a class="govuk-link" href="@routes.JourneyRecoveryController.onPageLoad()" class="govuk-link govuk-link--no-visited-state">@messages("viewSubmissions.voidThisReport.link")</a>
-                        <span class="govuk-visually-hidden"> (@originalMessageRefId)</span>
-                        </a>
-                    </div>
-                }
-                </div>
-                <div class="govuk-summary-card__content">
-                    <dl class="govuk-summary-list">
-                    @for(card <- cardList) {
-                        <div class="govuk-summary-list__row">
-                            <dt class="govuk-summary-list__key">
-                            @card.summaryKey
-                            </dt>
-                            <dd class="govuk-summary-list__value">
-                            @card.summaryValue
-                            </dd>
+                        </h2>
+                        <div class="govuk-summary-card__actions">
+                            <a class="govuk-link" href="@routes.JourneyRecoveryController.onPageLoad()" class="govuk-link govuk-link--no-visited-state">@messages("viewSubmissions.voidThisReport.link")</a>
+                            <span class="govuk-visually-hidden"> (@originalMessageRefId)</span>
+                            </a>
                         </div>
                     }
-                    </dl>
+                    </div>
+                    <div class="govuk-summary-card__content">
+                        <dl class="govuk-summary-list">
+                        @for(card <- cardList) {
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                @card.summaryKey
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                @card.summaryValue
+                                </dd>
+                            </div>
+                        }
+                        </dl>
+                    </div>
                 </div>
-            </div>
+            }
         }
-    }
     } else {
         <h2  class="govuk-body">@messages("viewSubmissions.noReport.text")</h2>
     }

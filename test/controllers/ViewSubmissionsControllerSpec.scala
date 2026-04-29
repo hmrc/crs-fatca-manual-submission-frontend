@@ -17,27 +17,60 @@
 package controllers
 
 import base.SpecBase
+import models.SubmissionsConstants.FATCA1
+import models.{SubmissionCard, SubmissionsConstants, SubmittedReport}
+import org.mockito.ArgumentMatchers.{any, eq as eqTo}
+import org.mockito.Mockito.when
+import pages.SubmissionsHistoryPage
+import play.api.inject.bind
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
+import services.SubmissionHistoryService
 import views.html.ViewSubmissionsView
 
 class ViewSubmissionsControllerSpec extends SpecBase {
 
+  private val submissionCard: SubmissionCard = SubmissionCard(
+    isVoided = Some(false),
+    messageRefId = "ref1",
+    originalMessageRefId = "ref1",
+    timeSent = now,
+    fileType = FATCA1,
+    submissionType = SubmissionsConstants.XML
+  )
+
+
+  private val mappedCards: Map[String, List[SubmissionCard]] = Map("ref1" -> List(submissionCard))
+  val service: SubmissionHistoryService                      = mock[SubmissionHistoryService]
   "ViewSubmissions Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers.set(SubmissionsHistoryPage,List(submittedReport)).success.value))
+        .overrides(bind[SubmissionHistoryService].toInstance(service)).build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.ViewSubmissionsController.onPageLoad().url)
-
+        val request = FakeRequest(GET, routes.ViewSubmissionsController.onPageLoad(2018, Some("fiId")).url)
+        when(service.prepareSubmissionHistoryCards(any(), eqTo(2018))).thenReturn(mappedCards)
         val result = route(application, request).value
 
         val view = application.injector.instanceOf[ViewSubmissionsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view()(request, messages(application)).toString
+        contentAsString(result) mustEqual view(mappedCards, 2018, "fiId")(request, messages(application)).toString
+      }
+    }
+
+    "must redirect to journey recovery if user answers are empty" in {
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.ViewSubmissionsController.onPageLoad(2018, Some("fiId")).url)
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
       }
     }
   }

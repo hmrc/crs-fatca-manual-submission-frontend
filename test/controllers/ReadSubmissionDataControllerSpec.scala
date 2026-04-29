@@ -32,42 +32,40 @@ import scala.concurrent.Future
 
 class ReadSubmissionDataControllerSpec extends SpecBase {
 
-  val mockService                               = mock[SubmissionHistoryService]
-  implicit val mockHeaderCarrier: HeaderCarrier = mock[HeaderCarrier]
+  val mockService: SubmissionHistoryService = mock[SubmissionHistoryService]
 
   override def beforeEach(): Unit =
     super.beforeEach()
 
   "ReadSubmissionData Controller" - {
 
-    "must return OK and the correct view for a GET" in {
+    "must redirect to view submissions page upon successful call to retrieve submission history" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(bind[SubmissionHistoryService].toInstance(mockService))
         .build()
 
       running(application) {
-        when(mockService.getAndMaybeCacheSubmissionHistory(any)(using any, any))
-          .thenReturn(Future.successful(ReadSubmissionResponseDetails(submissionsList = List.empty)))
+        when(mockService.getAndMaybeCacheSubmissionHistory(any(),any())(using any()))
+          .thenReturn(Future.successful(true))
         val request = FakeRequest(GET, routes.ReadSubmissionDataController.onPageLoad(None).url)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[ReadSubmissionDataView]
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view()(request, messages(application)).toString
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.routes.ViewSubmissionsController.onPageLoad(now.getYear.intValue-1 , None).url
       }
     }
     "must return Internal Server Error and the correct view for a GET" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
-          bind[ReadSubmissionConnector].toInstance(mockConnector)
+          bind[SubmissionHistoryService].toInstance(mockService)
         )
         .build()
 
       running(application) {
-        when(mockConnector.submissionList(any)(using any, any)).thenReturn(Future.failed(InternalServerException("Failed")))
+        when(mockService.getAndMaybeCacheSubmissionHistory(any, any)(using any)).thenReturn(Future.failed(InternalServerException("Failed")))
         val request = FakeRequest(GET, routes.ReadSubmissionDataController.onPageLoad(None).url)
         val result  = route(application, request).get
 

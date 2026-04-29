@@ -16,6 +16,7 @@
 
 package controllers
 
+import config.FrontendAppConfig
 import controllers.actions.*
 import pages.SubmissionsHistoryPage
 import play.api.Logging
@@ -35,7 +36,7 @@ class ViewSubmissionsController @Inject() (
   service: SubmissionHistoryService,
   val controllerComponents: MessagesControllerComponents,
   view: ViewSubmissionsView
-) extends FrontendBaseController
+)(implicit config: FrontendAppConfig) extends FrontendBaseController
     with I18nSupport
     with Logging {
 

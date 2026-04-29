@@ -9,6 +9,8 @@ object CodeCoverageSettings {
     "uk.gov.hmrc.BuildInfo",
     "app.*",
     "prod.*",
+    "views.*",
+    "models.*",
     "config.*",
     "module.*",
     ".*Routes.*",

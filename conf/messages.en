@@ -48,13 +48,17 @@ signedOut.guidance = We did not save your answers.
 unauthorised.title = You can’t access this service with this account
 unauthorised.heading = You can’t access this service with this account
 
-viewSubmissions.title = Submitted reports for {0} for 2026
+viewSubmissions.title = Submitted reports for {0} for {1}
+viewSubmissions.body.1 = You can send a report by either
+viewSubmissions.body.2 = or
+viewSubmissions.body.link.1 = uploading an XML file
+viewSubmissions.body.link.2 = filling in an online form for manual reporting
 viewSubmissions.fatca.submit = FATCA reports for {0}
 viewSubmissions.crs.submit = CRS reports for {0}
 viewSubmissions.voidThisReport.link = Void this information
 viewSubmissions.voided = Voided
 viewSubmissions.noReport.text = You have not sent any reports
-viewSubmissions.heading = Submitted reports for {0} for 2026
+viewSubmissions.heading = Submitted reports for {0} for {1}
 
 readSubmissionData.title = readSubmissionData
 readSubmissionData.heading = readSubmissionData

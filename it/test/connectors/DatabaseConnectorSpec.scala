@@ -16,42 +16,46 @@
 
 package connectors
 
-import models.{ReadSubmissionRequest, ReadSubmissionResponseDetails}
+import models.ServiceErrors.Downstream_Error
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers.{a, include, must, mustBe}
 import play.api.http.Status.*
-import play.api.libs.json.Json
-import uk.gov.hmrc.http.InternalServerException
+import play.api.libs.json.{JsValue, Json}
 import utils.ISpecBase
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
-import scala.concurrent.{Await, Future}
 
 class DatabaseConnectorSpec extends AnyFreeSpec with ISpecBase {
 
   lazy val connector: DatabaseConnector = app.injector.instanceOf[DatabaseConnector]
-  val url = "/crs-fatca-manual-submission/submissionList"
+  val url                               = "/crs-fatca-manual-submission/submissionList"
+  val jsValue: JsValue                  = Json.toJson(emptyUserAnswers)
   "DatabaseConnector" - {
 
     "get" - {
-      "should return the Response when EIS return successful Response" in {
-        stubGetResponse(url, OK, Json.toJson(response).toString)
+      "should return the Response when mongo return some data in Response" in {
+        stubGetResponse(url, OK, jsValue.toString)
 
-        val result = Await.result(connector.submissionList(request), 2.seconds)
+        val result = Await.result(connector.get(), 2.seconds)
 
-        result mustBe response
+        result mustBe Some(jsValue)
       }
 
-      "should return Future Failure When EIS return INTERNAL_SERVER_ERROR" in {
-        stubPostResponse(readSubmissionUrl, INTERNAL_SERVER_ERROR)
+      "should return None when mongo return no data" in {
+        stubGetResponse(url, NOT_FOUND, Json.obj().toString)
 
-        val result: Future[ReadSubmissionResponseDetails] = connector.submissionList(request)
+        val result = Await.result(connector.get(), 2.seconds)
 
-        val exception = result.failed.futureValue
+        result mustBe None
+      }
 
-        exception mustBe a[InternalServerException]
-        exception.getMessage must include("Unable to retrieve submission history")
+      "should Downstream_Error when mongo return an error" in {
+        stubGetResponse(url, INTERNAL_SERVER_ERROR, "")
+
+        val result = connector.get()
+
+        result.failed.value mustBe Downstream_Error
 
       }
     }

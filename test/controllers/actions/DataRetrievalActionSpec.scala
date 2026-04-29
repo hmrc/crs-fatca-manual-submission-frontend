@@ -17,8 +17,10 @@
 package controllers.actions
 
 import base.SpecBase
+import connectors.DatabaseConnector
 import models.UserAnswers
 import models.requests.{IdentifierRequest, OptionalDataRequest}
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.*
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.FakeRequest
@@ -30,7 +32,7 @@ import scala.concurrent.Future
 
 class DataRetrievalActionSpec extends SpecBase with MockitoSugar {
 
-  class Harness(sessionRepository: SessionRepository) extends DataRetrievalActionImpl(sessionRepository) {
+  class Harness(userDataConnector: DatabaseConnector) extends DataRetrievalActionImpl(userDataConnector) {
     def callTransform[A](request: IdentifierRequest[A]): Future[OptionalDataRequest[A]] = transform(request)
   }
 
@@ -40,9 +42,9 @@ class DataRetrievalActionSpec extends SpecBase with MockitoSugar {
 
       "must set userAnswers to 'None' in the request" in {
 
-        val sessionRepository = mock[SessionRepository]
-        when(sessionRepository.get("id")) thenReturn Future(None)
-        val action = new Harness(sessionRepository)
+        val connector = mock[DatabaseConnector]
+        when(connector.get()(any())) thenReturn Future(None)
+        val action = new Harness(connector)
 
         val result = action.callTransform(IdentifierRequest(FakeRequest(), "id", "FATCAID", Organisation)).futureValue
 
@@ -54,9 +56,9 @@ class DataRetrievalActionSpec extends SpecBase with MockitoSugar {
 
       "must build a userAnswers object and add it to the request" in {
 
-        val sessionRepository = mock[SessionRepository]
-        when(sessionRepository.get("id")) thenReturn Future(Some(UserAnswers("id")))
-        val action = new Harness(sessionRepository)
+        val connector = mock[DatabaseConnector]
+        when(connector.get()(any())) thenReturn Future(Some(UserAnswers("id")))
+        val action = new Harness(connector)
 
         val result = action.callTransform(new IdentifierRequest(FakeRequest(), "id", "FATCAID", Organisation)).futureValue
 

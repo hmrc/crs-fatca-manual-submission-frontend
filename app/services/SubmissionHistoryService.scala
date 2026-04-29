@@ -28,7 +28,7 @@ class SubmissionHistoryService @Inject() (readSubmissionConnector: ReadSubmissio
 
   def getAndMaybeCacheSubmissionHistory(id: String, submissionRequest: ReadSubmissionRequest)(implicit hc: HeaderCarrier): Future[Boolean] =
     readSubmissionConnector
-      .submissionList(submissionRequest)
+      .getSubmissionsList(submissionRequest)
       .map(
         _ => true
       )
