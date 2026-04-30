@@ -27,7 +27,9 @@ import play.api.Application
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.libs.json.Writes
 import play.api.test.FakeRequest
+import queries.Settable
 
 trait SpecBase
     extends AnyFreeSpec
@@ -52,4 +54,11 @@ trait SpecBase
         bind[IdentifierAction].to[FakeIdentifierAction],
         bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers))
       )
+
+  implicit class UserAnswersExtension(userAnswers: UserAnswers) {
+
+    def withPage[T](page: Settable[T], value: T)(implicit writes: Writes[T]): UserAnswers =
+      userAnswers.set(page, value).success.value
+  }
+
 }

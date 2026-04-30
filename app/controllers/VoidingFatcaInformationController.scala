@@ -18,9 +18,7 @@ package controllers
 
 import controllers.actions.*
 import forms.VoidingFatcaInformationFormProvider
-
-import javax.inject.Inject
-import models.{Mode, NormalMode}
+import models.NormalMode
 import navigation.Navigator
 import pages.VoidingFatcaInformationPage
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -29,6 +27,7 @@ import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.VoidingFatcaInformationView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class VoidingFatcaInformationController @Inject() (
@@ -47,15 +46,9 @@ class VoidingFatcaInformationController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(): Action[AnyContent] = (identify andThen getData) {
     implicit request =>
-
-      val preparedForm = request.userAnswers.get(VoidingFatcaInformationPage) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
-
-      Ok(view(preparedForm))
+      Ok(view(form))
   }
 
   def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async {

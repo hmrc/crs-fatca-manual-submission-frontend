@@ -18,8 +18,8 @@ package navigation
 
 import base.SpecBase
 import controllers.routes
-import pages._
-import models._
+import models.*
+import pages.*
 
 class NavigatorSpec extends SpecBase {
 
@@ -33,6 +33,27 @@ class NavigatorSpec extends SpecBase {
 
         case object UnknownPage extends Page
         navigator.nextPage(UnknownPage, NormalMode, UserAnswers("id")) mustBe routes.IndexController.onPageLoad()
+      }
+
+      "VoidingFatcaInformationPage" - {
+
+        "must go to InformationVoidedController when the answer is true" in {
+          navigator.nextPage(VoidingFatcaInformationPage,
+                             NormalMode,
+                             UserAnswers("id").withPage(VoidingFatcaInformationPage, true)
+          ) mustBe routes.InformationVoidedController.onPageLoad()
+        }
+
+        "must go to [ManageSubmissions] when the answer is false" in {
+          navigator.nextPage(VoidingFatcaInformationPage,
+                             NormalMode,
+                             UserAnswers("id").withPage(VoidingFatcaInformationPage, false)
+          ) mustBe routes.IndexController.onPageLoad()
+        }
+
+        "must go to JourneyRecoveryController when the answer is not there" in {
+          navigator.nextPage(VoidingFatcaInformationPage, NormalMode, UserAnswers("id")) mustBe routes.JourneyRecoveryController.onPageLoad()
+        }
       }
     }
 
