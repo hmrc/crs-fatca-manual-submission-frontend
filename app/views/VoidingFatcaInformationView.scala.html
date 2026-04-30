@@ -19,12 +19,46 @@
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
     govukRadios: GovukRadios,
-    govukButton: GovukButton
+    govukButton: GovukButton,
+    header: components.Heading,
+    warning: components.Warning
 )
 
-@(form: Form[_])(implicit request: Request[_], messages: Messages)
+@(form: Form[_], fiName: String, fatcaVoidCardModel: FatcaVoidCardModel)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("voidingFatcaInformation.title"))) {
+
+    @header(messages("voidingFatcaInformation.heading", fiName))
+
+     <p class="govuk-body">@messages("voidingFatcaInformation.p1")</p>
+
+    <div class="govuk-summary-card">
+        <div class="govuk-summary-card__title-wrapper">
+            <h2 class="govuk-summary-card__title">
+                @messages("voidingFatcaInformation.card.header")
+            </h2>
+        </div>
+        <div class="govuk-summary-card__content">
+            <dl class="govuk-summary-list">
+                @for(fatcaCardModel <- fatcaVoidCardModel.cardDetailList) {
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            @{fatcaCardModel.reportType}
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @messages("voidingFatcaInformation.messageRefId")
+                            @{fatcaCardModel.messageRefId}
+                            <br/>
+                            @messages("voidingFatcaInformation.sent", fatcaCardModel.dateSent, fatcaCardModel.dateSentTime)
+
+                        </dd>
+                    </div>
+                }
+            </dl>
+        </div>
+    </div>
+
+    @warning(messages("voidingFatcaInformation.warning", fiName))
 
     @formHelper(action = routes.VoidingFatcaInformationController.onSubmit(), Symbol("autoComplete") -> "off") {
 
@@ -35,7 +69,8 @@
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = LegendViewModel(messages("voidingFatcaInformation.heading")).asPageHeading()
+                legend = LegendViewModel(messages("voidingFatcaInformation.form.heading"))
+                             .withCssClass("govuk-fieldset__legend govuk-fieldset__legend--m govuk-!-display-block")
             )
         )
 

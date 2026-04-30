@@ -18,7 +18,7 @@ package controllers
 
 import controllers.actions.*
 import forms.VoidingFatcaInformationFormProvider
-import models.NormalMode
+import models.{FatcaCardDetail, FatcaVoidCardModel, Mode, NormalMode}
 import navigation.Navigator
 import pages.VoidingFatcaInformationPage
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -44,11 +44,15 @@ class VoidingFatcaInformationController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  val form = formProvider()
+  val form               = formProvider()
+  val fiName             = "ABC Bank plc"
+  val fatcaCardDetail1   = FatcaCardDetail("GB2026GB-ABC1234567890-FATCA_003_2", "Sent 30 May 2027", "11:59pm", "Amended information for an existing report")
+  val fatcaCardDetail2   = FatcaCardDetail("GB2026GB-ABC1234567890-FATCA_003", "Sent 28 May 2027", "9:25am", "New information")
+  val fatcaVoidCardModel = FatcaVoidCardModel(Seq(fatcaCardDetail1, fatcaCardDetail2))
 
   def onPageLoad(): Action[AnyContent] = (identify andThen getData) {
     implicit request =>
-      Ok(view(form))
+      Ok(view(form, fiName, fatcaVoidCardModel))
   }
 
   def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
@@ -56,7 +60,7 @@ class VoidingFatcaInformationController @Inject() (
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, fiName, fatcaVoidCardModel))),
           value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(VoidingFatcaInformationPage, value))
