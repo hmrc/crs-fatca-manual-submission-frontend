@@ -31,6 +31,9 @@ class DatabaseConnectorSpec extends AnyFreeSpec with ISpecBase {
   lazy val connector: DatabaseConnector = app.injector.instanceOf[DatabaseConnector]
   val url                               = "/crs-fatca-manual-submission/submissionList"
   val jsValue: JsValue                  = Json.toJson(emptyUserAnswers)
+
+  override def beforeEach(): Unit =
+    server.resetAll()
   "DatabaseConnector" - {
 
     "get" - {
@@ -43,7 +46,7 @@ class DatabaseConnectorSpec extends AnyFreeSpec with ISpecBase {
       }
 
       "should return None when mongo return no data" in {
-        stubGetResponse(url, NOT_FOUND, Json.obj().toString)
+        stubGetResponse(url, NOT_FOUND)
 
         val result = Await.result(connector.get(), 2.seconds)
 
@@ -51,12 +54,10 @@ class DatabaseConnectorSpec extends AnyFreeSpec with ISpecBase {
       }
 
       "should Downstream_Error when mongo return an error" in {
-        stubGetResponse(url, INTERNAL_SERVER_ERROR, "")
+        stubGetResponse(url, NOT_IMPLEMENTED, "")
 
         val result = connector.get()
-
         result.failed.value mustBe Downstream_Error
-
       }
     }
   }

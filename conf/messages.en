@@ -59,6 +59,7 @@ viewSubmissions.voidThisReport.link = Void this information
 viewSubmissions.voided = Voided
 viewSubmissions.noReport.text = You have not sent any reports
 viewSubmissions.heading = Submitted reports for {0} for {1}
+viewSubmissions.manageFisLink = Back to manage your CRS and FATCA reports
 
 readSubmissionData.title = readSubmissionData
 readSubmissionData.heading = readSubmissionData

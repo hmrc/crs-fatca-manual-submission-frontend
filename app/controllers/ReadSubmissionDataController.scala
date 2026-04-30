@@ -38,14 +38,14 @@ class ReadSubmissionDataController @Inject() (
     with I18nSupport
     with Logging {
 
-  def onPageLoad(fiId: Option[String]): Action[AnyContent] = (identify andThen getData andThen setData).async {
+  def onPageLoad(fiId: String, fiName: String): Action[AnyContent] = (identify andThen getData andThen setData).async {
     implicit request =>
       val defaultYear = Year.now(ZoneOffset.UTC).getValue - 1
       service
-        .getAndMaybeCacheSubmissionHistory(request.fatcaId, ReadSubmissionRequest(true, fiId))
+        .getAndMaybeCacheSubmissionHistory(request.fatcaId, ReadSubmissionRequest(true, Some(fiId)))
         .map {
           _ =>
-            Redirect(controllers.routes.ViewSubmissionsController.onPageLoad(defaultYear, fiId))
+            Redirect(controllers.routes.ViewSubmissionsController.onPageLoad(defaultYear, fiId, fiName))
         }
   }
 

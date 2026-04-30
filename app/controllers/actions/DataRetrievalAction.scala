@@ -19,7 +19,6 @@ package controllers.actions
 import connectors.DatabaseConnector
 import models.UserAnswers
 import models.requests.{IdentifierRequest, OptionalDataRequest}
-import play.api.Logging
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.ActionTransformer
 import uk.gov.hmrc.http.HeaderCarrier

@@ -19,6 +19,7 @@ package connectors
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import models.ServiceErrors.Downstream_Error
+import play.api.Logging
 import play.api.http.Status.*
 import play.api.libs.json.JsValue
 import uk.gov.hmrc.http.*
@@ -27,7 +28,7 @@ import uk.gov.hmrc.http.client.HttpClientV2
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class DatabaseConnector @Inject() (client: HttpClientV2, config: FrontendAppConfig)(implicit ec: ExecutionContext) {
+class DatabaseConnector @Inject() (client: HttpClientV2, config: FrontendAppConfig)(implicit ec: ExecutionContext) extends Logging {
   private val url = config.crsFatcaManualBackendUrl
 
   def get()(implicit headerCarrier: HeaderCarrier): Future[Option[JsValue]] =
@@ -36,6 +37,7 @@ class DatabaseConnector @Inject() (client: HttpClientV2, config: FrontendAppConf
       .execute[HttpResponse](using readRaw, ec)
       .flatMap {
         response =>
+          logger.info(s"status is ${response.status}")
           response.status match {
             case OK        => Future.successful(Some(response.json))
             case NOT_FOUND => Future.successful(None)

@@ -32,7 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class ReadSubmissionConnector @Inject() (http: HttpClientV2, config: FrontendAppConfig)(using ec: ExecutionContext) extends Logging {
 
   def getSubmissionsList(requestBody: ReadSubmissionRequest)(using
-                                                             hc: HeaderCarrier
+    hc: HeaderCarrier
   ): Future[ReadSubmissionResponseDetails] = {
     val url = url"${config.crsFatcaManualBackendUrl}/crs-fatca-manual-submission/read-submission-history"
 

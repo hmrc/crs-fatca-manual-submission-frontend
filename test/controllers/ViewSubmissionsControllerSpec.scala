@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import config.FrontendAppConfig
 import models.SubmissionsConstants.FATCA1
 import models.{SubmissionCard, SubmissionsConstants, SubmittedReport}
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
@@ -39,16 +40,16 @@ class ViewSubmissionsControllerSpec extends SpecBase {
     submissionType = SubmissionsConstants.XML
   )
 
-
   private val mappedCards: Map[String, List[SubmissionCard]] = Map("ref1" -> List(submissionCard))
   val service: SubmissionHistoryService                      = mock[SubmissionHistoryService]
   "ViewSubmissions Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers.set(SubmissionsHistoryPage,List(submittedReport)).success.value))
-        .overrides(bind[SubmissionHistoryService].toInstance(service)).build()
-
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers.set(SubmissionsHistoryPage, List(submittedReport)).success.value))
+        .overrides(bind[SubmissionHistoryService].toInstance(service))
+        .build()
+      implicit val config: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
       running(application) {
         val request = FakeRequest(GET, routes.ViewSubmissionsController.onPageLoad(2018, Some("fiId")).url)
         when(service.prepareSubmissionHistoryCards(any(), eqTo(2018))).thenReturn(mappedCards)
@@ -67,7 +68,7 @@ class ViewSubmissionsControllerSpec extends SpecBase {
 
       running(application) {
         val request = FakeRequest(GET, routes.ViewSubmissionsController.onPageLoad(2018, Some("fiId")).url)
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url

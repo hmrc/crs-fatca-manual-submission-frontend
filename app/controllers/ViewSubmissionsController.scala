@@ -36,17 +36,17 @@ class ViewSubmissionsController @Inject() (
   service: SubmissionHistoryService,
   val controllerComponents: MessagesControllerComponents,
   view: ViewSubmissionsView
-)(implicit config: FrontendAppConfig) extends FrontendBaseController
+)(implicit config: FrontendAppConfig)
+    extends FrontendBaseController
     with I18nSupport
     with Logging {
 
-  def onPageLoad(year: Int, fiId: Option[String]): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(year: Int, fiId: String, fiName: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       (for {
-        submissions                  <- request.userAnswers.get(SubmissionsHistoryPage)
-        financialInstituteIdentifier <- fiId
+        submissions <- request.userAnswers.get(SubmissionsHistoryPage)
         cards = service.prepareSubmissionHistoryCards(submissions, year)
-      } yield Ok(view(cards, year, financialInstituteIdentifier)))
+      } yield Ok(view(cards, year, fiName)))
         .getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
 
   }

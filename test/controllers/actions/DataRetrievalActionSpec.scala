@@ -23,8 +23,8 @@ import models.requests.{IdentifierRequest, OptionalDataRequest}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.*
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import repositories.SessionRepository
 import uk.gov.hmrc.auth.core.AffinityGroup.Organisation
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -41,14 +41,14 @@ class DataRetrievalActionSpec extends SpecBase with MockitoSugar {
     "when there is no data in the cache" - {
 
       "must set userAnswers to 'None' in the request" in {
-
+        val emptyJson = Json.obj()
         val connector = mock[DatabaseConnector]
         when(connector.get()(any())) thenReturn Future(None)
         val action = new Harness(connector)
 
         val result = action.callTransform(IdentifierRequest(FakeRequest(), "id", "FATCAID", Organisation)).futureValue
 
-        result.userAnswers must not be defined
+        result.userAnswers.map(_.data mustBe emptyJson)
       }
     }
 
@@ -57,10 +57,10 @@ class DataRetrievalActionSpec extends SpecBase with MockitoSugar {
       "must build a userAnswers object and add it to the request" in {
 
         val connector = mock[DatabaseConnector]
-        when(connector.get()(any())) thenReturn Future(Some(UserAnswers("id")))
+        when(connector.get()(any())) thenReturn Future(Some(Json.parse(Json.obj("someField" -> "someData").toString)))
         val action = new Harness(connector)
 
-        val result = action.callTransform(new IdentifierRequest(FakeRequest(), "id", "FATCAID", Organisation)).futureValue
+        val result = action.callTransform(IdentifierRequest(FakeRequest(), "id", "FATCAID", Organisation)).futureValue
 
         result.userAnswers mustBe defined
       }

@@ -24,11 +24,11 @@
 )
 
 
-@(cards: Map[String, List[SubmissionCard]], year: Int, fiId: String)(implicit request: Request[_], messages: Messages, config:FrontendAppConfig)
+@(cards: Map[String, List[SubmissionCard]], year: Int, fiName: String)(implicit request: Request[_], messages: Messages, config:FrontendAppConfig)
 
 
-@layout(pageTitle = titleNoForm(title = messages("viewSubmissions.title", fiId, year.toString))) {
-@heading(messages("viewSubmissions.title", fiId, year.toString))
+@layout(pageTitle = titleNoForm(title = messages("viewSubmissions.title", fiName, year.toString))) {
+@heading(messages("viewSubmissions.title", fiName, year.toString))
 @paragraphMessageWithLink(message1 = Some(messages("viewSubmissions.body.1")),
     linkMessage = messages("viewSubmissions.body.link.1"),
     message2 = Some(messages("viewSubmissions.body.2")),
@@ -108,4 +108,5 @@
     } else {
         <h2  class="govuk-body">@messages("viewSubmissions.noReport.text")</h2>
     }
+  @paragraphMessageWithLink(linkMessage =messages("viewSubmissions.manageFisLink") , linkUrl = config.manageYourFisUrl)
 }

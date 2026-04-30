@@ -44,7 +44,7 @@ trait SpecBase
     with BeforeAndAfterEach {
 
   val userAnswersId: String = "id"
-  val now: LocalDateTime    = LocalDateTime.now()
+  def now: LocalDateTime    = LocalDateTime.now()
 
   val submittedReport: SubmittedReport = SubmittedReport(
     fiId = "id",
