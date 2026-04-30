@@ -18,7 +18,7 @@ package connectors
 
 import models.ServiceErrors.Downstream_Error
 import org.scalatest.freespec.AnyFreeSpec
-import org.scalatest.matchers.must.Matchers.{a, include, must, mustBe}
+import org.scalatest.matchers.must.Matchers.{a, include, must, mustBe, mustEqual}
 import play.api.http.Status.*
 import play.api.libs.json.{JsValue, Json}
 import utils.ISpecBase
@@ -26,7 +26,7 @@ import utils.ISpecBase
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
-class DatabaseConnectorSpec extends AnyFreeSpec with ISpecBase {
+class DatabaseConnectorISpec extends AnyFreeSpec with ISpecBase {
 
   lazy val connector: DatabaseConnector = app.injector.instanceOf[DatabaseConnector]
   val url                               = "/crs-fatca-manual-submission/submissionList"
@@ -54,10 +54,10 @@ class DatabaseConnectorSpec extends AnyFreeSpec with ISpecBase {
       }
 
       "should Downstream_Error when mongo return an error" in {
-        stubGetResponse(url, NOT_IMPLEMENTED, "")
+        stubGetResponse(url, INTERNAL_SERVER_ERROR, "")
 
         val result = connector.get()
-        result.failed.value mustBe Downstream_Error
+        result.failed.futureValue mustEqual Downstream_Error
       }
     }
   }

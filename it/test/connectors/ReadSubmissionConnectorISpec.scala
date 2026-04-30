@@ -28,7 +28,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, Future}
 
-class ReadSubmissionConnectorSpec extends AnyFreeSpec with ISpecBase {
+class ReadSubmissionConnectorISpec extends AnyFreeSpec with ISpecBase {
 
   lazy val connector: ReadSubmissionConnector = app.injector.instanceOf[ReadSubmissionConnector]
   val readSubmissionUrl = "/crs-fatca-manual-submission/read-submission-history"

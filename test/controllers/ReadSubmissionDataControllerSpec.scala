@@ -45,12 +45,12 @@ class ReadSubmissionDataControllerSpec extends SpecBase {
       running(application) {
         when(mockService.getAndMaybeCacheSubmissionHistory(any(), any())(using any()))
           .thenReturn(Future.successful(true))
-        val request = FakeRequest(GET, routes.ReadSubmissionDataController.onPageLoad(None).url)
+        val request = FakeRequest(GET, routes.ReadSubmissionDataController.onPageLoad("fiId", "fiName").url)
 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual controllers.routes.ViewSubmissionsController.onPageLoad(now.getYear.intValue - 1, None).url
+        redirectLocation(result).value mustEqual controllers.routes.ViewSubmissionsController.onPageLoad(now.getYear.intValue - 1, "fiId", "fiName").url
       }
     }
     "must return Internal Server Error and the correct view for a GET" in {
@@ -63,7 +63,7 @@ class ReadSubmissionDataControllerSpec extends SpecBase {
 
       running(application) {
         when(mockService.getAndMaybeCacheSubmissionHistory(any, any)(using any)).thenReturn(Future.failed(InternalServerException("Failed")))
-        val request = FakeRequest(GET, routes.ReadSubmissionDataController.onPageLoad(None).url)
+        val request = FakeRequest(GET, routes.ReadSubmissionDataController.onPageLoad("fiId", "fiName").url)
         val result  = route(application, request).get
 
         val ex = intercept[Throwable] {

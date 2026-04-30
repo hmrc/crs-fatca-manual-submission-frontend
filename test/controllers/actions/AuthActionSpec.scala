@@ -20,18 +20,30 @@ import base.SpecBase
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import controllers.routes
+import models.IdentifierType
+import org.mockito.ArgumentMatchers.{any, eq as eqTo}
+import org.mockito.Mockito.{reset, when}
+import play.api.inject
 import play.api.mvc.{Action, AnyContent, BodyParsers, Results}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import uk.gov.hmrc.auth.core._
+import play.api.test.Helpers.*
+import uk.gov.hmrc.auth.core.*
+import uk.gov.hmrc.auth.core.AffinityGroup.Individual
 import uk.gov.hmrc.auth.core.authorise.Predicate
-import uk.gov.hmrc.auth.core.retrieve.Retrieval
+import uk.gov.hmrc.auth.core.retrieve.{~, Retrieval}
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.http.HeaderCarrier
-
+import uk.gov.hmrc.auth.core.retrieve.~
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
 class AuthActionSpec extends SpecBase {
+  private val authConnector: AuthConnector = mock[AuthConnector]
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    reset(authConnector)
+  }
 
   class Harness(authAction: IdentifierAction) {
 
@@ -180,6 +192,94 @@ class AuthActionSpec extends SpecBase {
           redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad().url)
         }
       }
+    }
+    "when the user is successfully authenticated" - {
+
+      "must allow the user through when they have a valid FATCA ID" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
+          val appConfig   = application.injector.instanceOf[FrontendAppConfig]
+
+          val enrolment = Enrolment(appConfig.enrolmentKey)
+            .withIdentifier(IdentifierType.FATCAID, "XAFATCA0000000001")
+
+          val enrolments = Enrolments(Set(enrolment))
+          when(authConnector.authorise(any(), any())(any(), any())).thenReturn(
+            Future.successful(new ~(new ~(Some(AffinityGroup.Organisation), enrolments), Some("internalId")))
+          )
+          val authAction = new AuthenticatedIdentifierAction(authConnector, appConfig, bodyParsers)
+          val controller = new Harness(authAction)
+          val result     = controller.onPageLoad()(FakeRequest())
+
+          status(result) mustBe OK
+        }
+      }
+
+      "must redirect to register when user has no FATCA ID" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
+          val appConfig   = application.injector.instanceOf[FrontendAppConfig]
+
+          val enrolments = Enrolments(Set.empty)
+          when(authConnector.authorise(any(), any())(any(), any())).thenReturn(
+            Future.successful(new ~(new ~(Some(AffinityGroup.Organisation), enrolments), Some("internalId")))
+          )
+          val authAction = new AuthenticatedIdentifierAction(authConnector, appConfig, bodyParsers)
+          val controller = new Harness(authAction)
+          val result     = controller.onPageLoad()(FakeRequest())
+
+          status(result) mustBe SEE_OTHER
+        }
+      }
+
+      "must redirect to register when FATCA ID is empty" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
+          val appConfig   = application.injector.instanceOf[FrontendAppConfig]
+
+          val enrolment = Enrolment(appConfig.enrolmentKey)
+            .withIdentifier(IdentifierType.FATCAID, "")
+
+          val enrolments = Enrolments(Set(enrolment))
+          when(authConnector.authorise(any(), any())(any(), any())).thenReturn(
+            Future.successful(new ~(new ~(Some(AffinityGroup.Organisation), enrolments), Some("internalId")))
+          )
+          val authAction = new AuthenticatedIdentifierAction(authConnector, appConfig, bodyParsers)
+          val controller = new Harness(authAction)
+          val result     = controller.onPageLoad()(FakeRequest())
+
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result).value mustBe appConfig.registerUrl
+        }
+      }
+
+      "must redirect to register when unable to retrieve any of the fields" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
+          val appConfig   = application.injector.instanceOf[FrontendAppConfig]
+
+          when(authConnector.authorise(any(), any())(any(), any())).thenReturn(
+            Future.successful(new ~(new ~(None, Enrolments(Set.empty)), None))
+          )
+          val authAction = new AuthenticatedIdentifierAction(authConnector, appConfig, bodyParsers)
+          val controller = new Harness(authAction)
+          val result     = controller.onPageLoad()(FakeRequest())
+          status(result) mustBe SEE_OTHER
+        }
+      }
+
     }
   }
 }

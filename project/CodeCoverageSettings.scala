@@ -13,6 +13,9 @@ object CodeCoverageSettings {
     "models.*",
     "config.*",
     "module.*",
+    "controllers.LanguageSwitchController",
+    "pages.*",
+    "viewmodels.*",
     ".*Routes.*",
     "testOnly.*",
     "testOnlyDoNotUseInAppConf.*"

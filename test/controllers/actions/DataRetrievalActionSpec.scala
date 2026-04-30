@@ -18,7 +18,6 @@ package controllers.actions
 
 import base.SpecBase
 import connectors.DatabaseConnector
-import models.UserAnswers
 import models.requests.{IdentifierRequest, OptionalDataRequest}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.*
@@ -26,7 +25,6 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.AffinityGroup.Organisation
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 

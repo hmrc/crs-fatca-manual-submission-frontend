@@ -37,7 +37,6 @@ class DatabaseConnector @Inject() (client: HttpClientV2, config: FrontendAppConf
       .execute[HttpResponse](using readRaw, ec)
       .flatMap {
         response =>
-          logger.info(s"status is ${response.status}")
           response.status match {
             case OK        => Future.successful(Some(response.json))
             case NOT_FOUND => Future.successful(None)

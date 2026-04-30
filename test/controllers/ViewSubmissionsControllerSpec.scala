@@ -51,14 +51,14 @@ class ViewSubmissionsControllerSpec extends SpecBase {
         .build()
       implicit val config: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
       running(application) {
-        val request = FakeRequest(GET, routes.ViewSubmissionsController.onPageLoad(2018, Some("fiId")).url)
+        val request = FakeRequest(GET, routes.ViewSubmissionsController.onPageLoad(2018, "fiId", "fiName").url)
         when(service.prepareSubmissionHistoryCards(any(), eqTo(2018))).thenReturn(mappedCards)
         val result = route(application, request).value
 
         val view = application.injector.instanceOf[ViewSubmissionsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(mappedCards, 2018, "fiId")(request, messages(application)).toString
+        contentAsString(result) mustEqual view(mappedCards, 2018, "fiName")(request, messages(application)).toString
       }
     }
 
@@ -67,7 +67,7 @@ class ViewSubmissionsControllerSpec extends SpecBase {
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.ViewSubmissionsController.onPageLoad(2018, Some("fiId")).url)
+        val request = FakeRequest(GET, routes.ViewSubmissionsController.onPageLoad(2018, "fiId", "fiName").url)
         val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
