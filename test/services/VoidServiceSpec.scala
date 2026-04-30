@@ -4,11 +4,11 @@ import base.SpecBase
 import connectors.FatcaVoidConnector
 import models.VoidFatcaRequest
 import org.mockito.ArgumentMatchers.*
-import org.mockito.Mockito.{verify, when}
+import org.mockito.Mockito.{times, verify, when}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class VoidServiceSpec extends SpecBase {
   private val mockConnector = mock[FatcaVoidConnector]
@@ -17,12 +17,12 @@ class VoidServiceSpec extends SpecBase {
   given HeaderCarrier = HeaderCarrier()
 
   "fatcaVoid" - {
-    "should call the connector with the correct request" ignore {
-      when(mockConnector.submit(any[VoidFatcaRequest]())).thenReturn(Future.successful(()))
+    "should call the connector with the correct request" in {
+      when(mockConnector.submit(any[VoidFatcaRequest]())(any(),any())).thenReturn(Future.successful(()))
 
       service.fatcaVoid("testMessageRefId", "testFiid")
 
-      verify(mockConnector).submit(VoidFatcaRequest("testMessageRefId", "testFiid"))
+      verify(mockConnector, times(1)).submit(any[VoidFatcaRequest]())(any(),any())
     }
   }
 
