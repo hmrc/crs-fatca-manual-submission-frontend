@@ -16,12 +16,10 @@
 
 package models
 
-import play.api.libs.json.*
+sealed abstract class ServiceErrors extends Throwable {
+  override def toString: String = getClass.getSimpleName.replace("$", "")
+}
 
-case class ReadSubmissionResponseDetails(
-  submissionsList: List[SubmittedReport]
-)
-
-object ReadSubmissionResponseDetails {
-  implicit val format: OFormat[ReadSubmissionResponseDetails] = Json.format[ReadSubmissionResponseDetails]
+object ServiceErrors {
+  case object Downstream_Error extends ServiceErrors
 }

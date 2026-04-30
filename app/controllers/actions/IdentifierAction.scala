@@ -48,9 +48,9 @@ class AuthenticatedIdentifierAction @Inject() (
 
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
-    authorised(AuthProviders(GovernmentGateway) and ConfidenceLevel.L50)
-      .retrieve(Retrievals.internalId and Retrievals.allEnrolments and Retrievals.affinityGroup) {
-        case Some(internalId) ~ enrolments ~ Some(affinity) => getSubscriptionId(request, enrolments, internalId, affinity, block)
+    authorised(AuthProviders(GovernmentGateway))
+      .retrieve(Retrievals.affinityGroup and Retrievals.allEnrolments and Retrievals.internalId) {
+        case Some(affinity) ~ enrolments ~ Some(internalId) => getSubscriptionId(request, enrolments, internalId, affinity, block)
         case _ =>
           logger.warn("Unable to retrieve internal id or affinity group")
           throw AuthorisationException.fromString("Unable to retrieve internal id or affinity group")

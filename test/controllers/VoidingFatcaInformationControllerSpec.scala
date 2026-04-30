@@ -1,8 +1,24 @@
+/*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package controllers
 
 import base.SpecBase
 import forms.VoidingFatcaInformationFormProvider
-import models.{NormalMode, UserAnswers}
+import models.{FatcaCardDetail, FatcaVoidCardModel, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -11,7 +27,7 @@ import pages.VoidingFatcaInformationPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import repositories.SessionRepository
 import views.html.VoidingFatcaInformationView
 
@@ -28,6 +44,11 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
 
   "VoidingFatcaInformation Controller" - {
 
+    val fiName             = "ABC Bank plc"
+    val fatcaCardDetail1   = FatcaCardDetail("GB2026GB-ABC1234567890-FATCA_003_2", "Sent 30 May 2027", "11:59pm", "Amended information for an existing report")
+    val fatcaCardDetail2   = FatcaCardDetail("GB2026GB-ABC1234567890-FATCA_003", "Sent 28 May 2027", "9:25am", "New information")
+    val fatcaVoidCardModel = FatcaVoidCardModel(Seq(fatcaCardDetail1, fatcaCardDetail2))
+
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
@@ -40,7 +61,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[VoidingFatcaInformationView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, fiName, fatcaVoidCardModel)(request, messages(application)).toString
       }
     }
 
@@ -58,7 +79,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true))(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), fiName, fatcaVoidCardModel)(request, messages(application)).toString
       }
     }
 
@@ -104,7 +125,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, fiName, fatcaVoidCardModel)(request, messages(application)).toString
       }
     }
 

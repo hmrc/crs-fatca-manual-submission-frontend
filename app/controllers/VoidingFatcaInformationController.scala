@@ -24,6 +24,7 @@ import pages.VoidingFatcaInformationPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
+import services.VoidService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.VoidingFatcaInformationView
 
@@ -39,7 +40,8 @@ class VoidingFatcaInformationController @Inject() (
   requireData: DataRequiredAction,
   formProvider: VoidingFatcaInformationFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: VoidingFatcaInformationView
+  view: VoidingFatcaInformationView,
+  voidService: VoidService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -63,8 +65,9 @@ class VoidingFatcaInformationController @Inject() (
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, fiName, fatcaVoidCardModel))),
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(VoidingFatcaInformationPage, value))
-              _              <- sessionRepository.set(updatedAnswers)
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(VoidingFatcaInformationPage, value)) // is this needed, probs not
+//              _              <- if(value) voidService.fatcaVoid()
+              _ <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(VoidingFatcaInformationPage, NormalMode, updatedAnswers))
         )
   }

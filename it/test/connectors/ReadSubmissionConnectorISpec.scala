@@ -28,22 +28,21 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, Future}
 
-class ReadSubmissionConnectorSpec extends AnyFreeSpec with ISpecBase {
+class ReadSubmissionConnectorISpec extends AnyFreeSpec with ISpecBase {
 
   lazy val connector: ReadSubmissionConnector = app.injector.instanceOf[ReadSubmissionConnector]
+  val readSubmissionUrl = "/crs-fatca-manual-submission/read-submission-history"
+  val request = ReadSubmissionRequest(true, None)
+  val response = ReadSubmissionResponseDetails(submissionsList = List.empty)
 
   "ReadSubmissionConnector" - {
 
     "submissionList" - {
-      val readSubmissionUrl = "/crs-fatca-manual-submission/read-submission-history"
-
-      val request = ReadSubmissionRequest(true,None)
-      val response = ReadSubmissionResponseDetails(submissionsList = List.empty)
 
       "should return the Response when EIS return successful Response" in {
         stubPostResponse(readSubmissionUrl, OK, Json.toJson(response).toString)
 
-        val result = Await.result(connector.submissionList(request), 2.seconds)
+        val result = Await.result(connector.getSubmissionsList(request), 2.seconds)
 
         result mustBe response
       }
@@ -51,7 +50,7 @@ class ReadSubmissionConnectorSpec extends AnyFreeSpec with ISpecBase {
       "should return Future Failure When EIS return INTERNAL_SERVER_ERROR" in {
         stubPostResponse(readSubmissionUrl, INTERNAL_SERVER_ERROR)
 
-        val result: Future[ReadSubmissionResponseDetails] = connector.submissionList(request)
+        val result: Future[ReadSubmissionResponseDetails] = connector.getSubmissionsList(request)
 
         val exception = result.failed.futureValue
 

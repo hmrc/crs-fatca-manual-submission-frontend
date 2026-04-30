@@ -43,7 +43,7 @@ lazy val microservice = (project in file("."))
     pipelineStages := Seq(digest),
     Assets / pipelineStages := Seq(concat)
   )
-
+addCommandAlias("testAll", "; test ; it/test")
 lazy val testSettings: Seq[Def.Setting[_]] = Seq(
   fork := true,
   unmanagedSourceDirectories += baseDirectory.value / "test-utils"

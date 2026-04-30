@@ -41,7 +41,7 @@ class InformationVoidedController @Inject() (
       val emailString = formatEmailList(emails)
       val fiName      = "[fiName]"
       val dateTime    = "[on 28 April 2026 at 3:36pm]" // TODO: Bring over format logic from other repo, into a helper?
-      val mris        = Seq("[GB2026GB-ABC1234567890-FATCA_003]") // ,"[GB2026GB-ABC1234567890-FATCA_004]")
+      val mris        = Seq("[GB2026GB-ABC1234567890-FATCA_003]") // ,"[GB2026GB-ABC1234567890-FATCA_004]") //ass messagerefids back on original MessageRefId
 
       Ok(view(fiName, dateTime, mris, emailString))
   }

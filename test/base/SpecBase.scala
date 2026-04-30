@@ -17,7 +17,8 @@
 package base
 
 import controllers.actions.*
-import models.UserAnswers
+import models.SubmissionsConstants.{FATCA, FATCA1, PASSED}
+import models.{SubmissionsConstants, SubmittedReport, UserAnswers}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -30,6 +31,10 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Writes
 import play.api.test.FakeRequest
 import queries.Settable
+import uk.gov.hmrc.http.HeaderCarrier
+
+import java.time.LocalDateTime
+import scala.concurrent.ExecutionContext.Implicits.global
 
 trait SpecBase
     extends AnyFreeSpec
@@ -42,9 +47,25 @@ trait SpecBase
     with BeforeAndAfterEach {
 
   val userAnswersId: String = "id"
+  def now: LocalDateTime    = LocalDateTime.now()
 
-  def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
-
+  val submittedReport: SubmittedReport = SubmittedReport(
+    fiId = "id",
+    fiName = "name",
+    fileName = "fileName",
+    submissionStatus = PASSED,
+    uploadDateTime = now,
+    regime = FATCA,
+    reportingYear = "2018",
+    submissionCaseId = "123",
+    submissionType = SubmissionsConstants.XML,
+    submissionFileType = FATCA1,
+    messageRefId = "ref1",
+    submissionDeleteStatus = None,
+    originalMessageRefId = None
+  )
+  def emptyUserAnswers: UserAnswers        = UserAnswers(userAnswersId)
+  implicit val hc: HeaderCarrier           = HeaderCarrier()
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
   protected def applicationBuilder(userAnswers: Option[UserAnswers] = None): GuiceApplicationBuilder =

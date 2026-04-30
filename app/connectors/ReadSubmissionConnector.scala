@@ -29,11 +29,10 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException, S
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ReadSubmissionConnector @Inject() (http: HttpClientV2, config: FrontendAppConfig) extends Logging {
+class ReadSubmissionConnector @Inject() (http: HttpClientV2, config: FrontendAppConfig)(using ec: ExecutionContext) extends Logging {
 
-  def submissionList(requestBody: ReadSubmissionRequest)(using
-    hc: HeaderCarrier,
-    ec: ExecutionContext
+  def getSubmissionsList(requestBody: ReadSubmissionRequest)(using
+    hc: HeaderCarrier
   ): Future[ReadSubmissionResponseDetails] = {
     val url = url"${config.crsFatcaManualBackendUrl}/crs-fatca-manual-submission/read-submission-history"
 

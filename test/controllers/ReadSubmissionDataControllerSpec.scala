@@ -17,60 +17,53 @@
 package controllers
 
 import base.SpecBase
-import connectors.ReadSubmissionConnector
-import models.ReadSubmissionResponseDetails
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{reset, when}
+import org.mockito.Mockito.when
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
-import views.html.ReadSubmissionDataView
+import services.SubmissionHistoryService
+import uk.gov.hmrc.http.InternalServerException
 
 import scala.concurrent.Future
 
 class ReadSubmissionDataControllerSpec extends SpecBase {
 
-  val mockConnector                             = mock[ReadSubmissionConnector]
-  implicit val mockHeaderCarrier: HeaderCarrier = mock[HeaderCarrier]
+  val mockService: SubmissionHistoryService = mock[SubmissionHistoryService]
 
   override def beforeEach(): Unit =
     super.beforeEach()
-    reset(mockConnector)
 
   "ReadSubmissionData Controller" - {
 
-    "must return OK and the correct view for a GET" in {
+    "must redirect to view submissions page upon successful call to retrieve submission history" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(
-          bind[ReadSubmissionConnector].toInstance(mockConnector)
-        )
+        .overrides(bind[SubmissionHistoryService].toInstance(mockService))
         .build()
 
       running(application) {
-        when(mockConnector.submissionList(any)(using any, any)).thenReturn(Future.successful(ReadSubmissionResponseDetails(submissionsList = List.empty)))
-        val request = FakeRequest(GET, routes.ReadSubmissionDataController.onPageLoad(None).url)
+        when(mockService.getAndMaybeCacheSubmissionHistory(any(), any())(using any()))
+          .thenReturn(Future.successful(true))
+        val request = FakeRequest(GET, routes.ReadSubmissionDataController.onPageLoad("fiId", "fiName").url)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[ReadSubmissionDataView]
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view()(request, messages(application)).toString
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.routes.ViewSubmissionsController.onPageLoad(now.getYear.intValue - 1, "fiId", "fiName").url
       }
     }
     "must return Internal Server Error and the correct view for a GET" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
-          bind[ReadSubmissionConnector].toInstance(mockConnector)
+          bind[SubmissionHistoryService].toInstance(mockService)
         )
         .build()
 
       running(application) {
-        when(mockConnector.submissionList(any)(using any, any)).thenReturn(Future.failed(InternalServerException("Failed")))
-        val request = FakeRequest(GET, routes.ReadSubmissionDataController.onPageLoad(None).url)
+        when(mockService.getAndMaybeCacheSubmissionHistory(any, any)(using any)).thenReturn(Future.failed(InternalServerException("Failed")))
+        val request = FakeRequest(GET, routes.ReadSubmissionDataController.onPageLoad("fiId", "fiName").url)
         val result  = route(application, request).get
 
         val ex = intercept[Throwable] {
