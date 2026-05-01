@@ -40,5 +40,4 @@ class Navigator @Inject() () {
     case CheckMode =>
       checkRouteMap(page)(userAnswers)
   }
-
 }
