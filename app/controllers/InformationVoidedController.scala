@@ -49,7 +49,8 @@ class InformationVoidedController @Inject() (
             val emailString = formatEmailList(emails)
             val dateTime    = LocalDateTime.now(clock.withZone(ZoneId.of("Europe/London"))).format(DateTimeFormatter.ofPattern("d MMMM yyyy 'at' h:mma"))
             val allRefIds: Seq[String] = details.cardModel.cardDetailList.map(_.messageRefId)
-            Ok(view(details.fiName, dateTime, allRefIds, emailString))
+            val year = details.reportingYear
+            Ok(view(details.fiName, dateTime, allRefIds, emailString, year))
         }
         .getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
   }

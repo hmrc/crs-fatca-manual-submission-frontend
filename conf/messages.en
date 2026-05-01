@@ -70,7 +70,7 @@ informationVoided.para.1 = We have sent a confirmation email to {0}.
 informationVoided.subheading = What you have voided
 informationVoided.para.2 = You have permanently deleted the following information for {0} with the MessageRefId:
 informationVoided.para.3 = You have permanently deleted the following information for {0} with the MessageRefId values:
-
+informationVoided.link.1 = Back to manage submitted reports for {0}
 
 voidingFatcaInformation.title = Voiding FATCA information for the financial institution
 voidingFatcaInformation.heading = Voiding FATCA information for {0}

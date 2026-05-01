@@ -50,6 +50,6 @@ class VoidService @Inject() (fatcaConnector: FatcaVoidConnector) {
             reportType = report.regime.toString
           )
       }
-    } yield VoidReportDetails(FatcaVoidCardModel(cardDetails), headReport.fiName, headReport.fiId)
+    } yield VoidReportDetails(FatcaVoidCardModel(cardDetails), headReport.fiName, headReport.fiId, headReport.reportingYear)
 
 }
