@@ -39,8 +39,9 @@ class VoidService @Inject() (fatcaConnector: FatcaVoidConnector) {
       matchingReports = allReports
         .filter(_.regime == FATCA)
         .filter {
-          report => report.originalMessageRefId.contains(originalMessageId) ||
-          report.originalMessageRefId.isEmpty && report.messageRefId == originalMessageId
+          report =>
+            report.originalMessageRefId.contains(originalMessageId) ||
+            report.originalMessageRefId.isEmpty && report.messageRefId == originalMessageId
         }
       headReport <- matchingReports.headOption
       cardDetails = matchingReports.map {
