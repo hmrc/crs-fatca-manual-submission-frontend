@@ -38,12 +38,12 @@ lazy val microservice = (project in file("."))
       "-Wconf:cat=feature:w",
       "-Wconf:src=target/.*:s"
     ),
-      libraryDependencies ++= AppDependencies(),
+    libraryDependencies ++= AppDependencies(),
     retrieveManaged := true,
     pipelineStages := Seq(digest),
     Assets / pipelineStages := Seq(concat)
   )
-
+addCommandAlias("testAll", "; test ; it/test")
 lazy val testSettings: Seq[Def.Setting[_]] = Seq(
   fork := true,
   unmanagedSourceDirectories += baseDirectory.value / "test-utils"

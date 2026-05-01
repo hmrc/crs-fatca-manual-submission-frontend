@@ -16,37 +16,39 @@
 
 package controllers
 
-import controllers.Execution.trampoline
+import config.FrontendAppConfig
 import controllers.actions.*
-import models.ReadSubmissionRequest
+import pages.SubmissionsHistoryPage
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SubmissionHistoryService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import java.time.{Year, ZoneOffset}
+import views.html.ViewSubmissionsView
+
 import javax.inject.Inject
 
-class ReadSubmissionDataController @Inject() (
+class ViewSubmissionsController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
-  setData: DataCreationAction,
+  requireData: DataRequiredAction,
   service: SubmissionHistoryService,
-  val controllerComponents: MessagesControllerComponents
-) extends FrontendBaseController
+  val controllerComponents: MessagesControllerComponents,
+  view: ViewSubmissionsView
+)(implicit config: FrontendAppConfig)
+    extends FrontendBaseController
     with I18nSupport
     with Logging {
 
-  def onPageLoad(fiId: String, fiName: String): Action[AnyContent] = (identify andThen getData andThen setData).async {
+  def onPageLoad(year: Int, fiId: String, fiName: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      val defaultYear = Year.now(ZoneOffset.UTC).getValue - 1
-      service
-        .getAndMaybeCacheSubmissionHistory(request.fatcaId, ReadSubmissionRequest(true, Some(fiId)))
-        .map {
-          _ =>
-            Redirect(controllers.routes.ViewSubmissionsController.onPageLoad(defaultYear, fiId, fiName))
-        }
+      (for {
+        submissions <- request.userAnswers.get(SubmissionsHistoryPage)
+        cards = service.prepareSubmissionHistoryCards(submissions, year)
+      } yield Ok(view(cards, year, fiName)))
+        .getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+
   }
 
 }

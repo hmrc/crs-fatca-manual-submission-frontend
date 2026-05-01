@@ -6,8 +6,6 @@ GET         /                                            controllers.IndexContro
 
 GET         /assets/*file                                controllers.Assets.versioned(path="/public", file: Asset)
 
-GET         /language/:lang                              controllers.LanguageSwitchController.switchToLanguage(lang: String)
-
 GET         /refresh-session                             controllers.KeepAliveController.keepAlive()
 
 GET         /there-is-a-problem                          controllers.JourneyRecoveryController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)
@@ -20,4 +18,6 @@ GET         /account/signed-out                          controllers.auth.Signed
 
 GET         /unauthorised                                controllers.UnauthorisedController.onPageLoad()
 
-GET        /read-submission-data                       controllers.ReadSubmissionDataController.onPageLoad(fiid: Option[String])
+GET        /read-submission-data                       controllers.ReadSubmissionDataController.onPageLoad(fiId: String, fiName: String)
+
+GET        /manage-reports-for-:year                      controllers.ViewSubmissionsController.onPageLoad(year: Int, fiId: String , fiName:String)

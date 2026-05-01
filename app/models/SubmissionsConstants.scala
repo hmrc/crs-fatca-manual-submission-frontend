@@ -62,6 +62,9 @@ object SubmissionsConstants:
   case object FATCA2 extends SubmissionFileType:
     def value = "FATCA2"
 
+  case object FATCA3 extends SubmissionFileType:
+    def value = "FATCA3"
+
   case object FATCA4 extends SubmissionFileType:
     def value = "FATCA4"
 
@@ -73,6 +76,9 @@ object SubmissionsConstants:
 
   case object CRS703 extends SubmissionFileType:
     def value = "CRS703"
+
+  case object CRSAdditional701 extends SubmissionFileType:
+    def value = "CRSAdditional701"
 
   implicit val regimeTypeFormat: Format[RegimeType] = new Format[RegimeType]:
     def reads(json: JsValue): JsResult[RegimeType] = json match
@@ -113,13 +119,15 @@ object SubmissionsConstants:
     def reads(json: JsValue): JsResult[SubmissionFileType] = json match
       case JsString(s) =>
         s.toUpperCase match
-          case "FATCA1" => JsSuccess(FATCA1)
-          case "FATCA2" => JsSuccess(FATCA2)
-          case "FATCA4" => JsSuccess(FATCA4)
-          case "CRS701" => JsSuccess(CRS701)
-          case "CRS702" => JsSuccess(CRS702)
-          case "CRS703" => JsSuccess(CRS703)
-          case _        => JsError("Invalid submission file type")
+          case "FATCA1"           => JsSuccess(FATCA1)
+          case "FATCA2"           => JsSuccess(FATCA2)
+          case "FATCA3"           => JsSuccess(FATCA3)
+          case "FATCA4"           => JsSuccess(FATCA4)
+          case "CRS701"           => JsSuccess(CRS701)
+          case "CRS702"           => JsSuccess(CRS702)
+          case "CRS703"           => JsSuccess(CRS703)
+          case "CRSAdditional701" => JsSuccess(CRSAdditional701)
+          case _                  => JsError("Invalid submission file type")
       case _ => JsError("Expected JsString")
 
     def writes(fileType: SubmissionFileType): JsValue = JsString(fileType.value)
