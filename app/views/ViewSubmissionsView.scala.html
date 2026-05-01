@@ -34,7 +34,7 @@
     message2 = Some(messages("viewSubmissions.body.2")),
     linkUrl = config.fileUploadUrl, secondaryLinkUrl = Some(controllers.routes.JourneyRecoveryController.onPageLoad().url),
     secondaryLinkMessage = Some(messages("viewSubmissions.body.link.2")), linkFullStop = true)
-<h1 class="govuk-heading-l" style="font-weight: bold;  margin-top: 2rem;"> @messages("viewSubmissions.crs.submit", year.toString)</h1>
+<h2 class="govuk-heading-l" style="font-weight: bold;  margin-top: 2rem;"> @messages("viewSubmissions.crs.submit", year.toString)</h2>
     @if(cards.values.flatten.exists(_.fileType.value.contains("CRS"))) {
         @for((originalMessageRefId, cardList) <- cards) {
             @if(cardList.exists(_.fileType.value.contains("CRS"))) {
