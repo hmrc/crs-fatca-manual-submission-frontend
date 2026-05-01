@@ -17,6 +17,7 @@
 package services
 
 import connectors.FatcaVoidConnector
+import models.SubmissionsConstants.FATCA
 import models.{FatcaVoidCardDetail, FatcaVoidCardModel, UserAnswers, VoidReportDetails}
 import pages.SubmissionsHistoryPage
 import uk.gov.hmrc.http.HeaderCarrier
@@ -32,14 +33,15 @@ class VoidService @Inject() (fatcaConnector: FatcaVoidConnector) {
     fatcaConnector.submit(request)
   }
 
-  def getVoidReportDetails(originalMessageId: String, userAnswers: UserAnswers): Option[VoidReportDetails] =
+  def getVoidFatcaReportDetails(originalMessageId: String, userAnswers: UserAnswers): Option[VoidReportDetails] =
     for {
       allReports <- userAnswers.get(SubmissionsHistoryPage)
-      matchingReports = allReports.filter {
-        report =>
-          report.originalMessageRefId.contains(originalMessageId) ||
-          (report.originalMessageRefId.isEmpty && report.messageRefId == originalMessageId)
-      }
+      matchingReports = allReports
+        .filter(_.regime == FATCA)
+        .filter {
+          report => report.originalMessageRefId.contains(originalMessageId) ||
+          report.originalMessageRefId.isEmpty && report.messageRefId == originalMessageId
+        }
       headReport <- matchingReports.headOption
       cardDetails = matchingReports.map {
         report =>

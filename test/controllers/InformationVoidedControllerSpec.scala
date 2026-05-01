@@ -60,7 +60,7 @@ class InformationVoidedControllerSpec extends SpecBase {
       val userAnswersWithSubmissions = emptyUserAnswers.withPage(SubmissionsHistoryPage, submissions)
 
       val mockVoidService = mock[VoidService]
-      when(mockVoidService.getVoidReportDetails(eqTo(originalMessageId), any())) thenReturn Some(
+      when(mockVoidService.getVoidFatcaReportDetails(eqTo(originalMessageId), any())) thenReturn Some(
         VoidReportDetails(fatcaVoidCardModel, fiName, report1.fiId, year)
       )
 
@@ -84,7 +84,7 @@ class InformationVoidedControllerSpec extends SpecBase {
     "must redirect to Journey Recovery for a GET if no matching submissions are found" in {
 
       val mockVoidService = mock[VoidService]
-      when(mockVoidService.getVoidReportDetails(eqTo(originalMessageId), any())) thenReturn None
+      when(mockVoidService.getVoidFatcaReportDetails(eqTo(originalMessageId), any())) thenReturn None
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(inject.bind[VoidService].toInstance(mockVoidService))
@@ -96,28 +96,6 @@ class InformationVoidedControllerSpec extends SpecBase {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-      }
-    }
-
-    "formatEmailList" - {
-      val controller = new InformationVoidedController(null, null, null, null, null, null, null, null)
-      "return a singular email" in {
-        controller.formatEmailList(Seq("email1@test.com")) mustBe "email1@test.com"
-      }
-
-      "return two emails joined with 'and'" in {
-        controller.formatEmailList(Seq("email1@test.com", "email2@test.com")) mustBe
-          "email1@test.com and email2@test.com"
-      }
-
-      "return three emails with commas and 'and' before the last when given three emails" in {
-        controller.formatEmailList(Seq("email1@test.com", "email2@test.com", "email3@test.com")) mustBe
-          "email1@test.com, email2@test.com and email3@test.com"
-      }
-
-      "return four emails with commas and 'and' before the last when given four emails" in {
-        controller.formatEmailList(Seq("email1@test.com", "email2@test.com", "email3@test.com", "email4@test.com")) mustBe
-          "email1@test.com, email2@test.com, email3@test.com and email4@test.com"
       }
     }
   }

@@ -33,7 +33,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class VoidingFatcaInformationController @Inject() (
   override val messagesApi: MessagesApi,
-  sessionRepository: SessionRepository,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
@@ -50,7 +49,7 @@ class VoidingFatcaInformationController @Inject() (
   def onPageLoad(originalMessageRefId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       voidService
-        .getVoidReportDetails(originalMessageRefId, request.userAnswers)
+        .getVoidFatcaReportDetails(originalMessageRefId, request.userAnswers)
         .map(
           details => Ok(view(form, details.fiName, details.cardModel, originalMessageRefId))
         )
@@ -60,7 +59,7 @@ class VoidingFatcaInformationController @Inject() (
   def onSubmit(originalMessageRefId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       voidService
-        .getVoidReportDetails(originalMessageRefId, request.userAnswers)
+        .getVoidFatcaReportDetails(originalMessageRefId, request.userAnswers)
         .map {
           details =>
             form
@@ -69,11 +68,7 @@ class VoidingFatcaInformationController @Inject() (
                 formWithErrors => Future.successful(BadRequest(view(formWithErrors, details.fiName, details.cardModel, originalMessageRefId))),
                 value =>
                   for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.set(VoidingFatcaInformationPage, value))
-                    _ <-
-                      if (value) voidService.fatcaVoid(originalMessageRefId, details.fiId)
-                      else Future.unit
-                    _ <- sessionRepository.set(updatedAnswers)
+                    _ <- if (value) voidService.fatcaVoid(originalMessageRefId, details.fiId) else Future.unit
                   } yield
                     if (value) {
                       Redirect(controllers.routes.InformationVoidedController.onPageLoad(originalMessageRefId))

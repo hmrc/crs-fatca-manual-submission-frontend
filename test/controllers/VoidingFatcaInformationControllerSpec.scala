@@ -29,7 +29,6 @@ import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import repositories.SessionRepository
 import services.VoidService
 import views.html.VoidingFatcaInformationView
 
@@ -107,19 +106,16 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to the next page when user submits true" in {
 
-      val mockSessionRepository = mock[SessionRepository]
-      val mockVoidService       = mock[VoidService]
+      val mockVoidService = mock[VoidService]
 
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
       when(mockVoidService.fatcaVoid(any(), any())(any(), any())) thenReturn Future.successful(())
-      when(mockVoidService.getVoidReportDetails(eqTo(originalMessageId), any())) thenReturn Some(
+      when(mockVoidService.getVoidFatcaReportDetails(eqTo(originalMessageId), any())) thenReturn Some(
         VoidReportDetails(fatcaVoidCardModel, fiName, report1.fiId, year)
       )
 
       val application =
         applicationBuilder(userAnswers = Some(userAnswersWithSubmissions))
           .overrides(
-            bind[SessionRepository].toInstance(mockSessionRepository),
             bind[VoidService].toInstance(mockVoidService)
           )
           .build()
@@ -140,19 +136,16 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to back to manage-reports when user submits false" in {
 
-      val mockSessionRepository = mock[SessionRepository]
-      val mockVoidService       = mock[VoidService]
+      val mockVoidService = mock[VoidService]
 
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
       when(mockVoidService.fatcaVoid(any(), any())(any(), any())) thenReturn Future.successful(())
-      when(mockVoidService.getVoidReportDetails(eqTo(originalMessageId), any())) thenReturn Some(
+      when(mockVoidService.getVoidFatcaReportDetails(eqTo(originalMessageId), any())) thenReturn Some(
         VoidReportDetails(fatcaVoidCardModel, fiName, report1.fiId, year)
       )
 
       val application =
         applicationBuilder(userAnswers = Some(userAnswersWithSubmissions))
           .overrides(
-            bind[SessionRepository].toInstance(mockSessionRepository),
             bind[VoidService].toInstance(mockVoidService)
           )
           .build()

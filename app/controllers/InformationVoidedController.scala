@@ -21,6 +21,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.VoidService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.formatEmailList
 import views.html.InformationVoidedView
 
 import java.time.format.DateTimeFormatter
@@ -42,7 +43,7 @@ class InformationVoidedController @Inject() (
   def onPageLoad(originalMessageId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       voidService
-        .getVoidReportDetails(originalMessageId, request.userAnswers)
+        .getVoidFatcaReportDetails(originalMessageId, request.userAnswers)
         .map {
           details =>
             val fiId        = details.fiId
@@ -54,12 +55,5 @@ class InformationVoidedController @Inject() (
             Ok(view(details.fiName, dateTime, allRefIds, emailString, year, fiId))
         }
         .getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
-  }
-
-  def formatEmailList(emails: Seq[String]): String = emails match {
-    case Seq(a)       => a
-    case Seq(a, b)    => s"$a and $b"
-    case init :+ last => init.mkString(", ") + s" and $last"
-    case _            => ""
   }
 }
