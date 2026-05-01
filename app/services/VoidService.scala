@@ -17,7 +17,7 @@
 package services
 
 import connectors.FatcaVoidConnector
-import models.{FatcaCardDetail, FatcaVoidCardModel, UserAnswers, VoidReportDetails}
+import models.{FatcaVoidCardDetail, FatcaVoidCardModel, UserAnswers, VoidReportDetails}
 import pages.SubmissionsHistoryPage
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -43,7 +43,7 @@ class VoidService @Inject() (fatcaConnector: FatcaVoidConnector) {
       headReport <- matchingReports.headOption
       cardDetails = matchingReports.map {
         report =>
-          FatcaCardDetail(
+          FatcaVoidCardDetail(
             messageRefId = report.messageRefId,
             dateSent = report.uploadDateTime.toLocalDate.format(DateTimeFormatter.ofPattern("d MMMM yyyy")),
             dateSentTime = report.uploadDateTime.toLocalTime.format(DateTimeFormatter.ofPattern("HH:mm")),

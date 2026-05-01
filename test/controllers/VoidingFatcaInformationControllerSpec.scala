@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import forms.VoidingFatcaInformationFormProvider
 import models.SubmissionsConstants.*
-import models.{FatcaCardDetail, FatcaVoidCardModel, SubmissionsConstants, SubmittedReport, VoidReportDetails}
+import models.{FatcaVoidCardDetail, FatcaVoidCardModel, SubmissionsConstants, SubmittedReport, VoidReportDetails}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchersSugar.eqTo
 import org.mockito.Mockito.{never, verify, when}
@@ -70,8 +70,8 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
         originalMessageRefId = Some(originalMessageId)
       )
 
-    val fatcaCardDetail1   = FatcaCardDetail("GB2026GB-ABC1234567890-FATCA_003", "30 May 2027", "11:59", "FATCA")
-    val fatcaCardDetail2   = FatcaCardDetail("GB2026GB-ABC1234567890-FATCA_003_2", "28 May 2027", "09:25", "FATCA")
+    val fatcaCardDetail1   = FatcaVoidCardDetail("GB2026GB-ABC1234567890-FATCA_003", "30 May 2027", "11:59", "FATCA")
+    val fatcaCardDetail2   = FatcaVoidCardDetail("GB2026GB-ABC1234567890-FATCA_003_2", "28 May 2027", "09:25", "FATCA")
     val fatcaVoidCardModel = FatcaVoidCardModel(Seq(fatcaCardDetail1, fatcaCardDetail2))
 
     val submissions = List(report1, report2)

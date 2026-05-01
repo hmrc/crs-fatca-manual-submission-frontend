@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import models.{FatcaCardDetail, FatcaVoidCardModel, VoidReportDetails}
+import models.{FatcaVoidCardDetail, FatcaVoidCardModel, VoidReportDetails}
 import org.mockito.ArgumentMatchersSugar.*
 import org.mockito.Mockito.*
 import pages.SubmissionsHistoryPage
@@ -42,8 +42,8 @@ class InformationVoidedControllerSpec extends SpecBase {
   private val fiName             = "someFiName"
   private val fiId               = "some-fiId"
   private val emailString        = "email1@test.com"
-  private val cardDetail1        = FatcaCardDetail("GB2026GB-ABC1234567890-FATCA_003", "30 May 2027", "11:59", "FATCA")
-  private val cardDetail2        = FatcaCardDetail("GB2026GB-ABC1234567890-FATCA_003_2", "28 May 2027", "09:25", "FATCA")
+  private val cardDetail1        = FatcaVoidCardDetail("GB2026GB-ABC1234567890-FATCA_003", "30 May 2027", "11:59", "FATCA")
+  private val cardDetail2        = FatcaVoidCardDetail("GB2026GB-ABC1234567890-FATCA_003_2", "28 May 2027", "09:25", "FATCA")
   private val fatcaVoidCardModel = FatcaVoidCardModel(Seq(cardDetail1, cardDetail2))
   private val messRefIds         = fatcaVoidCardModel.cardDetailList.map(_.messageRefId)
 
