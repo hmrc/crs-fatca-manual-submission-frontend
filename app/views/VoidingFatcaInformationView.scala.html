@@ -24,7 +24,7 @@
     warning: components.Warning
 )
 
-@(form: Form[_], fiName: String, fatcaVoidCardModel: FatcaVoidCardModel)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], fiName: String, fatcaVoidCardModel: FatcaVoidCardModel, originalMessageRefId: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("voidingFatcaInformation.title"))) {
 
@@ -60,7 +60,7 @@
 
     @warning(messages("voidingFatcaInformation.warning", fiName))
 
-    @formHelper(action = routes.VoidingFatcaInformationController.onSubmit("SOMETHING"), Symbol("autoComplete") -> "off") {
+    @formHelper(action = routes.VoidingFatcaInformationController.onSubmit(originalMessageRefId), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))

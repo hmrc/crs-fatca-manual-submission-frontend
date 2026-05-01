@@ -32,8 +32,8 @@ class VoidService @Inject() (fatcaConnector: FatcaVoidConnector) {
     fatcaConnector.submit(request)
   }
 
-  def getVoidReportDetails(originalMessageId: String, userAnswers: UserAnswers): Option[VoidReportDetails] = {
-    val x = for {
+  def getVoidReportDetails(originalMessageId: String, userAnswers: UserAnswers): Option[VoidReportDetails] =
+    for {
       allReports <- userAnswers.get(SubmissionsHistoryPage)
       matchingReports = allReports.filter {
         report =>
@@ -51,7 +51,4 @@ class VoidService @Inject() (fatcaConnector: FatcaVoidConnector) {
           )
       }
     } yield VoidReportDetails(FatcaVoidCardModel(cardDetails), headReport.fiName, headReport.fiId, headReport.reportingYear)
-    println(Console.MAGENTA + s"getVoidReportDetails: $x" + Console.RESET)
-    x
-  }
 }

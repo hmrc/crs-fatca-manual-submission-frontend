@@ -88,7 +88,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
         val view    = application.injector.instanceOf[VoidingFatcaInformationView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, report1.fiName, fatcaVoidCardModel)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, report1.fiName, fatcaVoidCardModel, originalMessageId)(request, messages(application)).toString
       }
     }
 
@@ -185,7 +185,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
         val result    = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, report1.fiName, fatcaVoidCardModel)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, report1.fiName, fatcaVoidCardModel, originalMessageId)(request, messages(application)).toString
       }
     }
 

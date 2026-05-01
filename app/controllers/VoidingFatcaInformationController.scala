@@ -52,7 +52,7 @@ class VoidingFatcaInformationController @Inject() (
       voidService
         .getVoidReportDetails(originalMessageRefId, request.userAnswers)
         .map(
-          details => Ok(view(form, details.fiName, details.cardModel))
+          details => Ok(view(form, details.fiName, details.cardModel, originalMessageRefId))
         )
         .getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
   }
@@ -63,25 +63,21 @@ class VoidingFatcaInformationController @Inject() (
         .getVoidReportDetails(originalMessageRefId, request.userAnswers)
         .map {
           details =>
-            println(Console.MAGENTA + s"WE HAVE DETAILS" + Console.RESET)
             form
               .bindFromRequest()
               .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, details.fiName, details.cardModel))),
+                formWithErrors => Future.successful(BadRequest(view(formWithErrors, details.fiName, details.cardModel, originalMessageRefId))),
                 value =>
-                    for {
-                      updatedAnswers <- Future.fromTry(request.userAnswers.set(VoidingFatcaInformationPage, value))
-                      _ <-
-                        if (value) voidService.fatcaVoid(originalMessageRefId, details.fiId)
-                        else Future.unit
-                      _ <- sessionRepository.set(updatedAnswers)
-                    } yield if (value) {
-                      println(
-                        Console.MAGENTA + s"Voiding FATCA information for messageRefId: $originalMessageRefId" + Console.RESET
-                      )
+                  for {
+                    updatedAnswers <- Future.fromTry(request.userAnswers.set(VoidingFatcaInformationPage, value))
+                    _ <-
+                      if (value) voidService.fatcaVoid(originalMessageRefId, details.fiId)
+                      else Future.unit
+                    _ <- sessionRepository.set(updatedAnswers)
+                  } yield
+                    if (value) {
                       Redirect(controllers.routes.InformationVoidedController.onPageLoad(originalMessageRefId))
                     } else {
-                      println(Console.MAGENTA + s"DONT VOID" + Console.RESET)
                       Redirect(
                         controllers.routes.ViewSubmissionsController
                           .onPageLoad(year = LocalDateTime.now.getYear - 1, fiId = details.fiId, fiName = details.fiName)
