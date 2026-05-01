@@ -22,7 +22,7 @@ import models.SubmissionsConstants.*
 import models.{FatcaCardDetail, FatcaVoidCardModel, SubmissionsConstants, SubmittedReport, VoidReportDetails}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchersSugar.eqTo
-import org.mockito.Mockito.{verify, when}
+import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.SubmissionsHistoryPage
 import play.api.inject.bind
@@ -105,7 +105,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must redirect to the next page when valid data is submitted" in {
+    "must redirect to the next page when user submits true" in {
 
       val mockSessionRepository = mock[SessionRepository]
       val mockVoidService       = mock[VoidService]
@@ -135,6 +135,39 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
         redirectLocation(result).value mustEqual "/crs-fatca-manual-submission-frontend/fatca-void/information-voided?originalMessageRefId=Some-OMId"
 
         verify(mockVoidService).fatcaVoid(eqTo(originalMessageId), eqTo(report1.fiId))(any(), any())
+      }
+    }
+
+    "must redirect to back to manage-reports when user submits false" in {
+
+      val mockSessionRepository = mock[SessionRepository]
+      val mockVoidService       = mock[VoidService]
+
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+      when(mockVoidService.fatcaVoid(any(), any())(any(), any())) thenReturn Future.successful(())
+      when(mockVoidService.getVoidReportDetails(eqTo(originalMessageId), any())) thenReturn Some(
+        VoidReportDetails(fatcaVoidCardModel, fiName, report1.fiId, year)
+      )
+
+      val application =
+        applicationBuilder(userAnswers = Some(userAnswersWithSubmissions))
+          .overrides(
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[VoidService].toInstance(mockVoidService)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, voidingFatcaInformationPostRoute)
+            .withFormUrlEncodedBody(("value", "false"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual "/crs-fatca-manual-submission-frontend/manage-reports-for-2025?fiId=id&fiName=ABC+Bank+plc"
+
+        verify(mockVoidService, never()).fatcaVoid(eqTo(originalMessageId), eqTo(report1.fiId))(any(), any())
       }
     }
 

@@ -63,6 +63,7 @@ class VoidingFatcaInformationController @Inject() (
         .getVoidReportDetails(originalMessageRefId, request.userAnswers)
         .map {
           details =>
+            println(Console.MAGENTA + s"WE HAVE DETAILS" + Console.RESET)
             form
               .bindFromRequest()
               .fold(
