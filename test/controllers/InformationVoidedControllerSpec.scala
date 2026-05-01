@@ -28,13 +28,14 @@ import services.VoidService
 import views.html.InformationVoidedView
 
 import java.time.format.DateTimeFormatter
-import java.time.{Clock, LocalDateTime, ZoneOffset}
+import java.time.{Clock, LocalDateTime, ZoneId, ZoneOffset}
 
 class InformationVoidedControllerSpec extends SpecBase {
 
-  private val fixedDateTime = LocalDateTime.of(2026, 4, 28, 15, 36)
+  private val zone = ZoneId.of("Europe/London")
+  private val fixedDateTime = LocalDateTime.of(2026, 4, 28, 15, 36).atZone(zone)
   private val dateTime      = fixedDateTime.format(DateTimeFormatter.ofPattern("d MMMM yyyy 'at' h:mma"))
-  private val fixedClock    = Clock.fixed(fixedDateTime.toInstant(ZoneOffset.UTC), ZoneOffset.UTC)
+  private val fixedClock    = Clock.fixed(fixedDateTime.toInstant, zone)
 
   private val originalMessageId  = "Some-OMRId"
   private val fiName             = "someFiName"
