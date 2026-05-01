@@ -27,8 +27,7 @@ import models._
 class Navigator @Inject() () {
 
   private val normalRoutes: Page => UserAnswers => Call = {
-    case VoidingFatcaInformationPage => userAnswers => VoidingFatcaInformationNavigation(userAnswers)
-    case _                           => _ => routes.IndexController.onPageLoad()
+    case _ => _ => routes.IndexController.onPageLoad()
   }
 
   private val checkRouteMap: Page => UserAnswers => Call = {
@@ -41,12 +40,5 @@ class Navigator @Inject() () {
     case CheckMode =>
       checkRouteMap(page)(userAnswers)
   }
-
-  private def VoidingFatcaInformationNavigation(userAnswers: UserAnswers) =
-    userAnswers.get(VoidingFatcaInformationPage) match {
-      case Some(true)  => controllers.routes.InformationVoidedController.onPageLoad()
-      case Some(false) => controllers.routes.IndexController.onPageLoad() // todo - update to manage submissions page
-      case None        => routes.JourneyRecoveryController.onPageLoad()
-    }
 
 }

@@ -49,21 +49,6 @@ trait SpecBase
   val userAnswersId: String = "id"
   def now: LocalDateTime    = LocalDateTime.now()
 
-  val submittedReport: SubmittedReport = SubmittedReport(
-    fiId = "id",
-    fiName = "name",
-    fileName = "fileName",
-    submissionStatus = PASSED,
-    uploadDateTime = now,
-    regime = FATCA,
-    reportingYear = "2018",
-    submissionCaseId = "123",
-    submissionType = SubmissionsConstants.XML,
-    submissionFileType = FATCA1,
-    messageRefId = "ref1",
-    submissionDeleteStatus = None,
-    originalMessageRefId = None
-  )
   def emptyUserAnswers: UserAnswers        = UserAnswers(userAnswersId)
   implicit val hc: HeaderCarrier           = HeaderCarrier()
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
@@ -81,5 +66,22 @@ trait SpecBase
     def withPage[T](page: Settable[T], value: T)(implicit writes: Writes[T]): UserAnswers =
       userAnswers.set(page, value).success.value
   }
+
+  // TEST DATA:
+  val submittedReport: SubmittedReport = SubmittedReport(
+    fiId = "id",
+    fiName = "name",
+    fileName = "fileName",
+    submissionStatus = PASSED,
+    uploadDateTime = now,
+    regime = FATCA,
+    reportingYear = "2018",
+    submissionCaseId = "123",
+    submissionType = SubmissionsConstants.XML,
+    submissionFileType = FATCA1,
+    messageRefId = "ref1",
+    submissionDeleteStatus = None,
+    originalMessageRefId = None
+  )
 
 }

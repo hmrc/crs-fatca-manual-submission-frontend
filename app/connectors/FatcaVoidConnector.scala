@@ -31,7 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class FatcaVoidConnector @Inject() (http: HttpClientV2, config: FrontendAppConfig) extends Logging {
 
-  def submit(requestBody: VoidFatcaRequest)(using
+  def submit(requestBody: VoidFatcaRequest)(implicit
     hc: HeaderCarrier,
     ec: ExecutionContext
   ): Future[Unit] = {

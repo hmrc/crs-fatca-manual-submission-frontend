@@ -60,7 +60,7 @@
 
     @warning(messages("voidingFatcaInformation.warning", fiName))
 
-    @formHelper(action = routes.VoidingFatcaInformationController.onSubmit(), Symbol("autoComplete") -> "off") {
+    @formHelper(action = routes.VoidingFatcaInformationController.onSubmit("SOMETHING"), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))

@@ -18,3 +18,4 @@ package models
 
 case class FatcaCardDetail(messageRefId: String, dateSent: String, dateSentTime: String, reportType: String)
 case class FatcaVoidCardModel(cardDetailList: Seq[FatcaCardDetail])
+case class VoidReportDetails(cardModel: FatcaVoidCardModel, fiName: String, fiId: String)

@@ -16,12 +16,16 @@
 
 package controllers
 
-import controllers.actions._
-import javax.inject.Inject
+import controllers.actions.*
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.VoidService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.InformationVoidedView
+
+import java.time.format.DateTimeFormatter
+import java.time.{Clock, LocalDateTime}
+import javax.inject.Inject
 
 class InformationVoidedController @Inject() (
   override val messagesApi: MessagesApi,
@@ -29,24 +33,28 @@ class InformationVoidedController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
-  view: InformationVoidedView
+  view: InformationVoidedView,
+  voidService: VoidService,
+  clock: Clock
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData) {
+  def onPageLoad(originalMessageId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-
-      val emails =
-        Seq("email1@test.com") // , "email2@test.com", "email2@test.com") //TODO: build this seq from sub and fi contacts | just sub contact is fiisuser
-      val emailString = formatEmailList(emails)
-      val fiName      = "[fiName]"
-      val dateTime    = "[on 28 April 2026 at 3:36pm]" // TODO: Bring over format logic from other repo, into a helper?
-      val mris        = Seq("[GB2026GB-ABC1234567890-FATCA_003]") // ,"[GB2026GB-ABC1234567890-FATCA_004]") //ass messagerefids back on original MessageRefId
-
-      Ok(view(fiName, dateTime, mris, emailString))
+      voidService
+        .getVoidReportDetails(originalMessageId, request.userAnswers)
+        .map {
+          details =>
+            val emails                 = Seq("email1@test.com") // TODO: from subscription/FI contacts
+            val emailString            = formatEmailList(emails)
+            val dateTime               = LocalDateTime.now(clock).format(DateTimeFormatter.ofPattern("d MMMM yyyy 'at' h:mma"))
+            val allRefIds: Seq[String] = details.cardModel.cardDetailList.map(_.messageRefId)
+            Ok(view(details.fiName, dateTime, allRefIds, emailString))
+        }
+        .getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
   }
 
-  def formatEmailList(emails: Seq[String]): String = emails match { // TODO: put this somewhere? make a formatting helper
+  def formatEmailList(emails: Seq[String]): String = emails match {
     case Seq(a)       => a
     case Seq(a, b)    => s"$a and $b"
     case init :+ last => init.mkString(", ") + s" and $last"
