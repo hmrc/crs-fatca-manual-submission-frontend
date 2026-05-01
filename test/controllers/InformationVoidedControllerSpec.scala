@@ -40,6 +40,7 @@ class InformationVoidedControllerSpec extends SpecBase {
   val year                       = "2027"
   private val originalMessageId  = "Some-OMRId"
   private val fiName             = "someFiName"
+  private val fiId               = "some-fiId"
   private val emailString        = "email1@test.com"
   private val cardDetail1        = FatcaCardDetail("GB2026GB-ABC1234567890-FATCA_003", "30 May 2027", "11:59", "FATCA")
   private val cardDetail2        = FatcaCardDetail("GB2026GB-ABC1234567890-FATCA_003_2", "28 May 2027", "09:25", "FATCA")
@@ -76,7 +77,7 @@ class InformationVoidedControllerSpec extends SpecBase {
         val view    = application.injector.instanceOf[InformationVoidedView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(fiName, dateTime, messRefIds, emailString, year)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(fiName, dateTime, messRefIds, emailString, year, report1.fiId)(request, messages(application)).toString
       }
     }
 

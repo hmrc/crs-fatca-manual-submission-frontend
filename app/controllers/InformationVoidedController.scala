@@ -45,12 +45,13 @@ class InformationVoidedController @Inject() (
         .getVoidReportDetails(originalMessageId, request.userAnswers)
         .map {
           details =>
+            val fiId        = details.fiId
             val emails      = Seq("email1@test.com") // TODO: from subscription/FI contacts
             val emailString = formatEmailList(emails)
             val dateTime    = LocalDateTime.now(clock.withZone(ZoneId.of("Europe/London"))).format(DateTimeFormatter.ofPattern("d MMMM yyyy 'at' h:mma"))
             val allRefIds: Seq[String] = details.cardModel.cardDetailList.map(_.messageRefId)
             val year                   = details.reportingYear
-            Ok(view(details.fiName, dateTime, allRefIds, emailString, year))
+            Ok(view(details.fiName, dateTime, allRefIds, emailString, year, fiId))
         }
         .getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
   }

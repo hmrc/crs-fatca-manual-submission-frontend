@@ -24,7 +24,7 @@
         appConfig: config.FrontendAppConfig
 )
 
-@(fiName: String, dateTime: String, messageRefIds:Seq[String], emailString: String, reportingYear: String)(implicit request: Request[_], messages: Messages)
+@(fiName: String, dateTime: String, messageRefIds:Seq[String], emailString: String, reportingYear: String, fiId: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("informationVoided.title")), showBackLink = false) {
 
@@ -50,6 +50,6 @@
         }
     </ol>
 
-    @link("",messages("informationVoided.link.1", fiName), id = Some("submitted-reports-link"))
+    @link(routes.ReadSubmissionDataController.onPageLoad(fiId, fiName).url, messages("informationVoided.link.1", fiName), id = Some("submitted-reports-link"))
     @link(appConfig.manageReportsLink,"Back to manage your CRS and FATCA reports", id = Some("manage-reports-link"))
 }
