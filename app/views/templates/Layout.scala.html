@@ -53,15 +53,10 @@
     @hmrcReportTechnicalIssueHelper()
 }
 
-@additionalScripts = {
-    <link href='@controllers.routes.Assets.versioned("stylesheets/application.css")' media="screen" rel="stylesheet" type="text/css" />
-}
-
 @hmrcStandardPage(HmrcStandardPageParams(
     pageTitle = Some(pageTitle),
     templateOverrides = TemplateOverrides(
-        additionalHeadBlock = Some(head),
-    additionalScriptsBlock = Some(additionalScripts)
+        additionalHeadBlock = Some(head)
     ),
     serviceURLs = ServiceURLs(
         serviceUrl = Some(routes.IndexController.onPageLoad().url),
@@ -71,5 +66,6 @@
         displayHmrcBanner = showHmrcBanner,
         phaseBanner = Some(alphaBanner(appConfig.feedbackUrl))
     ),
+    isWelshTranslationAvailable = false,
     backLink = if (showBackLink) Some(BackLink.mimicsBrowserBackButtonViaJavaScript) else None
 ))(content)

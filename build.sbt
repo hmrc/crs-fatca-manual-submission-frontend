@@ -38,7 +38,7 @@ lazy val microservice = (project in file("."))
       "-Wconf:cat=feature:w",
       "-Wconf:src=target/.*:s"
     ),
-      libraryDependencies ++= AppDependencies(),
+    libraryDependencies ++= AppDependencies(),
     retrieveManaged := true,
     pipelineStages := Seq(digest),
     Assets / pipelineStages := Seq(concat)

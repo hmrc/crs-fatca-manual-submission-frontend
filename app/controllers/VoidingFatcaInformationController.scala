@@ -18,11 +18,9 @@ package controllers
 
 import controllers.actions.*
 import forms.VoidingFatcaInformationFormProvider
-import pages.VoidingFatcaInformationPage
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import repositories.SessionRepository
 import services.VoidService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.VoidingFatcaInformationView
