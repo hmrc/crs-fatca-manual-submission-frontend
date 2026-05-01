@@ -49,7 +49,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
 
   "VoidingFatcaInformation Controller" - {
     val fiName          = "ABC Bank plc"
-    val year = "2027"
+    val year            = "2027"
     val uploadDateTime1 = LocalDateTime.of(2027, 5, 30, 11, 59)
     val uploadDateTime2 = LocalDateTime.of(2027, 5, 28, 9, 25)
 
@@ -88,7 +88,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
         val view    = application.injector.instanceOf[VoidingFatcaInformationView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, report1.fiName, fatcaVoidCardModel, year)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, report1.fiName, fatcaVoidCardModel)(request, messages(application)).toString
       }
     }
 
@@ -112,7 +112,9 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
       when(mockVoidService.fatcaVoid(any(), any())(any(), any())) thenReturn Future.successful(())
-      when(mockVoidService.getVoidReportDetails(eqTo(originalMessageId), any())) thenReturn Some(VoidReportDetails(fatcaVoidCardModel, fiName, report1.fiId, year))
+      when(mockVoidService.getVoidReportDetails(eqTo(originalMessageId), any())) thenReturn Some(
+        VoidReportDetails(fatcaVoidCardModel, fiName, report1.fiId, year)
+      )
 
       val application =
         applicationBuilder(userAnswers = Some(userAnswersWithSubmissions))
@@ -150,7 +152,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
         val result    = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, report1.fiName, fatcaVoidCardModel, year)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, report1.fiName, fatcaVoidCardModel)(request, messages(application)).toString
       }
     }
 

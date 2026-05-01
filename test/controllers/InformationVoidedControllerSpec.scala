@@ -28,15 +28,16 @@ import services.VoidService
 import views.html.InformationVoidedView
 
 import java.time.format.DateTimeFormatter
-import java.time.{Clock, LocalDateTime, ZoneId, ZoneOffset}
+import java.time.{Clock, LocalDateTime, ZoneId}
 
 class InformationVoidedControllerSpec extends SpecBase {
 
-  private val zone = ZoneId.of("Europe/London")
+  private val zone          = ZoneId.of("Europe/London")
   private val fixedDateTime = LocalDateTime.of(2026, 4, 28, 15, 36).atZone(zone)
   private val dateTime      = fixedDateTime.format(DateTimeFormatter.ofPattern("d MMMM yyyy 'at' h:mma"))
   private val fixedClock    = Clock.fixed(fixedDateTime.toInstant, zone)
 
+  val year                       = "2027"
   private val originalMessageId  = "Some-OMRId"
   private val fiName             = "someFiName"
   private val emailString        = "email1@test.com"
@@ -58,7 +59,9 @@ class InformationVoidedControllerSpec extends SpecBase {
       val userAnswersWithSubmissions = emptyUserAnswers.withPage(SubmissionsHistoryPage, submissions)
 
       val mockVoidService = mock[VoidService]
-      when(mockVoidService.getVoidReportDetails(eqTo(originalMessageId), any())) thenReturn Some(VoidReportDetails(fatcaVoidCardModel, fiName, report1.fiId))
+      when(mockVoidService.getVoidReportDetails(eqTo(originalMessageId), any())) thenReturn Some(
+        VoidReportDetails(fatcaVoidCardModel, fiName, report1.fiId, year)
+      )
 
       val application = applicationBuilder(userAnswers = Some(userAnswersWithSubmissions))
         .overrides(
@@ -73,7 +76,7 @@ class InformationVoidedControllerSpec extends SpecBase {
         val view    = application.injector.instanceOf[InformationVoidedView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(fiName, dateTime, messRefIds, emailString)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(fiName, dateTime, messRefIds, emailString, year)(request, messages(application)).toString
       }
     }
 

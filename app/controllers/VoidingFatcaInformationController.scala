@@ -68,18 +68,24 @@ class VoidingFatcaInformationController @Inject() (
               .fold(
                 formWithErrors => Future.successful(BadRequest(view(formWithErrors, details.fiName, details.cardModel))),
                 value =>
-                  for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.set(VoidingFatcaInformationPage, value))
-                    _              <- voidService.fatcaVoid(originalMessageRefId, details.fiId)
-                    _              <- sessionRepository.set(updatedAnswers)
-                  } yield value match {
-                    case true => Redirect(controllers.routes.InformationVoidedController.onPageLoad(originalMessageRefId))
-                    case false =>
+                    for {
+                      updatedAnswers <- Future.fromTry(request.userAnswers.set(VoidingFatcaInformationPage, value))
+                      _ <-
+                        if (value) voidService.fatcaVoid(originalMessageRefId, details.fiId)
+                        else Future.unit
+                      _ <- sessionRepository.set(updatedAnswers)
+                    } yield if (value) {
+                      println(
+                        Console.MAGENTA + s"Voiding FATCA information for messageRefId: $originalMessageRefId" + Console.RESET
+                      )
+                      Redirect(controllers.routes.InformationVoidedController.onPageLoad(originalMessageRefId))
+                    } else {
+                      println(Console.MAGENTA + s"DONT VOID" + Console.RESET)
                       Redirect(
                         controllers.routes.ViewSubmissionsController
                           .onPageLoad(year = LocalDateTime.now.getYear - 1, fiId = details.fiId, fiName = details.fiName)
                       )
-                  }
+                    }
               )
         }
         .getOrElse(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())))
