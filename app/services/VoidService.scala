@@ -33,12 +33,15 @@ class VoidService @Inject() (fatcaConnector: FatcaVoidConnector) {
   }
 
   def getVoidFatcaReportDetails(originalMessageId: String, submittedReports: List[SubmittedReport]): Option[VoidReportDetails] = {
-    val matchingReports = submittedReports.filter {
-      report =>
-        report.regime == FATCA &&
-        (report.originalMessageRefId.contains(originalMessageId) ||
-          (report.originalMessageRefId.isEmpty && report.messageRefId == originalMessageId))
-    }
+    val matchingReports = submittedReports
+      .filter {
+        report =>
+          report.regime == FATCA &&
+          (report.originalMessageRefId.contains(originalMessageId) ||
+            (report.originalMessageRefId.isEmpty && report.messageRefId == originalMessageId))
+      }
+      .sortBy(_.uploadDateTime)
+      .reverse
 
     val cardDetails = matchingReports.map {
       report =>
