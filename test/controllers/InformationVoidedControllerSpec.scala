@@ -38,7 +38,7 @@ class InformationVoidedControllerSpec extends SpecBase {
   private val dateTime      = fixedDateTime.format(DateTimeFormatter.ofPattern("d MMMM yyyy 'at' h:mma"))
   private val fixedClock    = Clock.fixed(fixedDateTime.toInstant, zone)
 
-  val year                       = "2027"
+  private val year               = "2027"
   private val originalMessageId  = "Some-OMRId"
   private val fiName             = "someFiName"
   private val fiId               = "some-fiId"
@@ -53,7 +53,6 @@ class InformationVoidedControllerSpec extends SpecBase {
     dateTime = dateTime,
     messageRefIds = messRefIds,
     emailString = emailString,
-    reportingYear = year,
     fiId = fiId
   )
 

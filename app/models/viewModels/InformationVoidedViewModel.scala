@@ -21,6 +21,5 @@ case class InformationVoidedViewModel(
   dateTime: String,
   messageRefIds: Seq[String],
   emailString: String,
-  reportingYear: String,
   fiId: String
 )

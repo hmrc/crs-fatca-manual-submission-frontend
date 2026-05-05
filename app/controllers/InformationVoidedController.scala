@@ -18,6 +18,7 @@ package controllers
 
 import controllers.actions.*
 import models.viewModels.InformationVoidedViewModel
+import pages.SubmissionsHistoryPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.VoidService
@@ -43,22 +44,26 @@ class InformationVoidedController @Inject() (
 
   def onPageLoad(originalMessageId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      voidService
-        .getVoidFatcaReportDetails(originalMessageId, request.userAnswers)
-        .map {
-          details =>
-            val emails = Seq("email1@test.com") // TODO: [DAC6-4271]
+      val errorRedirect = Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
 
-            val infoVoidedViewModel = InformationVoidedViewModel(
-              fiName = details.fiName,
-              dateTime = LocalDateTime.now(clock.withZone(ZoneId.of("Europe/London"))).format(DateTimeFormatter.ofPattern("d MMMM yyyy 'at' h:mma")),
-              messageRefIds = details.cardModel.cardDetailList.map(_.messageRefId),
-              emailString = formatEmailList(emails),
-              reportingYear = details.reportingYear,
-              fiId = details.fiId
-            )
-            Ok(view(infoVoidedViewModel))
-        }
-        .getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+      request.userAnswers.get(SubmissionsHistoryPage).fold(errorRedirect) {
+        submittedReports =>
+          voidService
+            .getVoidFatcaReportDetails(originalMessageId, submittedReports)
+            .map {
+              details =>
+                val emails = Seq("email1@test.com") // TODO: [DAC6-4271]
+
+                val infoVoidedViewModel = InformationVoidedViewModel(
+                  fiName = details.fiName,
+                  dateTime = LocalDateTime.now(clock.withZone(ZoneId.of("Europe/London"))).format(DateTimeFormatter.ofPattern("d MMMM yyyy 'at' h:mma")),
+                  messageRefIds = details.cardModel.cardDetailList.map(_.messageRefId),
+                  emailString = formatEmailList(emails),
+                  fiId = details.fiId
+                )
+                Ok(view(infoVoidedViewModel))
+            }
+            .getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+      }
   }
 }

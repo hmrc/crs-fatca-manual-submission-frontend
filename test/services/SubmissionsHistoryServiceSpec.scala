@@ -19,7 +19,7 @@ package services
 import base.SpecBase
 import connectors.ReadSubmissionConnector
 import models.SubmissionsConstants.{CRS701, CRSAdditional701, FAILED, FATCA1}
-import models.{ReadSubmissionRequest, ReadSubmissionResponseDetails, SubmissionCard, SubmissionsConstants, SubmittedReport}
+import models.{ReadSubmissionRequest, ReadSubmissionResponseDetails, SubmissionsConstants, SubmittedReport}
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.when
 import play.api.inject.bind

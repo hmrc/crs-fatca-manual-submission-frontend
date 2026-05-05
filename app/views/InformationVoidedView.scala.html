@@ -32,7 +32,7 @@
 
     @govukPanel(Panel(
         title = Text(messages("informationVoided.heading")),
-        content = HtmlContent(s"<b>$model.dateTime</b>")
+        content = HtmlContent(s"<b>${model.dateTime}</b>")
         )
     )
 
@@ -50,6 +50,6 @@
         }
     </ol>
 
-    @link(routes.ViewSubmissionsController.onPageLoad(model.reportingYear.toInt, model.fiId, model.fiName).url, messages("informationVoided.link.1", model.fiName), id = Some("submitted-reports-link"))
+    @link(routes.ReadSubmissionDataController.onPageLoad(model.fiId, model.fiName).url, messages("informationVoided.link.1", model.fiName), id = Some("submitted-reports-link"))
     @link(appConfig.manageReportsLink,"Back to manage your CRS and FATCA reports", id = Some("manage-reports-link"))
 }

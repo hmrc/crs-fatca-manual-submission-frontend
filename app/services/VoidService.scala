@@ -18,8 +18,7 @@ package services
 
 import connectors.FatcaVoidConnector
 import models.SubmissionsConstants.FATCA
-import models.{FatcaVoidCardDetail, FatcaVoidCardModel, UserAnswers, VoidReportDetails}
-import pages.SubmissionsHistoryPage
+import models.{FatcaVoidCardDetail, FatcaVoidCardModel, SubmittedReport, VoidReportDetails}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import java.time.format.DateTimeFormatter
@@ -33,25 +32,27 @@ class VoidService @Inject() (fatcaConnector: FatcaVoidConnector) {
     fatcaConnector.submit(request)
   }
 
-  def getVoidFatcaReportDetails(originalMessageId: String, userAnswers: UserAnswers): Option[VoidReportDetails] =
-    for {
-      allReports <- userAnswers.get(SubmissionsHistoryPage)
-      matchingReports = allReports
-        .filter(_.regime == FATCA)
-        .filter {
-          report =>
-            report.originalMessageRefId.contains(originalMessageId) ||
-            report.originalMessageRefId.isEmpty && report.messageRefId == originalMessageId
-        }
-      headReport <- matchingReports.headOption
-      cardDetails = matchingReports.map {
-        report =>
-          FatcaVoidCardDetail(
-            messageRefId = report.messageRefId,
-            dateSent = report.uploadDateTime.toLocalDate.format(DateTimeFormatter.ofPattern("d MMMM yyyy")),
-            dateSentTime = report.uploadDateTime.toLocalTime.format(DateTimeFormatter.ofPattern("HH:mm")),
-            reportType = report.regime.toString
-          )
-      }
-    } yield VoidReportDetails(FatcaVoidCardModel(cardDetails), headReport.fiName, headReport.fiId, headReport.reportingYear)
+  def getVoidFatcaReportDetails(originalMessageId: String, submittedReports: List[SubmittedReport]): Option[VoidReportDetails] = {
+    val matchingReports = submittedReports.filter {
+      report =>
+        report.regime == FATCA &&
+        (report.originalMessageRefId.contains(originalMessageId) ||
+          (report.originalMessageRefId.isEmpty && report.messageRefId == originalMessageId))
+    }
+
+    val cardDetails = matchingReports.map {
+      report =>
+        FatcaVoidCardDetail(
+          messageRefId = report.messageRefId,
+          dateSent = report.uploadDateTime.toLocalDate.format(DateTimeFormatter.ofPattern("d MMMM yyyy")),
+          dateSentTime = report.uploadDateTime.toLocalTime.format(DateTimeFormatter.ofPattern("HH:mm")),
+          reportType = report.regime.toString
+        )
+    }
+
+    matchingReports.headOption.map {
+      headReport =>
+        VoidReportDetails(FatcaVoidCardModel(cardDetails), headReport.fiName, headReport.fiId, headReport.reportingYear)
+    }
+  }
 }
