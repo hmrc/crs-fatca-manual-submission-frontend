@@ -31,8 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class FatcaVoidConnector @Inject() (http: HttpClientV2, config: FrontendAppConfig)(implicit ec: ExecutionContext) extends Logging {
 
-  def submit(requestBody: VoidFatcaRequest)(implicit
-    hc: HeaderCarrier): Future[Unit] = {
+  def submit(requestBody: VoidFatcaRequest)(implicit hc: HeaderCarrier): Future[Unit] = {
     val url = url"${config.crsFatcaManualBackendUrl}/crs-fatca-manual-submission/submitVoidRequest"
 
     http

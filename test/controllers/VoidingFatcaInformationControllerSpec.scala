@@ -108,7 +108,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
 
       val mockVoidService = mock[VoidService]
 
-      when(mockVoidService.fatcaVoid(any(), any())(any(), any())) thenReturn Future.successful(())
+      when(mockVoidService.fatcaVoid(any(), any())(any())) thenReturn Future.successful(())
       when(mockVoidService.getVoidFatcaReportDetails(eqTo(originalMessageId), any())) thenReturn Some(
         VoidReportDetails(fatcaVoidCardModel, fiName, report1.fiId, year)
       )
@@ -130,7 +130,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual "/crs-fatca-manual-submission-frontend/fatca-void/information-voided?originalMessageRefId=Some-OMId"
 
-        verify(mockVoidService).fatcaVoid(eqTo(originalMessageId), eqTo(report1.fiId))(any(), any())
+        verify(mockVoidService).fatcaVoid(eqTo(originalMessageId), eqTo(report1.fiId))(any())
       }
     }
 
@@ -138,7 +138,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
 
       val mockVoidService = mock[VoidService]
 
-      when(mockVoidService.fatcaVoid(any(), any())(any(), any())) thenReturn Future.successful(())
+      when(mockVoidService.fatcaVoid(any(), any())(any())) thenReturn Future.successful(())
       when(mockVoidService.getVoidFatcaReportDetails(eqTo(originalMessageId), any())) thenReturn Some(
         VoidReportDetails(fatcaVoidCardModel, fiName, report1.fiId, year)
       )
@@ -160,7 +160,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual "/crs-fatca-manual-submission-frontend/manage-reports-for-2025?fiId=id&fiName=ABC+Bank+plc"
 
-        verify(mockVoidService, never()).fatcaVoid(eqTo(originalMessageId), eqTo(report1.fiId))(any(), any())
+        verify(mockVoidService, never()).fatcaVoid(eqTo(originalMessageId), eqTo(report1.fiId))(any())
       }
     }
 

@@ -14,6 +14,8 @@
  * limitations under the License.
  *@
 
+@import models.viewModels.InformationVoidedViewModel
+
 @this(
         layout: templates.Layout,
         govukButton: GovukButton,
@@ -24,32 +26,30 @@
         appConfig: config.FrontendAppConfig
 )
 
-@(fiName: String, dateTime: String, messageRefIds:Seq[String], emailString: String, reportingYear: String, fiId: String)(implicit request: Request[_], messages: Messages)
+@(model: InformationVoidedViewModel)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("informationVoided.title")), showBackLink = false) {
 
-<!-- make datetime parameter in panel-->
-
     @govukPanel(Panel(
         title = Text(messages("informationVoided.heading")),
-        content = HtmlContent(s"<b>$dateTime</b>")
+        content = HtmlContent(s"<b>$model.dateTime</b>")
         )
     )
-<!--Check which emails should be used here - fisuser -->
-    @para("informationVoided.para.1", Seq(emailString))
+
+    @para("informationVoided.para.1", Seq(model.emailString))
 
     @heading(messages("informationVoided.subheading"), "m", "h2")
-    @{if(messageRefIds.size > 1) {
-        para("informationVoided.para.3",classes ="govuk-!-margin-bottom-2", args = Seq(fiName))
+    @{if(model.messageRefIds.size > 1) {
+        para("informationVoided.para.3",classes ="govuk-!-margin-bottom-2", args = Seq(model.fiName))
     }else{
-        para("informationVoided.para.2",classes ="govuk-!-margin-bottom-2", args = Seq(fiName))
+        para("informationVoided.para.2",classes ="govuk-!-margin-bottom-2", args = Seq(model.fiName))
     }}
     <ol class="govuk-list govuk-list--bullet">
-        @for(messageRefId <- messageRefIds) {
+        @for(messageRefId <- model.messageRefIds) {
             <li>@messageRefId</li>
         }
     </ol>
 
-    @link(routes.ReadSubmissionDataController.onPageLoad(fiId, fiName).url, messages("informationVoided.link.1", fiName), id = Some("submitted-reports-link"))
+    @link(routes.ViewSubmissionsController.onPageLoad(model.reportingYear.toInt, model.fiId, model.fiName).url, messages("informationVoided.link.1", model.fiName), id = Some("submitted-reports-link"))
     @link(appConfig.manageReportsLink,"Back to manage your CRS and FATCA reports", id = Some("manage-reports-link"))
 }

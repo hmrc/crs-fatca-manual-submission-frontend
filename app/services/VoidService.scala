@@ -24,7 +24,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class VoidService @Inject() (fatcaConnector: FatcaVoidConnector) {
 

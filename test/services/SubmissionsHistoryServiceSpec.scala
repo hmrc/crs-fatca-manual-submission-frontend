@@ -31,15 +31,6 @@ import scala.concurrent.Future
 
 class SubmissionsHistoryServiceSpec extends SpecBase {
 
-  private val submissionCard: SubmissionCard = SubmissionCard(
-    isVoided = Some(false),
-    messageRefId = "ref1",
-    originalMessageRefId = "ref1",
-    timeSent = now,
-    fileType = FATCA1,
-    submissionType = SubmissionsConstants.XML
-  )
-  private val mappedCards: Map[String, List[SubmissionCard]]                  = Map("ref1" -> List(submissionCard))
   private val lastYear: LocalDateTime                                         = now.minusYears(1)
   private val nextYear: LocalDateTime                                         = now.plusYears(1)
   private val submissionRequest                                               = ReadSubmissionRequest(shouldCache = true, fiId = None)

@@ -17,6 +17,7 @@
 package controllers
 
 import controllers.actions.*
+import models.viewModels.InformationVoidedViewModel
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.VoidService
@@ -46,13 +47,17 @@ class InformationVoidedController @Inject() (
         .getVoidFatcaReportDetails(originalMessageId, request.userAnswers)
         .map {
           details =>
-            val fiId        = details.fiId
-            val emails      = Seq("email1@test.com") // TODO: from subscription/FI contacts
-            val emailString = formatEmailList(emails)
-            val dateTime    = LocalDateTime.now(clock.withZone(ZoneId.of("Europe/London"))).format(DateTimeFormatter.ofPattern("d MMMM yyyy 'at' h:mma"))
-            val allRefIds: Seq[String] = details.cardModel.cardDetailList.map(_.messageRefId)
-            val year                   = details.reportingYear
-            Ok(view(details.fiName, dateTime, allRefIds, emailString, year, fiId))
+            val emails = Seq("email1@test.com") // TODO: [DAC6-4271]
+
+            val infoVoidedViewModel = InformationVoidedViewModel(
+              fiName = details.fiName,
+              dateTime = LocalDateTime.now(clock.withZone(ZoneId.of("Europe/London"))).format(DateTimeFormatter.ofPattern("d MMMM yyyy 'at' h:mma")),
+              messageRefIds = details.cardModel.cardDetailList.map(_.messageRefId),
+              emailString = formatEmailList(emails),
+              reportingYear = details.reportingYear,
+              fiId = details.fiId
+            )
+            Ok(view(infoVoidedViewModel))
         }
         .getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
   }

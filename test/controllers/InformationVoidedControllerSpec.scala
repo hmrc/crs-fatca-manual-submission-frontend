@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import models.viewModels.InformationVoidedViewModel
 import models.{FatcaVoidCardDetail, FatcaVoidCardModel, VoidReportDetails}
 import org.mockito.ArgumentMatchersSugar.*
 import org.mockito.Mockito.*
@@ -47,11 +48,20 @@ class InformationVoidedControllerSpec extends SpecBase {
   private val fatcaVoidCardModel = FatcaVoidCardModel(Seq(cardDetail1, cardDetail2))
   private val messRefIds         = fatcaVoidCardModel.cardDetailList.map(_.messageRefId)
 
+  private val infoVoidedViewModel = InformationVoidedViewModel(
+    fiName = fiName,
+    dateTime = dateTime,
+    messageRefIds = messRefIds,
+    emailString = emailString,
+    reportingYear = year,
+    fiId = fiId
+  )
+
   private val report2 =
     submittedReport.copy(originalMessageRefId = Some(originalMessageId), messageRefId = "GB2026GB-ABC1234567890-FATCA_003_2")
 
   private val report1 =
-    submittedReport.copy(messageRefId = "GB2026GB-ABC1234567890-FATCA_003")
+    submittedReport.copy(messageRefId = "GB2026GB-ABC1234567890-FATCA_003", fiId = fiId)
   private val submissions = List(report1, report2)
 
   "InformationVoided Controller" - {
@@ -77,7 +87,7 @@ class InformationVoidedControllerSpec extends SpecBase {
         val view    = application.injector.instanceOf[InformationVoidedView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(fiName, dateTime, messRefIds, emailString, year, report1.fiId)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(infoVoidedViewModel)(request, messages(application)).toString
       }
     }
 

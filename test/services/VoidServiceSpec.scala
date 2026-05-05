@@ -23,8 +23,7 @@ import org.mockito.ArgumentMatchers.*
 import org.mockito.Mockito.{times, verify, when}
 import uk.gov.hmrc.http.HeaderCarrier
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class VoidServiceSpec extends SpecBase {
   private val mockConnector = mock[FatcaVoidConnector]
@@ -34,11 +33,11 @@ class VoidServiceSpec extends SpecBase {
 
   "fatcaVoid" - {
     "should call the connector with the correct request" in {
-      when(mockConnector.submit(any[VoidFatcaRequest]())(any(), any())).thenReturn(Future.successful(()))
+      when(mockConnector.submit(any[VoidFatcaRequest]())(any())).thenReturn(Future.successful(()))
 
       service.fatcaVoid("testMessageRefId", "testFiid")
 
-      verify(mockConnector, times(1)).submit(any[VoidFatcaRequest]())(any(), any())
+      verify(mockConnector, times(1)).submit(any[VoidFatcaRequest]())(any())
     }
   }
 

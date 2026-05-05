@@ -30,14 +30,10 @@ import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Writes
 import play.api.test.FakeRequest
-import uk.gov.hmrc.http.HeaderCarrier
-
-import java.time.LocalDateTime
 import queries.Settable
 import uk.gov.hmrc.http.HeaderCarrier
 
 import java.time.LocalDateTime
-import scala.concurrent.ExecutionContext.Implicits.global
 
 trait SpecBase
     extends AnyFreeSpec
