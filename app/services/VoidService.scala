@@ -28,7 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class VoidService @Inject() (fatcaConnector: FatcaVoidConnector) {
 
-  def fatcaVoid(messageRefId: String, fiid: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
+  def fatcaVoid(messageRefId: String, fiid: String)(implicit hc: HeaderCarrier): Future[Unit] = {
     val request = models.VoidFatcaRequest(messageRefId, fiid)
     fatcaConnector.submit(request)
   }
