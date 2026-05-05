@@ -46,7 +46,7 @@ class VoidService @Inject() (fatcaConnector: FatcaVoidConnector) {
           messageRefId = report.messageRefId,
           dateSent = report.uploadDateTime.toLocalDate.format(DateTimeFormatter.ofPattern("d MMMM yyyy")),
           dateSentTime = report.uploadDateTime.toLocalTime.format(DateTimeFormatter.ofPattern("HH:mm")),
-          reportType = report.regime.toString
+          submissionFileType = report.submissionFileType
         )
     }
 

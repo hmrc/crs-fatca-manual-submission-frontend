@@ -16,6 +16,10 @@
 
 package models
 
-case class FatcaVoidCardDetail(messageRefId: String, dateSent: String, dateSentTime: String, reportType: String)
+import models.SubmissionsConstants.SubmissionFileType
+
+case class FatcaVoidCardDetail(messageRefId: String, dateSent: String, dateSentTime: String, submissionFileType: SubmissionFileType) {
+  val summaryKey: String = submissionFileType.cardSummaryKey
+}
 case class FatcaVoidCardModel(cardDetailList: Seq[FatcaVoidCardDetail])
 case class VoidReportDetails(cardModel: FatcaVoidCardModel, fiName: String, fiId: String, reportingYear: String)

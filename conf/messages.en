@@ -79,5 +79,5 @@ voidingFatcaInformation.card.header = FATCA XML
 voidingFatcaInformation.messageRefId = MessageRefId:
 voidingFatcaInformation.sent = {0} at {1}
 voidingFatcaInformation.warning = If you void information that you still need to report on, then you must send a new report. Missing reports could result in a penalty for {0}.
-voidingFatcaInformation.error.required = Select yes if voidingFatcaInformation
+voidingFatcaInformation.error.required = Select yes if you are sure you want to void this FATCA information
 voidingFatcaInformation.form.heading = Are you sure you want to void this FATCA information?

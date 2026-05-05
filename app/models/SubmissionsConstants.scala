@@ -56,6 +56,15 @@ object SubmissionsConstants:
   sealed trait SubmissionFileType:
     def value: String
 
+    val cardSummaryKey: String = this match
+      case FATCA1 | CRS701  => "New information"
+      case FATCA2           => "Corrected information for an existing report"
+      case CRS702           => "Corrected or deleted information for an existing report"
+      case FATCA4           => "Amended information for an existing report"
+      case CRS703           => "No information to report"
+      case FATCA3           => "Date voided"
+      case CRSAdditional701 => "Additional information for an existing report"
+
   case object FATCA1 extends SubmissionFileType:
     def value = "FATCA1"
 
