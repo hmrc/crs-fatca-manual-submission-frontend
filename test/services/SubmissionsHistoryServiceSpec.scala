@@ -19,7 +19,7 @@ package services
 import base.SpecBase
 import connectors.ReadSubmissionConnector
 import models.SubmissionsConstants.{CRS701, CRSAdditional701, FAILED, FATCA1}
-import models.{ReadSubmissionRequest, ReadSubmissionResponseDetails, SubmissionCard, SubmissionsConstants, SubmittedReport}
+import models.{ReadSubmissionRequest, ReadSubmissionResponseDetails, SubmissionsConstants, SubmittedReport}
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.when
 import play.api.inject.bind
@@ -31,15 +31,6 @@ import scala.concurrent.Future
 
 class SubmissionsHistoryServiceSpec extends SpecBase {
 
-  private val submissionCard: SubmissionCard = SubmissionCard(
-    isVoided = Some(false),
-    messageRefId = "ref1",
-    originalMessageRefId = "ref1",
-    timeSent = now,
-    fileType = FATCA1,
-    submissionType = SubmissionsConstants.XML
-  )
-  private val mappedCards: Map[String, List[SubmissionCard]]                  = Map("ref1" -> List(submissionCard))
   private val lastYear: LocalDateTime                                         = now.minusYears(1)
   private val nextYear: LocalDateTime                                         = now.plusYears(1)
   private val submissionRequest                                               = ReadSubmissionRequest(shouldCache = true, fiId = None)

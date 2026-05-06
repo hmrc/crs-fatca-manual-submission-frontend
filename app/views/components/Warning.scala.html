@@ -1,5 +1,5 @@
 @*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,12 @@
 
 @this()
 
-@(headingContent: String, size: String = "l", level: String = "h1")
+@(content: String)
 
-<@level class="govuk-heading-@size wrappable">@headingContent</@level>
+<div class="govuk-warning-text">
+ <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+ <strong class="govuk-warning-text__text">
+  <span class="govuk-visually-hidden">Warning</span>
+  @content
+ </strong>
+</div>

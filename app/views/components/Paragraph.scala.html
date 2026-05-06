@@ -16,6 +16,6 @@
 
 @this()
 
-@(headingContent: String, size: String = "l", level: String = "h1")
+@(messageKey: String, args: Seq[Any] = Seq.empty, classes: String = "", id: Option[String] = None)(implicit messages: Messages)
 
-<@level class="govuk-heading-@size wrappable">@headingContent</@level>
+<p class="@classes govuk-body wrappable" @id.map{id => id="@id"}>@messages(messageKey, args.map(_.asInstanceOf[AnyRef]): _*)</p>

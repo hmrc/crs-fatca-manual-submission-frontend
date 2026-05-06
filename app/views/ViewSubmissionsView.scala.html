@@ -82,7 +82,10 @@
                         @cardList.head.title
                         </h2>
                         <div class="govuk-summary-card__actions">
-                            <a class="govuk-link" href="@routes.JourneyRecoveryController.onPageLoad()" class="govuk-link govuk-link--no-visited-state">@messages("viewSubmissions.voidThisReport.link")</a>
+                            <a class="govuk-link govuk-link--no-visited-state"
+                               href="@routes.VoidingFatcaInformationController.onPageLoad(originalMessageRefId)">
+                                @messages("viewSubmissions.voidThisReport.link")
+                            </a>
                             <span class="govuk-visually-hidden"> (@originalMessageRefId)</span>
                             </a>
                         </div>

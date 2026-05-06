@@ -18,6 +18,11 @@ GET         /account/signed-out                          controllers.auth.Signed
 
 GET         /unauthorised                                controllers.UnauthorisedController.onPageLoad()
 
-GET        /read-submission-data                       controllers.ReadSubmissionDataController.onPageLoad(fiId: String, fiName: String)
+GET        /read-submission-data                         controllers.ReadSubmissionDataController.onPageLoad(fiId: String, fiName: String)
 
-GET        /manage-reports-for-:year                      controllers.ViewSubmissionsController.onPageLoad(year: Int, fiId: String , fiName:String)
+GET        /manage-reports-for-:year                     controllers.ViewSubmissionsController.onPageLoad(year: Int, fiId: String , fiName:String)
+
+GET        /fatca-void/voiding-fatca-information         controllers.VoidingFatcaInformationController.onPageLoad(originalMessageRefId: String)
+POST       /fatca-void/voiding-fatca-information         controllers.VoidingFatcaInformationController.onSubmit(originalMessageRefId: String)
+
+GET        /fatca-void/information-voided                controllers.InformationVoidedController.onPageLoad(originalMessageRefId: String)

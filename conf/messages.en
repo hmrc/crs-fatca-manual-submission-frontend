@@ -63,3 +63,21 @@ viewSubmissions.manageFisLink = Back to manage your CRS and FATCA reports
 
 readSubmissionData.title = readSubmissionData
 readSubmissionData.heading = readSubmissionData
+
+informationVoided.title = FATCA information voided
+informationVoided.heading = FATCA information voided
+informationVoided.para.1 = We have sent a confirmation email to {0}.
+informationVoided.subheading = What you have voided
+informationVoided.para.2 = You have permanently deleted the following information for {0} with the MessageRefId:
+informationVoided.para.3 = You have permanently deleted the following information for {0} with the MessageRefId values:
+informationVoided.link.1 = Back to manage submitted reports for {0}
+
+voidingFatcaInformation.title = Voiding FATCA information for the financial institution
+voidingFatcaInformation.heading = Voiding FATCA information for {0}
+voidingFatcaInformation.p1 = If you continue, you’ll permanently delete the following information.
+voidingFatcaInformation.card.header = FATCA XML
+voidingFatcaInformation.messageRefId = MessageRefId:
+voidingFatcaInformation.sent = {0} at {1}
+voidingFatcaInformation.warning = If you void information that you still need to report on, then you must send a new report. Missing reports could result in a penalty for {0}.
+voidingFatcaInformation.error.required = Select yes if you are sure you want to void this FATCA information
+voidingFatcaInformation.form.heading = Are you sure you want to void this FATCA information?

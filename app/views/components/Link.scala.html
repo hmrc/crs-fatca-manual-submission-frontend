@@ -1,5 +1,5 @@
 @*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,14 @@
 
 @this()
 
-@(headingContent: String, size: String = "l", level: String = "h1")
+@(href: String, message: String, id: Option[String] = None, openInNewWindow: Boolean = false, classes: String = "govuk-link", asPara: Boolean = true, paraClasses: String = "")(implicit messages: Messages)
 
-<@level class="govuk-heading-@size wrappable">@headingContent</@level>
+@link = {
+    <a class="@classes" @id.map{i => id="@id"} href="@href" @if(openInNewWindow){target="_blank" rel="noopener noreferrer"}>@message</a>
+}
+
+@if(asPara) {
+    <p class="govuk-body @paraClasses">@link</p>
+} else {
+    @link
+}

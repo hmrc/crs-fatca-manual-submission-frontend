@@ -1,5 +1,5 @@
-@*
- * Copyright 2024 HM Revenue & Customs
+/*
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,10 +12,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this()
+package forms
 
-@(headingContent: String, size: String = "l", level: String = "h1")
+import javax.inject.Inject
 
-<@level class="govuk-heading-@size wrappable">@headingContent</@level>
+import forms.mappings.Mappings
+import play.api.data.Form
+
+class VoidingFatcaInformationFormProvider @Inject() extends Mappings {
+
+  def apply(): Form[Boolean] =
+    Form(
+      "value" -> boolean("voidingFatcaInformation.error.required")
+    )
+}

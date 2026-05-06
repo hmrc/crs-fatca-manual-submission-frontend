@@ -1,5 +1,5 @@
-@*
- * Copyright 2024 HM Revenue & Customs
+/*
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,10 +12,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this()
+package utils
 
-@(headingContent: String, size: String = "l", level: String = "h1")
-
-<@level class="govuk-heading-@size wrappable">@headingContent</@level>
+def formatEmailList(emails: Seq[String]): String = emails match {
+  case Seq(a)       => a
+  case Seq(a, b)    => s"$a and $b"
+  case init :+ last => init.mkString(", ") + s" and $last"
+  case _            => ""
+}

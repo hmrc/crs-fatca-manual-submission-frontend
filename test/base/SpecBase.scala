@@ -28,7 +28,9 @@ import play.api.Application
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.libs.json.Writes
 import play.api.test.FakeRequest
+import queries.Settable
 import uk.gov.hmrc.http.HeaderCarrier
 
 import java.time.LocalDateTime
@@ -46,6 +48,25 @@ trait SpecBase
   val userAnswersId: String = "id"
   def now: LocalDateTime    = LocalDateTime.now()
 
+  def emptyUserAnswers: UserAnswers        = UserAnswers(userAnswersId)
+  implicit val hc: HeaderCarrier           = HeaderCarrier()
+  def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
+
+  protected def applicationBuilder(userAnswers: Option[UserAnswers] = None): GuiceApplicationBuilder =
+    new GuiceApplicationBuilder()
+      .overrides(
+        bind[DataRequiredAction].to[DataRequiredActionImpl],
+        bind[IdentifierAction].to[FakeIdentifierAction],
+        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers))
+      )
+
+  implicit class UserAnswersExtension(userAnswers: UserAnswers) {
+
+    def withPage[T](page: Settable[T], value: T)(implicit writes: Writes[T]): UserAnswers =
+      userAnswers.set(page, value).success.value
+  }
+
+  // TEST DATA:
   val submittedReport: SubmittedReport = SubmittedReport(
     fiId = "id",
     fiName = "name",
@@ -61,15 +82,5 @@ trait SpecBase
     submissionDeleteStatus = None,
     originalMessageRefId = None
   )
-  def emptyUserAnswers: UserAnswers        = UserAnswers(userAnswersId)
-  implicit val hc: HeaderCarrier           = HeaderCarrier()
-  def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
-  protected def applicationBuilder(userAnswers: Option[UserAnswers] = None): GuiceApplicationBuilder =
-    new GuiceApplicationBuilder()
-      .overrides(
-        bind[DataRequiredAction].to[DataRequiredActionImpl],
-        bind[IdentifierAction].to[FakeIdentifierAction],
-        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers))
-      )
 }
