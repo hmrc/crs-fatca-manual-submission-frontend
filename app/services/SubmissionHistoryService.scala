@@ -36,7 +36,7 @@ class SubmissionHistoryService @Inject() (readSubmissionConnector: ReadSubmissio
   def prepareSubmissionHistoryCards(submissions: List[SubmittedReport], submissionYear: Int): Map[String, List[SubmissionCard]] =
     submissions
       .filter(_.submissionStatus == PASSED)
-      .filter(_.uploadDateTime.getYear == submissionYear)
+      .filter(_.reportingYear.toInt == submissionYear)
       .map(submissionToCardConverter)
       .sortBy(_.timeSent)
       .reverse
@@ -46,6 +46,7 @@ class SubmissionHistoryService @Inject() (readSubmissionConnector: ReadSubmissio
     SubmissionCard(
       isVoided = report.submissionDeleteStatus,
       messageRefId = report.messageRefId,
+      reportingYear = report.reportingYear.toInt,
       originalMessageRefId = report.originalMessageRefId.getOrElse(report.messageRefId),
       timeSent = report.uploadDateTime,
       fileType = if report.originalMessageRefId.isDefined & report.submissionFileType == CRS701 then CRSAdditional701 else report.submissionFileType,

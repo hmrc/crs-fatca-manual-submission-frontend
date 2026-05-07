@@ -46,7 +46,7 @@ class ViewSubmissionsControllerSpec extends SpecBase {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers.set(SubmissionsHistoryPage, List(submittedReport)).success.value))
+      val application = applicationBuilder(userData = Some(emptyUserAnswers.set(SubmissionsHistoryPage, List(submittedReport)).success.value))
         .overrides(bind[SubmissionHistoryService].toInstance(service))
         .build()
       implicit val config: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
@@ -64,7 +64,7 @@ class ViewSubmissionsControllerSpec extends SpecBase {
 
     "must redirect to journey recovery if user answers are empty" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userData = Some(emptyUserAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, routes.ViewSubmissionsController.onPageLoad(2018, "fiId", "fiName").url)

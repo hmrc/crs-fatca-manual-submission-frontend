@@ -24,6 +24,7 @@ import java.time.LocalDateTime
 
 case class SubmissionCard(isVoided: Option[Boolean],
                           messageRefId: String,
+                          reportingYear: Int,
                           originalMessageRefId: String,
                           timeSent: LocalDateTime,
                           fileType: SubmissionFileType,

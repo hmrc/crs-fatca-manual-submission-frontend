@@ -17,9 +17,8 @@
 package controllers.actions
 
 import connectors.DatabaseConnector
-import models.UserAnswers
+import models.UserData
 import models.requests.{IdentifierRequest, OptionalDataRequest}
-import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.ActionTransformer
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
@@ -38,7 +37,7 @@ class DataRetrievalActionImpl @Inject() (
       data =>
         OptionalDataRequest(request.request,
                             request.userId,
-                            Some(UserAnswers(id = request.fatcaId, data = data.getOrElse(Json.obj()).as[JsObject])),
+                            Some(data.getOrElse(UserData(request.fatcaId))),
                             request.fatcaId
         )
     }
