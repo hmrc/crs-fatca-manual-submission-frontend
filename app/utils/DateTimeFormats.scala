@@ -36,7 +36,7 @@ object DateTimeFormats {
     DateTimeFormatter.ofPattern("'Sent' d MMMM yyyy 'at' h:mma")
 
   private val voidTimeSubmittedFormat: DateTimeFormatter =
-    DateTimeFormatter.ofPattern("'On' d MMMM yyyy 'at' h:mma")
+    DateTimeFormatter.ofPattern("'on' d MMMM yyyy 'at' h:mma")
 
   extension (t: LocalDateTime)
 
