@@ -27,25 +27,25 @@ import play.api.inject
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.VoidService
+import utils.DateTimeFormats.formatTimeVoidSubmitted
 import views.html.InformationVoidedView
 
-import java.time.format.DateTimeFormatter
 import java.time.{Clock, LocalDateTime, ZoneId}
 
 class InformationVoidedControllerSpec extends SpecBase {
 
   private val zone          = ZoneId.of("Europe/London")
-  private val fixedDateTime = LocalDateTime.of(2026, 4, 28, 15, 36).atZone(zone)
-  private val dateTime      = fixedDateTime.format(DateTimeFormatter.ofPattern("d MMMM yyyy 'at' h:mma"))
-  private val fixedClock    = Clock.fixed(fixedDateTime.toInstant, zone)
+  private val fixedDateTime = LocalDateTime.of(2026, 4, 28, 15, 36)
+  private val fixedClock    = Clock.fixed(fixedDateTime.atZone(zone).toInstant, zone)
+  private val dateTime      = fixedDateTime.formatTimeVoidSubmitted
 
   private val year               = "2027"
   private val originalMessageId  = "Some-OMRId"
   private val fiName             = "someFiName"
   private val fiId               = "some-fiId"
   private val emailString        = "email1@test.com"
-  private val cardDetail1        = FatcaVoidCardDetail("GB2026GB-ABC1234567890-FATCA_003", "30 May 2027", "11:59", FATCA1)
-  private val cardDetail2        = FatcaVoidCardDetail("GB2026GB-ABC1234567890-FATCA_003_2", "28 May 2027", "09:25", FATCA4)
+  private val cardDetail1        = FatcaVoidCardDetail("GB2026GB-ABC1234567890-FATCA_003", "Sent 30 May 2027 at 11:59", FATCA1)
+  private val cardDetail2        = FatcaVoidCardDetail("GB2026GB-ABC1234567890-FATCA_003_2", "Sent 28 May 2027 at 09:25", FATCA4)
   private val fatcaVoidCardModel = FatcaVoidCardModel(Seq(cardDetail1, cardDetail2))
   private val messRefIds         = fatcaVoidCardModel.cardDetailList.map(_.messageRefId)
 

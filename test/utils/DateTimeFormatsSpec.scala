@@ -19,14 +19,13 @@ package utils
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import play.api.i18n.Lang
-import utils.DateTimeFormats.dateTimeFormat
+import utils.DateTimeFormats.{dateTimeFormat, formatTimeSent, formatTimeVoidSubmitted}
 
-import java.time.LocalDate
+import java.time.{LocalDate, LocalDateTime}
 
 class DateTimeFormatsSpec extends AnyFreeSpec with Matchers {
 
   ".dateTimeFormat" - {
-
     "must format dates in English" in {
       val formatter = dateTimeFormat()(Lang("en"))
       val result    = LocalDate.of(2023, 1, 1).format(formatter)
@@ -37,6 +36,34 @@ class DateTimeFormatsSpec extends AnyFreeSpec with Matchers {
       val formatter = dateTimeFormat()(Lang("de"))
       val result    = LocalDate.of(2023, 1, 1).format(formatter)
       result mustEqual "1 January 2023"
+    }
+  }
+
+  ".formatTimeSent" - {
+    "must format a morning datetime" in {
+      LocalDateTime.of(2024, 5, 6, 9, 30).formatTimeSent mustEqual "Sent 6 May 2024 at 9:30am"
+    }
+
+    "must format an afternoon datetime" in {
+      LocalDateTime.of(2024, 3, 23, 14, 30).formatTimeSent mustEqual "Sent 23 March 2024 at 2:30pm"
+    }
+
+    "must format midnight as 12am" in {
+      LocalDateTime.of(2014, 3, 15, 0, 0).formatTimeSent mustEqual "Sent 15 March 2014 at 12:00am"
+    }
+
+    "must format noon as 12pm" in {
+      LocalDateTime.of(2024, 5, 6, 12, 0).formatTimeSent mustEqual "Sent 6 May 2024 at 12:00pm"
+    }
+  }
+
+  ".formatTimeVoidSubmitted" - {
+    "must format a morning datetime" in {
+      LocalDateTime.of(2024, 3, 15, 9, 30).formatTimeVoidSubmitted mustEqual "On 15 March 2024 at 9:30am"
+    }
+
+    "must format an afternoon datetime" in {
+      LocalDateTime.of(2024, 3, 15, 14, 30).formatTimeVoidSubmitted mustEqual "On 15 March 2024 at 2:30pm"
     }
   }
 }

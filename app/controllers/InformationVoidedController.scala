@@ -23,11 +23,11 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.VoidService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.DateTimeFormats.formatTimeVoidSubmitted
 import utils.formatEmailList
 import views.html.InformationVoidedView
 
-import java.time.format.DateTimeFormatter
-import java.time.{Clock, LocalDateTime, ZoneId}
+import java.time.{Clock, LocalDateTime}
 import javax.inject.Inject
 
 class InformationVoidedController @Inject() (
@@ -56,7 +56,7 @@ class InformationVoidedController @Inject() (
 
                 val infoVoidedViewModel = InformationVoidedViewModel(
                   fiName = details.fiName,
-                  dateTime = LocalDateTime.now(clock.withZone(ZoneId.of("Europe/London"))).format(DateTimeFormatter.ofPattern("d MMMM yyyy 'at' h:mma")),
+                  dateTime = LocalDateTime.now(clock).formatTimeVoidSubmitted,
                   messageRefIds = details.cardModel.cardDetailList.map(_.messageRefId),
                   emailString = formatEmailList(emails),
                   fiId = details.fiId

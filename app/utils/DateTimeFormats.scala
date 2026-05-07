@@ -19,6 +19,7 @@ package utils
 import play.api.i18n.Lang
 
 import java.time.format.DateTimeFormatter
+import java.time.{LocalDateTime, ZoneId}
 
 object DateTimeFormats {
 
@@ -31,6 +32,26 @@ object DateTimeFormats {
   def dateTimeFormat()(implicit lang: Lang): DateTimeFormatter =
     localisedDateTimeFormatters.getOrElse(lang.code, dateTimeFormatter)
 
-  val dateTimeHintFormat: DateTimeFormatter =
-    DateTimeFormatter.ofPattern("d M yyyy")
+  private val cardSummaryTimeSentFormat: DateTimeFormatter =
+    DateTimeFormatter.ofPattern("'Sent' d MMMM yyyy 'at' h:mma")
+
+  private val voidTimeSubmittedFormat: DateTimeFormatter =
+    DateTimeFormatter.ofPattern("'On' d MMMM yyyy 'at' h:mma")
+
+  extension (t: LocalDateTime)
+
+    def formatTimeSent: String =
+      cardSummaryTimeSentFormat
+        .format(t.atZone(zone))
+        .replace("AM", "am")
+        .replace("PM", "pm")
+
+    def formatTimeVoidSubmitted: String =
+      voidTimeSubmittedFormat
+        .format(t.atZone(zone))
+        .replace("AM", "am")
+        .replace("PM", "pm")
+
+  private val zone = ZoneId.of("Europe/London")
+
 }

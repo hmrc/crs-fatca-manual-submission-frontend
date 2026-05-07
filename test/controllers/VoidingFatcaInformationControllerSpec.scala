@@ -30,6 +30,7 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.VoidService
+import utils.DateTimeFormats.*
 import views.html.VoidingFatcaInformationView
 
 import java.time.LocalDateTime
@@ -70,8 +71,8 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
         submissionFileType = FATCA4
       )
 
-    val fatcaCardDetail1   = FatcaVoidCardDetail("GB2026GB-ABC1234567890-FATCA_003", "30 May 2027", "11:59", FATCA1)
-    val fatcaCardDetail2   = FatcaVoidCardDetail("GB2026GB-ABC1234567890-FATCA_003_2", "28 May 2027", "09:25", FATCA4)
+    val fatcaCardDetail1   = FatcaVoidCardDetail("GB2026GB-ABC1234567890-FATCA_003", uploadDateTime1.formatTimeSent, FATCA1)
+    val fatcaCardDetail2   = FatcaVoidCardDetail("GB2026GB-ABC1234567890-FATCA_003_2", uploadDateTime2.formatTimeSent, FATCA4)
     val fatcaVoidCardModel = FatcaVoidCardModel(Seq(fatcaCardDetail1, fatcaCardDetail2))
 
     val submissions = List(report1, report2)

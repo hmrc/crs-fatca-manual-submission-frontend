@@ -20,8 +20,8 @@ import connectors.FatcaVoidConnector
 import models.SubmissionsConstants.FATCA
 import models.{FatcaVoidCardDetail, FatcaVoidCardModel, SubmittedReport, VoidReportDetails}
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.DateTimeFormats.*
 
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import scala.concurrent.Future
 
@@ -47,8 +47,7 @@ class VoidService @Inject() (fatcaConnector: FatcaVoidConnector) {
       report =>
         FatcaVoidCardDetail(
           messageRefId = report.messageRefId,
-          dateSent = report.uploadDateTime.toLocalDate.format(DateTimeFormatter.ofPattern("d MMMM yyyy")),
-          dateSentTime = report.uploadDateTime.toLocalTime.format(DateTimeFormatter.ofPattern("HH:mm")),
+          dateTimeSent = report.uploadDateTime.formatTimeSent,
           submissionFileType = report.submissionFileType
         )
     }
