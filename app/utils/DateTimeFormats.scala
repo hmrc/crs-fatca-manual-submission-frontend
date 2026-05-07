@@ -19,7 +19,7 @@ package utils
 import play.api.i18n.Lang
 
 import java.time.format.DateTimeFormatter
-import java.time.{LocalDateTime, ZoneId, ZoneOffset}
+import java.time.{LocalDateTime, ZoneId, ZoneOffset, ZonedDateTime}
 
 object DateTimeFormats {
 
@@ -40,18 +40,20 @@ object DateTimeFormats {
 
   extension (t: LocalDateTime)
 
+    private def utcToBritshTime(ldt: LocalDateTime): ZonedDateTime =
+      val zone = ZoneId.of("Europe/London")
+      t.atZone(ZoneOffset.UTC).withZoneSameInstant(zone)
+
     def formatTimeSent: String =
       cardSummaryTimeSentFormat
-        .format(t.atZone(ZoneOffset.UTC).withZoneSameInstant(zone))
+        .format(utcToBritshTime(t))
         .replace("AM", "am")
         .replace("PM", "pm")
 
     def formatTimeVoidSubmitted: String =
       voidTimeSubmittedFormat
-        .format(t.atZone(ZoneOffset.UTC).withZoneSameInstant(zone))
+        .format(utcToBritshTime(t))
         .replace("AM", "am")
         .replace("PM", "pm")
-
-  private val zone = ZoneId.of("Europe/London")
 
 }
