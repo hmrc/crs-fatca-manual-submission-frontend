@@ -66,14 +66,14 @@ class DateTimeFormatsSpec extends AnyFreeSpec with Matchers {
 
   ".formatTimeVoidSubmitted" - {
     "must format a morning datetime" in {
-      LocalDateTime.of(2024, 3, 15, 9, 30).formatTimeVoidSubmitted mustEqual "On 15 March 2024 at 9:30am"
+      LocalDateTime.of(2024, 3, 15, 9, 30).formatTimeVoidSubmitted mustEqual "on 15 March 2024 at 9:30am"
     }
 
     "must format an afternoon datetime" in {
-      LocalDateTime.of(2024, 3, 15, 14, 30).formatTimeVoidSubmitted mustEqual "On 15 March 2024 at 2:30pm"
+      LocalDateTime.of(2024, 3, 15, 14, 30).formatTimeVoidSubmitted mustEqual "on 15 March 2024 at 2:30pm"
     }
     "must convert UTC to BST (UTC+1) in summer" in {
-      LocalDateTime.of(2024, 7, 1, 13, 0).formatTimeVoidSubmitted mustEqual "On 1 July 2024 at 2:00pm"
+      LocalDateTime.of(2024, 7, 1, 13, 0).formatTimeVoidSubmitted mustEqual "on 1 July 2024 at 2:00pm"
     }
   }
 }
