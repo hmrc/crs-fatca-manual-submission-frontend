@@ -19,7 +19,7 @@ package utils
 import play.api.i18n.Lang
 
 import java.time.format.DateTimeFormatter
-import java.time.{LocalDateTime, ZoneId}
+import java.time.{LocalDateTime, ZoneId, ZoneOffset}
 
 object DateTimeFormats {
 
@@ -42,13 +42,13 @@ object DateTimeFormats {
 
     def formatTimeSent: String =
       cardSummaryTimeSentFormat
-        .format(t.atZone(zone))
+        .format(t.atZone(ZoneOffset.UTC).withZoneSameInstant(zone))
         .replace("AM", "am")
         .replace("PM", "pm")
 
     def formatTimeVoidSubmitted: String =
       voidTimeSubmittedFormat
-        .format(t.atZone(zone))
+        .format(t.atZone(ZoneOffset.UTC).withZoneSameInstant(zone))
         .replace("AM", "am")
         .replace("PM", "pm")
 
