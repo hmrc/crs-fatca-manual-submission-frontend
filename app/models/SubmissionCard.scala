@@ -18,9 +18,9 @@ package models
 
 import models.SubmissionsConstants.{FATCA3, SubmissionFileType, SubmissionType}
 import play.twirl.api.Html
+import utils.DateTimeFormats.formatTimeSent
 
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 case class SubmissionCard(isVoided: Option[Boolean],
                           messageRefId: String,
@@ -32,6 +32,6 @@ case class SubmissionCard(isVoided: Option[Boolean],
   val title: String = (if fileType.value.contains("CRS") then "CRS" else "FATCA") + " " + submissionType.value
 
   val summaryKey: String                = fileType.cardSummaryKey
-  private val formattedDateTime: String = timeSent.format(DateTimeFormatter.ofPattern("d MMMM yyyy 'at' h:mma"))
+  private val formattedDateTime: String = timeSent.formatTimeSent
   val summaryValue: Html                = if fileType != FATCA3 then Html(s"MessageRefId: $messageRefId <br> $formattedDateTime") else Html(formattedDateTime)
 }
