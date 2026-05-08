@@ -39,18 +39,21 @@
     @para("informationVoided.para.1", Seq(model.emailString))
 
     @heading(messages("informationVoided.subheading"), "m", "h2")
-    @{if(model.messageRefIds.size > 1) {
-        para("informationVoided.para.3",classes ="govuk-!-margin-bottom-2", args = Seq(model.fiName))
-    }else{
-        para("informationVoided.para.2",classes ="govuk-!-margin-bottom-2", args = Seq(model.fiName))
-    }}
-    <ol class="govuk-list govuk-list--bullet">
-        @for(messageRefId <- model.messageRefIds) {
-            <li>@messageRefId</li>
-        }
-    </ol>
+
+    @if(model.messageRefIds.size > 1) {
+        @para("informationVoided.para.3", classes = "govuk-!-margin-bottom-2", args = Seq(model.fiName))
+        <ol class="govuk-list govuk-list--bullet">
+            @for(messageRefId <- model.messageRefIds) {
+                <li>@messageRefId</li>
+            }
+        </ol>
+    } else {
+        @para("informationVoided.para.2", classes = "govuk-!-margin-bottom-2", args = Seq(model.fiName))
+        @para(model.messageRefIds.head)
+    }
+
     <div class="govuk-!-padding-top-2">
         @link(routes.ReadSubmissionDataController.onPageLoad(model.fiId, model.fiName).url, messages("informationVoided.link.1", model.fiName), id = Some("submitted-reports-link"), paraClasses = "govuk-!-margin-bottom-1")
-        @link(appConfig.manageReportsLink,"Back to manage your CRS and FATCA reports", id = Some("manage-reports-link"))
+        @link(appConfig.manageReportsLink, "Back to manage your CRS and FATCA reports", id = Some("manage-reports-link"))
     </div>
-    }
+}
