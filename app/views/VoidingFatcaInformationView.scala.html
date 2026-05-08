@@ -50,7 +50,6 @@
                             @{fatcaCardModel.messageRefId}
                             <br/>
                             @{fatcaCardModel.dateTimeSent}
-
                         </dd>
                     </div>
                 }
@@ -75,7 +74,7 @@
         )
 
         @govukButton(
-            ButtonViewModel(messages("site.continue"))
+            ButtonViewModel(messages("site.continue")).withAttribute("id","submit")
         )
     }
 }
