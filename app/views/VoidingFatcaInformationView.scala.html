@@ -49,7 +49,7 @@
                             @messages("voidingFatcaInformation.messageRefId")
                             @{fatcaCardModel.messageRefId}
                             <br/>
-                            @{fatcaCardModel.dateTimeSent}
+                            @messages("voidingFatcaInformation.sent", fatcaCardModel.dateSent, fatcaCardModel.dateSentTime)
 
                         </dd>
                     </div>
@@ -75,7 +75,7 @@
         )
 
         @govukButton(
-            ButtonViewModel(messages("site.continue"))
+            ButtonViewModel(messages("site.continue")).withAttribute("id","submit")
         )
     }
 }
