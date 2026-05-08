@@ -57,6 +57,6 @@
 
     <div class="govuk-!-padding-top-2">
         @link(routes.ReadSubmissionDataController.onPageLoad(model.fiId, model.fiName).url, messages("informationVoided.link.1", model.fiName), id = Some("submitted-reports-link"), paraClasses = "govuk-!-margin-bottom-1")
-        @link(appConfig.manageReportsLink,"Back to manage your CRS and FATCA reports", id = Some("manage-reports-link"))
+        @link(appConfig.manageReportsLink, "Back to manage your CRS and FATCA reports", id = Some("manage-reports-link"))
     </div>
-    }
+}
