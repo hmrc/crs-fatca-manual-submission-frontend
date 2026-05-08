@@ -48,8 +48,11 @@
             }
         </ol>
     } else {
-        @para("informationVoided.para.2", classes = "govuk-!-margin-bottom-2", args = Seq(model.fiName))
-        @para(model.messageRefIds.head)
+        <p class="govuk-body govuk-!-margin-bottom-2">
+            @messages("informationVoided.para.2", model.fiName)
+            <br>
+            @model.messageRefIds.head
+        </p>
     }
 
     <div class="govuk-!-padding-top-2">
