@@ -47,7 +47,7 @@ class InformationVoidedControllerSpec extends SpecBase {
   private val cardDetail1        = FatcaVoidCardDetail("GB2026GB-ABC1234567890-FATCA_003", "Sent 30 May 2027 at 11:59", FATCA1)
   private val cardDetail2        = FatcaVoidCardDetail("GB2026GB-ABC1234567890-FATCA_003_2", "Sent 28 May 2027 at 09:25", FATCA4)
   private val fatcaVoidCardModel = FatcaVoidCardModel(Seq(cardDetail1, cardDetail2))
-  private val messRefIds         = fatcaVoidCardModel.cardDetailList.map(_.messageRefId)
+  private val messRefIds         = fatcaVoidCardModel.cardDetailList.map(_.messageRefId).reverse
 
   private val infoVoidedViewModel = InformationVoidedViewModel(
     fiName = fiName,
