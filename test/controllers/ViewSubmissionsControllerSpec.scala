@@ -29,17 +29,20 @@ import play.api.test.Helpers.*
 import services.SubmissionHistoryService
 import views.html.ViewSubmissionsView
 
+import java.time.LocalDate
+
 class ViewSubmissionsControllerSpec extends SpecBase {
 
   private val submissionCard: SubmissionCard = SubmissionCard(
     isVoided = Some(false),
     messageRefId = "ref1",
+    reportingYear = 2016,
     originalMessageRefId = "ref1",
     timeSent = now,
     fileType = FATCA1,
     submissionType = SubmissionsConstants.XML
   )
-
+  private val currentYear = LocalDate.now().getYear
   private val mappedCards: Map[String, List[SubmissionCard]] = Map("ref1" -> List(submissionCard))
   val service: SubmissionHistoryService                      = mock[SubmissionHistoryService]
   "ViewSubmissions Controller" - {
@@ -51,14 +54,14 @@ class ViewSubmissionsControllerSpec extends SpecBase {
         .build()
       implicit val config: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
       running(application) {
-        val request = FakeRequest(GET, routes.ViewSubmissionsController.onPageLoad(2018, "fiId", "fiName").url)
-        when(service.prepareSubmissionHistoryCards(any(), eqTo(2018))).thenReturn(mappedCards)
+        val request = FakeRequest(GET, routes.ViewSubmissionsController.onPageLoad(2016, "fiId", "fiName").url)
+        when(service.prepareSubmissionHistoryCards(any(), eqTo(2016))).thenReturn(mappedCards)
         val result = route(application, request).value
 
         val view = application.injector.instanceOf[ViewSubmissionsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(mappedCards, 2018, "fiName")(request, messages(application)).toString
+        contentAsString(result) mustEqual view(mappedCards, 2016, "fiName", (currentYear - 12 to currentYear ).toList, "fiId")(request, messages(application)).toString
       }
     }
 

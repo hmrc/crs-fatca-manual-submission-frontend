@@ -74,7 +74,7 @@ trait SpecBase
     submissionStatus = PASSED,
     uploadDateTime = now,
     regime = FATCA,
-    reportingYear = "2018",
+    reportingYear = "2016",
     submissionCaseId = "123",
     submissionType = SubmissionsConstants.XML,
     submissionFileType = FATCA1,

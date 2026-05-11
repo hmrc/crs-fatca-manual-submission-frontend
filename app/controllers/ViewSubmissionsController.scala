@@ -50,7 +50,6 @@ class ViewSubmissionsController @Inject() (
         currentYear = LocalDate.now().getYear
         submissionYears = (currentYear - 12 to currentYear).toList.sorted
       } yield {
-        logger.info(s"submission years = ${submissionYears.toString()}")
         Ok(view(cards, chosenYear, fiName ,submissionYears, fiId))
       })
         .getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
