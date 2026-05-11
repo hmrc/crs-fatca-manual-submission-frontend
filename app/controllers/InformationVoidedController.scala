@@ -57,7 +57,7 @@ class InformationVoidedController @Inject() (
                 val infoVoidedViewModel = InformationVoidedViewModel(
                   fiName = details.fiName,
                   dateTime = LocalDateTime.now(clock).formatTimeVoidSubmitted,
-                  messageRefIds = details.cardModel.cardDetailList.map(_.messageRefId),
+                  messageRefIds = details.cardModel.cardDetailList.map(_.messageRefId).reverse,
                   emailString = formatEmailList(emails),
                   fiId = details.fiId
                 )
