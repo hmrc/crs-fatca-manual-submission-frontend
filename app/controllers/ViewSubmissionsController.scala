@@ -46,12 +46,10 @@ class ViewSubmissionsController @Inject() (
     implicit request =>
       (for {
         submissions <- request.userData.get(SubmissionsHistoryPage)
-        cards = service.prepareSubmissionHistoryCards(submissions, chosenYear)
-        currentYear = LocalDate.now().getYear
+        cards           = service.prepareSubmissionHistoryCards(submissions, chosenYear)
+        currentYear     = LocalDate.now().getYear
         submissionYears = (currentYear - 12 to currentYear).toList.sorted
-      } yield {
-        Ok(view(cards, chosenYear, fiName ,submissionYears, fiId))
-      })
+      } yield Ok(view(cards, chosenYear, fiName, submissionYears, fiId)))
         .getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
 
   }

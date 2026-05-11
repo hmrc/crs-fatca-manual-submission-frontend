@@ -35,11 +35,7 @@ class DataRetrievalActionImpl @Inject() (
     given hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
     userDataConnector.get().map {
       data =>
-        OptionalDataRequest(request.request,
-                            request.userId,
-                            Some(data.getOrElse(UserData(request.fatcaId))),
-                            request.fatcaId
-        )
+        OptionalDataRequest(request.request, request.userId, Some(data.getOrElse(UserData(request.fatcaId))), request.fatcaId)
     }
 
 }

@@ -42,7 +42,7 @@ class ViewSubmissionsControllerSpec extends SpecBase {
     fileType = FATCA1,
     submissionType = SubmissionsConstants.XML
   )
-  private val currentYear = LocalDate.now().getYear
+  private val currentYear                                    = LocalDate.now().getYear
   private val mappedCards: Map[String, List[SubmissionCard]] = Map("ref1" -> List(submissionCard))
   val service: SubmissionHistoryService                      = mock[SubmissionHistoryService]
   "ViewSubmissions Controller" - {
@@ -61,7 +61,9 @@ class ViewSubmissionsControllerSpec extends SpecBase {
         val view = application.injector.instanceOf[ViewSubmissionsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(mappedCards, 2016, "fiName", (currentYear - 12 to currentYear ).toList, "fiId")(request, messages(application)).toString
+        contentAsString(result) mustEqual view(mappedCards, 2016, "fiName", (currentYear - 12 to currentYear).toList, "fiId")(request,
+                                                                                                                              messages(application)
+        ).toString
       }
     }
 
