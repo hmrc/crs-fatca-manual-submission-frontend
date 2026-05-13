@@ -14,27 +14,30 @@
  * limitations under the License.
  *@
 
-@import views.html.components.{Heading, ParagraphMessageWithLink}
+@import views.html.components.{Heading, ParagraphMessageWithLink, PaginationWithYear}
 @import config.FrontendAppConfig
+
 @this(
         layout: templates.Layout,
         govukButton: GovukButton,
         paragraphMessageWithLink: ParagraphMessageWithLink,
-        heading: components.Heading
+        heading: components.Heading,
+        pagi:    components.PaginationWithYear
 )
 
 
-@(cards: Map[String, List[SubmissionCard]], year: Int, fiName: String)(implicit request: Request[_], messages: Messages, config:FrontendAppConfig)
+@(cards: Map[String, List[SubmissionCard]], chosenYear: Int, fiName: String , past12SubmissionYears: List[Int] , fiId: String)(implicit request: Request[_], messages: Messages, config:FrontendAppConfig)
 
 
-@layout(pageTitle = titleNoForm(title = messages("viewSubmissions.title", fiName, year.toString))) {
-@heading(messages("viewSubmissions.title", fiName, year.toString))
+@layout(pageTitle = titleNoForm(title = messages("viewSubmissions.title", chosenYear.toString))) {
+@heading(messages("viewSubmissions.heading", fiName, chosenYear.toString))
 @paragraphMessageWithLink(message1 = Some(messages("viewSubmissions.body.1")),
     linkMessage = messages("viewSubmissions.body.link.1"),
     message2 = Some(messages("viewSubmissions.body.2")),
     linkUrl = config.fileUploadUrl, secondaryLinkUrl = Some(controllers.routes.JourneyRecoveryController.onPageLoad().url),
     secondaryLinkMessage = Some(messages("viewSubmissions.body.link.2")), linkFullStop = true)
-<h2 class="govuk-heading-l" style="font-weight: bold;  margin-top: 2rem;"> @messages("viewSubmissions.crs.submit", year.toString)</h2>
+@pagi(past12SubmissionYears, chosenYear, fiId, fiName)
+@heading(headingContent= messages("viewSubmissions.crs.submit", chosenYear.toString), size= "m" , level = "h2")
     @if(cards.values.flatten.exists(_.fileType.value.contains("CRS"))) {
         @for((originalMessageRefId, cardList) <- cards) {
             @if(cardList.exists(_.fileType.value.contains("CRS"))) {
@@ -64,8 +67,7 @@
     } else {
         <h2  class="govuk-body">@messages("viewSubmissions.noReport.text")</h2>
     }
-    <h2 class="govuk-heading-l" style="font-weight: bold;
-        margin-top: 2rem;"> @messages("viewSubmissions.fatca.submit", year.toString)</h2>
+@heading(headingContent= messages("viewSubmissions.fatca.submit", chosenYear.toString), size= "m" , level = "h2")
     @if(cards.values.flatten.exists(_.fileType.value.contains("FATCA"))) {
         @for((originalMessageRefId, cardList) <- cards) {
             @if(cardList.exists(_.fileType.value.contains("FATCA"))) {

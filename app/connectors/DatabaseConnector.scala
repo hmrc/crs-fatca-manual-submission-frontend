@@ -19,9 +19,9 @@ package connectors
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import models.ServiceErrors.Downstream_Error
+import models.UserData
 import play.api.Logging
 import play.api.http.Status.*
-import play.api.libs.json.JsValue
 import uk.gov.hmrc.http.*
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import uk.gov.hmrc.http.client.HttpClientV2
@@ -31,14 +31,14 @@ import scala.concurrent.{ExecutionContext, Future}
 class DatabaseConnector @Inject() (client: HttpClientV2, config: FrontendAppConfig)(implicit ec: ExecutionContext) extends Logging {
   private val url = config.crsFatcaManualBackendUrl
 
-  def get()(implicit headerCarrier: HeaderCarrier): Future[Option[JsValue]] =
+  def get()(implicit headerCarrier: HeaderCarrier): Future[Option[UserData]] =
     client
       .get(url"$url/crs-fatca-manual-submission/submissionList")
       .execute[HttpResponse](using readRaw, ec)
       .flatMap {
         response =>
           response.status match {
-            case OK        => Future.successful(Some(response.json))
+            case OK        => Future.successful(Some(response.json.as[UserData]))
             case NOT_FOUND => Future.successful(None)
             case _         => Future.failed(Downstream_Error)
           }

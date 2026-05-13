@@ -17,7 +17,7 @@
 package utils
 
 import generators.Generators
-import models.UserAnswers
+import models.UserData
 import org.scalatest.TryValues.convertTryToSuccessOrFailure
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Seconds, Span}
@@ -30,10 +30,10 @@ import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mongo.test.DefaultPlayMongoRepositorySupport
 
-trait ISpecBase extends GuiceOneServerPerSuite with DefaultPlayMongoRepositorySupport[UserAnswers] with ScalaFutures with WireMockHelper with Generators {
+trait ISpecBase extends GuiceOneServerPerSuite with DefaultPlayMongoRepositorySupport[UserData] with ScalaFutures with WireMockHelper with Generators {
 
   val userAnswersId: String = "internalId"
-  def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
+  def emptyUserAnswers: UserData = UserData(userAnswersId)
 
   val repository: SessionRepository = app.injector.instanceOf[SessionRepository]
   implicit val hc: HeaderCarrier    = HeaderCarrier()
@@ -54,10 +54,10 @@ trait ISpecBase extends GuiceOneServerPerSuite with DefaultPlayMongoRepositorySu
     .configure(config)
     .build()
 
-  implicit class UserAnswersExtension(userAnswers: UserAnswers) {
+  implicit class UserAnswersExtension(userData: UserData) {
 
-    def withPage[T](page: Settable[T], value: T)(implicit writes: Writes[T]): UserAnswers =
-      userAnswers.set(page, value).success.value
+    def withPage[T](page: Settable[T], value: T)(implicit writes: Writes[T]): UserData =
+      userData.set(page, value).success.value
 
   }
 

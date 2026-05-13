@@ -74,7 +74,7 @@ class InformationVoidedControllerSpec extends SpecBase {
         VoidReportDetails(fatcaVoidCardModel, fiName, report1.fiId, year)
       )
 
-      val application = applicationBuilder(userAnswers = Some(userAnswersWithSubmissions))
+      val application = applicationBuilder(userData = Some(userAnswersWithSubmissions))
         .overrides(
           inject.bind[VoidService].toInstance(mockVoidService),
           inject.bind[Clock].toInstance(fixedClock)
@@ -96,7 +96,7 @@ class InformationVoidedControllerSpec extends SpecBase {
       val mockVoidService = mock[VoidService]
       when(mockVoidService.getVoidFatcaReportDetails(eqTo(originalMessageId), any())) thenReturn None
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+      val application = applicationBuilder(userData = Some(emptyUserAnswers))
         .overrides(inject.bind[VoidService].toInstance(mockVoidService))
         .build()
 

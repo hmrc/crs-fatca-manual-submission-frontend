@@ -17,6 +17,7 @@
 package connectors
 
 import models.ServiceErrors.Downstream_Error
+import models.UserData
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers.{a, include, must, mustBe, mustEqual}
 import play.api.http.Status.*
@@ -41,8 +42,8 @@ class DatabaseConnectorISpec extends AnyFreeSpec with ISpecBase {
         stubGetResponse(url, OK, jsValue.toString)
 
         val result = Await.result(connector.get(), 2.seconds)
-
-        result mustBe Some(jsValue)
+        val expectedResult: UserData = jsValue.as[UserData]
+        result mustBe Some(expectedResult)
       }
 
       "should return None when mongo return no data" in {

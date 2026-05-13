@@ -67,20 +67,20 @@ class SubmissionsHistoryServiceSpec extends SpecBase {
     running(app) {
 
       "return empty map when submissions list is empty" in {
-        val result = service.prepareSubmissionHistoryCards(List(), now.getYear)
+        val result = service.prepareSubmissionHistoryCards(List(), 2016)
         result mustEqual Map()
       }
 
       "filter out submissions with status other than PASSED" in {
         val failedReport = submittedReport.copy(submissionStatus = FAILED)
-        val result       = service.prepareSubmissionHistoryCards(List(failedReport, submittedReport), now.getYear)
+        val result       = service.prepareSubmissionHistoryCards(List(failedReport, submittedReport), 2016)
         result.size mustEqual 1
         result("ref1").length mustEqual 1
       }
 
       "filter out submissions from different years" in {
-        val oldReport = submittedReport.copy(uploadDateTime = lastYear)
-        val result    = service.prepareSubmissionHistoryCards(List(oldReport, submittedReport), now.getYear)
+        val oldReport = submittedReport.copy(reportingYear = lastYear.getYear.toString)
+        val result    = service.prepareSubmissionHistoryCards(List(oldReport, submittedReport), 2016)
         result.size mustEqual 1
         result("ref1").length mustEqual 1
       }
@@ -88,14 +88,14 @@ class SubmissionsHistoryServiceSpec extends SpecBase {
       "group submissions by originalMessageRefId" in {
         val report1 = submittedReport.copy(messageRefId = "msg1", originalMessageRefId = Some("orig1"))
         val report2 = submittedReport.copy(messageRefId = "msg2", originalMessageRefId = Some("orig1"))
-        val result  = service.prepareSubmissionHistoryCards(List(report1, report2), now.getYear)
+        val result  = service.prepareSubmissionHistoryCards(List(report1, report2), 2016)
         result.size mustEqual 1
         result("orig1").length mustEqual 2
       }
 
       "use messageRefId as key when originalMessageRefId is None" in {
         val report = submittedReport.copy(messageRefId = "msg1", originalMessageRefId = None)
-        val result = service.prepareSubmissionHistoryCards(List(report), now.getYear)
+        val result = service.prepareSubmissionHistoryCards(List(report), 2016)
         result.keys.toList must contain("msg1")
       }
 
@@ -104,7 +104,7 @@ class SubmissionsHistoryServiceSpec extends SpecBase {
         val report2 = submittedReport.copy(messageRefId = "msg2", uploadDateTime = now)
         val report3 = submittedReport.copy(messageRefId = "msg3", uploadDateTime = now.minusHours(1))
 
-        val result = service.prepareSubmissionHistoryCards(List(report1, report2, report3), now.getYear)
+        val result = service.prepareSubmissionHistoryCards(List(report1, report2, report3), 2016)
 
         val allCards = result.values.flatten.toList
 
@@ -121,7 +121,7 @@ class SubmissionsHistoryServiceSpec extends SpecBase {
           submissionFileType = FATCA1,
           submissionType = SubmissionsConstants.XML
         )
-        val result = service.prepareSubmissionHistoryCards(List(report), now.getYear)
+        val result = service.prepareSubmissionHistoryCards(List(report), 2016)
 
         val card = result("ref123").head
         card.isVoided mustBe Some(true)
@@ -137,7 +137,7 @@ class SubmissionsHistoryServiceSpec extends SpecBase {
           originalMessageRefId = Some("orig1"),
           submissionFileType = CRS701
         )
-        val result = service.prepareSubmissionHistoryCards(List(report, submittedReport), now.getYear)
+        val result = service.prepareSubmissionHistoryCards(List(report, submittedReport), 2016)
 
         result("orig1").head.fileType mustEqual CRSAdditional701
       }
@@ -148,15 +148,15 @@ class SubmissionsHistoryServiceSpec extends SpecBase {
           originalMessageRefId = None,
           submissionFileType = CRS701
         )
-        val result = service.prepareSubmissionHistoryCards(List(report), now.getYear)
+        val result = service.prepareSubmissionHistoryCards(List(report), 2016)
 
         result("msg1").head.fileType mustEqual CRS701
       }
 
       "handle multiple submissions with different years correctly" in {
-        val currentYearReport = submittedReport.copy(uploadDateTime = now)
-        val nextYearReport    = submittedReport.copy(uploadDateTime = nextYear)
-        val lastYearReport    = submittedReport.copy(uploadDateTime = lastYear)
+        val currentYearReport = submittedReport.copy(reportingYear = now.getYear.toString)
+        val nextYearReport    = submittedReport.copy(reportingYear = nextYear.getYear.toString)
+        val lastYearReport    = submittedReport.copy(reportingYear = lastYear.getYear.toString)
 
         val result = service.prepareSubmissionHistoryCards(
           List(currentYearReport, nextYearReport, lastYearReport),
@@ -187,7 +187,7 @@ class SubmissionsHistoryServiceSpec extends SpecBase {
 
         val result = service.prepareSubmissionHistoryCards(
           List(report1, report2, report3),
-          now.getYear
+          2016
         )
 
         result.size mustEqual 2

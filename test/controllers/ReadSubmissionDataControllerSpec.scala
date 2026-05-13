@@ -38,7 +38,7 @@ class ReadSubmissionDataControllerSpec extends SpecBase {
 
     "must redirect to view submissions page upon successful call to retrieve submission history" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+      val application = applicationBuilder(userData = Some(emptyUserAnswers))
         .overrides(bind[SubmissionHistoryService].toInstance(mockService))
         .build()
 
@@ -55,7 +55,7 @@ class ReadSubmissionDataControllerSpec extends SpecBase {
     }
     "must return Internal Server Error and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+      val application = applicationBuilder(userData = Some(emptyUserAnswers))
         .overrides(
           bind[SubmissionHistoryService].toInstance(mockService)
         )

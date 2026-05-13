@@ -16,7 +16,7 @@
 
 package controllers.actions
 
-import models.UserAnswers
+import models.UserData
 import models.requests.{DataRequest, OptionalDataRequest}
 import play.api.mvc.ActionTransformer
 
@@ -26,8 +26,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class DataCreationActionImpl @Inject() (implicit val executionContext: ExecutionContext) extends DataCreationAction {
 
   override protected def transform[A](request: OptionalDataRequest[A]): Future[DataRequest[A]] =
-    request.userAnswers match {
-      case None       => Future.successful(DataRequest(request.request, request.userId, UserAnswers(request.userId), request.fatcaId))
+    request.userData match {
+      case None       => Future.successful(DataRequest(request.request, request.userId, UserData(request.userId), request.fatcaId))
       case Some(data) => Future.successful(DataRequest(request.request, request.userId, data, request.fatcaId))
     }
 }
