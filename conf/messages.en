@@ -81,3 +81,17 @@ voidingFatcaInformation.sent = {0} at {1}
 voidingFatcaInformation.warning = If you void information that you still need to report on, then you must send a new report. Missing reports could result in a penalty for {0}.
 voidingFatcaInformation.error.required = Select yes if you are sure you want to void this FATCA information
 voidingFatcaInformation.form.heading = Are you sure you want to void this FATCA information?
+
+crs.caption = CRS elections for {0}
+
+crsContracts.title = Is the financial institution excluding cash value insurance contracts or annuity contracts from their reporting for CRS?
+crsContracts.heading = Is {0} excluding cash value insurance contracts or annuity contracts from their reporting for CRS?
+crsContracts.checkYourAnswersLabel = CRSContracts
+crsContracts.error.required = Select yes if the financial institution is excluding cash value insurance contracts or annuity contracts from their reporting for CRS
+crsContracts.change.hidden = CRSContracts
+
+crsDormantAccounts.title = Is the financial institution treating dormant accounts as not being reportable accounts for CRS?
+crsDormantAccounts.heading = Is {0} treating dormant accounts as not being reportable accounts for CRS?
+crsDormantAccounts.checkYourAnswersLabel = CRSDormantAccounts
+crsDormantAccounts.error.required = Select yes if the financial institution is treating dormant accounts as not being reportable accounts for CRS
+crsDormantAccounts.change.hidden = CRSDormantAccounts

@@ -26,3 +26,13 @@ GET        /fatca-void/voiding-fatca-information         controllers.VoidingFatc
 POST       /fatca-void/voiding-fatca-information         controllers.VoidingFatcaInformationController.onSubmit(originalMessageRefId: String)
 
 GET        /fatca-void/information-voided                controllers.InformationVoidedController.onPageLoad(originalMessageRefId: String)
+
+GET        /manual/elections/crs/contracts                        controllers.CRSContractsController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/elections/crs/contracts                        controllers.CRSContractsController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/elections/crs/change-contracts                  controllers.CRSContractsController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/elections/crs/change-contracts                  controllers.CRSContractsController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/elections/crs/dormant-accounts                        controllers.CRSDormantAccountsController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/elections/crs/dormant-accounts                        controllers.CRSDormantAccountsController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/elections/crs/change-dormant-accounts                  controllers.CRSDormantAccountsController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/elections/crs/change-dormant-accounts                  controllers.CRSDormantAccountsController.onSubmit(mode: Mode = CheckMode)
