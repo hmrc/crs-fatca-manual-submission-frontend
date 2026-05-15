@@ -1,28 +1,39 @@
 # microservice specific routes
 
-->          /hmrc-frontend                               hmrcfrontend.Routes
+->          /hmrc-frontend                                         hmrcfrontend.Routes
 
-GET         /                                            controllers.IndexController.onPageLoad()
+GET         /                                                      controllers.IndexController.onPageLoad()
 
-GET         /assets/*file                                controllers.Assets.versioned(path="/public", file: Asset)
+GET         /assets/*file                                          controllers.Assets.versioned(path="/public", file: Asset)
 
-GET         /refresh-session                             controllers.KeepAliveController.keepAlive()
+GET         /refresh-session                                       controllers.KeepAliveController.keepAlive()
 
-GET         /there-is-a-problem                          controllers.JourneyRecoveryController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)
+GET         /there-is-a-problem                                    controllers.JourneyRecoveryController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)
 
-GET         /check-your-answers                          controllers.CheckYourAnswersController.onPageLoad()
+GET         /check-your-answers                                    controllers.CheckYourAnswersController.onPageLoad()
 
-GET         /account/sign-out-survey                     controllers.auth.AuthController.signOut()
-GET         /account/sign-out                            controllers.auth.AuthController.signOutNoSurvey()
-GET         /account/signed-out                          controllers.auth.SignedOutController.onPageLoad()
+GET         /account/sign-out-survey                               controllers.auth.AuthController.signOut()
+GET         /account/sign-out                                      controllers.auth.AuthController.signOutNoSurvey()
+GET         /account/signed-out                                    controllers.auth.SignedOutController.onPageLoad()
 
-GET         /unauthorised                                controllers.UnauthorisedController.onPageLoad()
+GET         /unauthorised                                          controllers.UnauthorisedController.onPageLoad()
 
-GET        /read-submission-data                         controllers.ReadSubmissionDataController.onPageLoad(fiId: String, fiName: String)
+GET         /read-submission-data                                  controllers.ReadSubmissionDataController.onPageLoad(fiId: String, fiName: String)
 
-GET        /manage-reports-for-:year                     controllers.ViewSubmissionsController.onPageLoad(year: Int, fiId: String , fiName:String)
+GET         /manage-reports-for-:year                              controllers.ViewSubmissionsController.onPageLoad(year: Int, fiId: String , fiName:String)
 
-GET        /fatca-void/voiding-fatca-information         controllers.VoidingFatcaInformationController.onPageLoad(originalMessageRefId: String)
-POST       /fatca-void/voiding-fatca-information         controllers.VoidingFatcaInformationController.onSubmit(originalMessageRefId: String)
+GET         /fatca-void/voiding-fatca-information                  controllers.VoidingFatcaInformationController.onPageLoad(originalMessageRefId: String)
+POST        /fatca-void/voiding-fatca-information                  controllers.VoidingFatcaInformationController.onSubmit(originalMessageRefId: String)
 
-GET        /fatca-void/information-voided                controllers.InformationVoidedController.onPageLoad(originalMessageRefId: String)
+GET         /fatca-void/information-voided                         controllers.InformationVoidedController.onPageLoad(originalMessageRefId: String)
+
+GET         /elections/fatca/us-treasury-regulations               controllers.elections.IsUsTreasuryRegulatedController.onPageLoad(mode: Mode = NormalMode, year: Int ?= 2027)
+POST        /elections/fatca/us-treasury-regulations               controllers.elections.IsUsTreasuryRegulatedController.onSubmit(mode: Mode = NormalMode, year: Int ?= 2027)
+GET         /elections/fatca/change/us-treasury-regulations        controllers.elections.IsUsTreasuryRegulatedController.onPageLoad(mode: Mode = CheckMode, year: Int ?= 2027)
+POST        /elections/fatca/change/us-treasury-regulations        controllers.elections.IsUsTreasuryRegulatedController.onSubmit(mode: Mode = CheckMode, year: Int ?= 2027)
+
+GET         /elections/fatca/thresholds                            controllers.elections.IsApplyingThresholdsController.onPageLoad(mode: Mode = NormalMode, year: Int ?= 2027)
+POST        /elections/fatca/thresholds                            controllers.elections.IsApplyingThresholdsController.onSubmit(mode: Mode = NormalMode, year: Int ?= 2027)
+GET         /elections/fatca/change/thresholds                     controllers.elections.IsApplyingThresholdsController.onPageLoad(mode: Mode = CheckMode, year: Int ?= 2027)
+POST        /elections/fatca/change/thresholds                     controllers.elections.IsApplyingThresholdsController.onSubmit(mode: Mode = CheckMode, year: Int ?= 2027)
+

@@ -27,7 +27,9 @@ import models._
 class Navigator @Inject() () {
 
   private val normalRoutes: Page => UserData => Call = {
-    case _ => _ => routes.IndexController.onPageLoad()
+    case IsUsTreasuryRegulatedPage => _ => controllers.elections.routes.IsApplyingThresholdsController.onPageLoad(NormalMode)
+    case IsApplyingThresholdsPage  => _ => routes.JourneyRecoveryController.onPageLoad()
+    case _                         => _ => routes.IndexController.onPageLoad()
   }
 
   private val checkRouteMap: Page => UserData => Call = {

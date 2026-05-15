@@ -27,7 +27,7 @@ class UnauthorisedControllerSpec extends SpecBase {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userData = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userData = Some(emptyUserData)).build()
 
       running(application) {
         val request = FakeRequest(GET, routes.UnauthorisedController.onPageLoad().url)

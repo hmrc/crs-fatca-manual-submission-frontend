@@ -67,7 +67,7 @@ class InformationVoidedControllerSpec extends SpecBase {
   "InformationVoided Controller" - {
     "must return OK and the correct view for a GET" in {
 
-      val userAnswersWithSubmissions = emptyUserAnswers.withPage(SubmissionsHistoryPage, submissions)
+      val userAnswersWithSubmissions = emptyUserData.withPage(SubmissionsHistoryPage, submissions)
 
       val mockVoidService = mock[VoidService]
       when(mockVoidService.getVoidFatcaReportDetails(eqTo(originalMessageId), any())) thenReturn Some(
@@ -96,7 +96,7 @@ class InformationVoidedControllerSpec extends SpecBase {
       val mockVoidService = mock[VoidService]
       when(mockVoidService.getVoidFatcaReportDetails(eqTo(originalMessageId), any())) thenReturn None
 
-      val application = applicationBuilder(userData = Some(emptyUserAnswers))
+      val application = applicationBuilder(userData = Some(emptyUserData))
         .overrides(inject.bind[VoidService].toInstance(mockVoidService))
         .build()
 
