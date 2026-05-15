@@ -31,7 +31,7 @@ class $className$Controller @Inject()(
 
       val form = formProvider()
       
-      val preparedForm = request.userAnswers.get($className$Page) match {
+      val preparedForm = request.userData.get($className$Page) match {
         case None => form
         case Some(value) => form.fill(value)
       }
@@ -50,7 +50,7 @@ class $className$Controller @Inject()(
 
         value =>
           for {
-            updatedAnswers <- Future.fromTry(request.userAnswers.set($className$Page, value))
+            updatedAnswers <- Future.fromTry(request.userData.set($className$Page, value))
             _              <- sessionRepository.set(updatedAnswers)
           } yield Redirect(navigator.nextPage($className$Page, mode, updatedAnswers))
       )
