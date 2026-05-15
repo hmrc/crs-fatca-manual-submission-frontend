@@ -16,7 +16,6 @@
 
 package viewmodels.checkAnswers
 
-import controllers.routes
 import models.{CheckMode, UserData}
 import pages.CRSThresholdsPage
 import play.api.i18n.Messages
@@ -33,11 +32,11 @@ object CRSThresholdsSummary {
         val value = if (answer) "site.yes" else "site.no"
 
         SummaryListRowViewModel(
-          key = "cRSThresholds.checkYourAnswersLabel",
+          key = "crsThresholds.checkYourAnswersLabel",
           value = ValueViewModel(value),
           actions = Seq(
-            ActionItemViewModel("site.change", routes.CRSThresholdsController.onPageLoad(CheckMode).url)
-              .withVisuallyHiddenText(messages("cRSThresholds.change.hidden"))
+            ActionItemViewModel("site.change", controllers.elections.routes.CRSThresholdsController.onPageLoad(CheckMode).url)
+              .withVisuallyHiddenText(messages("crsThresholds.change.hidden"))
           )
         )
     }

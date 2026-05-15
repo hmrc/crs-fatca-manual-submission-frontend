@@ -21,14 +21,15 @@
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
     govukRadios: GovukRadios,
-    govukButton: GovukButton
+    govukButton: GovukButton,
+    caption: components.Caption
 )
 
 @(form: Form[_], mode: Mode, fiName: String, reportingYear: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("crsThresholds.title"))) {
 
-    @formHelper(action = routes.CRSThresholdsController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+    @formHelper(action = controllers.elections.routes.CRSThresholdsController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
@@ -37,7 +38,7 @@
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = LegendViewModel(HtmlContent(s"""<span class="govuk-caption-l">${messages("crs.caption",reportingYear)}</span>
+                legend = LegendViewModel(HtmlContent(s"""${caption(messages("crs.caption",reportingYear))}
                     ${messages("crsThresholds.heading", fiName)}""")).asPageHeading(size = LegendSize.Large)
                 )
         )

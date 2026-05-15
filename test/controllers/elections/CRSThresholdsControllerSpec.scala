@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.elections
 
 import base.SpecBase
+import controllers.routes
 import forms.CRSThresholdsFormProvider
 import models.{NormalMode, UserData}
 import navigation.{FakeNavigator, Navigator}
@@ -43,7 +44,7 @@ class CRSThresholdsControllerSpec extends SpecBase with MockitoSugar {
   val form                  = formProvider()
   val mockSessionRepository = mock[SessionRepository]
 
-  lazy val cRSThresholdsRoute = routes.CRSThresholdsController.onPageLoad(NormalMode).url
+  lazy val cRSThresholdsRoute = controllers.elections.routes.CRSThresholdsController.onPageLoad(NormalMode).url
 
   override def beforeEach(): Unit =
     reset(mockSessionRepository)

@@ -33,8 +33,9 @@ class NavigatorSpec extends SpecBase {
 
         case object UnknownPage extends Page
         navigator.nextPage(UnknownPage, NormalMode, UserData("id")) mustBe routes.IndexController.onPageLoad()
-        navigator.nextPage(CRSContractsPage, NormalMode, UserData("id")) mustBe routes.CRSDormantAccountsController.onPageLoad(NormalMode)
-        navigator.nextPage(CRSDormantAccountsPage, NormalMode, UserData("id")) mustBe routes.CRSThresholdsController.onPageLoad(NormalMode)
+        navigator.nextPage(CRSContractsPage, NormalMode, UserData("id")) mustBe controllers.elections.routes.CRSDormantAccountsController.onPageLoad(NormalMode)
+        navigator.nextPage(CRSDormantAccountsPage, NormalMode, UserData("id")) mustBe controllers.elections.routes.CRSThresholdsController
+          .onPageLoad(NormalMode)
       }
     }
 
@@ -44,8 +45,8 @@ class NavigatorSpec extends SpecBase {
 
         case object UnknownPage extends Page
         navigator.nextPage(UnknownPage, CheckMode, UserData("id")) mustBe routes.CheckYourAnswersController.onPageLoad()
-        navigator.nextPage(CRSContractsPage, CheckMode, UserData("id")) mustBe routes.CRSDormantAccountsController.onPageLoad(CheckMode)
-        navigator.nextPage(CRSDormantAccountsPage, CheckMode, UserData("id")) mustBe routes.CRSThresholdsController.onPageLoad(CheckMode)
+        navigator.nextPage(CRSContractsPage, CheckMode, UserData("id")) mustBe controllers.elections.routes.CRSDormantAccountsController.onPageLoad(CheckMode)
+        navigator.nextPage(CRSDormantAccountsPage, CheckMode, UserData("id")) mustBe controllers.elections.routes.CRSThresholdsController.onPageLoad(CheckMode)
       }
     }
   }

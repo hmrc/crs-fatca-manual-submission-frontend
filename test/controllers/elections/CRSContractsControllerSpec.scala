@@ -14,42 +14,41 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.elections
 
 import base.SpecBase
-import forms.CRSDormantAccountsFormProvider
+import forms.CRSContractsFormProvider
 import models.{NormalMode, UserData}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.CRSDormantAccountsPage
+import pages.CRSContractsPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import repositories.SessionRepository
-import views.html.CRSDormantAccountsView
+import views.html.CRSContractsView
 
 import scala.concurrent.Future
 
-class CRSDormantAccountsControllerSpec extends SpecBase with MockitoSugar {
+class CRSContractsControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  val formProvider          = new CRSDormantAccountsFormProvider()
+  val formProvider          = new CRSContractsFormProvider()
   val form                  = formProvider()
-  val fiName                = "Test FI"
-  val reportingYear         = "2027"
+  val testFIName            = "Test FI" // TODO : Require update after integration
+  val reportingYear         = "2027" // TODO : Require update after integration
   val mockSessionRepository = mock[SessionRepository]
 
-  lazy val cRSDormantAccountsRoute = routes.CRSDormantAccountsController.onPageLoad(NormalMode).url
+  lazy val cRSContractsRoute = controllers.elections.routes.CRSContractsController.onPageLoad(NormalMode).url
 
-  override def beforeEach(): Unit =
-    reset(mockSessionRepository)
-    super.beforeEach()
+  override def beforeEach(): Unit = reset(mockSessionRepository)
+  super.beforeEach()
 
-  "CRSDormantAccounts Controller" - {
+  "CRSContracts Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
@@ -58,42 +57,43 @@ class CRSDormantAccountsControllerSpec extends SpecBase with MockitoSugar {
         .build()
 
       running(application) {
-        when(mockSessionRepository.get(any())) thenReturn Future.successful(Some(emptyUserAnswers))
-        val request = FakeRequest(GET, cRSDormantAccountsRoute)
+        when(mockSessionRepository.get(any())) thenReturn Future.successful(None)
+        val request = FakeRequest(GET, cRSContractsRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[CRSDormantAccountsView]
+        val view = application.injector.instanceOf[CRSContractsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, fiName, reportingYear)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, testFIName, reportingYear)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserData(userAnswersId).set(CRSDormantAccountsPage, true).success.value
+      val mockSessionRepository = mock[SessionRepository]
+      val userAnswers           = UserData(userAnswersId).set(CRSContractsPage, true).success.value
+      when(mockSessionRepository.get(any())) thenReturn Future.successful(Some(userAnswers))
 
-      val application = applicationBuilder(userData = Some(userAnswers))
+      val application = applicationBuilder(userData = Some(emptyUserAnswers))
         .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
         .build()
 
       running(application) {
-        when(mockSessionRepository.get(any())) thenReturn Future.successful(Some(userAnswers))
-        val request = FakeRequest(GET, cRSDormantAccountsRoute)
+        val request = FakeRequest(GET, cRSContractsRoute)
 
-        val view = application.injector.instanceOf[CRSDormantAccountsView]
+        val view = application.injector.instanceOf[CRSContractsView]
 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode, fiName, reportingYear)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode, testFIName, reportingYear)(request, messages(application)).toString
       }
     }
 
     "must redirect to the next page when valid data is submitted" in {
 
-      when(mockSessionRepository.get(any())) thenReturn Future.successful(Some(emptyUserAnswers))
+      when(mockSessionRepository.get(any())) thenReturn Future.successful(None)
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
@@ -106,7 +106,7 @@ class CRSDormantAccountsControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, cRSDormantAccountsRoute)
+          FakeRequest(POST, cRSContractsRoute)
             .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
@@ -118,55 +118,26 @@ class CRSDormantAccountsControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
+      when(mockSessionRepository.get(any())) thenReturn Future.successful(None)
       val application = applicationBuilder(userData = Some(emptyUserAnswers))
         .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
         .build()
 
       running(application) {
-        when(mockSessionRepository.get(any())) thenReturn Future.successful(Some(emptyUserAnswers))
         val request =
-          FakeRequest(POST, cRSDormantAccountsRoute)
+          FakeRequest(POST, cRSContractsRoute)
             .withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
 
-        val view = application.injector.instanceOf[CRSDormantAccountsView]
+        val view = application.injector.instanceOf[CRSContractsView]
 
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, fiName, reportingYear)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, testFIName, reportingYear)(request, messages(application)).toString
       }
     }
 
-    "must redirect to Journey Recovery for a GET if no existing data is found" in {
-
-      val application = applicationBuilder(userData = None).build()
-
-      running(application) {
-        val request = FakeRequest(GET, cRSDormantAccountsRoute)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-      }
-    }
-
-    "must redirect to Journey Recovery for a POST if no existing data is found" in {
-
-      val application = applicationBuilder(userData = None).build()
-
-      running(application) {
-        val request =
-          FakeRequest(POST, cRSDormantAccountsRoute)
-            .withFormUrlEncodedBody(("value", "true"))
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-      }
-    }
   }
 }

@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.elections
 
-import controllers.actions._
+import controllers.actions.*
 import forms.CRSThresholdsFormProvider
-import javax.inject.Inject
 import models.Mode
 import navigation.Navigator
 import pages.CRSThresholdsPage
@@ -28,6 +27,7 @@ import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CRSThresholdsView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CRSThresholdsController @Inject() (

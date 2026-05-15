@@ -14,45 +14,43 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.elections
 
-import controllers.actions._
-import forms.CRSDormantAccountsFormProvider
-import javax.inject.Inject
+import controllers.actions.*
+import forms.CRSContractsFormProvider
 import models.Mode
 import navigation.Navigator
-import pages.CRSDormantAccountsPage
+import pages.CRSContractsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.CRSDormantAccountsView
+import views.html.CRSContractsView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CRSDormantAccountsController @Inject() (
+class CRSContractsController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
   identify: IdentifierAction,
+  setData: DataCreationAction,
   getData: FrontendDataRetrievalAction,
-  requireData: DataRequiredAction,
-  formProvider: CRSDormantAccountsFormProvider,
+  formProvider: CRSContractsFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: CRSDormantAccountsView
+  view: CRSContractsView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen setData) {
     implicit request =>
-
       val reportingYear = "2027" // TODO : Will be updated once we integrate in DAC6-4282
       val fiName        = "Test FI" // TODO : Will be updated once we integrate in DAC6-4282
-
-      val preparedForm = request.userData.get(CRSDormantAccountsPage) match {
+      val preparedForm = request.userData.get(CRSContractsPage) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
@@ -60,21 +58,19 @@ class CRSDormantAccountsController @Inject() (
       Ok(view(preparedForm, mode, fiName, reportingYear))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen setData).async {
     implicit request =>
-
       val reportingYear = "2027" // TODO : Will be updated once we integrate in DAC6-4282
       val fiName        = "Test FI" // TODO : Will be updated once we integrate in DAC6-4282
-
       form
         .bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiName, reportingYear))),
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userData.set(CRSDormantAccountsPage, value))
+              updatedAnswers <- Future.fromTry(request.userData.set(CRSContractsPage, value))
               _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(CRSDormantAccountsPage, mode, updatedAnswers))
+            } yield Redirect(navigator.nextPage(CRSContractsPage, mode, updatedAnswers))
         )
   }
 }

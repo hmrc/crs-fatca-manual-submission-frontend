@@ -29,7 +29,7 @@ class FrontendDataRetrievalActionImpl @Inject() (
     extends FrontendDataRetrievalAction {
 
   override protected def transform[A](request: IdentifierRequest[A]): Future[OptionalDataRequest[A]] =
-    sessionRepository.get(request.userId).map {
+    sessionRepository.get(request.fatcaId).map {
       OptionalDataRequest(request.request, request.userId, _, request.fatcaId)
     }
 }

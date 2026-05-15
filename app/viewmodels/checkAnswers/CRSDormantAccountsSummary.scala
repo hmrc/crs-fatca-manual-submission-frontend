@@ -16,7 +16,6 @@
 
 package viewmodels.checkAnswers
 
-import controllers.routes
 import models.{CheckMode, UserData}
 import pages.CRSDormantAccountsPage
 import play.api.i18n.Messages
@@ -36,7 +35,7 @@ object CRSDormantAccountsSummary {
           key = "crsDormantAccounts.checkYourAnswersLabel",
           value = ValueViewModel(value),
           actions = Seq(
-            ActionItemViewModel("site.change", routes.CRSDormantAccountsController.onPageLoad(CheckMode).url)
+            ActionItemViewModel("site.change", controllers.elections.routes.CRSDormantAccountsController.onPageLoad(CheckMode).url)
               .withVisuallyHiddenText(messages("crsDormantAccounts.change.hidden"))
           )
         )

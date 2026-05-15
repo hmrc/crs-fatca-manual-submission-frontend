@@ -27,14 +27,14 @@ import models._
 class Navigator @Inject() () {
 
   private val normalRoutes: Page => UserData => Call = {
-    case CRSContractsPage       => _ => routes.CRSDormantAccountsController.onPageLoad(NormalMode)
-    case CRSDormantAccountsPage => _ => routes.CRSThresholdsController.onPageLoad(NormalMode)
+    case CRSContractsPage       => _ => controllers.elections.routes.CRSDormantAccountsController.onPageLoad(NormalMode)
+    case CRSDormantAccountsPage => _ => controllers.elections.routes.CRSThresholdsController.onPageLoad(NormalMode)
     case _                      => _ => routes.IndexController.onPageLoad()
   }
 
   private val checkRouteMap: Page => UserData => Call = {
-    case CRSContractsPage       => _ => routes.CRSDormantAccountsController.onPageLoad(CheckMode)
-    case CRSDormantAccountsPage => _ => routes.CRSThresholdsController.onPageLoad(CheckMode)
+    case CRSContractsPage       => _ => controllers.elections.routes.CRSDormantAccountsController.onPageLoad(CheckMode)
+    case CRSDormantAccountsPage => _ => controllers.elections.routes.CRSThresholdsController.onPageLoad(CheckMode)
     case _                      => _ => routes.CheckYourAnswersController.onPageLoad()
   }
 
