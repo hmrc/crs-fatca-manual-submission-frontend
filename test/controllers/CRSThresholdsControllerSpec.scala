@@ -17,39 +17,39 @@
 package controllers
 
 import base.SpecBase
-import forms.CRSDormantAccountsFormProvider
+import forms.CRSThresholdsFormProvider
 import models.{NormalMode, UserData}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.CRSDormantAccountsPage
+import pages.CRSThresholdsPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import repositories.SessionRepository
-import views.html.CRSDormantAccountsView
+import views.html.CRSThresholdsView
 
 import scala.concurrent.Future
 
-class CRSDormantAccountsControllerSpec extends SpecBase with MockitoSugar {
+class CRSThresholdsControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
+  def onwardRoute   = Call("GET", "/foo")
+  val testFIName    = "Test FI"
+  val reportingYear = "2027"
 
-  val formProvider          = new CRSDormantAccountsFormProvider()
+  val formProvider          = new CRSThresholdsFormProvider()
   val form                  = formProvider()
-  val fiName                = "Test FI"
-  val reportingYear         = "2027"
   val mockSessionRepository = mock[SessionRepository]
 
-  lazy val cRSDormantAccountsRoute = routes.CRSDormantAccountsController.onPageLoad(NormalMode).url
+  lazy val cRSThresholdsRoute = routes.CRSThresholdsController.onPageLoad(NormalMode).url
 
   override def beforeEach(): Unit =
     reset(mockSessionRepository)
     super.beforeEach()
 
-  "CRSDormantAccounts Controller" - {
+  "CRSThresholds Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
@@ -59,20 +59,20 @@ class CRSDormantAccountsControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         when(mockSessionRepository.get(any())) thenReturn Future.successful(Some(emptyUserAnswers))
-        val request = FakeRequest(GET, cRSDormantAccountsRoute)
+        val request = FakeRequest(GET, cRSThresholdsRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[CRSDormantAccountsView]
+        val view = application.injector.instanceOf[CRSThresholdsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, fiName, reportingYear)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, testFIName, reportingYear)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserData(userAnswersId).set(CRSDormantAccountsPage, true).success.value
+      val userAnswers = UserData(userAnswersId).set(CRSThresholdsPage, true).success.value
 
       val application = applicationBuilder(userData = Some(userAnswers))
         .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
@@ -80,14 +80,14 @@ class CRSDormantAccountsControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         when(mockSessionRepository.get(any())) thenReturn Future.successful(Some(userAnswers))
-        val request = FakeRequest(GET, cRSDormantAccountsRoute)
+        val request = FakeRequest(GET, cRSThresholdsRoute)
 
-        val view = application.injector.instanceOf[CRSDormantAccountsView]
+        val view = application.injector.instanceOf[CRSThresholdsView]
 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode, fiName, reportingYear)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode, testFIName, reportingYear)(request, messages(application)).toString
       }
     }
 
@@ -106,7 +106,7 @@ class CRSDormantAccountsControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, cRSDormantAccountsRoute)
+          FakeRequest(POST, cRSThresholdsRoute)
             .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
@@ -121,21 +121,21 @@ class CRSDormantAccountsControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(userData = Some(emptyUserAnswers))
         .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
         .build()
+      when(mockSessionRepository.get(any())) thenReturn Future.successful(Some(emptyUserAnswers))
 
       running(application) {
-        when(mockSessionRepository.get(any())) thenReturn Future.successful(Some(emptyUserAnswers))
         val request =
-          FakeRequest(POST, cRSDormantAccountsRoute)
+          FakeRequest(POST, cRSThresholdsRoute)
             .withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
 
-        val view = application.injector.instanceOf[CRSDormantAccountsView]
+        val view = application.injector.instanceOf[CRSThresholdsView]
 
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, fiName, reportingYear)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, testFIName, reportingYear)(request, messages(application)).toString
       }
     }
 
@@ -144,7 +144,7 @@ class CRSDormantAccountsControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(userData = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, cRSDormantAccountsRoute)
+        val request = FakeRequest(GET, cRSThresholdsRoute)
 
         val result = route(application, request).value
 
@@ -159,7 +159,7 @@ class CRSDormantAccountsControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, cRSDormantAccountsRoute)
+          FakeRequest(POST, cRSThresholdsRoute)
             .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value

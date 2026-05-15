@@ -17,14 +17,14 @@
 package views
 
 import base.SpecBase
-import forms.{CRSContractsFormProvider, CRSDormantAccountsFormProvider}
+import forms.CRSDormantAccountsFormProvider
 import models.NormalMode
 import org.jsoup.Jsoup
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
-import views.html.{CRSContractsView, CRSDormantAccountsView}
+import views.html.CRSDormantAccountsView
 
 class CRSDormantAccountsViewSpec extends SpecBase {
 

@@ -35,7 +35,7 @@ class CRSDormantAccountsController @Inject() (
   sessionRepository: SessionRepository,
   navigator: Navigator,
   identify: IdentifierAction,
-  getData: DataRetrievalAction,
+  getData: FrontendDataRetrievalAction,
   requireData: DataRequiredAction,
   formProvider: CRSDormantAccountsFormProvider,
   val controllerComponents: MessagesControllerComponents,

@@ -95,3 +95,9 @@ crsDormantAccounts.heading = Is {0} treating dormant accounts as not being repor
 crsDormantAccounts.checkYourAnswersLabel = CRSDormantAccounts
 crsDormantAccounts.error.required = Select yes if the financial institution is treating dormant accounts as not being reportable accounts for CRS
 crsDormantAccounts.change.hidden = CRSDormantAccounts
+
+crsThresholds.title = Is the financial institution applying thresholds to any of their accounts in their due diligence process for CRS?
+crsThresholds.heading = Is {0} applying thresholds to any of their accounts in their due diligence process for CRS?
+crsThresholds.checkYourAnswersLabel = CRSThresholds
+crsThresholds.error.required = Select yes if the financial institution is applying thresholds to any of their accounts in their due diligence process for CRS
+crsThresholds.change.hidden = CRSThresholds

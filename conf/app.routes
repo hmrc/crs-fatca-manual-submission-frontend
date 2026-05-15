@@ -36,3 +36,8 @@ GET        /manual/elections/crs/dormant-accounts                        control
 POST       /manual/elections/crs/dormant-accounts                        controllers.CRSDormantAccountsController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/elections/crs/change-dormant-accounts                  controllers.CRSDormantAccountsController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/elections/crs/change-dormant-accounts                  controllers.CRSDormantAccountsController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/elections/crs/thresholds                       controllers.CRSThresholdsController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/elections/crs/thresholds                        controllers.CRSThresholdsController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/elections/crs/change-thresholds                  controllers.CRSThresholdsController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/elections/crs/change-thresholds                 controllers.CRSThresholdsController.onSubmit(mode: Mode = CheckMode)

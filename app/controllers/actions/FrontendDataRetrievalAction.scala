@@ -23,10 +23,10 @@ import repositories.SessionRepository
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class DataRetrievalElectionActionImpl @Inject() (
+class FrontendDataRetrievalActionImpl @Inject() (
   val sessionRepository: SessionRepository
 )(implicit val executionContext: ExecutionContext)
-    extends DataRetrievalElectionAction {
+    extends FrontendDataRetrievalAction {
 
   override protected def transform[A](request: IdentifierRequest[A]): Future[OptionalDataRequest[A]] =
     sessionRepository.get(request.userId).map {
@@ -34,4 +34,4 @@ class DataRetrievalElectionActionImpl @Inject() (
     }
 }
 
-trait DataRetrievalElectionAction extends ActionTransformer[IdentifierRequest, OptionalDataRequest]
+trait FrontendDataRetrievalAction extends ActionTransformer[IdentifierRequest, OptionalDataRequest]
