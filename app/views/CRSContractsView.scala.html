@@ -14,8 +14,6 @@
  * limitations under the License.
  *@
 
-@import viewmodels.LegendSize
-
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
@@ -40,7 +38,7 @@
     RadiosViewModel.yesNo(
         field = form("value"),
         legend = LegendViewModel(HtmlContent(s"""${caption(messages("crs.caption",reportingYear))}
-        ${messages("crsContracts.heading", fiName)}""")).asPageHeading(size = LegendSize.Large)
+        ${messages("crsContracts.heading", fiName)}""")).asPageHeading()
     )
 )
 
