@@ -19,18 +19,23 @@ package controllers
 import controllers.Execution.trampoline
 import controllers.actions.*
 import models.ReadSubmissionRequest
+import pages.FiNamePage
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import repositories.SessionRepository
 import services.SubmissionHistoryService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+
 import java.time.{Year, ZoneOffset}
 import javax.inject.Inject
+import scala.concurrent.Future
 
 class ReadSubmissionDataController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
+  sessionRepository: SessionRepository,
   setData: DataCreationAction,
   service: SubmissionHistoryService,
   val controllerComponents: MessagesControllerComponents
@@ -40,13 +45,12 @@ class ReadSubmissionDataController @Inject() (
 
   def onPageLoad(fiId: String, fiName: String): Action[AnyContent] = (identify andThen getData andThen setData).async {
     implicit request =>
-      val defaultYear = Year.now(ZoneOffset.UTC).getValue - 1
-      service
-        .getAndMaybeCacheSubmissionHistory(request.fatcaId, ReadSubmissionRequest(true, Some(fiId)))
-        .map {
-          _ =>
-            Redirect(controllers.routes.ViewSubmissionsController.onPageLoad(defaultYear, fiId, fiName))
-        }
+      for {
+        _ <- service.getAndMaybeCacheSubmissionHistory(request.fatcaId, ReadSubmissionRequest(true, Some(fiId)))
+        defaultYear = Year.now(ZoneOffset.UTC).getValue - 1
+        userData <- Future.fromTry(request.userData.set(FiNamePage, fiName))
+        _        <- sessionRepository.set(userData)
+      } yield Redirect(controllers.routes.ViewSubmissionsController.onPageLoad(defaultYear, fiId, fiName))
   }
 
 }

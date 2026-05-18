@@ -23,21 +23,24 @@
         govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode, fiName:String, year: Int)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, fiName: String, year: Int)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("isUsTreasuryRegulated.title", fiName))) {
 
-    @formHelper(action = controllers.elections.routes.IsUsTreasuryRegulatedController.onSubmit(mode,year), Symbol("autoComplete") -> "off") {
+    @formHelper(action = controllers.elections.routes.IsUsTreasuryRegulatedController.onSubmit(mode, year), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
-        @caption(" " + messages("fatca.elections.caption",year.toString))
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = LegendViewModel(messages("isUsTreasuryRegulated.heading", fiName)).asPageHeading()
-            )
+                legend = LegendViewModel(HtmlContent(
+                    caption(
+                        messages("fatca.elections.caption", year.toString),
+                        messages("isUsTreasuryRegulated.heading", fiName))
+                )).asPageHeading()
+        )
         )
 
         @govukButton(

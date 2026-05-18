@@ -20,7 +20,7 @@ import controllers.actions.*
 import forms.elections.IsApplyingThresholdsFormProvider
 import models.Mode
 import navigation.Navigator
-import pages.IsApplyingThresholdsPage
+import pages.{FiNamePage, IsApplyingThresholdsPage}
 import play.api.Logging
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -51,29 +51,29 @@ class IsApplyingThresholdsController @Inject() (
 
   def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
+      request.userData.get(FiNamePage).map { fiName =>
+        val preparedForm = request.userData.get(IsApplyingThresholdsPage) match {
+          case None => form
+          case Some(value) => form.fill(value)
+        }
+        Ok(view(preparedForm, mode, fiName, year))
+      }.getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
 
-      val preparedForm = request.userData.get(IsApplyingThresholdsPage) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
-
-      val fiName   = "toBeCompleted" // TODO
-      val yearTodo = year // TODO
-      logger.info(s"year = $year , fiName = $fiName")
-      Ok(view(preparedForm, mode, fiName, yearTodo))
   }
 
   def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, "toBeCompleted", year))),
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userData.set(IsApplyingThresholdsPage, value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(IsApplyingThresholdsPage, mode, updatedAnswers))
-        )
+      request.userData.get(FiNamePage).map { fiName =>
+        form
+          .bindFromRequest()
+          .fold(
+            formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiName, year))),
+            value =>
+              for {
+                updatedAnswers <- Future.fromTry(request.userData.set(IsApplyingThresholdsPage, value))
+                _ <- sessionRepository.set(updatedAnswers)
+              } yield Redirect(navigator.nextPage(IsApplyingThresholdsPage, mode, updatedAnswers, Some(year)))
+          )
+      }.getOrElse(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())))
   }
 }
