@@ -28,11 +28,11 @@
 @layout(pageTitle = title(form, messages("isUsTreasuryRegulated.title", fiName))) {
 
     @formHelper(action = controllers.elections.routes.IsUsTreasuryRegulatedController.onSubmit(mode,year), Symbol("autoComplete") -> "off") {
-        @caption(messages("fatca.elections.caption",year.toString))
+
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
-
+        @caption(" " + messages("fatca.elections.caption",year.toString))
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
