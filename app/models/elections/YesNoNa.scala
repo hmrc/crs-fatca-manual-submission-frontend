@@ -14,13 +14,28 @@
  * limitations under the License.
  */
 
-package models
+package models.elections
 
-sealed abstract class ServiceErrors extends Throwable {
-  override def toString: String = getClass.getSimpleName.replace("$", "")
-}
+import play.api.libs.json.*
 
-object ServiceErrors {
-  case object Downstream_Error extends ServiceErrors
-  case object Elections_Error extends ServiceErrors
-}
+enum YesNoNa:
+  case Yes, No, NA
+
+object YesNoNa:
+
+  given Format[YesNoNa] = Format(
+    Reads {
+      case JsString("yes") => JsSuccess(Yes)
+      case JsString("no")  => JsSuccess(No)
+      case JsString("na")  => JsSuccess(NA)
+      case other           => JsError(s"Unknown value: $other")
+    },
+    Writes(
+      v =>
+        JsString(v match
+          case Yes => "yes"
+          case No  => "no"
+          case NA  => "na"
+        )
+    )
+  )

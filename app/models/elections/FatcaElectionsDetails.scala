@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package models
+package models.elections
 
-sealed abstract class ServiceErrors extends Throwable {
-  override def toString: String = getClass.getSimpleName.replace("$", "")
-}
+import play.api.libs.json.*
 
-object ServiceErrors {
-  case object Downstream_Error extends ServiceErrors
-  case object Elections_Error extends ServiceErrors
-}
+case class FatcaElectionsDetails(
+  hasThresholds: Option[YesNoNa],
+  hasTreasuryRegulations: Option[YesNoNa]
+)
+
+object FatcaElectionsDetails:
+  given OFormat[FatcaElectionsDetails] = Json.format[FatcaElectionsDetails]
