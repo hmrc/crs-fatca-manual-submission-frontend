@@ -14,12 +14,13 @@
  * limitations under the License.
  *@
 
+@import views.html.components.HeadingWithCaption
 @this(
         layout: templates.Layout,
         formHelper: FormWithCSRF,
         govukErrorSummary: GovukErrorSummary,
         govukRadios: GovukRadios,
-        caption: components.Caption,
+        caption: components.HeadingWithCaption,
         govukButton: GovukButton
 )
 
@@ -32,16 +33,18 @@
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
-        @caption(messages("fatca.elections.caption", year.toString))
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = LegendViewModel(messages("isApplyingThresholds.heading",fiName)).asPageHeading()
+                legend = LegendViewModel(HtmlContent(
+                    caption(
+                        messages("fatca.elections.caption", year.toString),
+                        messages("isApplyingThresholds.heading",fiName))
+                )).asPageHeading()
             )
         )
-
         @govukButton(
             ButtonViewModel(messages("site.continue"))
         )
     }
-}@import views.html.components.Caption
+}

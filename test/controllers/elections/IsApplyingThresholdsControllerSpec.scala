@@ -17,7 +17,6 @@
 package controllers.elections
 
 import base.SpecBase
-import controllers.routes
 import forms.elections.IsApplyingThresholdsFormProvider
 import models.NormalMode
 import navigation.{FakeNavigator, Navigator}
