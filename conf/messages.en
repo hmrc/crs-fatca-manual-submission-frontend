@@ -101,3 +101,15 @@ crsThresholds.heading = Is {0} applying thresholds to any of their accounts in t
 crsThresholds.checkYourAnswersLabel = CRSThresholds
 crsThresholds.error.required = Select yes if the financial institution is applying thresholds to any of their accounts in their due diligence process for CRS
 crsThresholds.change.hidden = CRSThresholds
+
+carfGrossProceeds.title = Is the financial institution reporting gross proceeds under the Cryptoasset Reporting Framework (CARF) for {0}?
+carfGrossProceeds.heading = Is {0} reporting gross proceeds under the Cryptoasset Reporting Framework (CARF) for {1}?
+carfGrossProceeds.checkYourAnswersLabel = carfGrossProceeds
+carfGrossProceeds.error.required = Select yes if the financial institution is reporting gross proceeds under the Cryptoasset Reporting Framework (CARF) for {0}?
+carfGrossProceeds.change.hidden = CarfGrossProceeds
+
+crsGrossProceeds.title = crsGrossProceeds
+crsGrossProceeds.heading = crsGrossProceeds
+crsGrossProceeds.checkYourAnswersLabel = crsGrossProceeds
+crsGrossProceeds.error.required = Select yes if crsGrossProceeds
+crsGrossProceeds.change.hidden = CrsGrossProceeds

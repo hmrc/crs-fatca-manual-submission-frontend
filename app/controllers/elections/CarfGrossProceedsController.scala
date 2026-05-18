@@ -17,42 +17,43 @@
 package controllers.elections
 
 import controllers.actions.*
-import forms.CRSThresholdsFormProvider
+import forms.CarfGrossProceedsFormProvider
 import models.Mode
 import navigation.Navigator
-import pages.{CRSReportingPeriodPage, CRSThresholdsPage}
+import pages.CarfGrossProceedsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.CRSThresholdsView
+import views.html.CarfGrossProceedsView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CRSThresholdsController @Inject() (
+class CarfGrossProceedsController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
   identify: IdentifierAction,
-  getData: FrontendDataRetrievalAction,
+  getData: DataRetrievalAction,
   requireData: DataRequiredAction,
-  formProvider: CRSThresholdsFormProvider,
+  formProvider: CarfGrossProceedsFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: CRSThresholdsView
+  view: CarfGrossProceedsView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  val form = formProvider()
+  
+
+  val reportingYear = "2027" // TODO : Will be updated once we integrate in DAC6-4282
+  val fiName        = "Test FI" // TODO : Will be updated once we integrate in DAC6-4282
+  val form = formProvider(reportingYear)
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
 
-      val reportingYear = "2027" // TODO : Will be updated once we integrate in DAC6-4282
-      val fiName        = "Test FI" // TODO : Will be updated once we integrate in DAC6-4282
-
-      val preparedForm = request.userData.get(CRSThresholdsPage) match {
+      val preparedForm = request.userData.get(CarfGrossProceedsPage) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
@@ -62,22 +63,15 @@ class CRSThresholdsController @Inject() (
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-
-      val reportingYear = "2027" // TODO : Will be updated once we integrate in DAC6-4282
-      val fiName        = "Test FI" // TODO : Will be updated once we integrate in DAC6-4282
-
       form
         .bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiName, reportingYear))),
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userData.set(CRSThresholdsPage, value))
-              updatedWithReportingPeriod <- Future.fromTry(
-                updatedAnswers.set(CRSReportingPeriodPage, 2026)
-              ) // TODO : Will remove this one when  we integrate with DAC6-4282 as it specifies the reprtingPeriod
-              _ <- sessionRepository.set(updatedWithReportingPeriod)
-            } yield Redirect(navigator.nextPage(CRSThresholdsPage, mode, updatedWithReportingPeriod))
+              updatedAnswers <- Future.fromTry(request.userData.set(CarfGrossProceedsPage, value))
+              _              <- sessionRepository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(CarfGrossProceedsPage, mode, updatedAnswers))
         )
   }
 }
