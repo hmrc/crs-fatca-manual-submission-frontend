@@ -21,7 +21,7 @@ import play.api.data.FormError
 
 class CRSDormantAccountsFormProviderSpec extends BooleanFieldBehaviours {
 
-  val requiredKey = "cRSDormantAccounts.error.required"
+  val requiredKey = "crsDormantAccounts.error.required"
   val invalidKey  = "error.boolean"
 
   val form = new CRSDormantAccountsFormProvider()()

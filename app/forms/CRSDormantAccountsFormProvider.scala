@@ -25,6 +25,6 @@ class CRSDormantAccountsFormProvider @Inject() extends Mappings {
 
   def apply(): Form[Boolean] =
     Form(
-      "value" -> boolean("cRSDormantAccounts.error.required")
+      "value" -> boolean("crsDormantAccounts.error.required")
     )
 }

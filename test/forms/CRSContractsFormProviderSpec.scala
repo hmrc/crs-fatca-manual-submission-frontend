@@ -21,7 +21,7 @@ import play.api.data.FormError
 
 class CRSContractsFormProviderSpec extends BooleanFieldBehaviours {
 
-  val requiredKey = "cRSContracts.error.required"
+  val requiredKey = "crsContracts.error.required"
   val invalidKey  = "error.boolean"
 
   val form = new CRSContractsFormProvider()()
