@@ -35,8 +35,6 @@
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
-
-
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
@@ -47,6 +45,7 @@
 
         @govukButton(
             ButtonViewModel(messages("site.continue"))
+                       .withAttribute("id" -> "submit")
         )
     }
 }

@@ -14,15 +14,18 @@
  * limitations under the License.
  *@
 
+@import viewmodels.LegendSize
+
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
     govukRadios: GovukRadios,
-    govukButton: GovukButton
+    govukButton: GovukButton,
+    caption: components.Caption
 )
 
-@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, fiName: String, reportingYear: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("crsGrossProceeds.title"))) {
 
@@ -35,12 +38,14 @@
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = LegendViewModel(messages("crsGrossProceeds.heading")).asPageHeading()
+                legend = LegendViewModel(HtmlContent(s"""${caption(messages("crs.caption",reportingYear))}
+                ${messages("crsGrossProceeds.heading", fiName)}""")).asPageHeading(size = LegendSize.Large)
             )
         )
 
         @govukButton(
             ButtonViewModel(messages("site.continue"))
+                      .withAttribute("id" -> "submit")
         )
     }
 }

@@ -44,7 +44,9 @@ class CrsGrossProceedsController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  val form = formProvider()
+  val reportingYear = "2027" // TODO : Will be updated once we integrate in DAC6-4282
+  val fiName        = "Test FI" // TODO : Will be updated once we integrate in DAC6-4282
+  val form          = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
@@ -54,7 +56,7 @@ class CrsGrossProceedsController @Inject() (
         case Some(value) => form.fill(value)
       }
 
-      Ok(view(preparedForm, mode))
+      Ok(view(preparedForm, mode, fiName, reportingYear))
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
@@ -62,7 +64,7 @@ class CrsGrossProceedsController @Inject() (
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiName, reportingYear))),
           value =>
             for {
               updatedAnswers <- Future.fromTry(request.userData.set(CrsGrossProceedsPage, value))

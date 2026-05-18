@@ -21,10 +21,11 @@ import play.api.data.FormError
 
 class CarfGrossProceedsFormProviderSpec extends BooleanFieldBehaviours {
 
-  val requiredKey = "carfGrossProceeds.error.required"
-  val invalidKey  = "error.boolean"
+  val requiredKey     = "carfGrossProceeds.error.required"
+  val invalidKey      = "error.boolean"
+  val reportingPeriod = "2027"
 
-  val form = new CarfGrossProceedsFormProvider()()
+  val form = new CarfGrossProceedsFormProvider()(reportingPeriod)
 
   ".value" - {
 
@@ -33,13 +34,13 @@ class CarfGrossProceedsFormProviderSpec extends BooleanFieldBehaviours {
     behave like booleanField(
       form,
       fieldName,
-      invalidError = FormError(fieldName, invalidKey)
+      invalidError = FormError(fieldName, invalidKey, args = Seq(reportingPeriod))
     )
 
     behave like mandatoryField(
       form,
       fieldName,
-      requiredError = FormError(fieldName, requiredKey)
+      requiredError = FormError(fieldName, requiredKey, args = Seq(reportingPeriod))
     )
   }
 }

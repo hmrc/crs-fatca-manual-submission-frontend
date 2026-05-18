@@ -21,13 +21,13 @@ import forms.CrsGrossProceedsFormProvider
 import models.{NormalMode, UserData}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{reset, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.CrsGrossProceedsPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import repositories.SessionRepository
 import views.html.CrsGrossProceedsView
 
@@ -35,10 +35,18 @@ import scala.concurrent.Future
 
 class CrsGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
+  val reportingYear = "2027"
+  val fiName        = "Test FI"
+  def onwardRoute   = Call("GET", "/foo")
 
   val formProvider = new CrsGrossProceedsFormProvider()
   val form         = formProvider()
+
+  val mockSessionRepository = mock[SessionRepository]
+
+  override def beforeEach(): Unit =
+    reset(mockSessionRepository)
+    super.beforeEach()
 
   lazy val crsGrossProceedsRoute = controllers.elections.routes.CrsGrossProceedsController.onPageLoad(NormalMode).url
 
@@ -56,7 +64,7 @@ class CrsGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[CrsGrossProceedsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, fiName, reportingYear)(request, messages(application)).toString
       }
     }
 
@@ -64,9 +72,12 @@ class CrsGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
 
       val userAnswers = UserData(userAnswersId).set(CrsGrossProceedsPage, true).success.value
 
-      val application = applicationBuilder(userData = Some(userAnswers)).build()
+      val application = applicationBuilder(userData = Some(userAnswers))
+        .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
+        .build()
 
       running(application) {
+        when(mockSessionRepository.get(any())) thenReturn Future.successful(Some(userAnswers))
         val request = FakeRequest(GET, crsGrossProceedsRoute)
 
         val view = application.injector.instanceOf[CrsGrossProceedsView]
@@ -74,7 +85,7 @@ class CrsGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode, fiName, reportingYear)(request, messages(application)).toString
       }
     }
 
@@ -120,7 +131,7 @@ class CrsGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, fiName, reportingYear)(request, messages(application)).toString
       }
     }
 

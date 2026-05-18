@@ -44,11 +44,9 @@ class CarfGrossProceedsController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  
-
   val reportingYear = "2027" // TODO : Will be updated once we integrate in DAC6-4282
   val fiName        = "Test FI" // TODO : Will be updated once we integrate in DAC6-4282
-  val form = formProvider(reportingYear)
+  val form          = formProvider(reportingYear)
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
