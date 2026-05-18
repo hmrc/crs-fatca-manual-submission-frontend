@@ -36,11 +36,11 @@ import scala.concurrent.Future
 
 class IsApplyingThresholdsControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
-  private val year = 2020
-  val formProvider        = new IsApplyingThresholdsFormProvider()
-  val form: Form[Boolean] = formProvider()
-  private val fiName = "fiName"
+  def onwardRoute                            = Call("GET", "/foo")
+  private val year                           = 2020
+  val formProvider                           = new IsApplyingThresholdsFormProvider()
+  val form: Form[Boolean]                    = formProvider()
+  private val fiName                         = "fiName"
   lazy val isApplyingThresholdsRoute: String = controllers.elections.routes.IsApplyingThresholdsController.onPageLoad(NormalMode, year).url
 
   "IsApplyingThresholds Controller" - {
@@ -63,8 +63,13 @@ class IsApplyingThresholdsControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userData = emptyUserData.set(IsApplyingThresholdsPage, true).success.value
-        .set(FiNamePage, fiName).success.value
+      val userData = emptyUserData
+        .set(IsApplyingThresholdsPage, true)
+        .success
+        .value
+        .set(FiNamePage, fiName)
+        .success
+        .value
 
       val application = applicationBuilder(userData = Some(userData)).build()
 
@@ -81,7 +86,7 @@ class IsApplyingThresholdsControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to the next page when valid data is submitted" in {
-      val userData = emptyUserData.set(FiNamePage, fiName).success.value
+      val userData              = emptyUserData.set(FiNamePage, fiName).success.value
       val mockSessionRepository = mock[SessionRepository]
 
       val application =

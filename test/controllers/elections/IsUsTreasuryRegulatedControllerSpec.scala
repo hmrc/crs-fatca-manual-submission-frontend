@@ -36,9 +36,9 @@ import scala.concurrent.Future
 
 class IsUsTreasuryRegulatedControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
-  private val fiName = "fiName"
-  private val year = 2020
+  def onwardRoute         = Call("GET", "/foo")
+  private val fiName      = "fiName"
+  private val year        = 2020
   val formProvider        = new IsUsTreasuryRegulatedFormProvider()
   val form: Form[Boolean] = formProvider()
 
@@ -48,7 +48,7 @@ class IsUsTreasuryRegulatedControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the correct view for a GET" in {
 
-      val application =  applicationBuilder(userData = Some(emptyUserData.withPage(FiNamePage, fiName))).build()
+      val application = applicationBuilder(userData = Some(emptyUserData.withPage(FiNamePage, fiName))).build()
 
       running(application) {
         val request = FakeRequest(GET, isUsTreasuryRegulatedRoute)
@@ -64,8 +64,13 @@ class IsUsTreasuryRegulatedControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserData(userAnswersId).set(IsUsTreasuryRegulatedPage, true).success.value
-        .set(FiNamePage, fiName).success.value
+      val userAnswers = UserData(userAnswersId)
+        .set(IsUsTreasuryRegulatedPage, true)
+        .success
+        .value
+        .set(FiNamePage, fiName)
+        .success
+        .value
 
       val application = applicationBuilder(userData = Some(userAnswers)).build()
 
@@ -82,7 +87,7 @@ class IsUsTreasuryRegulatedControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to the next page when valid data is submitted" in {
-      val userData = emptyUserData.set(FiNamePage, fiName).success.value
+      val userData              = emptyUserData.set(FiNamePage, fiName).success.value
       val mockSessionRepository = mock[SessionRepository]
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)

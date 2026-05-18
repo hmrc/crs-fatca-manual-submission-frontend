@@ -49,27 +49,36 @@ class IsUsTreasuryRegulatedController @Inject() (
 
   def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      request.userData.get(FiNamePage).map { fiName =>
-      val preparedForm = request.userData.get(IsUsTreasuryRegulatedPage) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
-        Ok(view(preparedForm, mode, fiName, year))
-      }.getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+      request.userData
+        .get(FiNamePage)
+        .map {
+          fiName =>
+            val preparedForm = request.userData.get(IsUsTreasuryRegulatedPage) match {
+              case None        => form
+              case Some(value) => form.fill(value)
+            }
+            Ok(view(preparedForm, mode, fiName, year))
+        }
+        .getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
   }
 
   def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      request.userData.get(FiNamePage).map { fiName =>
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiName, year))),
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userData.set(IsUsTreasuryRegulatedPage, value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(IsUsTreasuryRegulatedPage, mode, updatedAnswers, Some(year)))
-        )     }.getOrElse(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())))
+      request.userData
+        .get(FiNamePage)
+        .map {
+          fiName =>
+            form
+              .bindFromRequest()
+              .fold(
+                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiName, year))),
+                value =>
+                  for {
+                    updatedAnswers <- Future.fromTry(request.userData.set(IsUsTreasuryRegulatedPage, value))
+                    _              <- sessionRepository.set(updatedAnswers)
+                  } yield Redirect(navigator.nextPage(IsUsTreasuryRegulatedPage, mode, updatedAnswers, Some(year)))
+              )
+        }
+        .getOrElse(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())))
   }
 }

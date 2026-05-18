@@ -24,7 +24,7 @@ import pages.*
 class NavigatorSpec extends SpecBase {
 
   val navigator = new Navigator
-  val year = 2025
+  val year      = 2025
   "Navigator" - {
 
     "in Normal mode" - {

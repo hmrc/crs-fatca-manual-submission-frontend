@@ -38,7 +38,7 @@ class ReadSubmissionDataControllerSpec extends SpecBase {
   "ReadSubmissionData Controller" - {
 
     "must redirect to view submissions page upon successful call to retrieve submission history" in {
-      val mockSessionRepository :SessionRepository = mock[SessionRepository]
+      val mockSessionRepository: SessionRepository = mock[SessionRepository]
       val application = applicationBuilder(userData = Some(emptyUserData))
         .overrides(bind[SubmissionHistoryService].toInstance(mockService))
         .build()
