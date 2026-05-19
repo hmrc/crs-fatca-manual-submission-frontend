@@ -37,6 +37,20 @@ POST        /elections/fatca/thresholds                            controllers.e
 GET         /elections/fatca/change/thresholds                     controllers.elections.IsApplyingThresholdsController.onPageLoad(mode: Mode = CheckMode, year: Int)
 POST        /elections/fatca/change/thresholds                     controllers.elections.IsApplyingThresholdsController.onSubmit(mode: Mode = CheckMode, year: Int)
 
+GET        /elections/crs/contracts                        controllers.elections.CRSContractsController.onPageLoad(mode: Mode = NormalMode, year: Int)
+POST       /elections/crs/contracts                        controllers.elections.CRSContractsController.onSubmit(mode: Mode = NormalMode, year: Int)
+GET        /elections/crs/change-contracts                  controllers.elections.CRSContractsController.onPageLoad(mode: Mode = CheckMode, year: Int)
+POST       /elections/crs/change-contracts                  controllers.elections.CRSContractsController.onSubmit(mode: Mode = CheckMode, year: Int)
+
+GET        /elections/crs/dormant-accounts                        controllers.elections.CRSDormantAccountsController.onPageLoad(mode: Mode = NormalMode, year: Int)
+POST       /elections/crs/dormant-accounts                        controllers.elections.CRSDormantAccountsController.onSubmit(mode: Mode = NormalMode, year: Int)
+GET        /elections/crs/change-dormant-accounts                  controllers.elections.CRSDormantAccountsController.onPageLoad(mode: Mode = CheckMode, year: Int)
+POST       /elections/crs/change-dormant-accounts                  controllers.elections.CRSDormantAccountsController.onSubmit(mode: Mode = CheckMode, year: Int)
+
+GET        /elections/crs/thresholds                       controllers.elections.CRSThresholdsController.onPageLoad(mode: Mode = NormalMode, year: Int)
+POST       /elections/crs/thresholds                        controllers.elections.CRSThresholdsController.onSubmit(mode: Mode = NormalMode, year: Int)
+GET        /elections/crs/change-thresholds                  controllers.elections.CRSThresholdsController.onPageLoad(mode: Mode = CheckMode, year: Int)
+POST       /elections/crs/change-thresholds                 controllers.elections.CRSThresholdsController.onSubmit(mode: Mode = CheckMode, year: Int)
 
 GET        /elections/crs/carf-gross-proceeds                       controllers.elections.CarfGrossProceedsController.onPageLoad(mode: Mode = NormalMode)
 POST       /elections/crs/carf-gross-proceeds                       controllers.elections.CarfGrossProceedsController.onSubmit(mode: Mode = NormalMode)

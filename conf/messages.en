@@ -95,6 +95,26 @@ isApplyingThresholds.error.required = Select yes if the financial institution is
 isApplyingThresholds.change.hidden = IsApplyingThresholds
 fatca.elections.caption = FATCA elections for {0}
 
+crs.elections.caption = CRS elections for {0}
+
+crsContracts.title = Is the financial institution excluding cash value insurance contracts or annuity contracts from their reporting for CRS?
+crsContracts.heading = Is {0} excluding cash value insurance contracts or annuity contracts from their reporting for CRS?
+crsContracts.checkYourAnswersLabel = CRSContracts
+crsContracts.error.required = Select yes if the financial institution is excluding cash value insurance contracts or annuity contracts from their reporting for CRS
+crsContracts.change.hidden = CRSContracts
+
+crsDormantAccounts.title = Is the financial institution treating dormant accounts as not being reportable accounts for CRS?
+crsDormantAccounts.heading = Is {0} treating dormant accounts as not being reportable accounts for CRS?
+crsDormantAccounts.checkYourAnswersLabel = CRSDormantAccounts
+crsDormantAccounts.error.required = Select yes if the financial institution is treating dormant accounts as not being reportable accounts for CRS
+crsDormantAccounts.change.hidden = CRSDormantAccounts
+
+crsThresholds.title = Is the financial institution applying thresholds to any of their accounts in their due diligence process for CRS?
+crsThresholds.heading = Is {0} applying thresholds to any of their accounts in their due diligence process for CRS?
+crsThresholds.checkYourAnswersLabel = CRSThresholds
+crsThresholds.error.required = Select yes if the financial institution is applying thresholds to any of their accounts in their due diligence process for CRS
+crsThresholds.change.hidden = CRSThresholds
+
 carfGrossProceeds.title = Is the financial institution reporting gross proceeds under the Cryptoasset Reporting Framework (CARF) for {0}?
 carfGrossProceeds.heading = Is {0} reporting gross proceeds under the Cryptoasset Reporting Framework (CARF) for {1}?
 carfGrossProceeds.checkYourAnswersLabel = carfGrossProceeds

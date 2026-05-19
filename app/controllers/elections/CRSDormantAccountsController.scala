@@ -17,30 +17,30 @@
 package controllers.elections
 
 import controllers.actions.*
-import forms.elections.CRSThresholdsFormProvider
+import forms.elections.CRSDormantAccountsFormProvider
 import models.Mode
 import navigation.Navigator
 import pages.FiNamePage
-import pages.elections.CRSThresholdsPage
+import pages.elections.CRSDormantAccountsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.CRSThresholdsView
+import views.html.CRSDormantAccountsView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CRSThresholdsController @Inject() (
+class CRSDormantAccountsController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
   identify: IdentifierAction,
   getData: FrontendDataRetrievalAction,
   requireData: DataRequiredAction,
-  formProvider: CRSThresholdsFormProvider,
+  formProvider: CRSDormantAccountsFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: CRSThresholdsView
+  view: CRSDormantAccountsView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -55,11 +55,10 @@ class CRSThresholdsController @Inject() (
         .get(FiNamePage)
         .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)) {
           fiName =>
-            val preparedForm = request.userData.get(CRSThresholdsPage) match {
+            val preparedForm = userData.get(CRSDormantAccountsPage) match {
               case None        => form
               case Some(value) => form.fill(value)
             }
-
             Ok(view(preparedForm, mode, fiName, year))
         }
   }
@@ -79,10 +78,11 @@ class CRSThresholdsController @Inject() (
                 formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiName, year))),
                 value =>
                   for {
-                    updatedAnswers <- Future.fromTry(request.userData.set(CRSThresholdsPage, value))
+                    updatedAnswers <- Future.fromTry(userData.set(CRSDormantAccountsPage, value))
                     _              <- sessionRepository.set(updatedAnswers)
-                  } yield Redirect(navigator.nextPage(CRSThresholdsPage, mode, updatedAnswers, Some(year)))
+                  } yield Redirect(navigator.nextPage(CRSDormantAccountsPage, mode, updatedAnswers, Some(year)))
               )
+
         }
   }
 }

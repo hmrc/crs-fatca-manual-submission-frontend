@@ -17,11 +17,11 @@
 package navigation
 
 import javax.inject.{Inject, Singleton}
-
 import play.api.mvc.Call
 import controllers.routes
-import pages._
-import models._
+import pages.*
+import models.*
+import pages.elections.{CRSContractsPage, CRSDormantAccountsPage}
 
 @Singleton
 class Navigator @Inject() () {
@@ -34,13 +34,17 @@ class Navigator @Inject() () {
         )
       case (IsApplyingThresholdsPage, NormalMode) =>
         routes.JourneyRecoveryController.onPageLoad()
+      case (CRSContractsPage, NormalMode) =>
+        year.fold(routes.JourneyRecoveryController.onPageLoad()) {
+          reportingYear => controllers.elections.routes.CRSDormantAccountsController.onPageLoad(mode, reportingYear)
+        }
+      case (CRSDormantAccountsPage, NormalMode) =>
+        year.fold(routes.JourneyRecoveryController.onPageLoad()) {
+          reportingYear => controllers.elections.routes.CRSThresholdsController.onPageLoad(mode, reportingYear)
+        }
       case (_, CheckMode) =>
         routes.CheckYourAnswersController.onPageLoad()
       case _ =>
         routes.IndexController.onPageLoad()
     }
-
-  private val checkRouteMap: Page => UserData => Call = {
-    case _ => _ => routes.CheckYourAnswersController.onPageLoad()
-  }
 }

@@ -17,45 +17,43 @@
 package controllers.elections
 
 import controllers.actions.*
-import forms.elections.CRSThresholdsFormProvider
+import forms.elections.CRSContractsFormProvider
 import models.Mode
 import navigation.Navigator
 import pages.FiNamePage
-import pages.elections.CRSThresholdsPage
+import pages.elections.CRSContractsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.CRSThresholdsView
+import views.html.CRSContractsView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CRSThresholdsController @Inject() (
+class CRSContractsController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
   identify: IdentifierAction,
+  setData: DataCreationAction,
   getData: FrontendDataRetrievalAction,
-  requireData: DataRequiredAction,
-  formProvider: CRSThresholdsFormProvider,
+  formProvider: CRSContractsFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: CRSThresholdsView
+  view: CRSContractsView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen setData) {
     implicit request =>
-
-      val userData = request.userData
-      userData
+      request.userData
         .get(FiNamePage)
         .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)) {
           fiName =>
-            val preparedForm = request.userData.get(CRSThresholdsPage) match {
+            val preparedForm = request.userData.get(CRSContractsPage) match {
               case None        => form
               case Some(value) => form.fill(value)
             }
@@ -64,12 +62,9 @@ class CRSThresholdsController @Inject() (
         }
   }
 
-  def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen setData).async {
     implicit request =>
-
-      val userData = request.userData
-
-      userData
+      request.userData
         .get(FiNamePage)
         .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))) {
           fiName =>
@@ -79,9 +74,9 @@ class CRSThresholdsController @Inject() (
                 formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiName, year))),
                 value =>
                   for {
-                    updatedAnswers <- Future.fromTry(request.userData.set(CRSThresholdsPage, value))
+                    updatedAnswers <- Future.fromTry(request.userData.set(CRSContractsPage, value))
                     _              <- sessionRepository.set(updatedAnswers)
-                  } yield Redirect(navigator.nextPage(CRSThresholdsPage, mode, updatedAnswers, Some(year)))
+                  } yield Redirect(navigator.nextPage(CRSContractsPage, mode, updatedAnswers, Some(year)))
               )
         }
   }

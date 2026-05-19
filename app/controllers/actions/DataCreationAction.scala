@@ -18,16 +18,21 @@ package controllers.actions
 
 import models.UserData
 import models.requests.{DataRequest, OptionalDataRequest}
+import pages.FiNamePage
 import play.api.mvc.ActionTransformer
+import repositories.SessionRepository
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class DataCreationActionImpl @Inject() (implicit val executionContext: ExecutionContext) extends DataCreationAction {
+class DataCreationActionImpl @Inject() (implicit val executionContext: ExecutionContext, sessionRepository: SessionRepository) extends DataCreationAction {
 
   override protected def transform[A](request: OptionalDataRequest[A]): Future[DataRequest[A]] =
     request.userData match {
-      case None       => Future.successful(DataRequest(request.request, request.userId, UserData(request.fatcaId), request.fatcaId))
+      case None =>
+        val data = UserData(request.fatcaId).set(FiNamePage, "Test FI").get // TODO : Need to replaced once we integrate
+        sessionRepository.set(data) // TODO : Need to replaced once we integrate
+        Future.successful(DataRequest(request.request, request.userId, data, request.fatcaId))
       case Some(data) => Future.successful(DataRequest(request.request, request.userId, data, request.fatcaId))
     }
 }
