@@ -25,7 +25,7 @@ import viewmodels.implicits._
 
 object CRSThresholdsSummary {
 
-  def row(answers: UserData)(implicit messages: Messages): Option[SummaryListRow] =
+  def row(answers: UserData, reportingYear: Int)(implicit messages: Messages): Option[SummaryListRow] =
     answers.get(CRSThresholdsPage).map {
       answer =>
 
@@ -35,7 +35,7 @@ object CRSThresholdsSummary {
           key = "crsThresholds.checkYourAnswersLabel",
           value = ValueViewModel(value),
           actions = Seq(
-            ActionItemViewModel("site.change", controllers.elections.routes.CRSThresholdsController.onPageLoad(CheckMode).url)
+            ActionItemViewModel("site.change", controllers.elections.routes.CRSThresholdsController.onPageLoad(CheckMode, reportingYear).url)
               .withVisuallyHiddenText(messages("crsThresholds.change.hidden"))
           )
         )

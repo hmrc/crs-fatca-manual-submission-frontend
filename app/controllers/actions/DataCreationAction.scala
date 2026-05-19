@@ -29,8 +29,8 @@ class DataCreationActionImpl @Inject() (implicit val executionContext: Execution
 
   override protected def transform[A](request: OptionalDataRequest[A]): Future[DataRequest[A]] =
     request.userData match {
-      case None       =>
-        val data = UserData(request.fatcaId).set(FiNamePage,"Test FI").get // TODO : Need to replaced once we integrate
+      case None =>
+        val data = UserData(request.fatcaId).set(FiNamePage, "Test FI").get // TODO : Need to replaced once we integrate
         sessionRepository.set(data) // TODO : Need to replaced once we integrate
         Future.successful(DataRequest(request.request, request.userId, data, request.fatcaId))
       case Some(data) => Future.successful(DataRequest(request.request, request.userId, data, request.fatcaId))

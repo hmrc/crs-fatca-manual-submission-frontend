@@ -20,7 +20,7 @@ import controllers.actions.*
 import forms.CRSDormantAccountsFormProvider
 import models.Mode
 import navigation.Navigator
-import pages.CRSDormantAccountsPage
+import pages.{CRSDormantAccountsPage, FiNamePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -46,35 +46,42 @@ class CRSDormantAccountsController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
 
-      val reportingYear = "2027" // TODO : Will be updated once we integrate in DAC6-4282
-      val fiName        = "Test FI" // TODO : Will be updated once we integrate in DAC6-4282
-
-      val preparedForm = request.userData.get(CRSDormantAccountsPage) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
-
-      Ok(view(preparedForm, mode, fiName, reportingYear))
+      val userData = request.userData
+      userData
+        .get(FiNamePage)
+        .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)) {
+          fiName =>
+            val preparedForm = userData.get(CRSDormantAccountsPage) match {
+              case None        => form
+              case Some(value) => form.fill(value)
+            }
+            Ok(view(preparedForm, mode, fiName, year))
+        }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
 
-      val reportingYear = "2027" // TODO : Will be updated once we integrate in DAC6-4282
-      val fiName        = "Test FI" // TODO : Will be updated once we integrate in DAC6-4282
+      val userData = request.userData
 
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiName, reportingYear))),
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userData.set(CRSDormantAccountsPage, value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(CRSDormantAccountsPage, mode, updatedAnswers))
-        )
+      userData
+        .get(FiNamePage)
+        .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))) {
+          fiName =>
+            form
+              .bindFromRequest()
+              .fold(
+                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiName, year))),
+                value =>
+                  for {
+                    updatedAnswers <- Future.fromTry(userData.set(CRSDormantAccountsPage, value))
+                    _              <- sessionRepository.set(updatedAnswers)
+                  } yield Redirect(navigator.nextPage(CRSDormantAccountsPage, mode, updatedAnswers, Some(year)))
+              )
+
+        }
   }
 }

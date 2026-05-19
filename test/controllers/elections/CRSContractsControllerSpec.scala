@@ -72,8 +72,13 @@ class CRSContractsControllerSpec extends SpecBase with MockitoSugar {
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
       val mockSessionRepository = mock[SessionRepository]
-      val userAnswers           = UserData(userAnswersId).set(CRSContractsPage, true).success.value
-        .set(FiNamePage,"Test FI").success.value
+      val userAnswers = UserData(userAnswersId)
+        .set(CRSContractsPage, true)
+        .success
+        .value
+        .set(FiNamePage, "Test FI")
+        .success
+        .value
       when(mockSessionRepository.get(any())) thenReturn Future.successful(Some(userAnswers))
 
       val application = applicationBuilder(userData = Some(emptyUserAnswers))

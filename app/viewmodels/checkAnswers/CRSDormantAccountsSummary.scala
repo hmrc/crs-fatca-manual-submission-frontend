@@ -25,7 +25,7 @@ import viewmodels.implicits._
 
 object CRSDormantAccountsSummary {
 
-  def row(answers: UserData)(implicit messages: Messages): Option[SummaryListRow] =
+  def row(answers: UserData, reportingYear: Int)(implicit messages: Messages): Option[SummaryListRow] =
     answers.get(CRSDormantAccountsPage).map {
       answer =>
 
@@ -35,7 +35,7 @@ object CRSDormantAccountsSummary {
           key = "crsDormantAccounts.checkYourAnswersLabel",
           value = ValueViewModel(value),
           actions = Seq(
-            ActionItemViewModel("site.change", controllers.elections.routes.CRSDormantAccountsController.onPageLoad(CheckMode).url)
+            ActionItemViewModel("site.change", controllers.elections.routes.CRSDormantAccountsController.onPageLoad(CheckMode, reportingYear).url)
               .withVisuallyHiddenText(messages("crsDormantAccounts.change.hidden"))
           )
         )

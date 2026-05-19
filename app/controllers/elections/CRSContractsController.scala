@@ -46,34 +46,36 @@ class CRSContractsController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode, reportingYear: Int): Action[AnyContent] = (identify andThen getData andThen setData) {
+  def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen setData) {
     implicit request =>
-      request.userData.get(FiNamePage)
-        .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)){
+      request.userData
+        .get(FiNamePage)
+        .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)) {
           fiName =>
-          val preparedForm = request.userData.get(CRSContractsPage) match {
-            case None => form
-            case Some(value) => form.fill(value)
-          }
+            val preparedForm = request.userData.get(CRSContractsPage) match {
+              case None        => form
+              case Some(value) => form.fill(value)
+            }
 
-          Ok(view(preparedForm, mode, fiName, reportingYear))
+            Ok(view(preparedForm, mode, fiName, year))
         }
   }
 
-  def onSubmit(mode: Mode, reportingYear: Int): Action[AnyContent] = (identify andThen getData andThen setData).async {
+  def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen setData).async {
     implicit request =>
-      request.userData.get(FiNamePage)
+      request.userData
+        .get(FiNamePage)
         .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))) {
           fiName =>
             form
               .bindFromRequest()
               .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiName, reportingYear))),
+                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiName, year))),
                 value =>
                   for {
                     updatedAnswers <- Future.fromTry(request.userData.set(CRSContractsPage, value))
-                    _ <- sessionRepository.set(updatedAnswers)
-                  } yield Redirect(navigator.nextPage(CRSContractsPage, mode, updatedAnswers))
+                    _              <- sessionRepository.set(updatedAnswers)
+                  } yield Redirect(navigator.nextPage(CRSContractsPage, mode, updatedAnswers, Some(year)))
               )
         }
   }

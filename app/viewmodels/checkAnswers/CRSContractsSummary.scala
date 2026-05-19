@@ -35,7 +35,7 @@ object CRSContractsSummary {
           key = "crsContracts.checkYourAnswersLabel",
           value = ValueViewModel(value),
           actions = Seq(
-            ActionItemViewModel("site.change", controllers.elections.routes.CRSContractsController.onPageLoad(CheckMode,reportingYear).url)
+            ActionItemViewModel("site.change", controllers.elections.routes.CRSContractsController.onPageLoad(CheckMode, reportingYear).url)
               .withVisuallyHiddenText(messages("crsContracts.change.hidden"))
           )
         )
