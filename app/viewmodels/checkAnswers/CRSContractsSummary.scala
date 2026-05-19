@@ -25,7 +25,7 @@ import viewmodels.implicits.*
 
 object CRSContractsSummary {
 
-  def row(answers: UserData)(implicit messages: Messages): Option[SummaryListRow] =
+  def row(answers: UserData, reportingYear: Int)(implicit messages: Messages): Option[SummaryListRow] =
     answers.get(CRSContractsPage).map {
       answer =>
 
@@ -35,7 +35,7 @@ object CRSContractsSummary {
           key = "crsContracts.checkYourAnswersLabel",
           value = ValueViewModel(value),
           actions = Seq(
-            ActionItemViewModel("site.change", controllers.elections.routes.CRSContractsController.onPageLoad(CheckMode).url)
+            ActionItemViewModel("site.change", controllers.elections.routes.CRSContractsController.onPageLoad(CheckMode,reportingYear).url)
               .withVisuallyHiddenText(messages("crsContracts.change.hidden"))
           )
         )

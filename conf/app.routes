@@ -27,10 +27,10 @@ POST       /fatca-void/voiding-fatca-information         controllers.VoidingFatc
 
 GET        /fatca-void/information-voided                controllers.InformationVoidedController.onPageLoad(originalMessageRefId: String)
 
-GET        /manual/elections/crs/contracts                        controllers.elections.CRSContractsController.onPageLoad(mode: Mode = NormalMode)
-POST       /manual/elections/crs/contracts                        controllers.elections.CRSContractsController.onSubmit(mode: Mode = NormalMode)
-GET        /manual/elections/crs/change-contracts                  controllers.elections.CRSContractsController.onPageLoad(mode: Mode = CheckMode)
-POST       /manual/elections/crs/change-contracts                  controllers.elections.CRSContractsController.onSubmit(mode: Mode = CheckMode)
+GET        /manual/elections/crs/contracts                        controllers.elections.CRSContractsController.onPageLoad(mode: Mode = NormalMode, year: Int)
+POST       /manual/elections/crs/contracts                        controllers.elections.CRSContractsController.onSubmit(mode: Mode = NormalMode, year: Int)
+GET        /manual/elections/crs/change-contracts                  controllers.elections.CRSContractsController.onPageLoad(mode: Mode = CheckMode, year: Int)
+POST       /manual/elections/crs/change-contracts                  controllers.elections.CRSContractsController.onSubmit(mode: Mode = CheckMode, year: Int)
 
 GET        /manual/elections/crs/dormant-accounts                        controllers.elections.CRSDormantAccountsController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/elections/crs/dormant-accounts                        controllers.elections.CRSDormantAccountsController.onSubmit(mode: Mode = NormalMode)

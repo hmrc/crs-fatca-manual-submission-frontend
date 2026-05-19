@@ -23,7 +23,7 @@ import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.CRSContractsPage
+import pages.{CRSContractsPage, FiNamePage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -40,10 +40,10 @@ class CRSContractsControllerSpec extends SpecBase with MockitoSugar {
   val formProvider          = new CRSContractsFormProvider()
   val form                  = formProvider()
   val testFIName            = "Test FI" // TODO : Require update after integration
-  val reportingYear         = "2027" // TODO : Require update after integration
+  val reportingYear         = 2027
   val mockSessionRepository = mock[SessionRepository]
 
-  lazy val cRSContractsRoute = controllers.elections.routes.CRSContractsController.onPageLoad(NormalMode).url
+  lazy val cRSContractsRoute = controllers.elections.routes.CRSContractsController.onPageLoad(NormalMode, reportingYear).url
 
   override def beforeEach(): Unit = reset(mockSessionRepository)
   super.beforeEach()
@@ -73,6 +73,7 @@ class CRSContractsControllerSpec extends SpecBase with MockitoSugar {
 
       val mockSessionRepository = mock[SessionRepository]
       val userAnswers           = UserData(userAnswersId).set(CRSContractsPage, true).success.value
+        .set(FiNamePage,"Test FI").success.value
       when(mockSessionRepository.get(any())) thenReturn Future.successful(Some(userAnswers))
 
       val application = applicationBuilder(userData = Some(emptyUserAnswers))
