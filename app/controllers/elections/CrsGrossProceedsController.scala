@@ -69,7 +69,7 @@ class CrsGrossProceedsController @Inject() (
             for {
               updatedAnswers <- Future.fromTry(request.userData.set(CrsGrossProceedsPage, value))
               _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(CrsGrossProceedsPage, mode, updatedAnswers))
+            } yield Redirect(navigator.nextPage(CrsGrossProceedsPage, mode, updatedAnswers, None))
         )
   }
 }

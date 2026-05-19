@@ -69,7 +69,7 @@ class CarfGrossProceedsController @Inject() (
             for {
               updatedAnswers <- Future.fromTry(request.userData.set(CarfGrossProceedsPage, value))
               _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(CarfGrossProceedsPage, mode, updatedAnswers))
+            } yield Redirect(navigator.nextPage(CarfGrossProceedsPage, mode, updatedAnswers, None))
         )
   }
 }
