@@ -27,11 +27,15 @@ import models._
 class Navigator @Inject() () {
 
   private val normalRoutes: Page => UserData => Call = {
-    case _ => _ => routes.IndexController.onPageLoad()
+    case CRSContractsPage       => _ => controllers.elections.routes.CRSDormantAccountsController.onPageLoad(NormalMode)
+    case CRSDormantAccountsPage => _ => controllers.elections.routes.CRSThresholdsController.onPageLoad(NormalMode)
+    case _                      => _ => routes.IndexController.onPageLoad()
   }
 
   private val checkRouteMap: Page => UserData => Call = {
-    case _ => _ => routes.CheckYourAnswersController.onPageLoad()
+    case CRSContractsPage       => _ => controllers.elections.routes.CRSDormantAccountsController.onPageLoad(CheckMode)
+    case CRSDormantAccountsPage => _ => controllers.elections.routes.CRSThresholdsController.onPageLoad(CheckMode)
+    case _                      => _ => routes.CheckYourAnswersController.onPageLoad()
   }
 
   def nextPage(page: Page, mode: Mode, userData: UserData): Call = mode match {

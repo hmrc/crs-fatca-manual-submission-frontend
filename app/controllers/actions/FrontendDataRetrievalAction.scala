@@ -16,20 +16,22 @@
 
 package controllers.actions
 
-import models.UserData
-import models.requests.{DataRequest, OptionalDataRequest}
-import play.api.mvc.ActionTransformer
-
 import javax.inject.Inject
+import models.requests.{IdentifierRequest, OptionalDataRequest}
+import play.api.mvc.ActionTransformer
+import repositories.SessionRepository
+
 import scala.concurrent.{ExecutionContext, Future}
 
-class DataCreationActionImpl @Inject() (implicit val executionContext: ExecutionContext) extends DataCreationAction {
+class FrontendDataRetrievalActionImpl @Inject() (
+  val sessionRepository: SessionRepository
+)(implicit val executionContext: ExecutionContext)
+    extends FrontendDataRetrievalAction {
 
-  override protected def transform[A](request: OptionalDataRequest[A]): Future[DataRequest[A]] =
-    request.userData match {
-      case None       => Future.successful(DataRequest(request.request, request.userId, UserData(request.fatcaId), request.fatcaId))
-      case Some(data) => Future.successful(DataRequest(request.request, request.userId, data, request.fatcaId))
+  override protected def transform[A](request: IdentifierRequest[A]): Future[OptionalDataRequest[A]] =
+    sessionRepository.get(request.fatcaId).map {
+      OptionalDataRequest(request.request, request.userId, _, request.fatcaId)
     }
 }
 
-trait DataCreationAction extends ActionTransformer[OptionalDataRequest, DataRequest]
+trait FrontendDataRetrievalAction extends ActionTransformer[IdentifierRequest, OptionalDataRequest]
