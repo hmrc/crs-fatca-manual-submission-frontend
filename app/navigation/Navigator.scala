@@ -26,18 +26,21 @@ import models._
 @Singleton
 class Navigator @Inject() () {
 
-  private val normalRoutes: Page => UserData => Call = {
-    case _ => _ => routes.IndexController.onPageLoad()
-  }
+  def nextPage(page: Page, mode: Mode, userData: UserData, year: Option[Int]): Call =
+    (page, mode) match {
+      case (IsUsTreasuryRegulatedPage, NormalMode) =>
+        year.fold(routes.JourneyRecoveryController.onPageLoad())(
+          y => controllers.elections.routes.IsApplyingThresholdsController.onPageLoad(NormalMode, y)
+        )
+      case (IsApplyingThresholdsPage, NormalMode) =>
+        routes.JourneyRecoveryController.onPageLoad()
+      case (_, CheckMode) =>
+        routes.CheckYourAnswersController.onPageLoad()
+      case _ =>
+        routes.IndexController.onPageLoad()
+    }
 
   private val checkRouteMap: Page => UserData => Call = {
     case _ => _ => routes.CheckYourAnswersController.onPageLoad()
-  }
-
-  def nextPage(page: Page, mode: Mode, userData: UserData): Call = mode match {
-    case NormalMode =>
-      normalRoutes(page)(userData)
-    case CheckMode =>
-      checkRouteMap(page)(userData)
   }
 }

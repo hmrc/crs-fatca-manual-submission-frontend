@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package navigation
+package pages
 
-import play.api.mvc.Call
-import pages._
-import models.{Mode, UserData}
+import play.api.libs.json.JsPath
 
-class FakeNavigator(desiredRoute: Call) extends Navigator {
+case object IsUsTreasuryRegulatedPage extends QuestionPage[Boolean] {
 
-  override def nextPage(page: Page, mode: Mode, userData: UserData, year: Option[Int]): Call =
-    desiredRoute
+  override def path: JsPath = JsPath \ toString
+
+  override def toString: String = "isUsTreasuryRegulated"
 }

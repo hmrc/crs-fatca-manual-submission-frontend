@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package navigation
+package controllers.actions
 
-import play.api.mvc.Call
-import pages._
-import models.{Mode, UserData}
+import models.UserData
+import models.requests.{IdentifierRequest, OptionalDataRequest}
 
-class FakeNavigator(desiredRoute: Call) extends Navigator {
+import scala.concurrent.{ExecutionContext, Future}
 
-  override def nextPage(page: Page, mode: Mode, userData: UserData, year: Option[Int]): Call =
-    desiredRoute
+class FakeFrontendDataRetrievalAction(dataToReturn: Option[UserData]) extends FrontendDataRetrievalAction {
+
+  override protected def transform[A](request: IdentifierRequest[A]): Future[OptionalDataRequest[A]] =
+    Future(OptionalDataRequest(request.request, request.userId, dataToReturn, request.fatcaId))
+
+  implicit override protected val executionContext: ExecutionContext =
+    scala.concurrent.ExecutionContext.Implicits.global
 }
