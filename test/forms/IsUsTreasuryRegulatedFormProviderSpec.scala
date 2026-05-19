@@ -17,14 +17,15 @@
 package forms
 
 import forms.behaviours.BooleanFieldBehaviours
+import forms.elections.IsUsTreasuryRegulatedFormProvider
 import play.api.data.FormError
 
-class CRSThresholdsFormProviderSpec extends BooleanFieldBehaviours {
+class IsUsTreasuryRegulatedFormProviderSpec extends BooleanFieldBehaviours {
 
-  val requiredKey = "crsThresholds.error.required"
+  val requiredKey = "isUsTreasuryRegulated.error.required"
   val invalidKey  = "error.boolean"
 
-  val form = new CRSThresholdsFormProvider()()
+  val form = new IsUsTreasuryRegulatedFormProvider()()
 
   ".value" - {
 

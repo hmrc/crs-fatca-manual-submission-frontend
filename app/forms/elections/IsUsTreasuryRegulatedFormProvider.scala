@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package forms
-
-import javax.inject.Inject
+package forms.elections
 
 import forms.mappings.Mappings
 import play.api.data.Form
 
-class CRSDormantAccountsFormProvider @Inject() extends Mappings {
+import javax.inject.Inject
+
+class IsUsTreasuryRegulatedFormProvider @Inject() extends Mappings {
 
   def apply(): Form[Boolean] =
     Form(
-      "value" -> boolean("crsDormantAccounts.error.required")
+      "value" -> boolean("isUsTreasuryRegulated.error.required")
     )
 }

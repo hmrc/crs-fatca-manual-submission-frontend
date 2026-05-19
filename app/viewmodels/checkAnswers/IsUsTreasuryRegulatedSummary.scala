@@ -17,26 +17,26 @@
 package viewmodels.checkAnswers
 
 import models.{CheckMode, UserData}
-import pages.CRSThresholdsPage
+import pages.IsUsTreasuryRegulatedPage
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
-import viewmodels.govuk.summarylist._
-import viewmodels.implicits._
+import viewmodels.govuk.summarylist.*
+import viewmodels.implicits.*
 
-object CRSThresholdsSummary {
+object IsUsTreasuryRegulatedSummary {
 
-  def row(answers: UserData)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(CRSThresholdsPage).map {
+  def row(answers: UserData, year: Int)(implicit messages: Messages): Option[SummaryListRow] =
+    answers.get(IsUsTreasuryRegulatedPage).map {
       answer =>
 
         val value = if (answer) "site.yes" else "site.no"
 
         SummaryListRowViewModel(
-          key = "crsThresholds.checkYourAnswersLabel",
+          key = "isUsTreasuryRegulated.checkYourAnswersLabel",
           value = ValueViewModel(value),
           actions = Seq(
-            ActionItemViewModel("site.change", controllers.elections.routes.CRSThresholdsController.onPageLoad(CheckMode).url)
-              .withVisuallyHiddenText(messages("crsThresholds.change.hidden"))
+            ActionItemViewModel("site.change", controllers.elections.routes.IsUsTreasuryRegulatedController.onPageLoad(CheckMode, year).url)
+              .withVisuallyHiddenText(messages("isUsTreasuryRegulated.change.hidden"))
           )
         )
     }

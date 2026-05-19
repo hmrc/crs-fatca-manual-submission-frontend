@@ -1,5 +1,5 @@
-/*
- * Copyright 2026 HM Revenue & Customs
+@*
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,15 +12,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *@
 
-package pages
+@this()
 
-import play.api.libs.json.JsPath
 
-case object CRSContractsPage extends QuestionPage[Boolean] {
+@(captionMessage: String, headingMessage: String, size: String = "l")(implicit messages: Messages)
 
-  override def path: JsPath = JsPath \ toString
+<h2 class="govuk-caption-l hmrc-caption-l">
+ <span id="section-header">@captionMessage</span>
+</h2>
+<h1 class="govuk-heading-@size">@headingMessage</h1>
 
-  override def toString: String = "CRSContracts"
-}

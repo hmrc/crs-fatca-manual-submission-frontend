@@ -48,7 +48,7 @@ trait SpecBase
   val userAnswersId: String = "id"
   def now: LocalDateTime    = LocalDateTime.now()
 
-  def emptyUserAnswers: UserData           = UserData(userAnswersId)
+  def emptyUserData: UserData              = UserData(userAnswersId)
   implicit val hc: HeaderCarrier           = HeaderCarrier()
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
@@ -56,6 +56,7 @@ trait SpecBase
     new GuiceApplicationBuilder()
       .overrides(
         bind[DataRequiredAction].to[DataRequiredActionImpl],
+        bind[FrontendDataRetrievalAction].to(new FakeFrontendDataRetrievalAction(userData)),
         bind[IdentifierAction].to[FakeIdentifierAction],
         bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userData))
       )

@@ -17,88 +17,83 @@
 package controllers.elections
 
 import base.SpecBase
-import controllers.routes
-import forms.CRSThresholdsFormProvider
+import forms.elections.IsUsTreasuryRegulatedFormProvider
 import models.{NormalMode, UserData}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{reset, when}
+import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.CRSThresholdsPage
+import pages.{FiNamePage, IsUsTreasuryRegulatedPage}
+import play.api.data.Form
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import repositories.SessionRepository
-import views.html.CRSThresholdsView
+import views.html.IsUsTreasuryRegulatedView
 
 import scala.concurrent.Future
 
-class CRSThresholdsControllerSpec extends SpecBase with MockitoSugar {
+class IsUsTreasuryRegulatedControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute   = Call("GET", "/foo")
-  val testFIName    = "Test FI"
-  val reportingYear = "2027"
+  def onwardRoute         = Call("GET", "/foo")
+  private val fiName      = "fiName"
+  private val year        = 2020
+  val formProvider        = new IsUsTreasuryRegulatedFormProvider()
+  val form: Form[Boolean] = formProvider()
 
-  val formProvider          = new CRSThresholdsFormProvider()
-  val form                  = formProvider()
-  val mockSessionRepository = mock[SessionRepository]
+  lazy val isUsTreasuryRegulatedRoute: String = controllers.elections.routes.IsUsTreasuryRegulatedController.onPageLoad(NormalMode, year).url
 
-  lazy val cRSThresholdsRoute = controllers.elections.routes.CRSThresholdsController.onPageLoad(NormalMode).url
-
-  override def beforeEach(): Unit =
-    reset(mockSessionRepository)
-    super.beforeEach()
-
-  "CRSThresholds Controller" - {
+  "IsUsTreasuryRegulated Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userData = Some(emptyUserAnswers))
-        .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
-        .build()
+      val application = applicationBuilder(userData = Some(emptyUserData.withPage(FiNamePage, fiName))).build()
 
       running(application) {
-        when(mockSessionRepository.get(any())) thenReturn Future.successful(Some(emptyUserAnswers))
-        val request = FakeRequest(GET, cRSThresholdsRoute)
+        val request = FakeRequest(GET, isUsTreasuryRegulatedRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[CRSThresholdsView]
+        val view = application.injector.instanceOf[IsUsTreasuryRegulatedView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, testFIName, reportingYear)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, fiName, year)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserData(userAnswersId).set(CRSThresholdsPage, true).success.value
+      val userAnswers = UserData(userAnswersId)
+        .set(IsUsTreasuryRegulatedPage, true)
+        .success
+        .value
+        .set(FiNamePage, fiName)
+        .success
+        .value
 
-      val application = applicationBuilder(userData = Some(userAnswers))
-        .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
-        .build()
+      val application = applicationBuilder(userData = Some(userAnswers)).build()
 
       running(application) {
-        when(mockSessionRepository.get(any())) thenReturn Future.successful(Some(userAnswers))
-        val request = FakeRequest(GET, cRSThresholdsRoute)
+        val request = FakeRequest(GET, isUsTreasuryRegulatedRoute)
 
-        val view = application.injector.instanceOf[CRSThresholdsView]
+        val view = application.injector.instanceOf[IsUsTreasuryRegulatedView]
 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode, testFIName, reportingYear)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode, fiName, year)(request, messages(application)).toString
       }
     }
 
     "must redirect to the next page when valid data is submitted" in {
+      val userData              = emptyUserData.set(FiNamePage, fiName).success.value
+      val mockSessionRepository = mock[SessionRepository]
 
-      when(mockSessionRepository.get(any())) thenReturn Future.successful(Some(emptyUserAnswers))
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
-        applicationBuilder(userData = Some(emptyUserAnswers))
+        applicationBuilder(userData = Some(userData))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository)
@@ -107,7 +102,7 @@ class CRSThresholdsControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, cRSThresholdsRoute)
+          FakeRequest(POST, isUsTreasuryRegulatedRoute)
             .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
@@ -118,25 +113,20 @@ class CRSThresholdsControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
-
-      val application = applicationBuilder(userData = Some(emptyUserAnswers))
-        .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
-        .build()
-      when(mockSessionRepository.get(any())) thenReturn Future.successful(Some(emptyUserAnswers))
-
+      val application = applicationBuilder(userData = Some(emptyUserData.withPage(FiNamePage, fiName))).build()
       running(application) {
         val request =
-          FakeRequest(POST, cRSThresholdsRoute)
+          FakeRequest(POST, isUsTreasuryRegulatedRoute)
             .withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
 
-        val view = application.injector.instanceOf[CRSThresholdsView]
+        val view = application.injector.instanceOf[IsUsTreasuryRegulatedView]
 
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, testFIName, reportingYear)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, fiName, year)(request, messages(application)).toString
       }
     }
 
@@ -145,12 +135,12 @@ class CRSThresholdsControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(userData = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, cRSThresholdsRoute)
+        val request = FakeRequest(GET, isUsTreasuryRegulatedRoute)
 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 
@@ -160,13 +150,13 @@ class CRSThresholdsControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, cRSThresholdsRoute)
+          FakeRequest(POST, isUsTreasuryRegulatedRoute)
             .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
       }
     }
   }

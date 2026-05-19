@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package forms
+package controllers.actions
 
-import javax.inject.Inject
+import models.UserData
+import models.requests.{IdentifierRequest, OptionalDataRequest}
 
-import forms.mappings.Mappings
-import play.api.data.Form
+import scala.concurrent.{ExecutionContext, Future}
 
-class CRSContractsFormProvider @Inject() extends Mappings {
+class FakeFrontendDataRetrievalAction(dataToReturn: Option[UserData]) extends FrontendDataRetrievalAction {
 
-  def apply(): Form[Boolean] =
-    Form(
-      "value" -> boolean("crsContracts.error.required")
-    )
+  override protected def transform[A](request: IdentifierRequest[A]): Future[OptionalDataRequest[A]] =
+    Future(OptionalDataRequest(request.request, request.userId, dataToReturn, request.fatcaId))
+
+  implicit override protected val executionContext: ExecutionContext =
+    scala.concurrent.ExecutionContext.Implicits.global
 }

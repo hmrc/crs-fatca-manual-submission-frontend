@@ -17,55 +17,30 @@
 package navigation
 
 import javax.inject.{Inject, Singleton}
+
 import play.api.mvc.Call
 import controllers.routes
-import pages.*
-import models.*
-import play.api.Logging
-import utils.ReportingConstants
+import pages._
+import models._
 
 @Singleton
-class Navigator @Inject() () extends Logging {
+class Navigator @Inject() () {
 
-  private val normalRoutes: Page => UserData => Call = {
-    case CRSContractsPage       => _ => controllers.elections.routes.CRSDormantAccountsController.onPageLoad(NormalMode)
-    case CRSDormantAccountsPage => _ => controllers.elections.routes.CRSThresholdsController.onPageLoad(NormalMode)
-    case CRSThresholdsPage      => userAnswers => thresholdsNavigation(userAnswers)
-    case CarfGrossProceedsPage  => userAnswers => crsCarfGrossProceedsRedirect(userAnswers)
-    case CrsGrossProceedsPage   => _ => routes.CheckYourAnswersController.onPageLoad()
-    case _                      => _ => routes.IndexController.onPageLoad()
-  }
+  def nextPage(page: Page, mode: Mode, userData: UserData, year: Option[Int]): Call =
+    (page, mode) match {
+      case (IsUsTreasuryRegulatedPage, NormalMode) =>
+        year.fold(routes.JourneyRecoveryController.onPageLoad())(
+          y => controllers.elections.routes.IsApplyingThresholdsController.onPageLoad(NormalMode, y)
+        )
+      case (IsApplyingThresholdsPage, NormalMode) =>
+        routes.JourneyRecoveryController.onPageLoad()
+      case (_, CheckMode) =>
+        routes.CheckYourAnswersController.onPageLoad()
+      case _ =>
+        routes.IndexController.onPageLoad()
+    }
 
   private val checkRouteMap: Page => UserData => Call = {
-    case CRSContractsPage       => _ => controllers.elections.routes.CRSDormantAccountsController.onPageLoad(CheckMode)
-    case CRSDormantAccountsPage => _ => controllers.elections.routes.CRSThresholdsController.onPageLoad(CheckMode)
-    case CarfGrossProceedsPage  => userAnswers => crsCarfGrossProceedsRedirect(userAnswers)
-    case _                      => _ => routes.CheckYourAnswersController.onPageLoad()
+    case _ => _ => routes.CheckYourAnswersController.onPageLoad()
   }
-
-  def nextPage(page: Page, mode: Mode, userData: UserData): Call = mode match {
-    case NormalMode =>
-      normalRoutes(page)(userData)
-    case CheckMode =>
-      checkRouteMap(page)(userData)
-  }
-
-  private def thresholdsNavigation(userAnswers: UserData): Call =
-    userAnswers.get(CRSReportingPeriodPage) match {
-      case Some(year) =>
-        if (year >= ReportingConstants.ThresholdDate.getYear)
-          controllers.elections.routes.CarfGrossProceedsController.onPageLoad(NormalMode)
-        else
-          routes.CheckYourAnswersController.onPageLoad()
-      case _ =>
-        logger.error("CRS Reporting period not found in user answers when navigating from thresholds page")
-        routes.JourneyRecoveryController.onPageLoad()
-    }
-
-  private def crsCarfGrossProceedsRedirect(userAnswers: UserData) =
-    userAnswers.get(CarfGrossProceedsPage) match {
-      case Some(true)  => controllers.elections.routes.CrsGrossProceedsController.onPageLoad(NormalMode)
-      case Some(false) => routes.CheckYourAnswersController.onPageLoad()
-      case None        => routes.JourneyRecoveryController.onPageLoad()
-    }
 }
