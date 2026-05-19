@@ -54,7 +54,7 @@ class CrsGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userData = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userData = Some(emptyUserData)).build()
 
       running(application) {
         val request = FakeRequest(GET, crsGrossProceedsRoute)
@@ -96,7 +96,7 @@ class CrsGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
-        applicationBuilder(userData = Some(emptyUserAnswers))
+        applicationBuilder(userData = Some(emptyUserData))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository)
@@ -117,7 +117,7 @@ class CrsGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userData = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userData = Some(emptyUserData)).build()
 
       running(application) {
         val request =

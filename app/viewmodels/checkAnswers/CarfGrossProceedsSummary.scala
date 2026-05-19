@@ -25,7 +25,7 @@ import viewmodels.implicits.*
 
 object CarfGrossProceedsSummary {
 
-  def row(answers: UserData)(implicit messages: Messages): Option[SummaryListRow] =
+  def row(answers: UserData, year: Int)(implicit messages: Messages): Option[SummaryListRow] =
     answers.get(CarfGrossProceedsPage).map {
       answer =>
 
@@ -35,7 +35,7 @@ object CarfGrossProceedsSummary {
           key = "carfGrossProceeds.checkYourAnswersLabel",
           value = ValueViewModel(value),
           actions = Seq(
-            ActionItemViewModel("site.change", controllers.elections.routes.CarfGrossProceedsController.onPageLoad(CheckMode).url)
+            ActionItemViewModel("site.change", controllers.elections.routes.CarfGrossProceedsController.onPageLoad(CheckMode, year).url)
               .withVisuallyHiddenText(messages("carfGrossProceeds.change.hidden"))
           )
         )

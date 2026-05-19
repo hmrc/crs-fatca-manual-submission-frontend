@@ -23,11 +23,11 @@
     caption: components.Caption
 )
 
-@(form: Form[_], mode: Mode, fiName: String, reportingYear: String)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, fiName: String, reportingYear: Int)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("crsGrossProceeds.title"))) {
 
-    @formHelper(action = controllers.elections.routes.CrsGrossProceedsController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+    @formHelper(action = controllers.elections.routes.CrsGrossProceedsController.onSubmit(mode, reportingYear), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))

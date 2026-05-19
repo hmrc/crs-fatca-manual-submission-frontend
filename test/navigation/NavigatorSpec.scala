@@ -67,14 +67,15 @@ class NavigatorSpec extends SpecBase {
       "must go from elections/crs/thresholds page" - {
         "to /elections/crs/gross-proceeds when the reporting period is 2026 or later" in {
           val userAnswers: UserData = emptyUserData
-          val reportingYear = 2026
-          navigator.nextPage(CRSThresholdsPage, NormalMode, userAnswers, Some(reportingYear)) mustBe controllers.elections.routes.CarfGrossProceedsController.onPageLoad(NormalMode)
+          val reportingYear         = 2026
+          navigator.nextPage(CRSThresholdsPage, NormalMode, userAnswers, Some(reportingYear)) mustBe controllers.elections.routes.CarfGrossProceedsController
+            .onPageLoad(NormalMode)
 
         }
 
         "to /check-your-answers when the reporting period is 2025 or earlier" in {
           val userAnswers: UserData = emptyUserData
-          val reportingYear = 2025
+          val reportingYear         = 2025
           navigator.nextPage(CRSThresholdsPage, NormalMode, userAnswers, Some(2025)) mustBe routes.CheckYourAnswersController.onPageLoad()
         }
       }
@@ -96,7 +97,7 @@ class NavigatorSpec extends SpecBase {
       "must go from /elections/crs/crs-gross-proceeds" - {
         "to /check-your-answers when the answers" in {
           val userAnswers = emptyUserData.withPage(CrsGrossProceedsPage, false)
-          navigator.nextPage(CrsGrossProceedsPage, NormalMode, userAnswers) mustBe routes.CheckYourAnswersController.onPageLoad()
+          navigator.nextPage(CrsGrossProceedsPage, NormalMode, userAnswers, Some(2026)) mustBe routes.CheckYourAnswersController.onPageLoad()
         }
       }
     }

@@ -25,7 +25,7 @@ import viewmodels.implicits._
 
 object CrsGrossProceedsSummary {
 
-  def row(answers: UserData)(implicit messages: Messages): Option[SummaryListRow] =
+  def row(answers: UserData, year: Int)(implicit messages: Messages): Option[SummaryListRow] =
     answers.get(CrsGrossProceedsPage).map {
       answer =>
 
@@ -35,7 +35,7 @@ object CrsGrossProceedsSummary {
           key = "crsGrossProceeds.checkYourAnswersLabel",
           value = ValueViewModel(value),
           actions = Seq(
-            ActionItemViewModel("site.change", controllers.elections.routes.CrsGrossProceedsController.onPageLoad(CheckMode).url)
+            ActionItemViewModel("site.change", controllers.elections.routes.CrsGrossProceedsController.onPageLoad(CheckMode, year).url)
               .withVisuallyHiddenText(messages("crsGrossProceeds.change.hidden"))
           )
         )
