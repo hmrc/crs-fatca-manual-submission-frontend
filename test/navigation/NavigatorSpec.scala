@@ -20,6 +20,7 @@ import base.SpecBase
 import controllers.routes
 import models.*
 import pages.*
+import pages.elections.{CRSContractsPage, CRSDormantAccountsPage, CRSThresholdsPage}
 
 class NavigatorSpec extends SpecBase {
 
@@ -61,6 +62,45 @@ class NavigatorSpec extends SpecBase {
 
         case object UnknownPage extends Page
         navigator.nextPage(UnknownPage, NormalMode, UserData("id"), None) mustBe routes.IndexController.onPageLoad()
+      }
+    }
+
+    "from CRSContractsPage" - {
+
+      "must go to Dormant Accounts Page with year when year is provided" in {
+        val userData = UserData("id")
+        navigator.nextPage(CRSContractsPage, NormalMode, userData, Some(year)) mustBe
+          controllers.elections.routes.CRSDormantAccountsController.onPageLoad(NormalMode, year)
+      }
+
+      "must go to JourneyRecovery when year is None" in {
+        val userData = UserData("id")
+        navigator.nextPage(CRSContractsPage, NormalMode, userData, None) mustBe
+          routes.JourneyRecoveryController.onPageLoad()
+      }
+    }
+
+    "from CRSDormantAccountPage" - {
+
+      "must go to Threshold Page with year when year is provided" in {
+        val userData = UserData("id")
+        navigator.nextPage(CRSDormantAccountsPage, NormalMode, userData, Some(year)) mustBe
+          controllers.elections.routes.CRSThresholdsController.onPageLoad(NormalMode, year)
+      }
+
+      "must go to JourneyRecovery when year is None" in {
+        val userData = UserData("id")
+        navigator.nextPage(CRSDormantAccountsPage, NormalMode, userData, None) mustBe
+          routes.JourneyRecoveryController.onPageLoad()
+      }
+    }
+
+    "from CRSThresholdsPage" - {
+
+      "must go to Index Controller" in {
+        val userData = UserData("id")
+        navigator.nextPage(CRSThresholdsPage, NormalMode, userData, None) mustBe
+          routes.IndexController.onPageLoad()
       }
     }
 
