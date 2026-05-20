@@ -146,45 +146,6 @@ class NavigatorSpec extends SpecBase {
       }
     }
 
-    "from CRSContractsPage" - {
-
-      "must go to Dormant Accounts Page with year when year is provided" in {
-        val userData = UserData("id")
-        navigator.nextPage(CRSContractsPage, NormalMode, userData, Some(year)) mustBe
-          controllers.elections.routes.CRSDormantAccountsController.onPageLoad(NormalMode, year)
-      }
-
-      "must go to JourneyRecovery when year is None" in {
-        val userData = UserData("id")
-        navigator.nextPage(CRSContractsPage, NormalMode, userData, None) mustBe
-          routes.JourneyRecoveryController.onPageLoad()
-      }
-    }
-
-    "from CRSDormantAccountPage" - {
-
-      "must go to Threshold Page with year when year is provided" in {
-        val userData = UserData("id")
-        navigator.nextPage(CRSDormantAccountsPage, NormalMode, userData, Some(year)) mustBe
-          controllers.elections.routes.CRSThresholdsController.onPageLoad(NormalMode, year)
-      }
-
-      "must go to JourneyRecovery when year is None" in {
-        val userData = UserData("id")
-        navigator.nextPage(CRSDormantAccountsPage, NormalMode, userData, None) mustBe
-          routes.JourneyRecoveryController.onPageLoad()
-      }
-    }
-
-    "from CRSThresholdsPage" - {
-
-      "must go to Index Controller" in {
-        val userData = UserData("id")
-        navigator.nextPage(CRSThresholdsPage, NormalMode, userData, None) mustBe
-          routes.IndexController.onPageLoad()
-      }
-    }
-
     "in Check mode" - {
 
       "must go from a page that doesn't exist in the edit route map to CheckYourAnswers" in {

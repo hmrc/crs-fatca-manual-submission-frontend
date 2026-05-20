@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import forms.CrsGrossProceedsFormProvider
-import models.{NormalMode, UserData}
+import models.NormalMode
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
@@ -76,8 +76,6 @@ class CrsGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
         val request = FakeRequest(GET, crsGrossProceedsRoute)
 
         val result = route(application, request).value
-
-        val view = application.injector.instanceOf[CrsGrossProceedsView]
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
