@@ -16,11 +16,6 @@
 
 @this()
 
+@(captionMessage: String, size: String = "l")
 
-@(captionMessage: String, headingMessage: String, size: String = "l")(implicit messages: Messages)
-
-<h1 class="govuk-fieldset__heading">
-    <span class="govuk-caption-l">@captionMessage</span>
-    @headingMessage
-</h1>
-
+<span class="govuk-caption-@size">@captionMessage </span>

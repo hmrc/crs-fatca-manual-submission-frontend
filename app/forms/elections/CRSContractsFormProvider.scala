@@ -1,5 +1,5 @@
-@*
- * Copyright 2024 HM Revenue & Customs
+/*
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,15 +12,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this()
+package forms.elections
 
+import javax.inject.Inject
 
-@(captionMessage: String, headingMessage: String, size: String = "l")(implicit messages: Messages)
+import forms.mappings.Mappings
+import play.api.data.Form
 
-<h1 class="govuk-fieldset__heading">
-    <span class="govuk-caption-l">@captionMessage</span>
-    @headingMessage
-</h1>
+class CRSContractsFormProvider @Inject() extends Mappings {
 
+  def apply(): Form[Boolean] =
+    Form(
+      "value" -> boolean("crsContracts.error.required")
+    )
+}
