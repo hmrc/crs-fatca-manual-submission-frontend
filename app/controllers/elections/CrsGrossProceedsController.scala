@@ -44,7 +44,7 @@ class CrsGrossProceedsController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  val form   = formProvider()
+  val form = formProvider()
 
   def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
