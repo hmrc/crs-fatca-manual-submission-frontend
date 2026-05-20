@@ -19,8 +19,8 @@
 
 @(captionMessage: String, headingMessage: String, size: String = "l")(implicit messages: Messages)
 
-<h2 class="govuk-caption-l hmrc-caption-l">
- <span id="section-header">@captionMessage</span>
-</h2>
-<h1 class="govuk-heading-@size">@headingMessage</h1>
+<h1 class="govuk-fieldset__heading">
+    <span class="govuk-caption-l">@captionMessage</span>
+    @headingMessage
+</h1>
 

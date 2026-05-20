@@ -74,5 +74,4 @@ class Navigator @Inject() () {
       case Some(false) => routes.CheckYourAnswersController.onPageLoad()
       case None        => routes.JourneyRecoveryController.onPageLoad()
     }
-
 }
