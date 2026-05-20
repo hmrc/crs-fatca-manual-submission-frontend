@@ -62,7 +62,7 @@ class Navigator @Inject() () {
     }
 
   private def thresholdsNavigation(year: Int): Call =
-    if (year >= ReportingConstants.ThresholdDate.getYear) {
+    if (year >= ReportingConstants.REPORTING_THRESHOLD_YEAR) {
       controllers.elections.routes.CarfGrossProceedsController.onPageLoad(NormalMode, year)
     } else {
       routes.CheckYourAnswersController.onPageLoad()
