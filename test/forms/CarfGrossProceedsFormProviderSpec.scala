@@ -23,7 +23,7 @@ class CarfGrossProceedsFormProviderSpec extends BooleanFieldBehaviours {
 
   val requiredKey     = "carfGrossProceeds.error.required"
   val invalidKey      = "error.boolean"
-  val reportingPeriod = 2027
+  val reportingPeriod = "2027"
 
   val form = new CarfGrossProceedsFormProvider()(reportingPeriod)
 

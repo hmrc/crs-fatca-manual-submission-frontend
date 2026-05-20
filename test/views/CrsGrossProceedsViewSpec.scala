@@ -42,7 +42,7 @@ class CrsGrossProceedsViewSpec extends SpecBase {
 
     "should render page components" - {
 
-      val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, "TestFIName", "2027")
+      val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, "TestFIName", 2027)
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
       "must display title" in {

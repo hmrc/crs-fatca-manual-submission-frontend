@@ -23,7 +23,7 @@ import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.CarfGrossProceedsPage
+import pages.{CarfGrossProceedsPage, FiNamePage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -37,23 +37,23 @@ class CarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  val reportingYear         = "2027"
+  val reportingYear         = 2027
   val fiName                = "Test FI"
   val formProvider          = new CarfGrossProceedsFormProvider()
-  val form                  = formProvider(reportingYear)
+  val form                  = formProvider(reportingYear.toString)
   val mockSessionRepository = mock[SessionRepository]
 
   override def beforeEach(): Unit =
     reset(mockSessionRepository)
     super.beforeEach()
 
-  lazy val carfGrossProceedsRoute = controllers.elections.routes.CarfGrossProceedsController.onPageLoad(NormalMode).url
+  lazy val carfGrossProceedsRoute = controllers.elections.routes.CarfGrossProceedsController.onPageLoad(NormalMode, reportingYear).url
 
   "CarfGrossProceeds Controller" - {
 
     "must return OK and the correct view for a GET" in {
-
-      val application = applicationBuilder(userData = Some(emptyUserData)).build()
+      val useranswers = emptyUserData.withPage(FiNamePage, fiName)
+      val application = applicationBuilder(userData = Some(useranswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, carfGrossProceedsRoute)
@@ -67,9 +67,27 @@ class CarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
+    "must redirect to journey recovery if finame is not in user answers" in {
+
+      val application = applicationBuilder(userData = Some(emptyUserData)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, carfGrossProceedsRoute)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[CarfGrossProceedsView]
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustBe controllers.routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userData = UserData(userAnswersId).set(CarfGrossProceedsPage, true).success.value
+      val userData = UserData(userAnswersId)
+        .withPage(CarfGrossProceedsPage, true)
+        .withPage(FiNamePage, fiName)
 
       val application = applicationBuilder(userData = Some(userData))
         .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
@@ -90,12 +108,15 @@ class CarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to the next page when valid data is submitted" in {
 
+      val userData = UserData(userAnswersId)
+        .withPage(FiNamePage, fiName)
+
       val mockSessionRepository = mock[SessionRepository]
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
-        applicationBuilder(userData = Some(emptyUserData))
+        applicationBuilder(userData = Some(userData))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository)
@@ -115,8 +136,10 @@ class CarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
+      val userData = UserData(userAnswersId)
+        .withPage(FiNamePage, fiName)
 
-      val application = applicationBuilder(userData = Some(emptyUserData)).build()
+      val application = applicationBuilder(userData = Some(userData)).build()
 
       running(application) {
         val request =
@@ -134,23 +157,9 @@ class CarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must redirect to Journey Recovery for a GET if no existing data is found" in {
-
-      val application = applicationBuilder(userData = None).build()
-
-      running(application) {
-        val request = FakeRequest(GET, carfGrossProceedsRoute)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-      }
-    }
-
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
-      val application = applicationBuilder(userData = None).build()
+      val application = applicationBuilder(userData = Some(emptyUserData)).build()
 
       running(application) {
         val request =

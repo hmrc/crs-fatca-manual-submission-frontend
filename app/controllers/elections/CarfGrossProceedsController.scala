@@ -35,8 +35,8 @@ class CarfGrossProceedsController @Inject() (
   sessionRepository: SessionRepository,
   navigator: Navigator,
   identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
+  getData: FrontendDataRetrievalAction,
+  setData: DataCreationAction,
   formProvider: CarfGrossProceedsFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: CarfGrossProceedsView
@@ -44,7 +44,7 @@ class CarfGrossProceedsController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen setData) {
     implicit request =>
       request.userData
         .get(FiNamePage)
@@ -60,7 +60,7 @@ class CarfGrossProceedsController @Inject() (
         }
   }
 
-  def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen setData).async {
     implicit request =>
       val form = formProvider(year.toString)
       request.userData

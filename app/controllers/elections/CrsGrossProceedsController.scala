@@ -35,8 +35,8 @@ class CrsGrossProceedsController @Inject() (
   sessionRepository: SessionRepository,
   navigator: Navigator,
   identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
+  getData: FrontendDataRetrievalAction,
+  setData: DataCreationAction,
   formProvider: CrsGrossProceedsFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: CrsGrossProceedsView
@@ -47,7 +47,7 @@ class CrsGrossProceedsController @Inject() (
   val fiName = "Test FI" // TODO : Will be updated once we integrate in DAC6-4282
   val form   = formProvider()
 
-  def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen setData) {
     implicit request =>
       request.userData
         .get(FiNamePage)
@@ -62,7 +62,7 @@ class CrsGrossProceedsController @Inject() (
         }
   }
 
-  def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen setData).async {
     implicit request =>
       request.userData
         .get(FiNamePage)

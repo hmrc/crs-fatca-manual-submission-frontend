@@ -23,7 +23,7 @@ import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.CrsGrossProceedsPage
+import pages.{CrsGrossProceedsPage, FiNamePage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -35,7 +35,7 @@ import scala.concurrent.Future
 
 class CrsGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
 
-  val reportingYear = "2027"
+  val reportingYear = 2027
   val fiName        = "Test FI"
   def onwardRoute   = Call("GET", "/foo")
 
@@ -48,13 +48,13 @@ class CrsGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
     reset(mockSessionRepository)
     super.beforeEach()
 
-  lazy val crsGrossProceedsRoute = controllers.elections.routes.CrsGrossProceedsController.onPageLoad(NormalMode).url
+  lazy val crsGrossProceedsRoute = controllers.elections.routes.CrsGrossProceedsController.onPageLoad(NormalMode, reportingYear).url
 
   "CrsGrossProceeds Controller" - {
 
     "must return OK and the correct view for a GET" in {
-
-      val application = applicationBuilder(userData = Some(emptyUserData)).build()
+      val userData    = emptyUserData.withPage(FiNamePage, fiName)
+      val application = applicationBuilder(userData = Some(userData)).build()
 
       running(application) {
         val request = FakeRequest(GET, crsGrossProceedsRoute)
@@ -68,9 +68,25 @@ class CrsGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must populate the view correctly on a GET when the question has previously been answered" in {
+    "must redirect to journey recovery when finame is not present in useranswers for a GET" in {
 
-      val userAnswers = UserData(userAnswersId).set(CrsGrossProceedsPage, true).success.value
+      val application = applicationBuilder(userData = Some(emptyUserData)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, crsGrossProceedsRoute)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[CrsGrossProceedsView]
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+
+      }
+    }
+
+    "must populate the view correctly on a GET when the question has previously been answered" in {
+      val userAnswers = emptyUserData.withPage(FiNamePage, fiName).withPage(CrsGrossProceedsPage, true)
 
       val application = applicationBuilder(userData = Some(userAnswers))
         .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
@@ -90,13 +106,13 @@ class CrsGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to the next page when valid data is submitted" in {
-
+      val userAnswers           = emptyUserData.withPage(FiNamePage, fiName)
       val mockSessionRepository = mock[SessionRepository]
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
-        applicationBuilder(userData = Some(emptyUserData))
+        applicationBuilder(userData = Some(userAnswers))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository)
@@ -116,8 +132,8 @@ class CrsGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
-
-      val application = applicationBuilder(userData = Some(emptyUserData)).build()
+      val userAnswers = emptyUserData.withPage(FiNamePage, fiName)
+      val application = applicationBuilder(userData = Some(userAnswers)).build()
 
       running(application) {
         val request =
@@ -135,23 +151,8 @@ class CrsGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must redirect to Journey Recovery for a GET if no existing data is found" in {
-
-      val application = applicationBuilder(userData = None).build()
-
-      running(application) {
-        val request = FakeRequest(GET, crsGrossProceedsRoute)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-      }
-    }
-
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
-
-      val application = applicationBuilder(userData = None).build()
+      val application = applicationBuilder(userData = Some(emptyUserData)).build()
 
       running(application) {
         val request =

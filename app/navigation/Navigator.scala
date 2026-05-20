@@ -21,7 +21,8 @@ import play.api.mvc.Call
 import controllers.routes
 import pages.*
 import models.*
-import pages.elections.{CRSContractsPage, CRSDormantAccountsPage}
+import pages.elections.{CRSContractsPage, CRSDormantAccountsPage, CRSThresholdsPage}
+import utils.ReportingConstants
 
 @Singleton
 class Navigator @Inject() () {
@@ -42,9 +43,36 @@ class Navigator @Inject() () {
         year.fold(routes.JourneyRecoveryController.onPageLoad()) {
           reportingYear => controllers.elections.routes.CRSThresholdsController.onPageLoad(mode, reportingYear)
         }
+      case (CRSThresholdsPage, NormalMode) =>
+        year.fold(routes.JourneyRecoveryController.onPageLoad()) {
+          reportingYear => thresholdsNavigation(reportingYear)
+        }
+      case (CarfGrossProceedsPage, _) =>
+        year.fold(routes.JourneyRecoveryController.onPageLoad()) {
+          reportingYear => crsCarfGrossProceedsRedirect(userData, reportingYear, mode)
+        }
+      case (CrsGrossProceedsPage, NormalMode) =>
+        year.fold(routes.JourneyRecoveryController.onPageLoad()) {
+          reportingYear => routes.CheckYourAnswersController.onPageLoad()
+        }
       case (_, CheckMode) =>
         routes.CheckYourAnswersController.onPageLoad()
       case _ =>
         routes.IndexController.onPageLoad()
     }
+
+  private def thresholdsNavigation(year: Int): Call =
+    if (year >= ReportingConstants.ThresholdDate.getYear) {
+      controllers.elections.routes.CarfGrossProceedsController.onPageLoad(NormalMode, year)
+    } else {
+      routes.CheckYourAnswersController.onPageLoad()
+    }
+
+  private def crsCarfGrossProceedsRedirect(userAnswers: UserData, reportingYear: Int, mode: Mode) =
+    userAnswers.get(CarfGrossProceedsPage) match {
+      case Some(true)  => controllers.elections.routes.CrsGrossProceedsController.onPageLoad(mode, reportingYear)
+      case Some(false) => routes.CheckYourAnswersController.onPageLoad()
+      case None        => routes.JourneyRecoveryController.onPageLoad()
+    }
+
 }

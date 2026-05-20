@@ -25,7 +25,7 @@
 
 @(form: Form[_], mode: Mode, fiName: String, reportingYear: Int)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("carfGrossProceeds.title", reportingYear))) {
+@layout(pageTitle = title(form, messages("carfGrossProceeds.title", reportingYear.toString))) {
 
     @formHelper(action = controllers.elections.routes.CarfGrossProceedsController.onSubmit(mode, reportingYear), Symbol("autoComplete") -> "off") {
 
@@ -36,8 +36,8 @@
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = LegendViewModel(HtmlContent(s"""${caption(messages("crs.caption",reportingYear))}
-                ${messages("carfGrossProceeds.heading", fiName, reportingYear)}""")).asPageHeading()
+                legend = LegendViewModel(HtmlContent(s"""${caption(messages("crs.elections.caption",reportingYear.toString))}
+                ${messages("carfGrossProceeds.heading", fiName, reportingYear.toString)}""")).asPageHeading()
             )
         )
 

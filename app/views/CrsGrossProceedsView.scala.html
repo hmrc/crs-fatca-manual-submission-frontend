@@ -36,7 +36,7 @@
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = LegendViewModel(HtmlContent(s"""${caption(messages("crs.caption",reportingYear))}
+                legend = LegendViewModel(HtmlContent(s"""${caption(messages("crs.elections.caption",reportingYear.toString))}
                 ${messages("crsGrossProceeds.heading", fiName)}""")).asPageHeading()
             )
         )
