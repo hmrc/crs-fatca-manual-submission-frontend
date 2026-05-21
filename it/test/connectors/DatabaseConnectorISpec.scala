@@ -17,7 +17,7 @@
 package connectors
 
 import models.ServiceErrors.Downstream_Error
-import models.UserData
+import models.UserAnswers
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers.{a, include, must, mustBe, mustEqual}
 import play.api.http.Status.*
@@ -42,7 +42,7 @@ class DatabaseConnectorISpec extends AnyFreeSpec with ISpecBase {
         stubGetResponse(url, OK, jsValue.toString)
 
         val result = Await.result(connector.get(), 2.seconds)
-        val expectedResult: UserData = jsValue.as[UserData]
+        val expectedResult: UserAnswers = jsValue.as[UserAnswers]
         result mustBe Some(expectedResult)
       }
 

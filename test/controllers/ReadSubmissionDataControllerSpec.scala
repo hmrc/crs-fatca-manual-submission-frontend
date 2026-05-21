@@ -44,7 +44,7 @@ class ReadSubmissionDataControllerSpec extends SpecBase {
         .build()
       when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
       running(application) {
-        when(mockService.getAndMaybeCacheSubmissionHistory(any(), any())(using any()))
+        when(mockService.getSubmissionHistory(any(), any())(using any()))
           .thenReturn(Future.successful(true))
         val request = FakeRequest(GET, routes.ReadSubmissionDataController.onPageLoad("fiId", "fiName").url)
 
@@ -63,7 +63,7 @@ class ReadSubmissionDataControllerSpec extends SpecBase {
         .build()
 
       running(application) {
-        when(mockService.getAndMaybeCacheSubmissionHistory(any, any)(using any)).thenReturn(Future.failed(InternalServerException("Failed")))
+        when(mockService.getSubmissionHistory(any, any)(using any)).thenReturn(Future.failed(InternalServerException("Failed")))
         val request = FakeRequest(GET, routes.ReadSubmissionDataController.onPageLoad("fiId", "fiName").url)
         val result  = route(application, request).get
 

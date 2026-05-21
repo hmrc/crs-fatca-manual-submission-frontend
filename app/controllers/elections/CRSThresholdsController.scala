@@ -50,12 +50,12 @@ class CRSThresholdsController @Inject() (
   def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
 
-      val userData = request.userData
+      val userData = request.userAnswers
       userData
         .get(FiNamePage)
         .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)) {
           fiName =>
-            val preparedForm = request.userData.get(CRSThresholdsPage) match {
+            val preparedForm = request.userAnswers.get(CRSThresholdsPage) match {
               case None        => form
               case Some(value) => form.fill(value)
             }
@@ -67,7 +67,7 @@ class CRSThresholdsController @Inject() (
   def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
 
-      val userData = request.userData
+      val userData = request.userAnswers
 
       userData
         .get(FiNamePage)
@@ -79,7 +79,7 @@ class CRSThresholdsController @Inject() (
                 formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiName, year))),
                 value =>
                   for {
-                    updatedAnswers <- Future.fromTry(request.userData.set(CRSThresholdsPage, value))
+                    updatedAnswers <- Future.fromTry(request.userAnswers.set(CRSThresholdsPage, value))
                     _              <- sessionRepository.set(updatedAnswers)
                   } yield Redirect(navigator.nextPage(CRSThresholdsPage, mode, updatedAnswers, Some(year)))
               )

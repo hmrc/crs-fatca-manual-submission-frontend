@@ -18,7 +18,7 @@ package controllers.elections
 
 import base.SpecBase
 import forms.elections.CRSContractsFormProvider
-import models.{NormalMode, UserData}
+import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
@@ -85,7 +85,7 @@ class CRSContractsControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserData(userAnswersId)
+      val userAnswers = UserAnswers(userAnswersId)
         .set(CRSContractsPage, true)
         .success
         .value

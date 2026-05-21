@@ -23,7 +23,7 @@ import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 import java.time.Instant
 import scala.util.{Failure, Success, Try}
 
-final case class UserData(
+final case class UserAnswers(
   id: String,
   data: JsObject = Json.obj(),
   lastUpdated: Instant = Instant.now
@@ -32,7 +32,7 @@ final case class UserData(
   def get[A](page: Gettable[A])(implicit rds: Reads[A]): Option[A] =
     Reads.optionNoError(Reads.at(page.path)).reads(data).getOrElse(None)
 
-  def set[A](page: Settable[A], value: A)(implicit writes: Writes[A]): Try[UserData] = {
+  def set[A](page: Settable[A], value: A)(implicit writes: Writes[A]): Try[UserAnswers] = {
 
     val updatedData = data.setObject(page.path, Json.toJson(value)) match {
       case JsSuccess(jsValue, _) =>
@@ -48,7 +48,7 @@ final case class UserData(
     }
   }
 
-  def remove[A](page: Settable[A]): Try[UserData] = {
+  def remove[A](page: Settable[A]): Try[UserAnswers] = {
 
     val updatedData = data.removeObject(page.path) match {
       case JsSuccess(jsValue, _) =>
@@ -65,9 +65,9 @@ final case class UserData(
   }
 }
 
-object UserData {
+object UserAnswers {
 
-  val reads: Reads[UserData] = {
+  val reads: Reads[UserAnswers] = {
 
     import play.api.libs.functional.syntax._
 
@@ -75,10 +75,10 @@ object UserData {
       (__ \ "_id").read[String] and
         (__ \ "data").read[JsObject] and
         (__ \ "lastUpdated").read(MongoJavatimeFormats.instantFormat)
-    )(UserData.apply _)
+    )(UserAnswers.apply _)
   }
 
-  val writes: OWrites[UserData] = {
+  val writes: OWrites[UserAnswers] = {
 
     import play.api.libs.functional.syntax._
 
@@ -91,5 +91,5 @@ object UserData {
     )
   }
 
-  implicit val format: OFormat[UserData] = OFormat(reads, writes)
+  implicit val format: OFormat[UserAnswers] = OFormat(reads, writes)
 }

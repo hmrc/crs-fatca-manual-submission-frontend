@@ -18,7 +18,7 @@ package base
 
 import controllers.actions.*
 import models.SubmissionsConstants.{FATCA, FATCA1, PASSED}
-import models.{SubmissionsConstants, SubmittedReport, UserData}
+import models.{SubmissionsConstants, SubmittedReport, UserAnswers}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -48,11 +48,11 @@ trait SpecBase
   val userAnswersId: String = "id"
   def now: LocalDateTime    = LocalDateTime.now()
 
-  def emptyUserData: UserData              = UserData(userAnswersId)
+  def emptyUserData: UserAnswers              = UserAnswers(userAnswersId)
   implicit val hc: HeaderCarrier           = HeaderCarrier()
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
-  protected def applicationBuilder(userData: Option[UserData] = None): GuiceApplicationBuilder =
+  protected def applicationBuilder(userData: Option[UserAnswers] = None): GuiceApplicationBuilder =
     new GuiceApplicationBuilder()
       .overrides(
         bind[DataRequiredAction].to[DataRequiredActionImpl],
@@ -61,9 +61,9 @@ trait SpecBase
         bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userData))
       )
 
-  implicit class UserAnswersExtension(userData: UserData) {
+  implicit class UserAnswersExtension(userData: UserAnswers) {
 
-    def withPage[T](page: Settable[T], value: T)(implicit writes: Writes[T]): UserData =
+    def withPage[T](page: Settable[T], value: T)(implicit writes: Writes[T]): UserAnswers =
       userData.set(page, value).success.value
   }
 

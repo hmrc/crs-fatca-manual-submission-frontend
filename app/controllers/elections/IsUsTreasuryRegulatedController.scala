@@ -49,11 +49,11 @@ class IsUsTreasuryRegulatedController @Inject() (
 
   def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      request.userData
+      request.userAnswers
         .get(FiNamePage)
         .map {
           fiName =>
-            val preparedForm = request.userData.get(IsUsTreasuryRegulatedPage) match {
+            val preparedForm = request.userAnswers.get(IsUsTreasuryRegulatedPage) match {
               case None        => form
               case Some(value) => form.fill(value)
             }
@@ -64,7 +64,7 @@ class IsUsTreasuryRegulatedController @Inject() (
 
   def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      request.userData
+      request.userAnswers
         .get(FiNamePage)
         .map {
           fiName =>
@@ -74,7 +74,7 @@ class IsUsTreasuryRegulatedController @Inject() (
                 formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiName, year))),
                 value =>
                   for {
-                    updatedAnswers <- Future.fromTry(request.userData.set(IsUsTreasuryRegulatedPage, value))
+                    updatedAnswers <- Future.fromTry(request.userAnswers.set(IsUsTreasuryRegulatedPage, value))
                     _              <- sessionRepository.set(updatedAnswers)
                   } yield Redirect(navigator.nextPage(IsUsTreasuryRegulatedPage, mode, updatedAnswers, Some(year)))
               )

@@ -46,7 +46,7 @@ class DataRetrievalActionSpec extends SpecBase with MockitoSugar {
 
         val result = action.callTransform(IdentifierRequest(FakeRequest(), "id", "FATCAID", Organisation)).futureValue
 
-        result.userData.map(_.data mustBe emptyJson)
+        result.maybeAnswers.map(_.data mustBe emptyJson)
       }
     }
 
@@ -60,7 +60,7 @@ class DataRetrievalActionSpec extends SpecBase with MockitoSugar {
 
         val result = action.callTransform(IdentifierRequest(FakeRequest(), "id", "FATCAID", Organisation)).futureValue
 
-        result.userData mustBe defined
+        result.maybeAnswers mustBe defined
       }
     }
   }

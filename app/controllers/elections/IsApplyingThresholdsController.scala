@@ -51,11 +51,11 @@ class IsApplyingThresholdsController @Inject() (
 
   def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      request.userData
+      request.userAnswers
         .get(FiNamePage)
         .map {
           fiName =>
-            val preparedForm = request.userData.get(IsApplyingThresholdsPage) match {
+            val preparedForm = request.userAnswers.get(IsApplyingThresholdsPage) match {
               case None        => form
               case Some(value) => form.fill(value)
             }
@@ -67,7 +67,7 @@ class IsApplyingThresholdsController @Inject() (
 
   def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      request.userData
+      request.userAnswers
         .get(FiNamePage)
         .map {
           fiName =>
@@ -77,7 +77,7 @@ class IsApplyingThresholdsController @Inject() (
                 formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiName, year))),
                 value =>
                   for {
-                    updatedAnswers <- Future.fromTry(request.userData.set(IsApplyingThresholdsPage, value))
+                    updatedAnswers <- Future.fromTry(request.userAnswers.set(IsApplyingThresholdsPage, value))
                     _              <- sessionRepository.set(updatedAnswers)
                   } yield Redirect(navigator.nextPage(IsApplyingThresholdsPage, mode, updatedAnswers, Some(year)))
               )

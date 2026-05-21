@@ -43,7 +43,7 @@ class SubmissionsHistoryServiceSpec extends SpecBase {
       val service: SubmissionHistoryService = app.injector.instanceOf[SubmissionHistoryService]
       running(app) {
         when(mockConnector.getSubmissionsList(eqTo(submissionRequest))(using any)).thenReturn(Future.successful(submissionHistorySuccessResponse))
-        val result = service.getAndMaybeCacheSubmissionHistory("id", submissionRequest)
+        val result = service.getSubmissionHistory("id", submissionRequest)
         result.futureValue mustEqual true
       }
     }
@@ -53,7 +53,7 @@ class SubmissionsHistoryServiceSpec extends SpecBase {
       running(app) {
         when(mockConnector.getSubmissionsList(eqTo(submissionRequest))(using any))
           .thenReturn(Future.failed(InternalServerException("Unable to retrieve submission history")))
-        val result = service.getAndMaybeCacheSubmissionHistory("id", submissionRequest)
+        val result = service.getSubmissionHistory("id", submissionRequest)
         result.failed.futureValue mustBe a[InternalServerException]
         result.failed.futureValue.getMessage must include("Unable to retrieve submission history")
       }

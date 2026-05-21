@@ -32,13 +32,13 @@ class NavigatorSpec extends SpecBase {
       "from IsUsTreasuryRegulatedPage" - {
 
         "must go to IsApplyingThresholds with year when year is provided" in {
-          val userData = UserData("id")
+          val userData = UserAnswers("id")
           navigator.nextPage(IsUsTreasuryRegulatedPage, NormalMode, userData, Some(year)) mustBe
             controllers.elections.routes.IsApplyingThresholdsController.onPageLoad(NormalMode, year)
         }
 
         "must go to JourneyRecovery when year is None" in {
-          val userData = UserData("id")
+          val userData = UserAnswers("id")
           navigator.nextPage(IsUsTreasuryRegulatedPage, NormalMode, userData, None) mustBe
             routes.JourneyRecoveryController.onPageLoad()
         }
@@ -47,13 +47,13 @@ class NavigatorSpec extends SpecBase {
       "from IsApplyingThresholdsPage" - {
 
         "must go to JourneyRecovery regardless of year" in {
-          val userData = UserData("id")
+          val userData = UserAnswers("id")
           navigator.nextPage(IsApplyingThresholdsPage, NormalMode, userData, Some(year)) mustBe
             routes.JourneyRecoveryController.onPageLoad()
         }
 
         "must go to JourneyRecovery when year is None" in {
-          val userData = UserData("id")
+          val userData = UserAnswers("id")
           navigator.nextPage(IsApplyingThresholdsPage, NormalMode, userData, None) mustBe
             routes.JourneyRecoveryController.onPageLoad()
         }
@@ -61,7 +61,7 @@ class NavigatorSpec extends SpecBase {
       "must go from a page that doesn't exist in the route map to Index" in {
 
         case object UnknownPage extends Page
-        navigator.nextPage(UnknownPage, NormalMode, UserData("id"), None) mustBe routes.IndexController.onPageLoad()
+        navigator.nextPage(UnknownPage, NormalMode, UserAnswers("id"), None) mustBe routes.IndexController.onPageLoad()
       }
 
       "must go from elections/crs/thresholds page" - {
@@ -119,13 +119,13 @@ class NavigatorSpec extends SpecBase {
     "from CRSContractsPage" - {
 
       "must go to Dormant Accounts Page with year when year is provided" in {
-        val userData = UserData("id")
+        val userData = UserAnswers("id")
         navigator.nextPage(CRSContractsPage, NormalMode, userData, Some(year)) mustBe
           controllers.elections.routes.CRSDormantAccountsController.onPageLoad(NormalMode, year)
       }
 
       "must go to JourneyRecovery when year is None" in {
-        val userData = UserData("id")
+        val userData = UserAnswers("id")
         navigator.nextPage(CRSContractsPage, NormalMode, userData, None) mustBe
           routes.JourneyRecoveryController.onPageLoad()
       }
@@ -134,15 +134,24 @@ class NavigatorSpec extends SpecBase {
     "from CRSDormantAccountPage" - {
 
       "must go to Threshold Page with year when year is provided" in {
-        val userData = UserData("id")
+        val userData = UserAnswers("id")
         navigator.nextPage(CRSDormantAccountsPage, NormalMode, userData, Some(year)) mustBe
           controllers.elections.routes.CRSThresholdsController.onPageLoad(NormalMode, year)
       }
 
       "must go to JourneyRecovery when year is None" in {
-        val userData = UserData("id")
+        val userData = UserAnswers("id")
         navigator.nextPage(CRSDormantAccountsPage, NormalMode, userData, None) mustBe
           routes.JourneyRecoveryController.onPageLoad()
+      }
+    }
+
+    "from CRSThresholdsPage" - {
+
+      "must go to Index Controller" in {
+        val userData = UserAnswers("id")
+        navigator.nextPage(CRSThresholdsPage, NormalMode, userData, None) mustBe
+          routes.IndexController.onPageLoad()
       }
     }
 
@@ -151,7 +160,7 @@ class NavigatorSpec extends SpecBase {
       "must go from a page that doesn't exist in the edit route map to CheckYourAnswers" in {
 
         case object UnknownPage extends Page
-        navigator.nextPage(UnknownPage, CheckMode, UserData("id"), None) mustBe routes.CheckYourAnswersController.onPageLoad()
+        navigator.nextPage(UnknownPage, CheckMode, UserAnswers("id"), None) mustBe routes.CheckYourAnswersController.onPageLoad()
       }
 
       "must go from /elections/crs/carf-gross-proceeds page" - {

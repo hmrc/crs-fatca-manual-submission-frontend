@@ -49,7 +49,7 @@ class VoidingFatcaInformationController @Inject() (
     implicit request =>
       val errorRedirect = Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
 
-      request.userData.get(SubmissionsHistoryPage).fold(errorRedirect) {
+      request.userAnswers.get(SubmissionsHistoryPage).fold(errorRedirect) {
         submittedReports =>
           voidService
             .getVoidFatcaReportDetails(originalMessageRefId, submittedReports)
@@ -63,7 +63,7 @@ class VoidingFatcaInformationController @Inject() (
     implicit request =>
       val errorRedirect = Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
 
-      request.userData.get(SubmissionsHistoryPage).fold(errorRedirect) {
+      request.userAnswers.get(SubmissionsHistoryPage).fold(errorRedirect) {
         submittedReports =>
           voidService
             .getVoidFatcaReportDetails(originalMessageRefId, submittedReports)

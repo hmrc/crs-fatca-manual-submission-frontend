@@ -16,42 +16,50 @@
 
 package controllers
 
+import cats.data.OptionT.{fromOption, liftF}
 import config.FrontendAppConfig
 import controllers.actions.*
-import pages.SubmissionsHistoryPage
+import models.FiDetails
+import models.ServiceErrors.NoFiDetailFound
+import pages.{FiDetailsPage, SubmissionsHistoryPage}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import repositories.SessionRepository
 import services.SubmissionHistoryService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.ViewSubmissionsView
 
 import java.time.LocalDate
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class ViewSubmissionsController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
+  setData: DataCreationAction,
+  sessionRepository: SessionRepository,
   service: SubmissionHistoryService,
   val controllerComponents: MessagesControllerComponents,
   view: ViewSubmissionsView
-)(implicit config: FrontendAppConfig)
+)(implicit config: FrontendAppConfig, ec:ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
     with Logging {
 
-  def onPageLoad(chosenYear: Int, fiId: String, fiName: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(chosenYear: Int, fiId: String): Action[AnyContent] = (identify andThen getData andThen setData).async {
     implicit request =>
       (for {
-        submissions <- request.userData.get(SubmissionsHistoryPage)
-        cards           = service.prepareSubmissionHistoryCards(submissions, chosenYear)
+        fiName <-  fromOption[Future]((request.userAnswers.get(FiDetailsPage).map(_.fiName)).orElse(???))
+        fiDetail <- liftF(Future.fromTry(request.userAnswers.set(FiDetailsPage, FiDetails(fiId = fiId, fiName = fiName))))
+        _ <- liftF(sessionRepository.set(fiDetail)) //set in session repository (FE data base to facilitate view election stuff)
+        submissions <- liftF(service.getSubmissionHistory(fiId))
+        cards           = service.prepareSubmissionHistoryCards(submissions.submissionsList, chosenYear)
         currentYear     = LocalDate.now().getYear
         submissionYears = (currentYear - 12 to currentYear).toList.sorted
       } yield Ok(view(cards, chosenYear, fiName, submissionYears, fiId)))
         .getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
-
   }
 
 }

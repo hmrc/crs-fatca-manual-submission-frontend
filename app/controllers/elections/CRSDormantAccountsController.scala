@@ -50,7 +50,7 @@ class CRSDormantAccountsController @Inject() (
   def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
 
-      val userData = request.userData
+      val userData = request.userAnswers
       userData
         .get(FiNamePage)
         .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)) {
@@ -66,7 +66,7 @@ class CRSDormantAccountsController @Inject() (
   def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
 
-      val userData = request.userData
+      val userData = request.userAnswers
 
       userData
         .get(FiNamePage)

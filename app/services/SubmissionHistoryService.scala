@@ -19,19 +19,17 @@ package services
 import com.google.inject.Inject
 import connectors.ReadSubmissionConnector
 import models.SubmissionsConstants.{CRS701, CRSAdditional701, PASSED}
-import models.{ReadSubmissionRequest, SubmissionCard, SubmittedReport}
+import models.{ReadSubmissionResponseDetails, SubmissionCard, SubmittedReport}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class SubmissionHistoryService @Inject() (readSubmissionConnector: ReadSubmissionConnector)(implicit ec: ExecutionContext) {
 
-  def getAndMaybeCacheSubmissionHistory(id: String, submissionRequest: ReadSubmissionRequest)(implicit hc: HeaderCarrier): Future[Boolean] =
+  def getSubmissionHistory(fiId:String)(implicit hc: HeaderCarrier): Future[ReadSubmissionResponseDetails] =
     readSubmissionConnector
-      .getSubmissionsList(submissionRequest)
-      .map(
-        _ => true
-      )
+      .getSubmissionsList(fiId)
+
 
   def prepareSubmissionHistoryCards(submissions: List[SubmittedReport], submissionYear: Int): Map[String, List[SubmissionCard]] =
     submissions

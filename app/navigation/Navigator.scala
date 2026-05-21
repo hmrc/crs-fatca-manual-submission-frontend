@@ -27,7 +27,7 @@ import utils.ReportingConstants
 @Singleton
 class Navigator @Inject() () {
 
-  def nextPage(page: Page, mode: Mode, userData: UserData, year: Option[Int]): Call =
+  def nextPage(page: Page, mode: Mode, userData: UserAnswers, year: Option[Int]): Call =
     (page, mode) match {
       case (IsUsTreasuryRegulatedPage, NormalMode) =>
         year.fold(routes.JourneyRecoveryController.onPageLoad())(

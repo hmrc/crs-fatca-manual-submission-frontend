@@ -46,7 +46,7 @@ class InformationVoidedController @Inject() (
     implicit request =>
       val errorRedirect = Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
 
-      request.userData.get(SubmissionsHistoryPage).fold(errorRedirect) {
+      request.userAnswers.get(SubmissionsHistoryPage).fold(errorRedirect) {
         submittedReports =>
           voidService
             .getVoidFatcaReportDetails(originalMessageId, submittedReports)

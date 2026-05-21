@@ -19,7 +19,7 @@ package controllers.elections
 import base.SpecBase
 import controllers.routes
 import forms.elections.CRSThresholdsFormProvider
-import models.{NormalMode, UserData}
+import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
@@ -74,7 +74,7 @@ class CRSThresholdsControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserData(userAnswersId)
+      val userAnswers = UserAnswers(userAnswersId)
         .withPage(FiNamePage, "Test FI")
         .withPage(CRSThresholdsPage, true)
 

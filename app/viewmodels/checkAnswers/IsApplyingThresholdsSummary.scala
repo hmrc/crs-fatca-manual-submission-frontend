@@ -16,7 +16,7 @@
 
 package viewmodels.checkAnswers
 
-import models.{CheckMode, UserData}
+import models.{CheckMode, UserAnswers}
 import pages.IsApplyingThresholdsPage
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
@@ -25,7 +25,7 @@ import viewmodels.implicits.*
 
 object IsApplyingThresholdsSummary {
 
-  def row(answers: UserData, year: Int)(implicit messages: Messages): Option[SummaryListRow] =
+  def row(answers: UserAnswers, year: Int)(implicit messages: Messages): Option[SummaryListRow] =
     answers.get(IsApplyingThresholdsPage).map {
       answer =>
 
