@@ -51,3 +51,13 @@ GET        /elections/crs/thresholds                       controllers.elections
 POST       /elections/crs/thresholds                        controllers.elections.CRSThresholdsController.onSubmit(mode: Mode = NormalMode, year: Int)
 GET        /elections/crs/change-thresholds                  controllers.elections.CRSThresholdsController.onPageLoad(mode: Mode = CheckMode, year: Int)
 POST       /elections/crs/change-thresholds                 controllers.elections.CRSThresholdsController.onSubmit(mode: Mode = CheckMode, year: Int)
+
+GET        /elections/crs/carf-gross-proceeds                       controllers.elections.CarfGrossProceedsController.onPageLoad(mode: Mode = NormalMode, year: Int)
+POST       /elections/crs/carf-gross-proceeds                       controllers.elections.CarfGrossProceedsController.onSubmit(mode: Mode = NormalMode, year: Int)
+GET        /elections/crs/change-carf-gross-proceeds                controllers.elections.CarfGrossProceedsController.onPageLoad(mode: Mode = CheckMode, year: Int)
+POST       /elections/crs/change-carf-gross-proceeds                controllers.elections.CarfGrossProceedsController.onSubmit(mode: Mode = CheckMode, year: Int)
+
+GET        /elections/crs/crs-gross-proceeds                         controllers.elections.CrsGrossProceedsController.onPageLoad(mode: Mode = NormalMode, year: Int)
+POST       /elections/crs/crs-gross-proceeds                         controllers.elections.CrsGrossProceedsController.onSubmit(mode: Mode = NormalMode, year: Int)
+GET        /elections/crs/change-crs-gross-proceeds                  controllers.elections.CrsGrossProceedsController.onPageLoad(mode: Mode = CheckMode, year: Int)
+POST       /elections/crs/change-crs-gross-proceeds                  controllers.elections.CrsGrossProceedsController.onSubmit(mode: Mode = CheckMode, year: Int)
