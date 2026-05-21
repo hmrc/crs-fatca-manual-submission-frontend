@@ -16,36 +16,25 @@
 
 package controllers
 
-import com.google.inject.Inject
-import controllers.actions.{DataRequiredAction, FrontendDataRetrievalAction, IdentifierAction}
-import pages.IsUsTreasuryRegulatedPage
+import controllers.actions._
+import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.CheckYourAnswersValidatorService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.govuk.summarylist.*
-import views.html.CheckYourAnswersView
+import views.html.ManageElectionsView
 
-class CheckYourAnswersController @Inject() (
+class ManageElectionsController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
   getData: FrontendDataRetrievalAction,
   requireData: DataRequiredAction,
-  validator: CheckYourAnswersValidatorService,
   val controllerComponents: MessagesControllerComponents,
-  view: CheckYourAnswersView
+  view: ManageElectionsView
 ) extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad(year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      val updated = request.userData.remove(IsUsTreasuryRegulatedPage).get
-
-      validator.validate(updated, year) match {
-        case Some(redirectUrl) => Redirect(controllers.elections.routes.ElectionInformationIsMissingController.onPageLoad(redirectUrl))
-        case None =>
-          val list = SummaryListViewModel(rows = Seq.empty)
-          Ok(view(list))
-      }
+      Ok(view())
   }
 }
