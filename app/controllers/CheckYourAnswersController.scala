@@ -39,9 +39,7 @@ class CheckYourAnswersController @Inject() (
 
   def onPageLoad(year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      val updated = request.userData.remove(IsUsTreasuryRegulatedPage).get
-
-      validator.validate(updated, year) match {
+      validator.validate(request.userData, year) match {
         case Some(redirectUrl) => Redirect(controllers.elections.routes.ElectionInformationIsMissingController.onPageLoad(redirectUrl))
         case None =>
           val list = SummaryListViewModel(rows = Seq.empty)
