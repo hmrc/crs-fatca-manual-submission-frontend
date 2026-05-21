@@ -29,7 +29,9 @@ class ViewFIService @Inject() (connector: FinancialInstitutionsConnector)(implic
   def getFIDetail(subId: String, fiId: String)(using
     hc: HeaderCarrier
   ): Future[FIDetail] = 
-    connector.viewFi(subId, fiId).flatMap(fi=> Future.successful(fi.getOrElse(Future.failed(NoFiDetailFound)))
+    connector.viewFi(subId, fiId).flatMap{maybeFi =>
+      maybeFi.map(Future.successful).getOrElse(Future.failed(Exception()))
+    }
       
     
 
