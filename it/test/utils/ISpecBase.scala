@@ -20,6 +20,7 @@ import generators.Generators
 import models.UserAnswers
 import org.scalatest.TryValues.convertTryToSuccessOrFailure
 import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.time.{Seconds, Span}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Application
@@ -30,9 +31,15 @@ import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mongo.test.DefaultPlayMongoRepositorySupport
 
-trait ISpecBase extends GuiceOneServerPerSuite with DefaultPlayMongoRepositorySupport[UserAnswers] with ScalaFutures with WireMockHelper with Generators {
+trait ISpecBase
+    extends AnyFreeSpec
+    with GuiceOneServerPerSuite
+    with DefaultPlayMongoRepositorySupport[UserAnswers]
+    with ScalaFutures
+    with WireMockHelper
+    with Generators {
 
-  val userAnswersId: String = "internalId"
+  val userAnswersId: String         = "internalId"
   def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
 
   val repository: SessionRepository = app.injector.instanceOf[SessionRepository]
@@ -42,10 +49,16 @@ trait ISpecBase extends GuiceOneServerPerSuite with DefaultPlayMongoRepositorySu
     "microservice.services.auth.host" -> WireMockConstants.stubHost,
     "microservice.services.auth.port" -> WireMockConstants.stubPort.toString,
     "microservice.services.crs-fatca-manual-submission.host" -> WireMockConstants.stubHost,
+    "microservice.services.auth.host"                        -> WireMockConstants.stubHost,
+    "microservice.services.auth.port"                        -> WireMockConstants.stubPort.toString,
     "microservice.services.crs-fatca-manual-submission.port" -> WireMockConstants.stubPort.toString,
     "microservice.services.crs-fatca-reporting.host" -> WireMockConstants.stubHost,
     "microservice.services.crs-fatca-reporting.port" -> WireMockConstants.stubPort.toString,
     "mongodb.uri" -> mongoUri,
+    "mongodb.uri"                                            -> mongoUri,
+    "play.filters.csrf.header.bypassHeaders.Csrf-Token"      -> "nocheck"
+    //    "logger.root"                                             -> "INFO",
+    //    "logger.controllers"                                      -> "DEBUG"
   )
 
   implicit override val patienceConfig: PatienceConfig = PatienceConfig(scaled(Span(20, Seconds)))

@@ -17,10 +17,11 @@
 package connectors
 
 import config.FrontendAppConfig
-import models.ReadSubmissionResponseDetails
+import models.ServiceErrors.NoFiDetailFound
+import models.{FIDetail, ReadSubmissionResponseDetails, ViewFIDetailsResponse}
 import play.api.Logging
 import play.api.http.Status.*
-import play.api.libs.json.Json
+import play.api.libs.json.{JsError, JsSuccess, Json}
 import play.api.libs.ws.writeableOf_JsValue
 import uk.gov.hmrc.http.HttpReads.Implicits.*
 import uk.gov.hmrc.http.client.HttpClientV2
@@ -29,7 +30,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException, S
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class FinancialInstitutionsConnector @Inject()(http: HttpClientV2, config: FrontendAppConfig)(using ec: ExecutionContext) extends Logging {
+class FinancialInstitutionsConnector @Inject() (http: HttpClientV2, config: FrontendAppConfig)(using ec: ExecutionContext) extends Logging {
 
   def getSubmissionsList(fiId: String)(using
     hc: HeaderCarrier
@@ -49,5 +50,31 @@ class FinancialInstitutionsConnector @Inject()(http: HttpClientV2, config: Front
           }
       }
   }
+
+  def viewFi(subscriptionId: String, fiId: String)(using
+    hc: HeaderCarrier
+  ): Future[Option[FIDetail]] =
+    http
+      .get(url"${config.fIManagementUrl}/crs-fatca-fi-management/financial-institutions/$subscriptionId/$fiId")
+      .execute[HttpResponse]
+      .flatMap {
+        response =>
+          response.status match {
+            case OK =>
+              response.json.validate[ViewFIDetailsResponse] match {
+                case JsSuccess(viewFiDetails, _) =>
+                  Future.successful(viewFiDetails.ViewFIDetails.ResponseDetails.FIDetails.headOption)
+                case JsError(errors) =>
+                  logger.error(s"Failed to parse an FI for subscriptionId: $subscriptionId errors: $errors")
+                  Future.failed(InternalServerException("Failed to parse FI details"))
+              }
+            case UNPROCESSABLE_ENTITY
+                if (Json.parse(response.body) \ "errorDetail" \ "errorCode").asOpt[String].contains("001") => // how we know there's no fi's under this user
+              logger.warn(s"No FI found for subscriptionId: $subscriptionId")
+              Future.successful(None)
+            case _ =>
+              Future.failed(NoFiDetailFound)
+          }
+      }
 
 }

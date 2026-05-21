@@ -48,7 +48,7 @@ trait SpecBase
   val userAnswersId: String = "id"
   def now: LocalDateTime    = LocalDateTime.now()
 
-  def emptyUserData: UserAnswers              = UserAnswers(userAnswersId)
+  def emptyUserData: UserAnswers           = UserAnswers(userAnswersId)
   implicit val hc: HeaderCarrier           = HeaderCarrier()
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 

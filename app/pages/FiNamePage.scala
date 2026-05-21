@@ -16,12 +16,12 @@
 
 package pages
 
-import models.FiIdentifier
+import models.FiDetails
 import play.api.libs.json.JsPath
 
-case object FiDetailsPage extends QuestionPage[FiIdentifier] {
+case object FiNamePage extends QuestionPage[String] { //todo: to be replaced by the fidetails page?
 
   override def path: JsPath = JsPath \ toString
 
-  override def toString: String = "fiDetails"
+  override def toString: String = "FiName"
 }

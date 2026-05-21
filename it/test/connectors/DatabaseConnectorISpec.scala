@@ -27,7 +27,7 @@ import utils.ISpecBase
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
-class DatabaseConnectorISpec extends AnyFreeSpec with ISpecBase {
+class DatabaseConnectorISpec extends ISpecBase {
 
   lazy val connector: DatabaseConnector = app.injector.instanceOf[DatabaseConnector]
   val url                               = "/crs-fatca-manual-submission/submissionList"

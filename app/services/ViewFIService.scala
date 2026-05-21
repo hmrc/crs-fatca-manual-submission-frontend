@@ -14,14 +14,23 @@
  * limitations under the License.
  */
 
-package pages
+package services
 
-import models.FiIdentifier
-import play.api.libs.json.JsPath
+import com.google.inject.Inject
+import connectors.FinancialInstitutionsConnector
+import models.FIDetail
+import models.ServiceErrors.NoFiDetailFound
+import uk.gov.hmrc.http.HeaderCarrier
 
-case object FiDetailsPage extends QuestionPage[FiIdentifier] {
+import scala.concurrent.{ExecutionContext, Future}
 
-  override def path: JsPath = JsPath \ toString
+class ViewFIService @Inject() (connector: FinancialInstitutionsConnector)(implicit ec: ExecutionContext) {
 
-  override def toString: String = "fiDetails"
+  def getFIDetail(subId: String, fiId: String)(using
+    hc: HeaderCarrier
+  ): Future[FIDetail] = 
+    connector.viewFi(subId, fiId).flatMap(fi=> Future.successful(fi.getOrElse(Future.failed(NoFiDetailFound)))
+      
+    
+
 }
