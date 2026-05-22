@@ -18,7 +18,8 @@ package controllers
 
 import base.SpecBase
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.ElectionInformationIsMissingView
 
 class ElectionInformationIsMissingControllerSpec extends SpecBase {
@@ -31,7 +32,7 @@ class ElectionInformationIsMissingControllerSpec extends SpecBase {
 
       running(application) {
         val redirectUrl = "/redirect"
-        val request     = FakeRequest(GET, controllers.elections.routes.ElectionInformationIsMissingController.onPageLoad(redirectUrl).url)
+        val request     = FakeRequest(GET, controllers.elections.routes.ElectionInformationIsMissingController.onPageLoad(RedirectUrl(redirectUrl)).url)
 
         val result = route(application, request).value
 

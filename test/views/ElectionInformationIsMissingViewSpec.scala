@@ -45,6 +45,7 @@ class ElectionInformationIsMissingViewSpec extends SpecBase {
 
       doc.title() must include("Some information is missing")
       doc.select("h1").text() must include("Some information is missing")
+      doc.select("p").text() must include("You must provide this information to send these elections.")
       val continueButton = doc.select("#submit")
       continueButton.text() mustBe "Continue"
       continueButton.attr("href") mustBe redirectUrl

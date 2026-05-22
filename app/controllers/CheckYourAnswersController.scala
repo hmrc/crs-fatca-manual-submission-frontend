@@ -22,6 +22,7 @@ import pages.IsUsTreasuryRegulatedPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.CheckYourAnswersValidatorService
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.govuk.summarylist.*
 import views.html.CheckYourAnswersView
@@ -40,7 +41,7 @@ class CheckYourAnswersController @Inject() (
   def onPageLoad(year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       validator.validate(request.userData, year) match {
-        case Some(redirectUrl) => Redirect(controllers.elections.routes.ElectionInformationIsMissingController.onPageLoad(redirectUrl))
+        case Some(redirectUrl) => Redirect(controllers.elections.routes.ElectionInformationIsMissingController.onPageLoad(RedirectUrl(redirectUrl)))
         case None =>
           val list = SummaryListViewModel(rows = Seq.empty)
           Ok(view(list))

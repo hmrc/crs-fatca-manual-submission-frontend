@@ -63,6 +63,6 @@ POST       /elections/crs/change-crs-gross-proceeds                  controllers
 
 GET        /elections/check-your-answers                             controllers.CheckYourAnswersController.onPageLoad(year: Int)
 
-GET        /problem/elections-information-is-missing                 controllers.elections.ElectionInformationIsMissingController.onPageLoad(redirectUrl: String)
+GET        /problem/elections-information-is-missing                 controllers.elections.ElectionInformationIsMissingController.onPageLoad(redirectUrl: RedirectUrl)
 
 GET        /elections/manage-elections-for-:year                       controllers.ManageElectionsController.onPageLoad(year: Int)

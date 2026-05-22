@@ -19,8 +19,10 @@ package controllers.elections
 import controllers.actions.*
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.binders.{OnlyRelative, RedirectUrl}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.ElectionInformationIsMissingView
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl.idFunctor
 
 import javax.inject.Inject
 
@@ -34,8 +36,8 @@ class ElectionInformationIsMissingController @Inject() (
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(redirectUrl: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(redirectUrl: RedirectUrl): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      Ok(view(redirectUrl))
+      Ok(view(redirectUrl.get(OnlyRelative).url))
   }
 }
