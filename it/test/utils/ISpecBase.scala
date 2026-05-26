@@ -41,11 +41,11 @@ trait ISpecBase extends GuiceOneServerPerSuite with DefaultPlayMongoRepositorySu
   def config: Map[String, String] = Map(
     "microservice.services.auth.host" -> WireMockConstants.stubHost,
     "microservice.services.auth.port" -> WireMockConstants.stubPort.toString,
+    "microservice.services.crs-fatca-manual-submission.host" -> WireMockConstants.stubHost,
     "microservice.services.crs-fatca-manual-submission.port" -> WireMockConstants.stubPort.toString,
-    "mongodb.uri"                     -> mongoUri,
-    "play.filters.csrf.header.bypassHeaders.Csrf-Token"       -> "nocheck"
-    //    "logger.root"                                             -> "INFO",
-    //    "logger.controllers"                                      -> "DEBUG"
+    "microservice.services.crs-fatca-reporting.host" -> WireMockConstants.stubHost,
+    "microservice.services.crs-fatca-reporting.port" -> WireMockConstants.stubPort.toString,
+    "mongodb.uri" -> mongoUri,
   )
 
   implicit override val patienceConfig: PatienceConfig = PatienceConfig(scaled(Span(20, Seconds)))
