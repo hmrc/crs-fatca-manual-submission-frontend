@@ -43,7 +43,8 @@ class CarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
   val formProvider          = new CarfGrossProceedsFormProvider()
   val form                  = formProvider(reportingYear.toString)
   val mockSessionRepository = mock[SessionRepository]
-  private val fiDetails = FiIdentifiers("fiId", fiName)
+  private val fiDetails     = FiIdentifiers("fiId", fiName)
+
   override def beforeEach(): Unit =
     reset(mockSessionRepository)
     super.beforeEach()
@@ -84,7 +85,8 @@ class CarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userData = emptyUserAnswers.withPage(FiDetailsPage, fiDetails)
+      val userData = emptyUserAnswers
+        .withPage(FiDetailsPage, fiDetails)
         .withPage(CarfGrossProceedsPage, true)
 
       val application = applicationBuilder(userData = Some(userData))
@@ -133,7 +135,7 @@ class CarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
-      val userData =emptyUserAnswers.withPage(FiDetailsPage, fiDetails)
+      val userData = emptyUserAnswers.withPage(FiDetailsPage, fiDetails)
 
       val application = applicationBuilder(userData = Some(userData)).build()
 

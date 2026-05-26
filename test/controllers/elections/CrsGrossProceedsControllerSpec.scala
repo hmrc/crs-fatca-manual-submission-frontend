@@ -48,7 +48,7 @@ class CrsGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
   override def beforeEach(): Unit =
     reset(mockSessionRepository)
     super.beforeEach()
-  private val fiDetails = FiIdentifiers("fiId", fiName)
+  private val fiDetails          = FiIdentifiers("fiId", fiName)
   lazy val crsGrossProceedsRoute = controllers.elections.routes.CrsGrossProceedsController.onPageLoad(NormalMode, reportingYear).url
 
   "CrsGrossProceeds Controller" - {
