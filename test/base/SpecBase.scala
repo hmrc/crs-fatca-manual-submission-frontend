@@ -17,8 +17,7 @@
 package base
 
 import controllers.actions.*
-import models.SubmissionsConstants.{FATCA, FATCA1, PASSED}
-import models.{SubmissionsConstants, SubmittedReport, UserAnswers}
+import models.UserAnswers
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -31,9 +30,6 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Writes
 import play.api.test.FakeRequest
 import queries.Settable
-import uk.gov.hmrc.http.HeaderCarrier
-
-import java.time.LocalDateTime
 
 trait SpecBase
     extends AnyFreeSpec
@@ -43,13 +39,8 @@ trait SpecBase
     with ScalaFutures
     with IntegrationPatience
     with MockitoSugar
-    with BeforeAndAfterEach {
-
-  val userAnswersId: String = "id"
-  def now: LocalDateTime    = LocalDateTime.now()
-
-  def emptyUserData: UserAnswers           = UserAnswers(userAnswersId)
-  implicit val hc: HeaderCarrier           = HeaderCarrier()
+    with BeforeAndAfterEach
+    with TestConstants {
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
   protected def applicationBuilder(userData: Option[UserAnswers] = None): GuiceApplicationBuilder =
@@ -66,22 +57,5 @@ trait SpecBase
     def withPage[T](page: Settable[T], value: T)(implicit writes: Writes[T]): UserAnswers =
       userData.set(page, value).success.value
   }
-
-  // TEST DATA:
-  val submittedReport: SubmittedReport = SubmittedReport(
-    fiId = "id",
-    fiName = "name",
-    fileName = "fileName",
-    submissionStatus = PASSED,
-    uploadDateTime = now,
-    regime = FATCA,
-    reportingYear = "2016",
-    submissionCaseId = "123",
-    submissionType = SubmissionsConstants.XML,
-    submissionFileType = FATCA1,
-    messageRefId = "ref1",
-    submissionDeleteStatus = None,
-    originalMessageRefId = None
-  )
 
 }

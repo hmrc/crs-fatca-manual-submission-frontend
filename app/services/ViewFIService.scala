@@ -21,18 +21,16 @@ import connectors.FinancialInstitutionsConnector
 import models.FIDetail
 import models.ServiceErrors.NoFiDetailFound
 import uk.gov.hmrc.http.HeaderCarrier
-
 import scala.concurrent.{ExecutionContext, Future}
 
 class ViewFIService @Inject() (connector: FinancialInstitutionsConnector)(implicit ec: ExecutionContext) {
 
   def getFIDetail(subId: String, fiId: String)(using
     hc: HeaderCarrier
-  ): Future[FIDetail] = 
-    connector.viewFi(subId, fiId).flatMap{maybeFi =>
-      maybeFi.map(Future.successful).getOrElse(Future.failed(Exception()))
+  ): Future[FIDetail] =
+    connector.viewFi(subId, fiId).flatMap {
+      maybeFi =>
+        maybeFi.map(Future.successful).getOrElse(Future.failed(NoFiDetailFound))
     }
-      
-    
 
 }

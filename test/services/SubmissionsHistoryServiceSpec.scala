@@ -19,7 +19,7 @@ package services
 import base.SpecBase
 import connectors.ReadSubmissionConnector
 import models.SubmissionsConstants.{CRS701, CRSAdditional701, FAILED, FATCA1}
-import models.{ReadSubmissionRequest, ReadSubmissionResponseDetails, SubmissionsConstants, SubmittedReport}
+import models.{ReadSubmissionResponseDetails, SubmissionsConstants, SubmittedReport}
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.when
 import play.api.inject.bind
@@ -33,7 +33,6 @@ class SubmissionsHistoryServiceSpec extends SpecBase {
 
   private val lastYear: LocalDateTime                                         = now.minusYears(1)
   private val nextYear: LocalDateTime                                         = now.plusYears(1)
-  private val submissionRequest                                               = ReadSubmissionRequest(shouldCache = true, fiId = None)
   private val mockConnector: ReadSubmissionConnector                          = mock[ReadSubmissionConnector]
   private val submissionHistorySuccessResponse: ReadSubmissionResponseDetails = ReadSubmissionResponseDetails(List(submittedReport))
   "getAndMaybeCacheSubmissionHistory" - {
@@ -42,18 +41,18 @@ class SubmissionsHistoryServiceSpec extends SpecBase {
       val app                               = applicationBuilder().overrides(bind[ReadSubmissionConnector].toInstance(mockConnector)).build()
       val service: SubmissionHistoryService = app.injector.instanceOf[SubmissionHistoryService]
       running(app) {
-        when(mockConnector.getSubmissionsList(eqTo(submissionRequest))(using any)).thenReturn(Future.successful(submissionHistorySuccessResponse))
-        val result = service.getSubmissionHistory("id", submissionRequest)
-        result.futureValue mustEqual true
+        when(mockConnector.getSubmissionsList(eqTo("id"))(using any)).thenReturn(Future.successful(submissionHistorySuccessResponse))
+        val result = service.getSubmissionHistory("id")
+        result.futureValue mustEqual submissionHistorySuccessResponse
       }
     }
     "return failed response if the call to BE fails" in {
       val app                               = applicationBuilder().overrides(bind[ReadSubmissionConnector].toInstance(mockConnector)).build()
       val service: SubmissionHistoryService = app.injector.instanceOf[SubmissionHistoryService]
       running(app) {
-        when(mockConnector.getSubmissionsList(eqTo(submissionRequest))(using any))
+        when(mockConnector.getSubmissionsList(eqTo("id"))(using any))
           .thenReturn(Future.failed(InternalServerException("Unable to retrieve submission history")))
-        val result = service.getSubmissionHistory("id", submissionRequest)
+        val result = service.getSubmissionHistory("id")
         result.failed.futureValue mustBe a[InternalServerException]
         result.failed.futureValue.getMessage must include("Unable to retrieve submission history")
       }

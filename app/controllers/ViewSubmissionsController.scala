@@ -20,9 +20,8 @@ import cats.data.OptionT
 import cats.data.OptionT.*
 import config.FrontendAppConfig
 import controllers.actions.*
-import models.FiIdentifier
-import models.ServiceErrors.NoFiDetailFound
-import pages.{FiDetailsPage, SubmissionsHistoryPage}
+import models.FiIdentifiers
+import pages.FiDetailsPage
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -54,27 +53,29 @@ class ViewSubmissionsController @Inject() (
     implicit request =>
       (for {
         fiName <- liftF(
-          Future.successful(
-          request.userAnswers.get(FiDetailsPage).map(_.fiName)
-          .getOrElse(
-            viewFIService.getFIDetail(request.fatcaId, fiId).map(_.FIName)
-          )).flatten)
-        
-          
+          request.userAnswers
+            .get(FiDetailsPage)
+            .map(_.fiName)
+            .map(Future.successful)
+            .getOrElse(
+              viewFIService.getFIDetail(request.fatcaId, fiId).map(_.FIName)
+            )
+        )
         fiDetail <- liftF(
-          Future.fromTry(request.userAnswers.set(FiDetailsPage, FiIdentifier(fiId, fiName)))
-        ) // FiIdentifier to prevent confusion with viewFi models
-        _           <- liftF(sessionRepository.set(fiDetail)) // set in session repository (FE database to facilitate view election stuff)
+          Future.fromTry(request.userAnswers.set(FiDetailsPage, FiIdentifiers(fiId, fiName)))
+        )
+        _           <- liftF(sessionRepository.set(fiDetail))
         submissions <- liftF(historyService.getSubmissionHistory(fiId))
         cards           = historyService.prepareSubmissionHistoryCards(submissions.submissionsList, chosenYear)
         currentYear     = LocalDate.now().getYear
         submissionYears = (currentYear - 12 to currentYear).toList.sorted
       } yield Ok(view(cards, chosenYear, fiName, submissionYears, fiId)))
-        .getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())).recover{
-          case custom_error => 
-            logger.error("no fi details")
+        .getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+        .recover {
+          case _ =>
+            logger.error(s"no data found for $fiId")
             Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
-          
+
         }
   }
 

@@ -84,7 +84,7 @@ class VoidingFatcaInformationController @Inject() (
                         Future.successful(
                           Redirect(
                             controllers.routes.ViewSubmissionsController
-                              .onPageLoad(year = LocalDateTime.now.getYear - 1, fiId = details.fiId, fiName = details.fiName)
+                              .onPageLoad(year = LocalDateTime.now.getYear - 1, fiId = details.fiId)
                           )
                         )
                       }

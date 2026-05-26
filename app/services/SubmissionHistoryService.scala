@@ -22,14 +22,13 @@ import models.SubmissionsConstants.{CRS701, CRSAdditional701, PASSED}
 import models.{ReadSubmissionResponseDetails, SubmissionCard, SubmittedReport}
 import uk.gov.hmrc.http.HeaderCarrier
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-class SubmissionHistoryService @Inject() (readSubmissionConnector: ReadSubmissionConnector)(implicit ec: ExecutionContext) {
+class SubmissionHistoryService @Inject() (readSubmissionConnector: ReadSubmissionConnector) {
 
-  def getSubmissionHistory(fiId:String)(implicit hc: HeaderCarrier): Future[ReadSubmissionResponseDetails] =
+  def getSubmissionHistory(fiId: String)(implicit hc: HeaderCarrier): Future[ReadSubmissionResponseDetails] =
     readSubmissionConnector
       .getSubmissionsList(fiId)
-
 
   def prepareSubmissionHistoryCards(submissions: List[SubmittedReport], submissionYear: Int): Map[String, List[SubmissionCard]] =
     submissions

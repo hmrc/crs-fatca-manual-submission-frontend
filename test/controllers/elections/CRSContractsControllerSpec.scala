@@ -18,13 +18,14 @@ package controllers.elections
 
 import base.SpecBase
 import forms.elections.CRSContractsFormProvider
-import models.{NormalMode, UserAnswers}
+import models.{FiIdentifiers, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.FiNamePage
+import pages.FiDetailsPage
 import pages.elections.CRSContractsPage
+import play.api.data.Form
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -38,13 +39,13 @@ class CRSContractsControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  val formProvider          = new CRSContractsFormProvider()
-  val form                  = formProvider()
-  val testFIName            = "Test FI" // TODO : Require update after integration
-  val reportingYear         = 2027
-  val mockSessionRepository = mock[SessionRepository]
+  val formProvider                             = new CRSContractsFormProvider()
+  val form: Form[Boolean]                      = formProvider()
+  val testFIName                               = "Test FI" // TODO : Require update after integration
+  val reportingYear                            = 2027
+  val mockSessionRepository: SessionRepository = mock[SessionRepository]
 
-  lazy val cRSContractsRoute = controllers.elections.routes.CRSContractsController.onPageLoad(NormalMode, reportingYear).url
+  lazy val cRSContractsRoute: String = controllers.elections.routes.CRSContractsController.onPageLoad(NormalMode, reportingYear).url
 
   override def beforeEach(): Unit = reset(mockSessionRepository)
   super.beforeEach()
@@ -53,7 +54,7 @@ class CRSContractsControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userData = None)
+      val application = applicationBuilder(userData = Some(emptyUserData.withPage(FiDetailsPage, FiIdentifiers("fiID", testFIName))))
         .build()
 
       running(application) {
@@ -89,7 +90,7 @@ class CRSContractsControllerSpec extends SpecBase with MockitoSugar {
         .set(CRSContractsPage, true)
         .success
         .value
-        .set(FiNamePage, "Test FI")
+        .set(FiDetailsPage, FiIdentifiers("fiID", testFIName))
         .success
         .value
 
@@ -157,7 +158,7 @@ class CRSContractsControllerSpec extends SpecBase with MockitoSugar {
     "must return a Bad Request and errors when invalid data is submitted" in {
 
       when(mockSessionRepository.get(any())) thenReturn Future.successful(None)
-      val application = applicationBuilder(userData = None)
+      val application = applicationBuilder(userData = Some(emptyUserData.withPage(FiDetailsPage, FiIdentifiers("fiID", testFIName))))
         .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
         .build()
 

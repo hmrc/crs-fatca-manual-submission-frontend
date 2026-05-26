@@ -20,8 +20,9 @@ import controllers.actions.*
 import forms.elections.CRSThresholdsFormProvider
 import models.Mode
 import navigation.Navigator
-import pages.FiNamePage
+import pages.FiDetailsPage
 import pages.elections.CRSThresholdsPage
+import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -45,22 +46,22 @@ class CRSThresholdsController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  val form = formProvider()
+  val form: Form[Boolean] = formProvider()
 
   def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
 
       val userData = request.userAnswers
       userData
-        .get(FiNamePage)
+        .get(FiDetailsPage)
         .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)) {
-          fiName =>
+          fiDetail =>
             val preparedForm = request.userAnswers.get(CRSThresholdsPage) match {
               case None        => form
               case Some(value) => form.fill(value)
             }
 
-            Ok(view(preparedForm, mode, fiName, year))
+            Ok(view(preparedForm, mode, fiDetail.fiName, year))
         }
   }
 
@@ -70,13 +71,13 @@ class CRSThresholdsController @Inject() (
       val userData = request.userAnswers
 
       userData
-        .get(FiNamePage)
+        .get(FiDetailsPage)
         .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))) {
-          fiName =>
+          fiDetail =>
             form
               .bindFromRequest()
               .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiName, year))),
+                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiDetail.fiName, year))),
                 value =>
                   for {
                     updatedAnswers <- Future.fromTry(request.userAnswers.set(CRSThresholdsPage, value))

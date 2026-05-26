@@ -19,13 +19,14 @@ package controllers.elections
 import base.SpecBase
 import controllers.routes
 import forms.elections.CRSDormantAccountsFormProvider
-import models.{NormalMode, UserAnswers}
+import models.{FiIdentifiers, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.FiNamePage
+import pages.FiDetailsPage
 import pages.elections.CRSDormantAccountsPage
+import play.api.data.Form
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -39,13 +40,13 @@ class CRSDormantAccountsControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  val formProvider          = new CRSDormantAccountsFormProvider()
-  val form                  = formProvider()
-  val fiName                = "Test FI"
-  val reportingYear         = 2027
-  val mockSessionRepository = mock[SessionRepository]
+  val formProvider                             = new CRSDormantAccountsFormProvider()
+  val form: Form[Boolean]                      = formProvider()
+  val fiName                                   = "Test FI"
+  val reportingYear                            = 2027
+  val mockSessionRepository: SessionRepository = mock[SessionRepository]
 
-  lazy val cRSDormantAccountsRoute = controllers.elections.routes.CRSDormantAccountsController.onPageLoad(NormalMode, reportingYear).url
+  lazy val cRSDormantAccountsRoute: String = controllers.elections.routes.CRSDormantAccountsController.onPageLoad(NormalMode, reportingYear).url
 
   override def beforeEach(): Unit =
     reset(mockSessionRepository)
@@ -55,7 +56,7 @@ class CRSDormantAccountsControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userData = Some(emptyUserData.withPage(FiNamePage, "Test FI")))
+      val application = applicationBuilder(userData = Some(emptyUserData.withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))))
         .build()
 
       running(application) {
@@ -73,7 +74,7 @@ class CRSDormantAccountsControllerSpec extends SpecBase with MockitoSugar {
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
       val userAnswers = UserAnswers(userAnswersId)
-        .withPage(FiNamePage, "Test FI")
+        .withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))
         .withPage(CRSDormantAccountsPage, true)
 
       val application = applicationBuilder(userData = Some(userAnswers))
@@ -98,7 +99,7 @@ class CRSDormantAccountsControllerSpec extends SpecBase with MockitoSugar {
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
-        applicationBuilder(userData = Some(emptyUserData.withPage(FiNamePage, "Test FI")))
+        applicationBuilder(userData = Some(emptyUserData.withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository)
@@ -119,7 +120,7 @@ class CRSDormantAccountsControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userData = Some(emptyUserData.withPage(FiNamePage, "Test FI")))
+      val application = applicationBuilder(userData = Some(emptyUserData.withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))))
         .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
         .build()
 

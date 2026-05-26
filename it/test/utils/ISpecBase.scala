@@ -17,7 +17,8 @@
 package utils
 
 import generators.Generators
-import models.UserAnswers
+import models.SubmissionsConstants.{FATCA, FATCA1, PASSED}
+import models.{SubmissionsConstants, SubmittedReport, UserAnswers}
 import org.scalatest.TryValues.convertTryToSuccessOrFailure
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.freespec.AnyFreeSpec
@@ -31,6 +32,8 @@ import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mongo.test.DefaultPlayMongoRepositorySupport
 
+import java.time.LocalDateTime
+
 trait ISpecBase
     extends AnyFreeSpec
     with GuiceOneServerPerSuite
@@ -41,7 +44,21 @@ trait ISpecBase
 
   val userAnswersId: String         = "internalId"
   def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
-
+  val submittedReport: SubmittedReport = SubmittedReport(
+    fiId = "id",
+    fiName = "name",
+    fileName = "fileName",
+    submissionStatus = PASSED,
+    uploadDateTime = LocalDateTime.now(),
+    regime = FATCA,
+    reportingYear = "2016",
+    submissionCaseId = "123",
+    submissionType = SubmissionsConstants.XML,
+    submissionFileType = FATCA1,
+    messageRefId = "ref1",
+    submissionDeleteStatus = None,
+    originalMessageRefId = None
+  )
   val repository: SessionRepository = app.injector.instanceOf[SessionRepository]
   implicit val hc: HeaderCarrier    = HeaderCarrier()
 
@@ -55,6 +72,7 @@ trait ISpecBase
     "microservice.services.crs-fatca-reporting.host" -> WireMockConstants.stubHost,
     "microservice.services.crs-fatca-reporting.port" -> WireMockConstants.stubPort.toString,
     "mongodb.uri" -> mongoUri,
+    "microservice.services.crs-fatca-fi-management.port"     -> WireMockConstants.stubPort.toString,
     "mongodb.uri"                                            -> mongoUri,
     "play.filters.csrf.header.bypassHeaders.Csrf-Token"      -> "nocheck"
     //    "logger.root"                                             -> "INFO",

@@ -18,12 +18,12 @@ package controllers.elections
 
 import base.SpecBase
 import forms.elections.IsApplyingThresholdsFormProvider
-import models.NormalMode
+import models.{FiIdentifiers, NormalMode}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{FiNamePage, IsApplyingThresholdsPage}
+import pages.{FiDetailsPage, IsApplyingThresholdsPage}
 import play.api.data.Form
 import play.api.inject.bind
 import play.api.mvc.Call
@@ -47,7 +47,7 @@ class IsApplyingThresholdsControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userData = Some(emptyUserData.withPage(FiNamePage, fiName))).build()
+      val application = applicationBuilder(userData = Some(emptyUserData.withPage(FiDetailsPage, FiIdentifiers("fiID", fiName)))).build()
 
       running(application) {
         val request = FakeRequest(GET, isApplyingThresholdsRoute)
@@ -67,9 +67,7 @@ class IsApplyingThresholdsControllerSpec extends SpecBase with MockitoSugar {
         .set(IsApplyingThresholdsPage, true)
         .success
         .value
-        .set(FiNamePage, fiName)
-        .success
-        .value
+        .withPage(FiDetailsPage, FiIdentifiers("fiID", fiName))
 
       val application = applicationBuilder(userData = Some(userData)).build()
 
@@ -86,7 +84,7 @@ class IsApplyingThresholdsControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to the next page when valid data is submitted" in {
-      val userData              = emptyUserData.set(FiNamePage, fiName).success.value
+      val userData              = emptyUserData.withPage(FiDetailsPage, FiIdentifiers("fiID", fiName))
       val mockSessionRepository = mock[SessionRepository]
 
       val application =
@@ -111,7 +109,7 @@ class IsApplyingThresholdsControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userData = Some(emptyUserData.withPage(FiNamePage, fiName))).build()
+      val application = applicationBuilder(userData = Some(emptyUserData.withPage(FiDetailsPage, FiIdentifiers("fiID", fiName)))).build()
 
       running(application) {
         val request =

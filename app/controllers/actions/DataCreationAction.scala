@@ -16,9 +16,9 @@
 
 package controllers.actions
 
-import models.UserAnswers
+import models.{FiIdentifiers, UserAnswers}
 import models.requests.{DataRequest, OptionalDataRequest}
-import pages.FiNamePage
+import pages.FiDetailsPage
 import play.api.mvc.ActionTransformer
 import repositories.SessionRepository
 
@@ -30,7 +30,7 @@ class DataCreationActionImpl @Inject() (implicit val executionContext: Execution
   override protected def transform[A](request: OptionalDataRequest[A]): Future[DataRequest[A]] =
     request.maybeAnswers match {
       case None =>
-        val data = UserAnswers(request.fatcaId).set(FiNamePage, "Test FI").get // TODO : Need to replaced once we integrate
+        val data = UserAnswers(request.fatcaId).set(FiDetailsPage, FiIdentifiers("FI ID", "FI Name")).get // TODO : Need to replaced once we integrate
         sessionRepository.set(data) // TODO : Need to replaced once we integrate
         Future.successful(DataRequest(request.request, request.userId, data, request.fatcaId))
       case Some(data) => Future.successful(DataRequest(request.request, request.userId, data, request.fatcaId))

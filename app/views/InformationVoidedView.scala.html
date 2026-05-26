@@ -15,7 +15,7 @@
  *@
 
 @import models.viewModels.InformationVoidedViewModel
-
+@import java.time.LocalDate
 @this(
         layout: templates.Layout,
         govukButton: GovukButton,
@@ -25,6 +25,7 @@
         link: components.Link,
         appConfig: config.FrontendAppConfig
 )
+
 
 @(model: InformationVoidedViewModel)(implicit request: Request[_], messages: Messages)
 
@@ -56,7 +57,7 @@
     }
 
     <div class="govuk-!-padding-top-2">
-        @link(routes.ReadSubmissionDataController.onPageLoad(model.fiId, model.fiName).url, messages("informationVoided.link.1", model.fiName), id = Some("submitted-reports-link"), paraClasses = "govuk-!-margin-bottom-1")
+        @link(routes.ViewSubmissionsController.onPageLoad(LocalDate.now().getYear -1 , model.fiId).url, messages("informationVoided.link.1", model.fiName), id = Some("submitted-reports-link"), paraClasses = "govuk-!-margin-bottom-1")
         @link(appConfig.manageReportsLink, "Back to manage your CRS and FATCA reports", id = Some("manage-reports-link"))
     </div>
 }

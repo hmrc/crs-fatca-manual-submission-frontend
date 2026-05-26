@@ -18,12 +18,12 @@ package controllers.elections
 
 import base.SpecBase
 import forms.elections.IsUsTreasuryRegulatedFormProvider
-import models.{NormalMode, UserAnswers}
+import models.{FiIdentifiers, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{FiNamePage, IsUsTreasuryRegulatedPage}
+import pages.{FiDetailsPage, IsUsTreasuryRegulatedPage}
 import play.api.data.Form
 import play.api.inject.bind
 import play.api.mvc.Call
@@ -48,7 +48,7 @@ class IsUsTreasuryRegulatedControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userData = Some(emptyUserData.withPage(FiNamePage, fiName))).build()
+      val application = applicationBuilder(userData = Some(emptyUserData.withPage(FiDetailsPage, FiIdentifiers("fiID", fiName)))).build()
 
       running(application) {
         val request = FakeRequest(GET, isUsTreasuryRegulatedRoute)
@@ -68,9 +68,7 @@ class IsUsTreasuryRegulatedControllerSpec extends SpecBase with MockitoSugar {
         .set(IsUsTreasuryRegulatedPage, true)
         .success
         .value
-        .set(FiNamePage, fiName)
-        .success
-        .value
+        .withPage(FiDetailsPage, FiIdentifiers("fiID", fiName))
 
       val application = applicationBuilder(userData = Some(userAnswers)).build()
 
@@ -87,7 +85,7 @@ class IsUsTreasuryRegulatedControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to the next page when valid data is submitted" in {
-      val userData              = emptyUserData.set(FiNamePage, fiName).success.value
+      val userData              = emptyUserData.withPage(FiDetailsPage, FiIdentifiers("fiID", fiName))
       val mockSessionRepository = mock[SessionRepository]
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
@@ -113,7 +111,7 @@ class IsUsTreasuryRegulatedControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
-      val application = applicationBuilder(userData = Some(emptyUserData.withPage(FiNamePage, fiName))).build()
+      val application = applicationBuilder(userData = Some(emptyUserData.withPage(FiDetailsPage, FiIdentifiers("fiID", fiName)))).build()
       running(application) {
         val request =
           FakeRequest(POST, isUsTreasuryRegulatedRoute)

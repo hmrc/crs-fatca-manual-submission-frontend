@@ -33,7 +33,7 @@ import services.VoidService
 import utils.DateTimeFormats.*
 import views.html.VoidingFatcaInformationView
 
-import java.time.LocalDateTime
+import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.Future
 
 class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
@@ -160,7 +160,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual "/crs-fatca-manual-submission-frontend/manage-reports-for-2025?fiId=id&fiName=ABC+Bank+plc"
+        redirectLocation(result).value mustEqual controllers.routes.ViewSubmissionsController.onPageLoad(LocalDate.now().getYear - 1, report1.fiId).url
 
         verify(mockVoidService, never()).fatcaVoid(eqTo(originalMessageId), eqTo(report1.fiId))(any())
       }
