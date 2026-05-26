@@ -77,7 +77,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
 
     val submissions = List(report1, report2)
 
-    val userAnswersWithSubmissions = emptyUserData.withPage(SubmissionsHistoryPage, submissions)
+    val userAnswersWithSubmissions = emptyUserAnswers.withPage(SubmissionsHistoryPage, submissions)
 
     "must return OK and the correct view for a GET" in {
 
@@ -95,7 +95,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to Journey Recovery for a GET if no matching submissions are found" in {
 
-      val application = applicationBuilder(userData = Some(emptyUserData)).build()
+      val application = applicationBuilder(userData = Some(emptyUserAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, voidingFatcaInformationRoute)

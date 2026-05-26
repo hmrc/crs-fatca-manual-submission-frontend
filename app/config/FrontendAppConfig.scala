@@ -50,10 +50,5 @@ class FrontendAppConfig @Inject() (configuration: Configuration, servicesConfig:
   lazy val registerUrl: String            = configuration.get[String]("urls.register")
   val crsFatcaManualBackendUrl: String    = servicesConfig.baseUrl("crs-fatca-manual-submission")
   val crsFatcaReportingBackendUrl: String = servicesConfig.baseUrl("crs-fatca-reporting")
-  val countdown: Int                   = configuration.get[Int]("timeout-dialog.countdown")
-  val cacheTtl: Long                   = configuration.get[Int]("mongodb.timeToLiveInSeconds")
-  val enrolmentKey: String             = configuration.get[String]("keys.enrolmentKey.crsFatca")
-  lazy val registerUrl: String         = configuration.get[String]("urls.register")
-  val crsFatcaManualBackendUrl: String = servicesConfig.baseUrl("crs-fatca-manual-submission")
   val fIManagementUrl: String          = servicesConfig.baseUrl("crs-fatca-fi-management")
 }

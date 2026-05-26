@@ -56,7 +56,7 @@ class CRSDormantAccountsControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userData = Some(emptyUserData.withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))))
+      val application = applicationBuilder(userData = Some(emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))))
         .build()
 
       running(application) {
@@ -99,7 +99,7 @@ class CRSDormantAccountsControllerSpec extends SpecBase with MockitoSugar {
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
-        applicationBuilder(userData = Some(emptyUserData.withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))))
+        applicationBuilder(userData = Some(emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository)
@@ -120,12 +120,12 @@ class CRSDormantAccountsControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userData = Some(emptyUserData.withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))))
+      val application = applicationBuilder(userData = Some(emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))))
         .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
         .build()
 
       running(application) {
-        when(mockSessionRepository.get(any())) thenReturn Future.successful(Some(emptyUserData))
+        when(mockSessionRepository.get(any())) thenReturn Future.successful(Some(emptyUserAnswers))
         val request =
           FakeRequest(POST, cRSDormantAccountsRoute)
             .withFormUrlEncodedBody(("value", ""))

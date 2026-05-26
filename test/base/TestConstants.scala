@@ -27,7 +27,7 @@ trait TestConstants {
 
   def now: LocalDateTime = LocalDateTime.now()
 
-  def emptyUserData: UserAnswers = UserAnswers(userAnswersId)
+  def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
 
   implicit val hc: HeaderCarrier    = HeaderCarrier()
   implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global

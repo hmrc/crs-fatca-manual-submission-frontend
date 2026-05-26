@@ -54,7 +54,7 @@ class CRSContractsControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userData = Some(emptyUserData.withPage(FiDetailsPage, FiIdentifiers("fiID", testFIName))))
+      val application = applicationBuilder(userData = Some(emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers("fiID", testFIName))))
         .build()
 
       running(application) {
@@ -71,7 +71,7 @@ class CRSContractsControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to Journey Recovery Page when FIName not present in UserData" in {
 
-      val application = applicationBuilder(userData = Some(emptyUserData))
+      val application = applicationBuilder(userData = Some(emptyUserAnswers))
         .build()
 
       running(application) {
@@ -113,7 +113,7 @@ class CRSContractsControllerSpec extends SpecBase with MockitoSugar {
     "must redirect to Journey Recovery Page when FIName not present" in {
 
       val application =
-        applicationBuilder(userData = Some(emptyUserData))
+        applicationBuilder(userData = Some(emptyUserAnswers))
           .overrides(
             bind[SessionRepository].toInstance(mockSessionRepository)
           )
@@ -158,7 +158,7 @@ class CRSContractsControllerSpec extends SpecBase with MockitoSugar {
     "must return a Bad Request and errors when invalid data is submitted" in {
 
       when(mockSessionRepository.get(any())) thenReturn Future.successful(None)
-      val application = applicationBuilder(userData = Some(emptyUserData.withPage(FiDetailsPage, FiIdentifiers("fiID", testFIName))))
+      val application = applicationBuilder(userData = Some(emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers("fiID", testFIName))))
         .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
         .build()
 

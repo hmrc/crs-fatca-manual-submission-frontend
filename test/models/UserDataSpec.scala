@@ -23,7 +23,7 @@ class UserDataSpec extends SpecBase {
 
   "CarfGrossProceedsPage" - {
     "must remove CrsGrossProceedsPage when CarfGrossProceedsPage is set to false" in {
-      val userData = emptyUserData
+      val userData = emptyUserAnswers
         .withPage(CrsGrossProceedsPage, true)
         .withPage(CarfGrossProceedsPage, false)
 
@@ -31,7 +31,7 @@ class UserDataSpec extends SpecBase {
     }
 
     "must not remove CrsGrossProceedsPage when CarfGrossProceedsPage is set to true" in {
-      val userData = emptyUserData
+      val userData = emptyUserAnswers
         .withPage(CrsGrossProceedsPage, true)
         .withPage(CarfGrossProceedsPage, true)
 

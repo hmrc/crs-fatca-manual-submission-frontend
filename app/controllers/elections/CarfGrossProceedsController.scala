@@ -20,7 +20,7 @@ import controllers.actions.*
 import forms.CarfGrossProceedsFormProvider
 import models.Mode
 import navigation.Navigator
-import pages.{CarfGrossProceedsPage, FiNamePage}
+import pages.{CarfGrossProceedsPage, FiDetailsPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -46,34 +46,34 @@ class CarfGrossProceedsController @Inject() (
 
   def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      request.userData
-        .get(FiNamePage)
+      request.userAnswers
+        .get(FiDetailsPage)
         .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)) {
-          fiName =>
+          fiDetail =>
             val form = formProvider(year.toString)
-            val preparedForm = request.userData.get(CarfGrossProceedsPage) match {
+            val preparedForm = request.userAnswers.get(CarfGrossProceedsPage) match {
               case None        => form
               case Some(value) => form.fill(value)
             }
 
-            Ok(view(preparedForm, mode, fiName, year))
+            Ok(view(preparedForm, mode, fiDetail.fiName, year))
         }
   }
 
   def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       val form = formProvider(year.toString)
-      request.userData
-        .get(FiNamePage)
+      request.userAnswers
+        .get(FiDetailsPage)
         .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))) {
-          fiName =>
+          fiDetail =>
             form
               .bindFromRequest()
               .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiName, year))),
+                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiDetail.fiName, year))),
                 value =>
                   for {
-                    updatedAnswers <- Future.fromTry(request.userData.set(CarfGrossProceedsPage, value))
+                    updatedAnswers <- Future.fromTry(request.userAnswers.set(CarfGrossProceedsPage, value))
                     _              <- sessionRepository.set(updatedAnswers)
                   } yield Redirect(navigator.nextPage(CarfGrossProceedsPage, mode, updatedAnswers, Some(year)))
               )

@@ -47,7 +47,7 @@ class IsApplyingThresholdsControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userData = Some(emptyUserData.withPage(FiDetailsPage, FiIdentifiers("fiID", fiName)))).build()
+      val application = applicationBuilder(userData = Some(emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers("fiID", fiName)))).build()
 
       running(application) {
         val request = FakeRequest(GET, isApplyingThresholdsRoute)
@@ -63,7 +63,7 @@ class IsApplyingThresholdsControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userData = emptyUserData
+      val userData = emptyUserAnswers
         .set(IsApplyingThresholdsPage, true)
         .success
         .value
@@ -84,7 +84,7 @@ class IsApplyingThresholdsControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to the next page when valid data is submitted" in {
-      val userData              = emptyUserData.withPage(FiDetailsPage, FiIdentifiers("fiID", fiName))
+      val userData              = emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers("fiID", fiName))
       val mockSessionRepository = mock[SessionRepository]
 
       val application =
@@ -109,7 +109,7 @@ class IsApplyingThresholdsControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userData = Some(emptyUserData.withPage(FiDetailsPage, FiIdentifiers("fiID", fiName)))).build()
+      val application = applicationBuilder(userData = Some(emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers("fiID", fiName)))).build()
 
       running(application) {
         val request =
