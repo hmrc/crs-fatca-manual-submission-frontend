@@ -33,7 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class VoidingFatcaInformationController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
-  getData: DataRetrievalAction,
+  getData: FrontendDataRetrievalAction,
   requireData: DataRequiredAction,
   formProvider: VoidingFatcaInformationFormProvider,
   val controllerComponents: MessagesControllerComponents,

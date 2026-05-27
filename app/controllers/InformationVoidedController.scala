@@ -16,12 +16,13 @@
 
 package controllers
 
+import cats.data.OptionT.{fromOption, liftF}
 import controllers.actions.*
 import models.viewModels.InformationVoidedViewModel
-import pages.SubmissionsHistoryPage
+import pages.{FiDetailsPage, SubmissionsHistoryPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.VoidService
+import services.{SubmissionHistoryService, VoidService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeFormats.formatTimeVoidSubmitted
 import utils.formatEmailList
@@ -29,41 +30,40 @@ import views.html.InformationVoidedView
 
 import java.time.{Clock, LocalDateTime}
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class InformationVoidedController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
-  getData: DataRetrievalAction,
+  getData: FrontendDataRetrievalAction,
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: InformationVoidedView,
   voidService: VoidService,
+  submissionService: SubmissionHistoryService,
   clock: Clock
-) extends FrontendBaseController
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(originalMessageId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(originalMessageId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      val errorRedirect = Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+      (for {
+        fiDetail          <- fromOption[Future](request.userAnswers.get(FiDetailsPage))
+        pastSubmissions   <- liftF(submissionService.getSubmissionHistory(fiDetail.fiId))
+        reportBeingVoided <- fromOption[Future](voidService.getVoidFatcaReportDetails(originalMessageId, pastSubmissions.submissionsList))
+      } yield
+        val emails = Seq("email1@test.com") // TODO: [DAC6-4271]
 
-      request.userAnswers.get(SubmissionsHistoryPage).fold(errorRedirect) {
-        submittedReports =>
-          voidService
-            .getVoidFatcaReportDetails(originalMessageId, submittedReports)
-            .map {
-              details =>
-                val emails = Seq("email1@test.com") // TODO: [DAC6-4271]
-
-                val infoVoidedViewModel = InformationVoidedViewModel(
-                  fiName = details.fiName,
-                  dateTime = LocalDateTime.now(clock).formatTimeVoidSubmitted,
-                  messageRefIds = details.cardModel.cardDetailList.map(_.messageRefId).reverse,
-                  emailString = formatEmailList(emails),
-                  fiId = details.fiId
-                )
-                Ok(view(infoVoidedViewModel))
-            }
-            .getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
-      }
+        val infoVoidedViewModel = InformationVoidedViewModel(
+          fiName = reportBeingVoided.fiName,
+          dateTime = LocalDateTime.now(clock).formatTimeVoidSubmitted,
+          messageRefIds = reportBeingVoided.cardModel.cardDetailList.map(_.messageRefId).reverse,
+          emailString = formatEmailList(emails),
+          fiId = reportBeingVoided.fiId
+        )
+        Ok(view(infoVoidedViewModel))
+      )
+        .getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
   }
 }
