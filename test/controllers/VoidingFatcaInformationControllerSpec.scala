@@ -19,17 +19,17 @@ package controllers
 import base.SpecBase
 import forms.VoidingFatcaInformationFormProvider
 import models.SubmissionsConstants.*
-import models.{FatcaVoidCardDetail, FatcaVoidCardModel, SubmissionsConstants, SubmittedReport, VoidReportDetails}
+import models.{FatcaVoidCardDetail, FatcaVoidCardModel, FiIdentifiers, ReadSubmissionResponseDetails, SubmissionsConstants, SubmittedReport, VoidReportDetails}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchersSugar.eqTo
 import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.SubmissionsHistoryPage
+import pages.{FiDetailsPage, SubmissionsHistoryPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import services.VoidService
+import services.{SubmissionHistoryService, VoidService}
 import utils.DateTimeFormats.*
 import views.html.VoidingFatcaInformationView
 
@@ -40,9 +40,11 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  private val formProvider      = new VoidingFatcaInformationFormProvider()
-  private val form              = formProvider()
-  private val originalMessageId = "Some-OMId"
+  private val mockVoidService              = mock[VoidService]
+  private val mockSubmissionHistoryService = mock[SubmissionHistoryService]
+  private val formProvider                 = new VoidingFatcaInformationFormProvider()
+  private val form                         = formProvider()
+  private val originalMessageId            = "Some-OMId"
 
   private lazy val voidingFatcaInformationRoute     = routes.VoidingFatcaInformationController.onPageLoad(originalMessageId).url
   private lazy val voidingFatcaInformationPostRoute = routes.VoidingFatcaInformationController.onSubmit(originalMessageId).url
@@ -75,14 +77,19 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
     val fatcaCardDetail2   = FatcaVoidCardDetail("GB2026GB-ABC1234567890-FATCA_003_2", uploadDateTime2.formatTimeSent, FATCA4)
     val fatcaVoidCardModel = FatcaVoidCardModel(Seq(fatcaCardDetail1, fatcaCardDetail2))
 
-    val submissions = List(report1, report2)
+    val submissions = ReadSubmissionResponseDetails(List(report1, report2))
 
-    val userAnswersWithSubmissions = emptyUserAnswers.withPage(SubmissionsHistoryPage, submissions)
+    val userAnswersWithFiDetail = emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers("fiId", "fiName"))
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userData = Some(userAnswersWithSubmissions)).build()
-
+      val application = applicationBuilder(userData = Some(userAnswersWithFiDetail))
+        .overrides(
+          bind[SubmissionHistoryService].toInstance(mockSubmissionHistoryService),
+          bind[VoidService].toInstance(mockVoidService)
+        )
+        .build()
+      when(mockSubmissionHistoryService.getSubmissionHistory(eqTo("fiId"))(any())).thenReturn(Future.successful(submissions))
       running(application) {
         val request = FakeRequest(GET, voidingFatcaInformationRoute)
         val result  = route(application, request).value
@@ -108,15 +115,13 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to the next page when user submits true" in {
 
-      val mockVoidService = mock[VoidService]
-
       when(mockVoidService.fatcaVoid(any(), any())(any())) thenReturn Future.successful(())
       when(mockVoidService.getVoidFatcaReportDetails(eqTo(originalMessageId), any())) thenReturn Some(
         VoidReportDetails(fatcaVoidCardModel, fiName, report1.fiId, year)
       )
 
       val application =
-        applicationBuilder(userData = Some(userAnswersWithSubmissions))
+        applicationBuilder(userData = Some(userAnswersWithFiDetail))
           .overrides(
             bind[VoidService].toInstance(mockVoidService)
           )
@@ -146,7 +151,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
       )
 
       val application =
-        applicationBuilder(userData = Some(userAnswersWithSubmissions))
+        applicationBuilder(userData = Some(userAnswersWithFiDetail))
           .overrides(
             bind[VoidService].toInstance(mockVoidService)
           )
@@ -168,7 +173,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and error when invalid data is submitted" in {
 
-      val application = applicationBuilder(userData = Some(userAnswersWithSubmissions)).build()
+      val application = applicationBuilder(userData = Some(userAnswersWithFiDetail)).build()
 
       running(application) {
         val request =
