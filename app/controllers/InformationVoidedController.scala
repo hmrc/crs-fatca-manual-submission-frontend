@@ -16,13 +16,12 @@
 
 package controllers
 
-import cats.data.OptionT.{fromOption, liftF}
 import controllers.actions.*
 import models.viewModels.InformationVoidedViewModel
-import pages.FiDetailsPage
+import pages.{FiDetailsPage, VoidedReportMessageRefIdsPage}
+import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{SubmissionHistoryService, VoidService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeFormats.formatTimeVoidSubmitted
 import utils.formatEmailList
@@ -30,7 +29,6 @@ import views.html.InformationVoidedView
 
 import java.time.{Clock, LocalDateTime}
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
 
 class InformationVoidedController @Inject() (
   override val messagesApi: MessagesApi,
@@ -39,34 +37,29 @@ class InformationVoidedController @Inject() (
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: InformationVoidedView,
-  voidService: VoidService,
-  submissionService: SubmissionHistoryService,
   clock: Clock
-)(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport {
+) extends FrontendBaseController
+    with I18nSupport
+    with Logging {
 
-  def onPageLoad(originalMessageId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onPageLoad(originalMessageId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       (for {
-        fiDetail          <- fromOption[Future](request.userAnswers.get(FiDetailsPage))
-        pastSubmissions   <- liftF(submissionService.getSubmissionHistory(fiDetail.fiId))
-        reportBeingVoided <- fromOption[Future](voidService.getVoidFatcaReportDetails(originalMessageId, pastSubmissions.submissionsList))
+        fiDetail     <- request.userAnswers.get(FiDetailsPage)
+        voidedReport <- request.userAnswers.get(VoidedReportMessageRefIdsPage)
       } yield
         val emails = Seq("email1@test.com") // TODO: [DAC6-4271]
 
         val infoVoidedViewModel = InformationVoidedViewModel(
-          fiName = reportBeingVoided.fiName,
+          fiName = fiDetail.fiName,
           dateTime = LocalDateTime.now(clock).formatTimeVoidSubmitted,
-          messageRefIds = reportBeingVoided.cardModel.cardDetailList.map(_.messageRefId).reverse,
+          messageRefIds = voidedReport.reverse,
           emailString = formatEmailList(emails),
-          fiId = reportBeingVoided.fiId
+          fiId = fiDetail.fiId
         )
         Ok(view(infoVoidedViewModel))
       )
         .getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
-        .recover {
-          case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
-        }
+
   }
 }

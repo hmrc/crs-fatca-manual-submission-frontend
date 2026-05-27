@@ -22,13 +22,14 @@ import models.SubmissionsConstants.*
 import models.{FatcaVoidCardDetail, FatcaVoidCardModel, FiIdentifiers, ReadSubmissionResponseDetails, SubmissionsConstants, SubmittedReport, VoidReportDetails}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchersSugar.eqTo
-import org.mockito.Mockito.{never, reset, verify, when}
+import org.mockito.Mockito.*
 import org.scalatestplus.mockito.MockitoSugar
 import pages.FiDetailsPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
+import repositories.SessionRepository
 import services.{SubmissionHistoryService, VoidService}
 import utils.DateTimeFormats.*
 import views.html.VoidingFatcaInformationView
@@ -147,8 +148,10 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
     "POST" - {
 
       "must redirect to the next page when user submits true" in {
+        val mockSession = mock[SessionRepository]
         when(mockSubmissionHistoryService.getSubmissionHistory(eqTo(report1.fiId))(any())).thenReturn(Future.successful(submissions))
         when(mockVoidService.fatcaVoid(any(), any())(any())) thenReturn Future.successful(())
+        when(mockSession.set(any())).thenReturn(Future.successful(true))
         when(mockVoidService.getVoidFatcaReportDetails(eqTo(originalMessageId), any())) thenReturn Some(
           VoidReportDetails(fatcaVoidCardModel, fiName, report1.fiId, year)
         )
@@ -157,6 +160,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
           applicationBuilder(userData = Some(userAnswersWithFiDetail))
             .overrides(
               bind[SubmissionHistoryService].toInstance(mockSubmissionHistoryService),
+              bind[SessionRepository].toInstance(mockSession),
               bind[VoidService].toInstance(mockVoidService)
             )
             .build()
@@ -172,6 +176,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
           redirectLocation(result).value mustEqual "/crs-fatca-manual-submission-frontend/fatca-void/information-voided?originalMessageRefId=Some-OMId"
 
           verify(mockVoidService).fatcaVoid(eqTo(originalMessageId), eqTo(report1.fiId))(any())
+          verify(mockSession, atMostOnce()).set(any())
         }
       }
 

@@ -19,28 +19,22 @@ package controllers
 import base.SpecBase
 import models.SubmissionsConstants.{FATCA1, FATCA4}
 import models.viewModels.InformationVoidedViewModel
-import models.{FatcaVoidCardDetail, FatcaVoidCardModel, FiIdentifiers, ReadSubmissionResponseDetails, UserAnswers, VoidReportDetails}
-import org.mockito.ArgumentMatchersSugar.*
-import org.mockito.Mockito.*
-import pages.FiDetailsPage
+import models.{FatcaVoidCardDetail, FatcaVoidCardModel, FiIdentifiers, ReadSubmissionResponseDetails}
+import pages.{FiDetailsPage, VoidedReportMessageRefIdsPage}
 import play.api.inject
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import services.{SubmissionHistoryService, VoidService}
 import utils.DateTimeFormats.formatTimeVoidSubmitted
 import views.html.InformationVoidedView
 
 import java.time.{Clock, LocalDateTime, ZoneId}
-import scala.concurrent.Future
 
 class InformationVoidedControllerSpec extends SpecBase {
 
-  private val zone          = ZoneId.of("Europe/London")
-  private val fixedDateTime = LocalDateTime.of(2026, 4, 28, 15, 36)
-  private val fixedClock    = Clock.fixed(fixedDateTime.atZone(zone).toInstant, zone)
-  private val dateTime      = fixedDateTime.formatTimeVoidSubmitted
-
-  private val year               = "2027"
+  private val zone               = ZoneId.of("Europe/London")
+  private val fixedDateTime      = LocalDateTime.of(2026, 4, 28, 15, 36)
+  private val fixedClock         = Clock.fixed(fixedDateTime.atZone(zone).toInstant, zone)
+  private val dateTime           = fixedDateTime.formatTimeVoidSubmitted
   private val originalMessageId  = "Some-OMRId"
   private val fiName             = "someFiName"
   private val fiId               = "some-fiId"
@@ -57,33 +51,27 @@ class InformationVoidedControllerSpec extends SpecBase {
     emailString = emailString,
     fiId = fiId
   )
-  private val mockVoidService              = mock[VoidService]
-  private val mockSubmissionHistoryService = mock[SubmissionHistoryService]
 
   private val report2 =
     submittedReport.copy(originalMessageRefId = Some(originalMessageId), messageRefId = "GB2026GB-ABC1234567890-FATCA_003_2")
 
   private val report1 =
     submittedReport.copy(messageRefId = "GB2026GB-ABC1234567890-FATCA_003", fiId = fiId)
-  val submissions                          = ReadSubmissionResponseDetails(List(report1, report2))
-  val userAnswersWithFiDetail: UserAnswers = emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers(report1.fiId, fiName))
+  val submissions                    = ReadSubmissionResponseDetails(List(report1, report2))
+  val fiDetails                      = FiIdentifiers(report1.fiId, fiName)
+  val voidedMessageRefs: Seq[String] = Seq(report1.messageRefId, report2.messageRefId)
 
-  override def beforeEach(): Unit = {
-    reset(mockSubmissionHistoryService)
-    reset(mockVoidService)
-  }
   "InformationVoided Controller" - {
     "must return OK and the correct view for a GET" in {
 
-      when(mockSubmissionHistoryService.getSubmissionHistory(eqTo(report1.fiId))(any())).thenReturn(Future.successful(submissions))
-      when(mockVoidService.getVoidFatcaReportDetails(eqTo(originalMessageId), any())) thenReturn Some(
-        VoidReportDetails(fatcaVoidCardModel, fiName, report1.fiId, year)
+      val application = applicationBuilder(userData =
+        Some(
+          emptyUserAnswers
+            .withPage(FiDetailsPage, fiDetails)
+            .withPage(VoidedReportMessageRefIdsPage, voidedMessageRefs)
+        )
       )
-
-      val application = applicationBuilder(userData = Some(userAnswersWithFiDetail))
         .overrides(
-          inject.bind[VoidService].toInstance(mockVoidService),
-          inject.bind[SubmissionHistoryService].toInstance(mockSubmissionHistoryService),
           inject.bind[Clock].toInstance(fixedClock)
         )
         .build()
@@ -98,7 +86,7 @@ class InformationVoidedControllerSpec extends SpecBase {
       }
     }
     "must redirect to Journey Recovery for a GET if no FI detail is found" in {
-      val application = applicationBuilder(userData = Some(emptyUserAnswers))
+      val application = applicationBuilder(userData = Some(emptyUserAnswers.withPage(VoidedReportMessageRefIdsPage, voidedMessageRefs)))
         .build()
 
       running(application) {
@@ -110,30 +98,9 @@ class InformationVoidedControllerSpec extends SpecBase {
       }
     }
 
-    "must redirect to Journey Recovery for a GET if call to fetch submissions fails" in {
+    "must redirect to Journey Recovery for a GET if no voided message ref data is found in mongo" in {
 
-      when(mockSubmissionHistoryService.getSubmissionHistory(eqTo(report1.fiId))(any())).thenReturn(Future.failed(Exception("bad")))
-
-      val application = applicationBuilder(userData = Some(userAnswersWithFiDetail))
-        .overrides(inject.bind[SubmissionHistoryService].toInstance(mockSubmissionHistoryService))
-        .build()
-
-      running(application) {
-        val request = FakeRequest(GET, routes.InformationVoidedController.onPageLoad(originalMessageId).url)
-        val result  = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-      }
-    }
-
-    "must redirect to Journey Recovery for a GET if no matching submissions is found for the messageRefId" in {
-
-      when(mockSubmissionHistoryService.getSubmissionHistory(eqTo(report1.fiId))(any())).thenReturn(Future.successful(submissions))
-      when(mockVoidService.getVoidFatcaReportDetails(eqTo(originalMessageId), any())) thenReturn None
-
-      val application = applicationBuilder(userData = Some(userAnswersWithFiDetail))
-        .overrides(inject.bind[VoidService].toInstance(mockVoidService), inject.bind[SubmissionHistoryService].toInstance(mockSubmissionHistoryService))
+      val application = applicationBuilder(userData = Some(emptyUserAnswers.withPage(FiDetailsPage, fiDetails)))
         .build()
 
       running(application) {
