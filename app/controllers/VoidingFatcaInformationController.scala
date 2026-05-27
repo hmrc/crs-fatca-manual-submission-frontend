@@ -52,9 +52,13 @@ class VoidingFatcaInformationController @Inject() (
         fiDetail          <- fromOption[Future](request.userAnswers.get(FiDetailsPage))
         pastSubmissions   <- liftF(submissionService.getSubmissionHistory(fiDetail.fiId))
         reportBeingVoided <- fromOption[Future](voidService.getVoidFatcaReportDetails(originalMessageRefId, pastSubmissions.submissionsList))
-      } yield Ok(view(form, reportBeingVoided.fiName, reportBeingVoided.cardModel, originalMessageRefId))).getOrElse(
-        Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
-      )
+      } yield Ok(view(form, reportBeingVoided.fiName, reportBeingVoided.cardModel, originalMessageRefId)))
+        .getOrElse(
+          Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+        )
+        .recover {
+          case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+        }
   }
 
   def onSubmit(originalMessageRefId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
