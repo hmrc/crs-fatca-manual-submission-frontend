@@ -22,7 +22,7 @@ import models.SubmissionsConstants.*
 import models.{FatcaVoidCardDetail, FatcaVoidCardModel, FiIdentifiers, ReadSubmissionResponseDetails, SubmissionsConstants, SubmittedReport, VoidReportDetails}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchersSugar.eqTo
-import org.mockito.Mockito.{atMostOnce, never, verify, when}
+import org.mockito.Mockito.{never, reset, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.FiDetailsPage
 import play.api.inject.bind
@@ -32,7 +32,7 @@ import play.api.test.Helpers.*
 import services.{SubmissionHistoryService, VoidService}
 import utils.DateTimeFormats.*
 import views.html.VoidingFatcaInformationView
-import org.mockito.Mockito.reset
+
 import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.Future
 

@@ -19,7 +19,7 @@ package controllers
 import cats.data.OptionT.{fromOption, liftF}
 import controllers.actions.*
 import models.viewModels.InformationVoidedViewModel
-import pages.{FiDetailsPage, SubmissionsHistoryPage}
+import pages.FiDetailsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{SubmissionHistoryService, VoidService}
@@ -65,5 +65,8 @@ class InformationVoidedController @Inject() (
         Ok(view(infoVoidedViewModel))
       )
         .getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+        .recover {
+          case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+        }
   }
 }
