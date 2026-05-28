@@ -18,7 +18,6 @@ package connectors
 
 import config.FrontendAppConfig
 import models.VoidFatcaRequest
-import play.api.Logging
 import play.api.http.Status.*
 import play.api.libs.json.Json
 import play.api.libs.ws.writeableOf_JsValue
@@ -29,7 +28,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException, S
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class FatcaVoidConnector @Inject() (http: HttpClientV2, config: FrontendAppConfig)(implicit ec: ExecutionContext) extends Logging {
+class FatcaVoidConnector @Inject() (http: HttpClientV2, config: FrontendAppConfig)(implicit ec: ExecutionContext) {
 
   def submit(requestBody: VoidFatcaRequest)(implicit hc: HeaderCarrier): Future[Unit] = {
     val url = url"${config.crsFatcaManualBackendUrl}/crs-fatca-manual-submission/submitVoidRequest"

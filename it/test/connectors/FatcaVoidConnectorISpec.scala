@@ -26,7 +26,7 @@ import utils.ISpecBase
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, Future}
 
-class FatcaVoidConnectorSpec extends AnyFreeSpec with ISpecBase {
+class FatcaVoidConnectorISpec extends ISpecBase {
 
   lazy val connector: FatcaVoidConnector = app.injector.instanceOf[FatcaVoidConnector]
 

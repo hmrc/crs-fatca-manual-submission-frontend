@@ -18,18 +18,22 @@ package controllers
 
 import base.SpecBase
 import config.FrontendAppConfig
+import models.ServiceErrors.NoFiDetailFound
 import models.SubmissionsConstants.FATCA1
-import models.{SubmissionCard, SubmissionsConstants, SubmittedReport}
+import models.{FiIdentifiers, ReadSubmissionResponseDetails, SubmissionCard, SubmissionsConstants, SubmittedReport}
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.when
-import pages.SubmissionsHistoryPage
+import pages.FiDetailsPage
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import services.SubmissionHistoryService
+import repositories.SessionRepository
+import services.{SubmissionHistoryService, ViewFIService}
+import uk.gov.hmrc.http.InternalServerException
 import views.html.ViewSubmissionsView
 
 import java.time.LocalDate
+import scala.concurrent.Future
 
 class ViewSubmissionsControllerSpec extends SpecBase {
 
@@ -42,37 +46,91 @@ class ViewSubmissionsControllerSpec extends SpecBase {
     fileType = FATCA1,
     submissionType = SubmissionsConstants.XML
   )
+  private val fiName: String                                 = "fiName"
+  private val fiId: String                                   = "fiId"
   private val currentYear                                    = LocalDate.now().getYear
   private val mappedCards: Map[String, List[SubmissionCard]] = Map("ref1" -> List(submissionCard))
-  val service: SubmissionHistoryService                      = mock[SubmissionHistoryService]
+  val mockSubmissionService: SubmissionHistoryService        = mock[SubmissionHistoryService]
+  val mockFiService: ViewFIService                           = mock[ViewFIService]
+  val mockSessionRepository: SessionRepository               = mock[SessionRepository]
   "ViewSubmissions Controller" - {
 
-    "must return OK and the correct view for a GET" in {
+    "must return OK and the correct view for a GET when FI data is already stored in mongo" in {
 
-      val application = applicationBuilder(userData = Some(emptyUserData.set(SubmissionsHistoryPage, List(submittedReport)).success.value))
-        .overrides(bind[SubmissionHistoryService].toInstance(service))
+      val application = applicationBuilder(userData = Some(emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers(fiId, fiName))))
+        .overrides(bind[SubmissionHistoryService].toInstance(mockSubmissionService), bind[SessionRepository].toInstance(mockSessionRepository))
         .build()
       implicit val config: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
       running(application) {
-        val request = FakeRequest(GET, routes.ViewSubmissionsController.onPageLoad(2016, "fiId", "fiName").url)
-        when(service.prepareSubmissionHistoryCards(any(), eqTo(2016))).thenReturn(mappedCards)
+        val request = FakeRequest(GET, routes.ViewSubmissionsController.onPageLoad(2016, fiId).url)
+        when(mockSubmissionService.getSubmissionHistory(eqTo(fiId))(any())).thenReturn(Future.successful(ReadSubmissionResponseDetails(List(submittedReport))))
+        when(mockSubmissionService.prepareSubmissionHistoryCards(any(), eqTo(2016))).thenReturn(mappedCards)
+        when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
         val result = route(application, request).value
 
         val view = application.injector.instanceOf[ViewSubmissionsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(mappedCards, 2016, "fiName", (currentYear - 12 to currentYear).toList, "fiId")(request,
-                                                                                                                              messages(application)
+        contentAsString(result) mustEqual view(mappedCards, 2016, fiName, (currentYear - 12 to currentYear).toList, fiId)(request,
+                                                                                                                          messages(application)
         ).toString
       }
     }
 
-    "must redirect to journey recovery if user answers are empty" in {
+    "must return OK and the correct view for a GET no FI data is found in mongo" in {
 
-      val application = applicationBuilder(userData = Some(emptyUserData)).build()
-
+      val application = applicationBuilder(userData = Some(emptyUserAnswers))
+        .overrides(
+          bind[SubmissionHistoryService].toInstance(mockSubmissionService),
+          bind[SessionRepository].toInstance(mockSessionRepository),
+          bind[ViewFIService].toInstance(mockFiService)
+        )
+        .build()
+      when(mockFiService.getFIDetail(any(), eqTo(fiId))(using any())).thenReturn(Future.successful(fiDetail))
+      implicit val config: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
       running(application) {
-        val request = FakeRequest(GET, routes.ViewSubmissionsController.onPageLoad(2018, "fiId", "fiName").url)
+        val request = FakeRequest(GET, routes.ViewSubmissionsController.onPageLoad(2016, fiId).url)
+        when(mockSubmissionService.getSubmissionHistory(eqTo(fiId))(any())).thenReturn(Future.successful(ReadSubmissionResponseDetails(List(submittedReport))))
+        when(mockSubmissionService.prepareSubmissionHistoryCards(any(), eqTo(2016))).thenReturn(mappedCards)
+        when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[ViewSubmissionsView]
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(mappedCards, 2016, fiName, (currentYear - 12 to currentYear).toList, fiId)(request,
+                                                                                                                          messages(application)
+        ).toString
+      }
+    }
+
+    "must redirect to journey recovery if no FI detail can be fetched" in {
+      val application = applicationBuilder(userData = Some(emptyUserAnswers))
+        .overrides(bind[SubmissionHistoryService].toInstance(mockSubmissionService), bind[ViewFIService].toInstance(mockFiService))
+        .build()
+      when(mockFiService.getFIDetail(any(), eqTo(fiId))(using any())).thenReturn(Future.failed(NoFiDetailFound))
+      running(application) {
+        val request = FakeRequest(GET, routes.ViewSubmissionsController.onPageLoad(2018, fiId).url)
+        val result  = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to journey recovery if call to get submission data fails" in {
+      val application = applicationBuilder(userData = Some(emptyUserAnswers))
+        .overrides(
+          bind[SubmissionHistoryService].toInstance(mockSubmissionService),
+          bind[SessionRepository].toInstance(mockSessionRepository),
+          bind[ViewFIService].toInstance(mockFiService)
+        )
+        .build()
+      when(mockFiService.getFIDetail(any(), eqTo(fiId))(using any())).thenReturn(Future.successful(fiDetail))
+      when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
+      when(mockSubmissionService.getSubmissionHistory(eqTo(fiId))(any())).thenReturn(Future.failed(InternalServerException("failed")))
+      running(application) {
+        val request = FakeRequest(GET, routes.ViewSubmissionsController.onPageLoad(2018, fiId).url)
         val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER

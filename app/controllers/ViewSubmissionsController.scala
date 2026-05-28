@@ -16,42 +16,67 @@
 
 package controllers
 
+import cats.data.OptionT
+import cats.data.OptionT.*
 import config.FrontendAppConfig
 import controllers.actions.*
-import pages.SubmissionsHistoryPage
+import models.FiIdentifiers
+import pages.FiDetailsPage
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.SubmissionHistoryService
+import repositories.SessionRepository
+import services.{SubmissionHistoryService, ViewFIService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.ViewSubmissionsView
 
 import java.time.LocalDate
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class ViewSubmissionsController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  service: SubmissionHistoryService,
+  setData: DataCreationAction,
+  sessionRepository: SessionRepository,
+  historyService: SubmissionHistoryService,
+  viewFIService: ViewFIService,
   val controllerComponents: MessagesControllerComponents,
   view: ViewSubmissionsView
-)(implicit config: FrontendAppConfig)
+)(implicit config: FrontendAppConfig, ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
     with Logging {
 
-  def onPageLoad(chosenYear: Int, fiId: String, fiName: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(chosenYear: Int, fiId: String): Action[AnyContent] = (identify andThen getData andThen setData).async {
     implicit request =>
       (for {
-        submissions <- request.userData.get(SubmissionsHistoryPage)
-        cards           = service.prepareSubmissionHistoryCards(submissions, chosenYear)
+        fiName <- liftF(
+          request.userAnswers
+            .get(FiDetailsPage)
+            .map(_.fiName)
+            .map(Future.successful)
+            .getOrElse(
+              viewFIService.getFIDetail(request.fatcaId, fiId).map(_.FIName)
+            )
+        )
+        fiDetail <- liftF(
+          Future.fromTry(request.userAnswers.set(FiDetailsPage, FiIdentifiers(fiId, fiName)))
+        )
+        _           <- liftF(sessionRepository.set(fiDetail))
+        submissions <- liftF(historyService.getSubmissionHistory(fiId))
+        cards           = historyService.prepareSubmissionHistoryCards(submissions.submissionsList, chosenYear)
         currentYear     = LocalDate.now().getYear
         submissionYears = (currentYear - 12 to currentYear).toList.sorted
       } yield Ok(view(cards, chosenYear, fiName, submissionYears, fiId)))
         .getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+        .recover {
+          case _ =>
+            logger.error(s"no data found for $fiId")
+            Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
 
+        }
   }
 
 }

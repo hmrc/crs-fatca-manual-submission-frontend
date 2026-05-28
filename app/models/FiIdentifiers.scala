@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package pages
+package models
 
-import play.api.libs.json.JsPath
+import play.api.libs.json.{Json, OFormat}
 
-case object FiNamePage extends QuestionPage[String] {
+case class FiIdentifiers(fiId: String, fiName: String)
 
-  override def path: JsPath = JsPath \ toString
-
-  override def toString: String = "fiName"
+object FiIdentifiers {
+  implicit val format: OFormat[FiIdentifiers] = Json.format[FiIdentifiers]
 }

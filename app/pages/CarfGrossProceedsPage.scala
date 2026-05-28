@@ -16,7 +16,7 @@
 
 package pages
 
-import models.UserData
+import models.UserAnswers
 import play.api.libs.json.JsPath
 
 import scala.util.Try
@@ -27,7 +27,7 @@ case object CarfGrossProceedsPage extends QuestionPage[Boolean] {
 
   override def toString: String = "carfGrossProceeds"
 
-  override def cleanup(value: Option[Boolean], userAnswers: UserData): Try[UserData] =
+  override def cleanup(value: Option[Boolean], userAnswers: UserAnswers): Try[UserAnswers] =
     value match {
       case Some(false) =>
         userAnswers

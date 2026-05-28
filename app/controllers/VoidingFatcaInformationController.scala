@@ -16,16 +16,18 @@
 
 package controllers
 
+import cats.data.OptionT.{fromOption, liftF}
 import controllers.actions.*
 import forms.VoidingFatcaInformationFormProvider
-import pages.SubmissionsHistoryPage
+import pages.{FiDetailsPage, VoidedReportMessageRefIdsPage}
+import play.api.Logging
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.VoidService
+import repositories.SessionRepository
+import services.{SubmissionHistoryService, VoidService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.VoidingFatcaInformationView
-
 import java.time.LocalDateTime
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,63 +35,63 @@ import scala.concurrent.{ExecutionContext, Future}
 class VoidingFatcaInformationController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
-  getData: DataRetrievalAction,
+  getData: FrontendDataRetrievalAction,
   requireData: DataRequiredAction,
   formProvider: VoidingFatcaInformationFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: VoidingFatcaInformationView,
-  voidService: VoidService
+  sessionRepository: SessionRepository,
+  voidService: VoidService,
+  submissionService: SubmissionHistoryService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with Logging {
 
   val form: Form[Boolean] = formProvider()
 
-  def onPageLoad(originalMessageRefId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(originalMessageRefId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      val errorRedirect = Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
-
-      request.userData.get(SubmissionsHistoryPage).fold(errorRedirect) {
-        submittedReports =>
-          voidService
-            .getVoidFatcaReportDetails(originalMessageRefId, submittedReports)
-            .fold(errorRedirect)(
-              details => Ok(view(form, details.fiName, details.cardModel, originalMessageRefId))
-            )
-      }
+      (for {
+        fiDetail          <- fromOption[Future](request.userAnswers.get(FiDetailsPage))
+        pastSubmissions   <- liftF(submissionService.getSubmissionHistory(fiDetail.fiId))
+        reportBeingVoided <- fromOption[Future](voidService.getVoidFatcaReportDetails(originalMessageRefId, pastSubmissions.submissionsList))
+      } yield Ok(view(form, reportBeingVoided.fiName, reportBeingVoided.cardModel, originalMessageRefId)))
+        .getOrElse(
+          Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+        )
+        .recover {
+          case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+        }
   }
 
   def onSubmit(originalMessageRefId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      val errorRedirect = Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
-
-      request.userData.get(SubmissionsHistoryPage).fold(errorRedirect) {
-        submittedReports =>
-          voidService
-            .getVoidFatcaReportDetails(originalMessageRefId, submittedReports)
-            .fold(errorRedirect) {
-              details =>
-                form
-                  .bindFromRequest()
-                  .fold(
-                    formWithErrors => Future.successful(BadRequest(view(formWithErrors, details.fiName, details.cardModel, originalMessageRefId))),
-                    value =>
-                      if (value) {
-                        voidService
-                          .fatcaVoid(originalMessageRefId, details.fiId)
-                          .map(
-                            _ => Redirect(controllers.routes.InformationVoidedController.onPageLoad(originalMessageRefId))
-                          )
-                      } else {
-                        Future.successful(
-                          Redirect(
-                            controllers.routes.ViewSubmissionsController
-                              .onPageLoad(year = LocalDateTime.now.getYear - 1, fiId = details.fiId, fiName = details.fiName)
-                          )
-                        )
-                      }
-                  )
+      (for {
+        fiDetail          <- fromOption[Future](request.userAnswers.get(FiDetailsPage))
+        pastSubmissions   <- liftF(submissionService.getSubmissionHistory(fiDetail.fiId))
+        reportBeingVoided <- fromOption[Future](voidService.getVoidFatcaReportDetails(originalMessageRefId, pastSubmissions.submissionsList))
+      } yield form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, reportBeingVoided.fiName, reportBeingVoided.cardModel, originalMessageRefId))),
+          value =>
+            if (value) {
+              for {
+                _ <- voidService.fatcaVoid(originalMessageRefId, reportBeingVoided.fiId)
+                voidedReportData <-
+                  Future
+                    .fromTry(request.userAnswers.set(VoidedReportMessageRefIdsPage, reportBeingVoided.cardModel.cardDetailList.map(_.messageRefId)))
+                _ <- sessionRepository.set(voidedReportData)
+              } yield Redirect(controllers.routes.InformationVoidedController.onPageLoad(originalMessageRefId))
+            } else {
+              Future.successful(
+                Redirect(
+                  controllers.routes.ViewSubmissionsController
+                    .onPageLoad(year = LocalDateTime.now.getYear - 1, fiId = reportBeingVoided.fiId)
+                )
+              )
             }
-      }
+        )).getOrElse(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))).flatMap(identity)
   }
 }

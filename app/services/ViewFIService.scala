@@ -14,18 +14,23 @@
  * limitations under the License.
  */
 
-package controllers.actions
+package services
 
-import models.UserAnswers
-import models.requests.{IdentifierRequest, OptionalDataRequest}
-
+import com.google.inject.Inject
+import connectors.FinancialInstitutionsConnector
+import models.FIDetail
+import models.ServiceErrors.NoFiDetailFound
+import uk.gov.hmrc.http.HeaderCarrier
 import scala.concurrent.{ExecutionContext, Future}
 
-class FakeDataRetrievalAction(dataToReturn: Option[UserAnswers]) extends DataRetrievalAction {
+class ViewFIService @Inject() (connector: FinancialInstitutionsConnector)(implicit ec: ExecutionContext) {
 
-  override protected def transform[A](request: IdentifierRequest[A]): Future[OptionalDataRequest[A]] =
-    Future(OptionalDataRequest(request.request, request.userId, dataToReturn, request.fatcaId))
+  def getFIDetail(subId: String, fiId: String)(using
+    hc: HeaderCarrier
+  ): Future[FIDetail] =
+    connector.viewFi(subId, fiId).flatMap {
+      maybeFi =>
+        maybeFi.map(Future.successful).getOrElse(Future.failed(NoFiDetailFound))
+    }
 
-  implicit override protected val executionContext: ExecutionContext =
-    scala.concurrent.ExecutionContext.Implicits.global
 }

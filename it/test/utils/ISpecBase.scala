@@ -17,9 +17,11 @@
 package utils
 
 import generators.Generators
-import models.UserData
+import models.SubmissionsConstants.{FATCA, FATCA1, PASSED}
+import models.{SubmissionsConstants, SubmittedReport, UserAnswers}
 import org.scalatest.TryValues.convertTryToSuccessOrFailure
 import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.time.{Seconds, Span}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Application
@@ -30,11 +32,33 @@ import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mongo.test.DefaultPlayMongoRepositorySupport
 
-trait ISpecBase extends GuiceOneServerPerSuite with DefaultPlayMongoRepositorySupport[UserData] with ScalaFutures with WireMockHelper with Generators {
+import java.time.LocalDateTime
 
-  val userAnswersId: String = "internalId"
-  def emptyUserAnswers: UserData = UserData(userAnswersId)
+trait ISpecBase
+    extends AnyFreeSpec
+    with GuiceOneServerPerSuite
+    with DefaultPlayMongoRepositorySupport[UserAnswers]
+    with ScalaFutures
+    with WireMockHelper
+    with Generators {
 
+  val userAnswersId: String         = "internalId"
+  def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
+  val submittedReport: SubmittedReport = SubmittedReport(
+    fiId = "id",
+    fiName = "name",
+    fileName = "fileName",
+    submissionStatus = PASSED,
+    uploadDateTime = LocalDateTime.now(),
+    regime = FATCA,
+    reportingYear = "2016",
+    submissionCaseId = "123",
+    submissionType = SubmissionsConstants.XML,
+    submissionFileType = FATCA1,
+    messageRefId = "ref1",
+    submissionDeleteStatus = None,
+    originalMessageRefId = None
+  )
   val repository: SessionRepository = app.injector.instanceOf[SessionRepository]
   implicit val hc: HeaderCarrier    = HeaderCarrier()
 
@@ -46,6 +70,12 @@ trait ISpecBase extends GuiceOneServerPerSuite with DefaultPlayMongoRepositorySu
     "microservice.services.crs-fatca-reporting.host" -> WireMockConstants.stubHost,
     "microservice.services.crs-fatca-reporting.port" -> WireMockConstants.stubPort.toString,
     "mongodb.uri" -> mongoUri,
+    "microservice.services.crs-fatca-fi-management.port"     -> WireMockConstants.stubPort.toString,
+    "microservice.services.crs-fatca-fi-management.host"     -> WireMockConstants.stubHost,
+    "mongodb.uri"                                            -> mongoUri,
+    "play.filters.csrf.header.bypassHeaders.Csrf-Token"      -> "nocheck"
+    //    "logger.root"                                             -> "INFO",
+    //    "logger.controllers"                                      -> "DEBUG"
   )
 
   implicit override val patienceConfig: PatienceConfig = PatienceConfig(scaled(Span(20, Seconds)))
@@ -54,9 +84,9 @@ trait ISpecBase extends GuiceOneServerPerSuite with DefaultPlayMongoRepositorySu
     .configure(config)
     .build()
 
-  implicit class UserAnswersExtension(userData: UserData) {
+  implicit class UserAnswersExtension(userData: UserAnswers) {
 
-    def withPage[T](page: Settable[T], value: T)(implicit writes: Writes[T]): UserData =
+    def withPage[T](page: Settable[T], value: T)(implicit writes: Writes[T]): UserAnswers =
       userData.set(page, value).success.value
 
   }
