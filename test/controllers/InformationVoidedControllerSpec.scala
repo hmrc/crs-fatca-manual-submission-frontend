@@ -19,14 +19,11 @@ package controllers
 import base.SpecBase
 import models.SubmissionsConstants.{FATCA1, FATCA4}
 import models.viewModels.InformationVoidedViewModel
-import models.{FatcaVoidCardDetail, FatcaVoidCardModel, VoidReportDetails}
-import org.mockito.ArgumentMatchersSugar.*
-import org.mockito.Mockito.*
-import pages.SubmissionsHistoryPage
+import models.{FatcaVoidCardDetail, FatcaVoidCardModel, FiIdentifiers, ReadSubmissionResponseDetails}
+import pages.{FiDetailsPage, VoidedReportMessageRefIdsPage}
 import play.api.inject
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import services.VoidService
 import utils.DateTimeFormats.formatTimeVoidSubmitted
 import views.html.InformationVoidedView
 
@@ -34,12 +31,10 @@ import java.time.{Clock, LocalDateTime, ZoneId}
 
 class InformationVoidedControllerSpec extends SpecBase {
 
-  private val zone          = ZoneId.of("Europe/London")
-  private val fixedDateTime = LocalDateTime.of(2026, 4, 28, 15, 36)
-  private val fixedClock    = Clock.fixed(fixedDateTime.atZone(zone).toInstant, zone)
-  private val dateTime      = fixedDateTime.formatTimeVoidSubmitted
-
-  private val year               = "2027"
+  private val zone               = ZoneId.of("Europe/London")
+  private val fixedDateTime      = LocalDateTime.of(2026, 4, 28, 15, 36)
+  private val fixedClock         = Clock.fixed(fixedDateTime.atZone(zone).toInstant, zone)
+  private val dateTime           = fixedDateTime.formatTimeVoidSubmitted
   private val originalMessageId  = "Some-OMRId"
   private val fiName             = "someFiName"
   private val fiId               = "some-fiId"
@@ -62,21 +57,21 @@ class InformationVoidedControllerSpec extends SpecBase {
 
   private val report1 =
     submittedReport.copy(messageRefId = "GB2026GB-ABC1234567890-FATCA_003", fiId = fiId)
-  private val submissions = List(report1, report2)
+  val submissions                    = ReadSubmissionResponseDetails(List(report1, report2))
+  val fiDetails                      = FiIdentifiers(report1.fiId, fiName)
+  val voidedMessageRefs: Seq[String] = Seq(report1.messageRefId, report2.messageRefId)
 
   "InformationVoided Controller" - {
     "must return OK and the correct view for a GET" in {
 
-      val userAnswersWithSubmissions = emptyUserData.withPage(SubmissionsHistoryPage, submissions)
-
-      val mockVoidService = mock[VoidService]
-      when(mockVoidService.getVoidFatcaReportDetails(eqTo(originalMessageId), any())) thenReturn Some(
-        VoidReportDetails(fatcaVoidCardModel, fiName, report1.fiId, year)
+      val application = applicationBuilder(userData =
+        Some(
+          emptyUserAnswers
+            .withPage(FiDetailsPage, fiDetails)
+            .withPage(VoidedReportMessageRefIdsPage, voidedMessageRefs)
+        )
       )
-
-      val application = applicationBuilder(userData = Some(userAnswersWithSubmissions))
         .overrides(
-          inject.bind[VoidService].toInstance(mockVoidService),
           inject.bind[Clock].toInstance(fixedClock)
         )
         .build()
@@ -90,14 +85,22 @@ class InformationVoidedControllerSpec extends SpecBase {
         contentAsString(result) mustEqual view(infoVoidedViewModel)(request, messages(application)).toString
       }
     }
+    "must redirect to Journey Recovery for a GET if no FI detail is found" in {
+      val application = applicationBuilder(userData = Some(emptyUserAnswers.withPage(VoidedReportMessageRefIdsPage, voidedMessageRefs)))
+        .build()
 
-    "must redirect to Journey Recovery for a GET if no matching submissions are found" in {
+      running(application) {
+        val request = FakeRequest(GET, routes.InformationVoidedController.onPageLoad(originalMessageId).url)
+        val result  = route(application, request).value
 
-      val mockVoidService = mock[VoidService]
-      when(mockVoidService.getVoidFatcaReportDetails(eqTo(originalMessageId), any())) thenReturn None
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
 
-      val application = applicationBuilder(userData = Some(emptyUserData))
-        .overrides(inject.bind[VoidService].toInstance(mockVoidService))
+    "must redirect to Journey Recovery for a GET if no voided message ref data is found in mongo" in {
+
+      val application = applicationBuilder(userData = Some(emptyUserAnswers.withPage(FiDetailsPage, fiDetails)))
         .build()
 
       running(application) {

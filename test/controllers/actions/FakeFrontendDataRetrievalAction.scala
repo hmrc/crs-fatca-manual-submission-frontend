@@ -16,12 +16,12 @@
 
 package controllers.actions
 
-import models.UserData
+import models.UserAnswers
 import models.requests.{IdentifierRequest, OptionalDataRequest}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class FakeFrontendDataRetrievalAction(dataToReturn: Option[UserData]) extends FrontendDataRetrievalAction {
+class FakeFrontendDataRetrievalAction(dataToReturn: Option[UserAnswers]) extends FrontendDataRetrievalAction {
 
   override protected def transform[A](request: IdentifierRequest[A]): Future[OptionalDataRequest[A]] =
     Future(OptionalDataRequest(request.request, request.userId, dataToReturn, request.fatcaId))

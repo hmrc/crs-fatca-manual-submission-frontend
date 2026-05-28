@@ -17,11 +17,10 @@
 package connectors
 
 import config.FrontendAppConfig
-import models.{ReadSubmissionRequest, ReadSubmissionResponseDetails}
+import models.ReadSubmissionResponseDetails
 import play.api.Logging
 import play.api.http.Status.*
 import play.api.libs.json.Json
-import play.api.libs.ws.writeableOf_JsValue
 import uk.gov.hmrc.http.HttpReads.Implicits.*
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException, StringContextOps}
@@ -31,14 +30,13 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ReadSubmissionConnector @Inject() (http: HttpClientV2, config: FrontendAppConfig)(using ec: ExecutionContext) extends Logging {
 
-  def getSubmissionsList(requestBody: ReadSubmissionRequest)(using
+  def getSubmissionsList(fiId: String)(using
     hc: HeaderCarrier
   ): Future[ReadSubmissionResponseDetails] = {
-    val url = url"${config.crsFatcaManualBackendUrl}/crs-fatca-manual-submission/read-submission-history"
+    val url = url"${config.crsFatcaManualBackendUrl}/crs-fatca-manual-submission/read-submission-history/$fiId"
 
     http
-      .post(url)
-      .withBody(Json.toJson(requestBody))
+      .get(url)
       .execute[HttpResponse]
       .flatMap {
         response =>

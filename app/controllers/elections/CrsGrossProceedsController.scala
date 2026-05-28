@@ -20,7 +20,8 @@ import controllers.actions.*
 import forms.CrsGrossProceedsFormProvider
 import models.Mode
 import navigation.Navigator
-import pages.{CrsGrossProceedsPage, FiNamePage}
+import pages.{CrsGrossProceedsPage, FiDetailsPage}
+import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -44,36 +45,36 @@ class CrsGrossProceedsController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  val form = formProvider()
+  val form: Form[Boolean] = formProvider()
 
   def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      request.userData
-        .get(FiNamePage)
+      request.userAnswers
+        .get(FiDetailsPage)
         .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)) {
-          fiName =>
-            val preparedForm = request.userData.get(CrsGrossProceedsPage) match {
+          fiDetail =>
+            val preparedForm = request.userAnswers.get(CrsGrossProceedsPage) match {
               case None        => form
               case Some(value) => form.fill(value)
             }
 
-            Ok(view(preparedForm, mode, fiName, year))
+            Ok(view(preparedForm, mode, fiDetail.fiName, year))
         }
   }
 
   def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      request.userData
-        .get(FiNamePage)
+      request.userAnswers
+        .get(FiDetailsPage)
         .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))) {
-          fiName =>
+          fiDetail =>
             form
               .bindFromRequest()
               .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiName, year))),
+                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiDetail.fiName, year))),
                 value =>
                   for {
-                    updatedAnswers <- Future.fromTry(request.userData.set(CrsGrossProceedsPage, value))
+                    updatedAnswers <- Future.fromTry(request.userAnswers.set(CrsGrossProceedsPage, value))
                     _              <- sessionRepository.set(updatedAnswers)
                   } yield Redirect(navigator.nextPage(CrsGrossProceedsPage, mode, updatedAnswers, Some(year)))
               )

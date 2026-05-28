@@ -16,7 +16,7 @@
 
 package queries
 
-import models.UserData
+import models.UserAnswers
 import play.api.libs.json.JsPath
 
 import scala.util.{Success, Try}
@@ -30,6 +30,6 @@ trait Gettable[A] extends Query
 
 trait Settable[A] extends Query {
 
-  def cleanup(value: Option[A], userData: UserData): Try[UserData] =
+  def cleanup(value: Option[A], userData: UserAnswers): Try[UserAnswers] =
     Success(userData)
 }

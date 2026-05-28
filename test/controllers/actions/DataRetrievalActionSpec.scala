@@ -25,7 +25,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.AffinityGroup.Organisation
-import scala.concurrent.ExecutionContext.Implicits.global
+
 import scala.concurrent.Future
 
 class DataRetrievalActionSpec extends SpecBase with MockitoSugar {
@@ -46,7 +46,7 @@ class DataRetrievalActionSpec extends SpecBase with MockitoSugar {
 
         val result = action.callTransform(IdentifierRequest(FakeRequest(), "id", "FATCAID", Organisation)).futureValue
 
-        result.userData.map(_.data mustBe emptyJson)
+        result.maybeAnswers.map(_.data mustBe emptyJson)
       }
     }
 
@@ -60,7 +60,7 @@ class DataRetrievalActionSpec extends SpecBase with MockitoSugar {
 
         val result = action.callTransform(IdentifierRequest(FakeRequest(), "id", "FATCAID", Organisation)).futureValue
 
-        result.userData mustBe defined
+        result.maybeAnswers mustBe defined
       }
     }
   }

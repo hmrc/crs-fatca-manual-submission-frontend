@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.elections
 
 import base.SpecBase
+import controllers.routes
 import forms.CarfGrossProceedsFormProvider
-import models.{NormalMode, UserData}
+import models.{FiIdentifiers, NormalMode}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{CarfGrossProceedsPage, FiNamePage}
+import pages.{CarfGrossProceedsPage, FiDetailsPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -42,6 +43,7 @@ class CarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
   val formProvider          = new CarfGrossProceedsFormProvider()
   val form                  = formProvider(reportingYear.toString)
   val mockSessionRepository = mock[SessionRepository]
+  private val fiDetails     = FiIdentifiers("fiId", fiName)
 
   override def beforeEach(): Unit =
     reset(mockSessionRepository)
@@ -52,7 +54,7 @@ class CarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
   "CarfGrossProceeds Controller" - {
 
     "must return OK and the correct view for a GET" in {
-      val useranswers = emptyUserData.withPage(FiNamePage, fiName)
+      val useranswers = emptyUserAnswers.withPage(FiDetailsPage, fiDetails)
       val application = applicationBuilder(userData = Some(useranswers)).build()
 
       running(application) {
@@ -69,7 +71,7 @@ class CarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to journey recovery if finame is not in user answers" in {
 
-      val application = applicationBuilder(userData = Some(emptyUserData)).build()
+      val application = applicationBuilder(userData = Some(emptyUserAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, carfGrossProceedsRoute)
@@ -83,9 +85,9 @@ class CarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userData = UserData(userAnswersId)
+      val userData = emptyUserAnswers
+        .withPage(FiDetailsPage, fiDetails)
         .withPage(CarfGrossProceedsPage, true)
-        .withPage(FiNamePage, fiName)
 
       val application = applicationBuilder(userData = Some(userData))
         .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
@@ -106,8 +108,7 @@ class CarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to the next page when valid data is submitted" in {
 
-      val userData = UserData(userAnswersId)
-        .withPage(FiNamePage, fiName)
+      val userData = emptyUserAnswers.withPage(FiDetailsPage, fiDetails)
 
       val mockSessionRepository = mock[SessionRepository]
 
@@ -134,8 +135,7 @@ class CarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
-      val userData = UserData(userAnswersId)
-        .withPage(FiNamePage, fiName)
+      val userData = emptyUserAnswers.withPage(FiDetailsPage, fiDetails)
 
       val application = applicationBuilder(userData = Some(userData)).build()
 
@@ -157,7 +157,7 @@ class CarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
-      val application = applicationBuilder(userData = Some(emptyUserData)).build()
+      val application = applicationBuilder(userData = Some(emptyUserAnswers)).build()
 
       running(application) {
         val request =

@@ -27,7 +27,7 @@ import utils.ReportingConstants
 @Singleton
 class Navigator @Inject() () {
 
-  def nextPage(page: Page, mode: Mode, userData: UserData, year: Option[Int]): Call =
+  def nextPage(page: Page, mode: Mode, userData: UserAnswers, year: Option[Int]): Call =
     (page, mode) match {
       case (IsUsTreasuryRegulatedPage, NormalMode) =>
         year.fold(routes.JourneyRecoveryController.onPageLoad())(
@@ -68,7 +68,7 @@ class Navigator @Inject() () {
       routes.CheckYourAnswersController.onPageLoad()
     }
 
-  private def crsCarfGrossProceedsRedirect(userAnswers: UserData, reportingYear: Int, mode: Mode) =
+  private def crsCarfGrossProceedsRedirect(userAnswers: UserAnswers, reportingYear: Int, mode: Mode) =
     userAnswers.get(CarfGrossProceedsPage) match {
       case Some(true)  => controllers.elections.routes.CrsGrossProceedsController.onPageLoad(mode, reportingYear)
       case Some(false) => routes.CheckYourAnswersController.onPageLoad()

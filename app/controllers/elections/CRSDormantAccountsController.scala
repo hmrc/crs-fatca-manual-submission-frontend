@@ -20,7 +20,7 @@ import controllers.actions.*
 import forms.elections.CRSDormantAccountsFormProvider
 import models.Mode
 import navigation.Navigator
-import pages.FiNamePage
+import pages.FiDetailsPage
 import pages.elections.CRSDormantAccountsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -50,32 +50,32 @@ class CRSDormantAccountsController @Inject() (
   def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
 
-      val userData = request.userData
+      val userData = request.userAnswers
       userData
-        .get(FiNamePage)
+        .get(FiDetailsPage)
         .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)) {
-          fiName =>
+          fiDetail =>
             val preparedForm = userData.get(CRSDormantAccountsPage) match {
               case None        => form
               case Some(value) => form.fill(value)
             }
-            Ok(view(preparedForm, mode, fiName, year))
+            Ok(view(preparedForm, mode, fiDetail.fiName, year))
         }
   }
 
   def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
 
-      val userData = request.userData
+      val userData = request.userAnswers
 
       userData
-        .get(FiNamePage)
+        .get(FiDetailsPage)
         .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))) {
-          fiName =>
+          fiDetail =>
             form
               .bindFromRequest()
               .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiName, year))),
+                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiDetail.fiName, year))),
                 value =>
                   for {
                     updatedAnswers <- Future.fromTry(userData.set(CRSDormantAccountsPage, value))

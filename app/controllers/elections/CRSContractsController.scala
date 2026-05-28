@@ -20,8 +20,9 @@ import controllers.actions.*
 import forms.elections.CRSContractsFormProvider
 import models.Mode
 import navigation.Navigator
-import pages.FiNamePage
 import pages.elections.CRSContractsPage
+import pages.FiDetailsPage
+import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -45,36 +46,36 @@ class CRSContractsController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  val form = formProvider()
+  val form: Form[Boolean] = formProvider()
 
   def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen setData) {
     implicit request =>
-      request.userData
-        .get(FiNamePage)
+      request.userAnswers
+        .get(FiDetailsPage)
         .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)) {
-          fiName =>
-            val preparedForm = request.userData.get(CRSContractsPage) match {
+          fiDetail =>
+            val preparedForm = request.userAnswers.get(CRSContractsPage) match {
               case None        => form
               case Some(value) => form.fill(value)
             }
 
-            Ok(view(preparedForm, mode, fiName, year))
+            Ok(view(preparedForm, mode, fiDetail.fiName, year))
         }
   }
 
   def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen setData).async {
     implicit request =>
-      request.userData
-        .get(FiNamePage)
+      request.userAnswers
+        .get(FiDetailsPage)
         .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))) {
-          fiName =>
+          fiDetail =>
             form
               .bindFromRequest()
               .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiName, year))),
+                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiDetail.fiName, year))),
                 value =>
                   for {
-                    updatedAnswers <- Future.fromTry(request.userData.set(CRSContractsPage, value))
+                    updatedAnswers <- Future.fromTry(request.userAnswers.set(CRSContractsPage, value))
                     _              <- sessionRepository.set(updatedAnswers)
                   } yield Redirect(navigator.nextPage(CRSContractsPage, mode, updatedAnswers, Some(year)))
               )

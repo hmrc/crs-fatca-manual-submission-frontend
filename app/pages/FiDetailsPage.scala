@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package models
+package pages
 
-import play.api.libs.json.{Json, OFormat}
+import models.FiIdentifiers
+import play.api.libs.json.JsPath
 
-case class ReadSubmissionRequest(shouldCache: Boolean, fiId: Option[String])
+case object FiDetailsPage extends QuestionPage[FiIdentifiers] {
 
-object ReadSubmissionRequest {
-  implicit val format: OFormat[ReadSubmissionRequest] = Json.format[ReadSubmissionRequest]
+  override def path: JsPath = JsPath \ toString
+
+  override def toString: String = "fiDetails"
 }
