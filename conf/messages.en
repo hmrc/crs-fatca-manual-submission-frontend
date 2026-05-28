@@ -126,3 +126,8 @@ crsGrossProceeds.heading = Is {0} also reporting these gross proceeds for the Cr
 crsGrossProceeds.checkYourAnswersLabel = crsGrossProceeds
 crsGrossProceeds.error.required = Select yes if the financial institution is also reporting these gross proceeds for the Cryptoasset Reporting Framework (CARF) under CRS
 crsGrossProceeds.change.hidden = CrsGrossProceeds
+
+manageElections.title = Manage elections for the financial institution for {0}
+manageElections.heading = Manage elections for {0} for {1}
+manageElections.para.1 = You can view and make elections in the service. If you need to change or remove elections, email {0}. These changes and removals will not be shown in the service.
+manageElections.link.1 = aeoi.enquiries@hmrc.gov.uk

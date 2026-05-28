@@ -29,10 +29,10 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ElectionsConnector @Inject() (client: HttpClientV2, config: FrontendAppConfig)(implicit ec: ExecutionContext) extends Logging {
+class ElectionsConnector @Inject() (client: HttpClientV2, config: FrontendAppConfig)(using ec: ExecutionContext) extends Logging {
   private val url = config.crsFatcaReportingBackendUrl
 
-  def viewElections(fiId: String, reportingYear: Option[Int] = None)(implicit hc: HeaderCarrier): Future[Seq[ElectionDetails]] =
+  def viewElections(fiId: String, reportingYear: Option[Int] = None)(using hc: HeaderCarrier): Future[Seq[ElectionDetails]] =
     val endpoint = reportingYear.fold(url"$url/elections/view/$fiId")(
       reportingYear => url"$url/elections/view/$fiId/$reportingYear"
     )
