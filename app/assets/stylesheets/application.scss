@@ -9,3 +9,16 @@
 .js-enabled .js-visible {
   display: inline-block !important;
 }
+.app-summary-list--wide-question {
+  .govuk-summary-list__key {
+    width: 60%;
+  }
+
+  .govuk-summary-list__value {
+    width: 20%;
+  }
+
+  .govuk-summary-list__actions {
+    width: 20%;
+  }
+}

@@ -19,7 +19,8 @@ package viewmodels.checkAnswers
 import models.{CheckMode, UserAnswers}
 import pages.CarfGrossProceedsPage
 import play.api.i18n.Messages
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
+import uk.gov.hmrc.govukfrontend.views.Aliases.Text
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
 import viewmodels.govuk.summarylist.*
 import viewmodels.implicits.*
 
@@ -32,11 +33,13 @@ object CarfGrossProceedsSummary {
         val value = if (answer) "site.yes" else "site.no"
 
         SummaryListRowViewModel(
-          key = "carfGrossProceeds.checkYourAnswersLabel",
+          key = Key(Text(messages("carfGrossProceeds.checkYourAnswersLabel", year.toString))),
           value = ValueViewModel(value),
           actions = Seq(
-            ActionItemViewModel("site.change", controllers.elections.routes.CarfGrossProceedsController.onPageLoad(CheckMode, year).url)
-              .withVisuallyHiddenText(messages("carfGrossProceeds.change.hidden"))
+            ActionItemViewModel(
+              "site.change",
+              controllers.elections.routes.CarfGrossProceedsController.onPageLoad(CheckMode, year).url
+            ).withVisuallyHiddenText(messages("carfGrossProceeds.change.hidden"))
           )
         )
     }
