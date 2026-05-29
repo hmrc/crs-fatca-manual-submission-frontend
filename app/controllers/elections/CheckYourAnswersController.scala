@@ -25,19 +25,18 @@ import viewmodels.checkAnswers.CheckYourAnswersElections
 import views.html.CheckYourAnswersView
 
 class CheckYourAnswersController @Inject() (
-                                             override val messagesApi: MessagesApi,
-                                             identify: IdentifierAction,
-                                             getData: FrontendDataRetrievalAction,
-                                             requireData: DataRequiredAction,
-                                             val controllerComponents: MessagesControllerComponents,
-                                             view: CheckYourAnswersView
+  override val messagesApi: MessagesApi,
+  identify: IdentifierAction,
+  getData: FrontendDataRetrievalAction,
+  requireData: DataRequiredAction,
+  val controllerComponents: MessagesControllerComponents,
+  view: CheckYourAnswersView
 ) extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad(year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
 
-      println(s"${request.userAnswers} ***** THIS IS THE USER ANSWERS}")
       val list = CheckYourAnswersElections(request.userAnswers, year)
       Ok(view(list))
   }
