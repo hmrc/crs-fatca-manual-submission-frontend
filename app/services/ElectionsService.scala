@@ -18,6 +18,7 @@ package services
 
 import connectors.ElectionsConnector
 import models.elections.{CrsElectionsDetails, ElectionDetails, FatcaElectionsDetails}
+import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -26,21 +27,22 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ElectionsService @Inject() (connector: ElectionsConnector)(using ec: ExecutionContext) {
 
-  def getElectionsRows(fiId: String, year: Int)(using hc: HeaderCarrier): Future[ElectionsRows] =
+  def getElectionsRows(fiId: String, year: Int)(using hc: HeaderCarrier, messages: Messages): Future[ElectionsRows] =
     connector
       .viewElections(fiId, Some(year))
       .map(_.headOption)
       .map {
-        case Some(elections) => prepareElectionsRows(elections)
-        case None => ElectionsRows(
-          crsRows = SummaryList(rows = Seq.empty),
-          fatcaRows = SummaryList(rows = Seq.empty)
-        )
+        case Some(elections) => prepareElectionsRows(elections, year)
+        case None =>
+          ElectionsRows(
+            crsRows = SummaryList(rows = Seq.empty),
+            fatcaRows = SummaryList(rows = Seq.empty)
+          )
       }
 
-  private def prepareElectionsRows(electionsDetails: ElectionDetails): ElectionsRows = {
+  private def prepareElectionsRows(electionsDetails: ElectionDetails, year: Int)(using messages: Messages): ElectionsRows = {
     val crsRows = electionsDetails.crs.fold(Seq.empty[SummaryListRow])(
-      details => CrsElectionsDetails.rows(details)
+      details => CrsElectionsDetails.rows(details, year)
     )
     val fatcaRows = electionsDetails.fatca.fold(Seq.empty[SummaryListRow])(
       details => FatcaElectionsDetails.rows(details)
@@ -52,8 +54,8 @@ class ElectionsService @Inject() (connector: ElectionsConnector)(using ec: Execu
     )
   }
 }
-  case class ElectionsRows(
-                            crsRows: SummaryList,
-                            fatcaRows: SummaryList
-                          )
 
+case class ElectionsRows(
+  crsRows: SummaryList,
+  fatcaRows: SummaryList
+)

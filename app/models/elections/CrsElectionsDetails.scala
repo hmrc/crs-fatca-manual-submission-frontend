@@ -16,10 +16,12 @@
 
 package models.elections
 
+import play.api.i18n.Messages
 import play.api.libs.json.*
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.*
-import viewmodels.govuk.all.{SummaryListRowViewModel, ValueViewModel}
+import viewmodels.InputWidth
+import viewmodels.govuk.all.{FluentKey, SummaryListRowViewModel}
 
 case class CrsElectionsDetails(
   hasCARF: Option[YesNoNa],
@@ -31,34 +33,30 @@ case class CrsElectionsDetails(
 object CrsElectionsDetails:
   given OFormat[CrsElectionsDetails] = Json.format[CrsElectionsDetails]
 
-  def rows(details: CrsElectionsDetails): Seq[SummaryListRow] =
+  def rows(details: CrsElectionsDetails, selectedYear: Int)(using messages: Messages): Seq[SummaryListRow] = {
+    def maybeCarfRow =
+      if (selectedYear > 2025) // CARF exists 2026 onwards
+        Seq(
+          SummaryListRowViewModel(
+            key = Key(content = Text(messages("manageElections.crs.hasCARF"))).withCssClass(InputWidth.ThreeQuarters.toString),
+            value = Value(content = Text(details.hasCARF.fold("Not Provided")(_.toString)))
+          )
+        )
+      else Seq.empty
+
     Seq(
-      details.hasCARF.map(
-        value =>
-          SummaryListRowViewModel(
-            key = Key(content = Text("Has CARF")),
-            value = Value(content = Text(value.toString))
-          )
+      SummaryListRowViewModel(
+        key = Key(content = Text(messages("manageElections.crs.hasContracts"))).withCssClass(InputWidth.ThreeQuarters.toString),
+        value = Value(content = Text(details.hasContracts.fold("Not Provided")(_.toString)))
       ),
-      details.hasContracts.map(
-        value =>
-          SummaryListRowViewModel(
-            key = Key(content = Text("Has Contracts")),
-            value = Value(content = Text(value.toString))
-          )
+      SummaryListRowViewModel(
+        key = Key(content = Text(messages("manageElections.crs.hasDormantAccounts"))).withCssClass(InputWidth.ThreeQuarters.toString),
+        value = Value(content = Text(details.hasDormantAccounts.fold("Not Provided")(_.toString)))
       ),
-      details.hasDormantAccounts.map(
-        value =>
-          SummaryListRowViewModel(
-            key = Key(content = Text("Has Dormant Accounts")),
-            value = Value(content = Text(value.toString))
-          )
-      ),
-      details.hasThresholds.map(
-        value =>
-          SummaryListRowViewModel(
-            key = Key(content = Text("Has Thresholds")),
-            value = Value(content = Text(value.toString))
-          )
+      SummaryListRowViewModel(
+        key = Key(content = Text(messages("manageElections.crs.hasThresholds"))).withCssClass(InputWidth.ThreeQuarters.toString),
+        value = Value(content = Text(details.hasThresholds.fold("Not Provided")(_.toString)))
       )
-    ).flatten
+    ) ++ maybeCarfRow
+
+  }

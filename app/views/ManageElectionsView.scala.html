@@ -29,19 +29,38 @@
         govukSummaryList: GovukSummaryList
 )
 
-@(electionYears: List[Int], electionsRows: ElectionsRows)(implicit request: Request[_], messages: Messages)
+@(electionYears: Seq[Int], electionsRows: ElectionsRows, selectedYear: Int, fiName: String)(implicit request: Request[_], messages: Messages)
 
     @emailLink = {@link(href="mailto:aeoi.enquiries@hmrc.gov.uk", messages("manageElections.link.1"), asPara = false)}
+    @year = @{selectedYear.toString}
 
-@layout(pageTitle = titleNoForm(messages("manageElections.title"))) {
-    @heading(messages("manageElections.heading", "fiName"))
+@layout(pageTitle = titleNoForm(messages("manageElections.title", year))) {
+    @heading(messages("manageElections.heading", fiName, year))
     @para("manageElections.para.1", htmlArgs = Seq(emailLink))
-    @pagination(electionYears, 2026, "fiId", "fiName")
 
-    @govukSummaryList(electionsRows.crsRows)
-    @govukSummaryList(electionsRows.fatcaRows)
+<div class="reduce-pagination-padding govuk-!-margin-bottom-7">
+    @pagination(electionYears, selectedYear, 3, selectedYear => routes.ManageElectionsController.onPageLoad(selectedYear, "fiId", fiName))
+</div>
+
+    @heading(messages("manageElections.subheading.crs", year), size = "m", level = "h2")
+    @if(electionsRows.crsRows.rows.isEmpty) {
+        @para(messages("manageElections.noelections"))
+        @link("#", messages("manageElections.noelections.crs"))
+    } else {
+        @govukSummaryList(electionsRows.crsRows)
+    }
 
 
+    @heading(messages("manageElections.subheading.fatca", year), size = "m", level = "h2")
+    @if(electionsRows.fatcaRows.rows.isEmpty) {
+        @para(messages("manageElections.noelections"))
+        @link("#", messages("manageElections.noelections.fatca"))
+    } else {
+        @govukSummaryList(electionsRows.fatcaRows)
+    }
+
+    @link("#", messages("manageElections.back.reports", fiName), asPara = true, paraClasses = "govuk-!-margin-bottom-1")
+    @link("#", messages("manageElections.back.manageReports"), asPara = true)
 
 
 }

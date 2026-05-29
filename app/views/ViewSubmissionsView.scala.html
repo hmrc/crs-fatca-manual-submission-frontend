@@ -37,7 +37,7 @@
     linkUrl = config.fileUploadUrl, secondaryLinkUrl = Some(controllers.routes.JourneyRecoveryController.onPageLoad().url),
     secondaryLinkMessage = Some(messages("viewSubmissions.body.link.2")), linkFullStop = true)
 
-@pagi(past12SubmissionYears, chosenYear, fiId, fiName)
+@pagi(past12SubmissionYears, chosenYear, 2, year => routes.ViewSubmissionsController.onPageLoad(year, fiId))
 
 @heading(headingContent= messages("viewSubmissions.crs.submit", chosenYear.toString), size= "m" , level = "h2")
     @if(cards.values.flatten.exists(_.fileType.value.contains("CRS"))) {

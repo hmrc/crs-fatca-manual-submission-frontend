@@ -131,3 +131,19 @@ manageElections.title = Manage elections for the financial institution for {0}
 manageElections.heading = Manage elections for {0} for {1}
 manageElections.para.1 = You can view and make elections in the service. If you need to change or remove elections, email {0}. These changes and removals will not be shown in the service.
 manageElections.link.1 = aeoi.enquiries@hmrc.gov.uk
+
+manageElections.subheading.crs = CRS elections for {0}
+manageElections.crs.hasCARF = Are they reporting gross proceeds under the Cryptoasset Reporting Framework (CARF) for {0} ?
+manageElections.crs.hasContracts = Are they excluding cash value insurance contracts or annuity contracts from their reporting for CRS?
+manageElections.crs.hasDormantAccounts = Are they treating dormant accounts as not being reportable accounts for CRS?
+manageElections.crs.hasThresholds = Are they applying thresholds to any of their accounts in their due diligence process for CRS?
+manageElections.subheading.fatca = FATCA elections for {0}
+manageElections.fatca.hasThresholds = Are they using due diligence procedures from US Treasury Regulations for FATCA?
+manageElections.fatca.hasTreasuryRegulations = Are they applying thresholds to any of their accounts in their due diligence process for FATCA?
+manageElections.noelections = You have not made any elections.
+manageElections.noelections.crs = Make CRS elections
+manageElections.noelections.fatca = Make FATCA elections
+manageElections.back.reports = Back to manage reports for {0}
+manageElections.back.manageReports = Back to manage your financial institutions
+
+

@@ -23,6 +23,7 @@ import services.ElectionsService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.ManageElectionsView
 
+import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
@@ -40,9 +41,11 @@ class ManageElectionsController @Inject() (
 
   def onPageLoad(year: Int, fiId: String, fiName: String): Action[AnyContent] = identify.async {
     implicit request =>
-      val years = (2015 to 2026).toList
+      val currentYear = LocalDate.now().getYear
+      val years       = currentYear - 12 to currentYear
+
       for {
         rows <- service.getElectionsRows(fiId, year)
-      } yield Ok(view(years, rows))
+      } yield Ok(view(years, rows, year, fiName))
   }
 }

@@ -15,56 +15,78 @@
  *@
 
 @this()
-@(sortedYears: Seq[Int], chosenYear: Int, fiId: String, fiName: String)
+@(sortedYears: Seq[Int], chosenYear: Int, visibleOptions: Int, pageUrl: Int => Call)
+
+@defining(sortedYears.indexOf(chosenYear)) { currentIdx =>
+@defining({
+    val lastIdx = sortedYears.length - 1
+
+    if (lastIdx <= 0) {
+        List(Right(sortedYears.head): Either[String, Int])
+    } else {
+
+        val half         = visibleOptions / 2
+        val rawStart     = currentIdx - half
+        val clampedEnd   = Math.min(lastIdx - 1, rawStart + visibleOptions - 1)
+        val clampedStart = Math.max(1, clampedEnd - visibleOptions + 1)
+
+        val first        = List[Either[String, Int]](Right(sortedYears.head))
+        val leftEllipsis = if (clampedStart > 1)           List[Either[String, Int]](Left("ellipsis")) else Nil
+        val middle       = (clampedStart to clampedEnd).map(i => Right(sortedYears(i)): Either[String, Int]).toList
+        val rightEllipsis= if (clampedEnd   < lastIdx - 1) List[Either[String, Int]](Left("ellipsis")) else Nil
+        val last         = List[Either[String, Int]](Right(sortedYears(lastIdx)))
+
+        first ++ leftEllipsis ++ middle ++ rightEllipsis ++ last
+    }
+}) { paginationItems =>
 
 <nav class="govuk-pagination" aria-label="Pagination">
+
     <div class="govuk-pagination__prev">
-    @if(chosenYear != sortedYears.head | sortedYears.reverse.head == chosenYear) {
-        <a class="govuk-link govuk-pagination__link" href="@routes.ViewSubmissionsController.onPageLoad(chosenYear -1 , fiId)" rel="prev">
-            <svg class="govuk-pagination__icon govuk-pagination__icon--prev" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="false" focusable="false" viewBox="0 0 15 13">
+        @if(currentIdx > 0) {
+        <a class="govuk-link govuk-pagination__link" href="@pageUrl(sortedYears(currentIdx - 1))" rel="prev">
+            <svg class="govuk-pagination__icon govuk-pagination__icon--prev" xmlns="http://www.w3.org/2000/svg" height="13" width="13" aria-hidden="false" focusable="false" viewBox="0 0 15 13">
                 <path d="m6.5938-0.0078125-6.7266 6.7266 6.7441 6.4062 1.377-1.449-4.1856-3.9768h12.896v-2h-12.984l4.2931-4.293-1.414-1.414z"></path>
             </svg>
             <span class="govuk-pagination__link-title">
                 Previous<span class="govuk-visually-hidden"> page</span>
             </span>
         </a>
-    }
+        }
     </div>
 
     <ul class="govuk-pagination__list">
-        <li class="govuk-pagination__item @if(sortedYears.head == chosenYear) { govuk-pagination__item--current }">
-            <a class="govuk-link govuk-pagination__link"
-            href="@routes.ViewSubmissionsController.onPageLoad(sortedYears.head, fiId)"
-            aria-label="Page @sortedYears.head"
-                @if(sortedYears.head == chosenYear) { aria-current="page" }>
-                @sortedYears.head
-            </a>
-        </li>
-
-
-            <li class="govuk-pagination__item govuk-pagination__item--ellipses">
-                ⋯
-            </li>
-
-        @for(year <- sortedYears.reverse.dropRight(sortedYears.size - 2).reverse) {
-            <li class="govuk-pagination__item @if(year == chosenYear) { govuk-pagination__item--current }">
-                <a class="govuk-link govuk-pagination__link"
-                href="@routes.ViewSubmissionsController.onPageLoad(year, fiId)"
-                aria-label="Page @year"
-                    @if(year == chosenYear) { aria-current="page" }>
-                @year
-                </a>
-            </li>
+        @for(item <- paginationItems) {
+            @item match {
+                case Left(_) => {
+                    <li class="govuk-pagination__item govuk-pagination__item--ellipses">&#x22EF;</li>
+                }
+                case Right(year) => {
+                    <li class="govuk-pagination__item @if(year == chosenYear) { govuk-pagination__item--current }">
+                        <a class="govuk-link govuk-pagination__link"
+                           href="@pageUrl(year)"
+                           aria-label="Page @year"
+                           @if(year == chosenYear) { aria-current="page" }>
+                            @year
+                        </a>
+                    </li>
+                }
+            }
         }
     </ul>
-    <div class="govuk-pagination__next" aria-label="Pagination">
-    @if(sortedYears.indexOf(chosenYear) < sortedYears.length - 1 ) {
-        <a class="govuk-link govuk-pagination__link" href="@routes.ViewSubmissionsController.onPageLoad(chosenYear+1,fiId)">
-            <svg class="govuk-pagination__icon govuk-pagination__icon--next" xmlns="http://www.w3.org/2000/svg" height="13" width="14" aria-hidden="false" focusable="false" viewBox="0 0 15 13">
+
+    <div class="govuk-pagination__next">
+        @if(currentIdx < sortedYears.length - 1) {
+        <a class="govuk-link govuk-pagination__link" href="@pageUrl(sortedYears(currentIdx + 1))" rel="next">
+            <svg class="govuk-pagination__icon govuk-pagination__icon--next" xmlns="http://www.w3.org/2000/svg" height="13" width="14" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
                 <path d="m8.107-0.0078125-1.4136 1.414 4.2926 4.293h-12.986v2h12.896l-4.1855 3.9766 1.377 1.4492 6.7441-6.4062-6.7246-6.7266z"></path>
             </svg>
-            <span class="govuk-pagination__link-title">Next<span class="govuk-visually-hidden"> next page</span></span>
-    }
-    </a>
+            <span class="govuk-pagination__link-title">
+                Next<span class="govuk-visually-hidden"> page</span>
+            </span>
+        </a>
+        }
     </div>
+
 </nav>
+}}
