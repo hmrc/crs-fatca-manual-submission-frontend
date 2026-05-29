@@ -16,14 +16,45 @@
 
 @this(
     layout: templates.Layout,
-    govukSummaryList: GovukSummaryList
+    formHelper: FormWithCSRF,
+    govukSummaryList: GovukSummaryList,
+    govukButton: GovukButton,
+    heading: components.Heading,
+    paragraph: components.Paragraph,
+    link: components.Link
 )
 
-@(list: SummaryList)(implicit request: Request[_], messages: Messages)
+@(list: SummaryList, year: Int, fiName: String, fatcaOrCrs: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("checkYourAnswers.title"))) {
 
-    <h1 class="govuk-heading-xl">@messages("checkYourAnswers.heading")</h1>
+@layout(pageTitle = titleNoForm(
+    if (fatcaOrCrs == "crs") {
+        messages("cyaElections.crs.title", year.toString)
+    } else {
+        messages("cyaElections.fatca.title", year.toString)
+    }
+    ))  {
+
+    @formHelper(action = controllers.elections.routes.CheckYourAnswersController.onPageLoad(year)){
+
+    <h1 class="govuk-heading-xl">
+    @if(fatcaOrCrs == "crs") {
+        @messages("cyaElections.crs.heading", fiName, year.toString)
+    } else {
+        @messages("cyaElections.fatca.heading", fiName, year.toString)
+    }
+    </h1>
 
     @govukSummaryList(list)
+
+    @heading(headingContent = messages("cyaElections.h2"), level="h2")
+
+    @paragraph(messageKey = messages("cyaElections.p1"))
+
+    @govukButton(
+     ButtonViewModel(messages("cyaElections.button"))
+     .withAttribute("id" -> "submit")
+    )
+    @link(href = "To be added as part of DAC6-4275", message = messages("cyaElections.backLink", fiName))
+}
 }

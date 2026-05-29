@@ -19,9 +19,10 @@ package viewmodels.checkAnswers
 import models.{CheckMode, UserAnswers}
 import pages.elections.CRSDormantAccountsPage
 import play.api.i18n.Messages
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
-import viewmodels.govuk.summarylist._
-import viewmodels.implicits._
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
+import viewmodels.InputWidth
+import viewmodels.govuk.summarylist.*
+import viewmodels.implicits.*
 
 object CRSDormantAccountsSummary {
 
@@ -32,7 +33,7 @@ object CRSDormantAccountsSummary {
         val value = if (answer) "site.yes" else "site.no"
 
         SummaryListRowViewModel(
-          key = "crsDormantAccounts.checkYourAnswersLabel",
+          key = Key(messages("crsDormantAccounts.checkYourAnswersLabel")).withCssClass(InputWidth.TwoThirds.toString),
           value = ValueViewModel(value),
           actions = Seq(
             ActionItemViewModel("site.change", controllers.elections.routes.CRSDormantAccountsController.onPageLoad(CheckMode, reportingYear).url)

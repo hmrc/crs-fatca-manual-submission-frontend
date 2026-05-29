@@ -21,6 +21,7 @@ import pages.CarfGrossProceedsPage
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
+import viewmodels.InputWidth
 import viewmodels.govuk.summarylist.*
 import viewmodels.implicits.*
 
@@ -33,7 +34,7 @@ object CarfGrossProceedsSummary {
         val value = if (answer) "site.yes" else "site.no"
 
         SummaryListRowViewModel(
-          key = Key(Text(messages("carfGrossProceeds.checkYourAnswersLabel", year.toString))),
+          key = Key(Text(messages("carfGrossProceeds.checkYourAnswersLabel", year.toString))).withCssClass(InputWidth.TwoThirds.toString),
           value = ValueViewModel(value),
           actions = Seq(
             ActionItemViewModel(

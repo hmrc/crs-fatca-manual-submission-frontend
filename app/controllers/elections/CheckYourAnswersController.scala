@@ -18,6 +18,8 @@ package controllers.elections
 
 import com.google.inject.Inject
 import controllers.actions.{DataRequiredAction, FrontendDataRetrievalAction, IdentifierAction}
+import pages.FiDetailsPage
+import pages.elections.CRSContractsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -37,7 +39,14 @@ class CheckYourAnswersController @Inject() (
   def onPageLoad(year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
 
-      val list = CheckYourAnswersElections(request.userAnswers, year)
-      Ok(view(list))
+      val list       = CheckYourAnswersElections(request.userAnswers, year)
+      val crsOrFatca = if (request.userAnswers.get(CRSContractsPage).isEmpty) "fatca" else "crs"
+      val fiName = request.userAnswers
+        .get(FiDetailsPage)
+        .map {
+          fiIdentifiers => fiIdentifiers.fiName
+        }
+        .getOrElse("MISSING FI NAME")
+      Ok(view(list, year, fiName, crsOrFatca))
   }
 }

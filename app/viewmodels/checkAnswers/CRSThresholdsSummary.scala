@@ -19,7 +19,8 @@ package viewmodels.checkAnswers
 import models.UserAnswers
 import pages.elections.CRSDormantAccountsPage
 import play.api.i18n.Messages
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
+import viewmodels.InputWidth
 import viewmodels.govuk.summarylist.*
 import viewmodels.implicits.*
 
@@ -32,7 +33,7 @@ object CRSThresholdsSummary {
         val value = if (answer) "site.yes" else "site.no"
 
         SummaryListRowViewModel(
-          key = "crsThresholds.checkYourAnswersLabel",
+          key = Key(messages("crsThresholds.checkYourAnswersLabel")).withCssClass(InputWidth.TwoThirds.toString),
           value = ValueViewModel(value),
           actions = Seq(
             ActionItemViewModel("site.change", controllers.elections.routes.CheckYourAnswersController.onPageLoad(reportingYear).url)
