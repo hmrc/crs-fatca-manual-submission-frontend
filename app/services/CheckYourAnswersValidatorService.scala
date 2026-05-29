@@ -16,7 +16,7 @@
 
 package services
 
-import models.{NormalMode, UserData}
+import models.{NormalMode, UserAnswers}
 import pages.elections.{CRSContractsPage, CRSDormantAccountsPage, CRSThresholdsPage}
 import pages.*
 import utils.ReportingConstants.REPORTING_THRESHOLD_YEAR
@@ -38,18 +38,18 @@ class CheckYourAnswersValidatorService @Inject() {
   private enum ElectionGroup:
     case CRS, FATCA, NONE
 
-  private def hasAny(pages: Set[QuestionPage[Boolean]], userData: UserData): Boolean = pages.exists(userData.get(_).isDefined)
+  private def hasAny(pages: Set[QuestionPage[Boolean]], userAnswers: UserAnswers): Boolean = pages.exists(userAnswers.get(_).isDefined)
 
-  private def allPresent(pages: Set[QuestionPage[Boolean]], userData: UserData): Boolean = pages.forall(userData.get(_).isDefined)
+  private def allPresent(pages: Set[QuestionPage[Boolean]], userAnswers: UserAnswers): Boolean = pages.forall(userAnswers.get(_).isDefined)
 
-  private def electionGroup(userData: UserData): ElectionGroup =
-    if hasAny(crsAllPages, userData) then ElectionGroup.CRS
-    else if hasAny(fatcaPages, userData) then ElectionGroup.FATCA
+  private def electionGroup(userAnswers: UserAnswers): ElectionGroup =
+    if hasAny(crsAllPages, userAnswers) then ElectionGroup.CRS
+    else if hasAny(fatcaPages, userAnswers) then ElectionGroup.FATCA
     else ElectionGroup.NONE
 
-  def validate(userData: UserData, reportingYear: Int): Either[String, Unit] =
+  def validate(userAnswers: UserAnswers, reportingYear: Int): Either[String, Unit] =
     if !isReportingYearValid(reportingYear) then Left(controllers.routes.JourneyRecoveryController.onPageLoad().url)
-    else validateElections(userData, reportingYear)
+    else validateElections(userAnswers, reportingYear)
 
   private def isReportingYearValid(reportingYear: Int) = {
     val maxYear        = Year.now().getValue
@@ -57,23 +57,23 @@ class CheckYourAnswersValidatorService @Inject() {
     reportingYear >= minAllowedYear && reportingYear <= maxYear
   }
 
-  private def isCrsPagesComplete(userData: UserData, reportingYear: Int): Boolean = {
-    val baseComplete = allPresent(crsBasePages, userData)
+  private def isCrsPagesComplete(userAnswers: UserAnswers, reportingYear: Int): Boolean = {
+    val baseComplete = allPresent(crsBasePages, userAnswers)
 
     if reportingYear < REPORTING_THRESHOLD_YEAR then baseComplete
     else {
-      userData.get(CarfGrossProceedsPage) match {
+      userAnswers.get(CarfGrossProceedsPage) match {
         case None        => false
         case Some(false) => baseComplete
-        case Some(true)  => baseComplete && userData.get(CrsGrossProceedsPage).isDefined
+        case Some(true)  => baseComplete && userAnswers.get(CrsGrossProceedsPage).isDefined
       }
     }
   }
 
-  private def validateElections(userData: UserData, reportingYear: Int): Either[String, Unit] =
-    electionGroup(userData) match
-      case ElectionGroup.CRS   => Either.cond(isCrsPagesComplete(userData, reportingYear), (), crsRedirect(reportingYear))
-      case ElectionGroup.FATCA => Either.cond(allPresent(fatcaPages, userData), (), fatcaRedirect(reportingYear))
+  private def validateElections(userAnswers: UserAnswers, reportingYear: Int): Either[String, Unit] =
+    electionGroup(userAnswers) match
+      case ElectionGroup.CRS   => Either.cond(isCrsPagesComplete(userAnswers, reportingYear), (), crsRedirect(reportingYear))
+      case ElectionGroup.FATCA => Either.cond(allPresent(fatcaPages, userAnswers), (), fatcaRedirect(reportingYear))
       case ElectionGroup.NONE  => Left(manageElectionRedirect(reportingYear))
 
 }

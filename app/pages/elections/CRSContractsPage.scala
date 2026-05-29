@@ -16,7 +16,7 @@
 
 package pages.elections
 
-import models.UserData
+import models.UserAnswers
 import pages.Page.electionFATCAPages
 import pages.QuestionPage
 import play.api.libs.json.JsPath
@@ -29,6 +29,6 @@ case object CRSContractsPage extends QuestionPage[Boolean] {
 
   override def toString: String = "crsContracts"
 
-  override def cleanup(value: Option[Boolean], userAnswers: UserData): Try[UserData] =
+  override def cleanup(value: Option[Boolean], userAnswers: UserAnswers): Try[UserAnswers] =
     userAnswers.removeAll(electionFATCAPages)
 }

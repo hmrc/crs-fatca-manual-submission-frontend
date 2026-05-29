@@ -39,7 +39,7 @@ class CheckYourAnswersController @Inject() (
 
   def onPageLoad(year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      validator.validate(request.userData, year) match {
+      validator.validate(request.userAnswers, year) match {
         case Left(redirectUrl) => Redirect(controllers.elections.routes.ElectionInformationIsMissingController.onPageLoad(RedirectUrl(redirectUrl)))
         case Right(()) =>
           val list = SummaryListViewModel(rows = Seq.empty)

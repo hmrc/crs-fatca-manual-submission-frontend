@@ -79,8 +79,8 @@ class NavigatorSpec extends SpecBase {
         }
 
         "to /check-your-answers when the reporting period is 2025 or earlier" in {
-          val userAnswers: UserData = emptyUserAnswers
-          val reportingYear         = 2025
+          val userAnswers: UserAnswers = emptyUserAnswers
+          val reportingYear            = 2025
           navigator.nextPage(CRSThresholdsPage, NormalMode, userAnswers, Some(reportingYear)) mustBe routes.CheckYourAnswersController.onPageLoad(reportingYear)
         }
       }
@@ -161,11 +161,7 @@ class NavigatorSpec extends SpecBase {
       "must go from a page that doesn't exist in the edit route map to CheckYourAnswers" in {
 
         case object UnknownPage extends Page
-<<<<<<< HEAD
-        navigator.nextPage(UnknownPage, CheckMode, UserData("id"), Some(year)) mustBe routes.CheckYourAnswersController.onPageLoad(year)
-=======
-        navigator.nextPage(UnknownPage, CheckMode, UserAnswers("id"), None) mustBe routes.CheckYourAnswersController.onPageLoad()
->>>>>>> main
+        navigator.nextPage(UnknownPage, CheckMode, UserAnswers("id"), Some(year)) mustBe routes.CheckYourAnswersController.onPageLoad(year)
       }
 
       "must go from /elections/crs/carf-gross-proceeds page" - {

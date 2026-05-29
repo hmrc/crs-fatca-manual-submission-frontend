@@ -64,7 +64,7 @@ final case class UserAnswers(
     }
   }
 
-  private def removeWithoutCleanUp[A](page: Settable[A]): Try[UserData] = {
+  private def removeWithoutCleanUp[A](page: Settable[A]): Try[UserAnswers] = {
 
     val updatedData = data.removeObject(page.path) match {
       case JsSuccess(jsValue, _) =>
@@ -79,7 +79,7 @@ final case class UserAnswers(
     }
   }
 
-  def removeAll[A](pages: Seq[Settable[A] with Gettable[A]])(implicit rds: Reads[A]): Try[UserData] =
+  def removeAll[A](pages: Seq[Settable[A] with Gettable[A]])(implicit rds: Reads[A]): Try[UserAnswers] =
     pages.foldLeft(Try(this)) {
       (accTry, page) =>
         accTry.flatMap {
