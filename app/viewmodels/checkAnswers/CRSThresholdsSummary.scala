@@ -35,7 +35,7 @@ object CRSThresholdsSummary {
           key = "crsThresholds.checkYourAnswersLabel",
           value = ValueViewModel(value),
           actions = Seq(
-            ActionItemViewModel("site.change", controllers.routes.CheckYourAnswersController.onPageLoad(reportingYear).url)
+            ActionItemViewModel("site.change", controllers.elections.routes.CheckYourAnswersController.onPageLoad(reportingYear).url)
               .withVisuallyHiddenText(messages("crsThresholds.change.hidden"))
           )
         )

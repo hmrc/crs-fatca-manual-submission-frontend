@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.elections
 
 import com.google.inject.Inject
-import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
+import controllers.actions.{DataRequiredAction, FrontendDataRetrievalAction, IdentifierAction}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -25,12 +25,12 @@ import viewmodels.checkAnswers.CheckYourAnswersElections
 import views.html.CheckYourAnswersView
 
 class CheckYourAnswersController @Inject() (
-  override val messagesApi: MessagesApi,
-  identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  val controllerComponents: MessagesControllerComponents,
-  view: CheckYourAnswersView
+                                             override val messagesApi: MessagesApi,
+                                             identify: IdentifierAction,
+                                             getData: FrontendDataRetrievalAction,
+                                             requireData: DataRequiredAction,
+                                             val controllerComponents: MessagesControllerComponents,
+                                             view: CheckYourAnswersView
 ) extends FrontendBaseController
     with I18nSupport {
 

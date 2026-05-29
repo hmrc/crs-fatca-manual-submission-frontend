@@ -59,4 +59,4 @@ GET        /elections/crs/change-crs-gross-proceeds                  controllers
 POST       /elections/crs/change-crs-gross-proceeds                  controllers.elections.CrsGrossProceedsController.onSubmit(mode: Mode = CheckMode, year: Int)
 
 
-GET        /elections/check-your-answers                             controllers.CheckYourAnswersController.onPageLoad(year: Int)
+GET        /elections/check-your-answers                             controllers.elections.CheckYourAnswersController.onPageLoad(year: Int)
