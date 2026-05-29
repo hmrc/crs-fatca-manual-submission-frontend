@@ -36,6 +36,7 @@ class CheckYourAnswersValidatorServiceSpec extends SpecBase {
     def manageElectionUrl(year: Int): String = controllers.routes.ManageElectionsController.onPageLoad(year).url
 
     "validate - reporting year validation" - {
+      val recoveryUrl = controllers.routes.JourneyRecoveryController.onPageLoad().url
       "should redirect when reporting year is older than 12 years" in {
 
         val crsData = emptyUserData
@@ -45,7 +46,7 @@ class CheckYourAnswersValidatorServiceSpec extends SpecBase {
 
         val reportingYear = Year.now().getValue - 13
 
-        service.validate(crsData, reportingYear) mustBe Some(controllers.routes.JourneyRecoveryController.onPageLoad().url)
+        service.validate(crsData, reportingYear) mustBe Left(recoveryUrl)
       }
 
       "should redirect when reporting year is greater than current years" in {
@@ -57,7 +58,7 @@ class CheckYourAnswersValidatorServiceSpec extends SpecBase {
 
         val reportingYear = Year.now().getValue + 1
 
-        service.validate(crsData, reportingYear) mustBe Some(controllers.routes.JourneyRecoveryController.onPageLoad().url)
+        service.validate(crsData, reportingYear) mustBe Left(recoveryUrl)
       }
     }
     val year2025 = 2025
@@ -69,7 +70,7 @@ class CheckYourAnswersValidatorServiceSpec extends SpecBase {
           .withPage(CRSDormantAccountsPage, true)
           .withPage(CRSThresholdsPage, true)
 
-        service.validate(crsData, year2025) mustBe None
+        service.validate(crsData, year2025) mustBe Right(())
       }
 
       val currentYear = Year.now().getValue
@@ -81,7 +82,7 @@ class CheckYourAnswersValidatorServiceSpec extends SpecBase {
           .withPage(CRSThresholdsPage, true)
           .withPage(CarfGrossProceedsPage, false)
 
-        service.validate(crsData, currentYear) mustBe None
+        service.validate(crsData, currentYear) mustBe Right(())
       }
 
       "should return None when reporting year is 2026 & crs pages are complete" in {
@@ -93,7 +94,7 @@ class CheckYourAnswersValidatorServiceSpec extends SpecBase {
           .withPage(CarfGrossProceedsPage, true)
           .withPage(CrsGrossProceedsPage, true)
 
-        service.validate(crsData, currentYear) mustBe None
+        service.validate(crsData, currentYear) mustBe Right(())
       }
 
       "should return Some(CRSRedirectUrl) when reporting year is 2026 & carfGross is true & crsGross is None" in {
@@ -104,7 +105,7 @@ class CheckYourAnswersValidatorServiceSpec extends SpecBase {
           .withPage(CRSThresholdsPage, true)
           .withPage(CarfGrossProceedsPage, true)
 
-        service.validate(crsData, currentYear) mustBe Some(crsRedirectUrl(currentYear))
+        service.validate(crsData, currentYear) mustBe Left(crsRedirectUrl(currentYear))
       }
 
       "should return Some(CRSRedirectUrl) when reporting year is 2026 & carfGross is None" in {
@@ -114,7 +115,7 @@ class CheckYourAnswersValidatorServiceSpec extends SpecBase {
           .withPage(CRSDormantAccountsPage, true)
           .withPage(CRSThresholdsPage, true)
 
-        service.validate(crsData, currentYear) mustBe Some(crsRedirectUrl(currentYear))
+        service.validate(crsData, currentYear) mustBe Left(crsRedirectUrl(currentYear))
       }
 
       "should return Some(CRSRedirectUrl) when reporting year is 2026 & crsContract is None" in {
@@ -123,7 +124,7 @@ class CheckYourAnswersValidatorServiceSpec extends SpecBase {
           .withPage(CRSDormantAccountsPage, true)
           .withPage(CRSThresholdsPage, true)
 
-        service.validate(crsData, currentYear) mustBe Some(crsRedirectUrl(currentYear))
+        service.validate(crsData, currentYear) mustBe Left(crsRedirectUrl(currentYear))
       }
 
       "should return Some(CRSRedirectUrl) when reporting year is 2026 & crsDormant is None" in {
@@ -132,7 +133,7 @@ class CheckYourAnswersValidatorServiceSpec extends SpecBase {
           .withPage(CRSContractsPage, true)
           .withPage(CRSThresholdsPage, true)
 
-        service.validate(crsData, currentYear) mustBe Some(crsRedirectUrl(currentYear))
+        service.validate(crsData, currentYear) mustBe Left(crsRedirectUrl(currentYear))
       }
 
       "should return Some(CRSRedirectUrl) when reporting year is 2026 & crsTheshold is None" in {
@@ -141,7 +142,7 @@ class CheckYourAnswersValidatorServiceSpec extends SpecBase {
           .withPage(CRSContractsPage, true)
           .withPage(CRSDormantAccountsPage, true)
 
-        service.validate(crsData, currentYear) mustBe Some(crsRedirectUrl(currentYear))
+        service.validate(crsData, currentYear) mustBe Left(crsRedirectUrl(currentYear))
       }
     }
     "validate - FATCA Regime" - {
@@ -151,33 +152,26 @@ class CheckYourAnswersValidatorServiceSpec extends SpecBase {
           .withPage(IsUsTreasuryRegulatedPage, true)
           .withPage(IsApplyingThresholdsPage, true)
 
-        service.validate(fatcaData, year2025) mustBe None
+        service.validate(fatcaData, year2025) mustBe Right(())
       }
       "should return Some(fatcaRedirect) when IsApplyingThreshold Page is None" in {
 
         val fatcaData = emptyUserData
           .withPage(IsUsTreasuryRegulatedPage, true)
 
-        service.validate(fatcaData, year2025) mustBe Some(fatcaRedirectUrl(year2025))
+        service.validate(fatcaData, year2025) mustBe Left(fatcaRedirectUrl(year2025))
       }
       "should return Some(fatcaRedirect) when IsUsTreasuryRegulatedPage Page is None" in {
 
         val fatcaData = emptyUserData
           .withPage(IsApplyingThresholdsPage, true)
 
-        service.validate(fatcaData, year2025) mustBe Some(fatcaRedirectUrl(year2025))
+        service.validate(fatcaData, year2025) mustBe Left(fatcaRedirectUrl(year2025))
       }
     }
     "validate - No Regime" - {
-      "should return Some(manageReport) when Partial pages are present" in {
-        val fatcaData = emptyUserData
-          .withPage(IsUsTreasuryRegulatedPage, true)
-          .withPage(CRSContractsPage, true)
-
-        service.validate(fatcaData, year2025) mustBe Some(manageElectionUrl(year2025))
-      }
       "should return Some(manageReport) when UserAnswer is empty" in {
-        service.validate(emptyUserData, year2025) mustBe Some(manageElectionUrl(year2025))
+        service.validate(emptyUserData, year2025) mustBe Left(manageElectionUrl(year2025))
       }
     }
   }

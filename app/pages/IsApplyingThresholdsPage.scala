@@ -16,11 +16,18 @@
 
 package pages
 
+import models.UserData
+import pages.Page.electionCRSPages
 import play.api.libs.json.JsPath
+
+import scala.util.Try
 
 case object IsApplyingThresholdsPage extends QuestionPage[Boolean] {
 
   override def path: JsPath = JsPath \ toString
 
   override def toString: String = "isApplyingThresholds"
+
+  override def cleanup(value: Option[Boolean], userAnswers: UserData): Try[UserData] =
+    userAnswers.removeAll(electionCRSPages)
 }

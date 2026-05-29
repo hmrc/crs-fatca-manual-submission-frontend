@@ -35,47 +35,45 @@ class CheckYourAnswersValidatorService @Inject() {
   private def fatcaRedirect(reportingYear: Int) = controllers.elections.routes.IsUsTreasuryRegulatedController.onPageLoad(NormalMode, reportingYear).url
   private def manageElectionRedirect(reportingYear: Int) = controllers.routes.ManageElectionsController.onPageLoad(reportingYear).url
 
-  def validate(userData: UserData, reportingYear: Int): Option[String] = {
+  private enum ElectionGroup:
+    case CRS, FATCA, NONE
 
-    def isReportingYearValid = {
-      val maxYear        = Year.now().getValue
-      val minAllowedYear = maxYear - 12
-      reportingYear >= minAllowedYear && reportingYear <= maxYear
-    }
+  private def hasAny(pages: Set[QuestionPage[Boolean]], userData: UserData): Boolean = pages.exists(userData.get(_).isDefined)
 
-    def hasAny(pages: Set[QuestionPage[Boolean]]): Boolean = pages.exists(userData.get(_).isDefined)
+  private def allPresent(pages: Set[QuestionPage[Boolean]], userData: UserData): Boolean = pages.forall(userData.get(_).isDefined)
 
-    def allPresent(pages: Set[QuestionPage[Boolean]]): Boolean = pages.forall(userData.get(_).isDefined)
+  private def electionGroup(userData: UserData): ElectionGroup =
+    if hasAny(crsAllPages, userData) then ElectionGroup.CRS
+    else if hasAny(fatcaPages, userData) then ElectionGroup.FATCA
+    else ElectionGroup.NONE
 
-    def isCrsPagesComplete: Boolean = {
-      val baseComplete = allPresent(crsBasePages)
+  def validate(userData: UserData, reportingYear: Int): Either[String, Unit] =
+    if !isReportingYearValid(reportingYear) then Left(controllers.routes.JourneyRecoveryController.onPageLoad().url)
+    else validateElections(userData, reportingYear)
 
-      val requireCARFGrossProceed = reportingYear >= REPORTING_THRESHOLD_YEAR
-
-      if !requireCARFGrossProceed then baseComplete
-      else
-        userData.get(CarfGrossProceedsPage).fold(false) {
-          value =>
-            if value then baseComplete && userData.get(CrsGrossProceedsPage).isDefined
-            else baseComplete
-        }
-    }
-
-    def isFatcaPagesComplete: Boolean = allPresent(fatcaPages)
-
-    if !isReportingYearValid then Some(controllers.routes.JourneyRecoveryController.onPageLoad().url)
-    else
-      val hasCrsPages   = hasAny(crsAllPages)
-      val hasFatcaPages = hasAny(fatcaPages)
-
-      (hasCrsPages, hasFatcaPages) match {
-
-        case (true, false) => if (isCrsPagesComplete) None else Some(crsRedirect(reportingYear))
-
-        case (false, true) => if (isFatcaPagesComplete) None else Some(fatcaRedirect(reportingYear))
-
-        case _ => Some(manageElectionRedirect(reportingYear))
-      }
+  private def isReportingYearValid(reportingYear: Int) = {
+    val maxYear        = Year.now().getValue
+    val minAllowedYear = maxYear - 12
+    reportingYear >= minAllowedYear && reportingYear <= maxYear
   }
+
+  private def isCrsPagesComplete(userData: UserData, reportingYear: Int): Boolean = {
+    val baseComplete = allPresent(crsBasePages, userData)
+
+    if reportingYear < REPORTING_THRESHOLD_YEAR then baseComplete
+    else {
+      userData.get(CarfGrossProceedsPage) match {
+        case None        => false
+        case Some(false) => baseComplete
+        case Some(true)  => baseComplete && userData.get(CrsGrossProceedsPage).isDefined
+      }
+    }
+  }
+
+  private def validateElections(userData: UserData, reportingYear: Int): Either[String, Unit] =
+    electionGroup(userData) match
+      case ElectionGroup.CRS   => Either.cond(isCrsPagesComplete(userData, reportingYear), (), crsRedirect(reportingYear))
+      case ElectionGroup.FATCA => Either.cond(allPresent(fatcaPages, userData), (), fatcaRedirect(reportingYear))
+      case ElectionGroup.NONE  => Left(manageElectionRedirect(reportingYear))
 
 }

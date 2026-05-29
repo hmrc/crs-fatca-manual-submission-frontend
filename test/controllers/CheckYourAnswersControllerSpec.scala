@@ -41,7 +41,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
         .build()
 
       running(application) {
-        when(mockService.validate(any(), any())).thenReturn(None)
+        when(mockService.validate(any(), any())).thenReturn(Right(()))
         val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad(year).url)
 
         val result = route(application, request).value
@@ -63,7 +63,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
         .build()
 
       running(application) {
-        when(mockService.validate(any(), any())).thenReturn(Some("/error"))
+        when(mockService.validate(any(), any())).thenReturn(Left("/error"))
         val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad(year).url)
 
         val result = route(application, request).value

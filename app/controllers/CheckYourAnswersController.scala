@@ -18,7 +18,6 @@ package controllers
 
 import com.google.inject.Inject
 import controllers.actions.{DataRequiredAction, FrontendDataRetrievalAction, IdentifierAction}
-import pages.IsUsTreasuryRegulatedPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.CheckYourAnswersValidatorService
@@ -41,8 +40,8 @@ class CheckYourAnswersController @Inject() (
   def onPageLoad(year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       validator.validate(request.userData, year) match {
-        case Some(redirectUrl) => Redirect(controllers.elections.routes.ElectionInformationIsMissingController.onPageLoad(RedirectUrl(redirectUrl)))
-        case None =>
+        case Left(redirectUrl) => Redirect(controllers.elections.routes.ElectionInformationIsMissingController.onPageLoad(RedirectUrl(redirectUrl)))
+        case Right(()) =>
           val list = SummaryListViewModel(rows = Seq.empty)
           Ok(view(list))
       }
