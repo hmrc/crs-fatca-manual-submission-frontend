@@ -16,7 +16,7 @@
 
 package pages
 
-import models.UserData
+import models.UserAnswers
 import pages.Page.electionFATCAPages
 import play.api.libs.json.JsPath
 
@@ -28,14 +28,14 @@ case object CarfGrossProceedsPage extends QuestionPage[Boolean] {
 
   override def toString: String = "carfGrossProceeds"
 
-  override def cleanup(value: Option[Boolean], userAnswers: UserData): Try[UserData] = {
+  override def cleanup(value: Option[Boolean], userAnswers: UserAnswers): Try[UserAnswers]  = {
     val clearedFatca = userAnswers.removeAll(electionFATCAPages)
 
     clearedFatca.flatMap {
       updatedAnswers =>
         value match {
           case Some(false) => updatedAnswers.remove(CrsGrossProceedsPage)
-          case _           => super.cleanup(value, updatedAnswers)
+          case _ => super.cleanup(value, updatedAnswers)
         }
     }
   }

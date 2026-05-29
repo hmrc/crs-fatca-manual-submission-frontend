@@ -26,6 +26,8 @@ import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
 import views.html.InformationVoidedView
 
+import java.time.LocalDate
+
 class InformationVoidedViewSpec extends SpecBase {
 
   private val application = applicationBuilder().build()
@@ -33,9 +35,9 @@ class InformationVoidedViewSpec extends SpecBase {
   private val view: InformationVoidedView                                = application.injector.instanceOf[InformationVoidedView]
   private val frontendAppConfig: FrontendAppConfig                       = application.injector.instanceOf[FrontendAppConfig]
   private val messagesControllerComponents: MessagesControllerComponents = application.injector.instanceOf[MessagesControllerComponents]
-
-  implicit private val request: FakeRequest[AnyContent] = FakeRequest()
-  implicit private val messages: Messages               = messagesControllerComponents.messagesApi.preferred(Seq(Lang("en")))
+  private def defaultYear: Int                                           = LocalDate.now().getYear - 1
+  implicit private val request: FakeRequest[AnyContent]                  = FakeRequest()
+  implicit private val messages: Messages                                = messagesControllerComponents.messagesApi.preferred(Seq(Lang("en")))
 
   private val fiName      = "Test Financial Institution"
   private val fiId        = "FI123"
@@ -89,7 +91,7 @@ class InformationVoidedViewSpec extends SpecBase {
       "must display the submitted reports link" in {
         val link = doc.select("#submitted-reports-link")
         link.text() mustEqual messages("informationVoided.link.1", fiName)
-        link.attr("href") mustEqual controllers.routes.ReadSubmissionDataController.onPageLoad(fiId, fiName).url
+        link.attr("href") mustEqual controllers.routes.ViewSubmissionsController.onPageLoad(defaultYear, fiId).url
       }
 
       "must display the manage reports link" in {

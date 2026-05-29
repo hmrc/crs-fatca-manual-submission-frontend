@@ -19,13 +19,14 @@ package controllers.elections
 import base.SpecBase
 import controllers.routes
 import forms.elections.CRSThresholdsFormProvider
-import models.{NormalMode, UserData}
+import models.{FiIdentifiers, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.FiNamePage
+import pages.FiDetailsPage
 import pages.elections.CRSThresholdsPage
+import play.api.data.Form
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -41,11 +42,11 @@ class CRSThresholdsControllerSpec extends SpecBase with MockitoSugar {
   val testFIName    = "Test FI"
   val reportingYear = 2027
 
-  val formProvider          = new CRSThresholdsFormProvider()
-  val form                  = formProvider()
-  val mockSessionRepository = mock[SessionRepository]
+  val formProvider                             = new CRSThresholdsFormProvider()
+  val form: Form[Boolean]                      = formProvider()
+  val mockSessionRepository: SessionRepository = mock[SessionRepository]
 
-  lazy val cRSThresholdsRoute = controllers.elections.routes.CRSThresholdsController.onPageLoad(NormalMode, reportingYear).url
+  lazy val cRSThresholdsRoute: String = controllers.elections.routes.CRSThresholdsController.onPageLoad(NormalMode, reportingYear).url
 
   override def beforeEach(): Unit =
     reset(mockSessionRepository)
@@ -55,12 +56,12 @@ class CRSThresholdsControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userData = Some(emptyUserData.withPage(FiNamePage, "Test FI")))
+      val application = applicationBuilder(userData = Some(emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))))
         .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
         .build()
 
       running(application) {
-        when(mockSessionRepository.get(any())) thenReturn Future.successful(Some(emptyUserData))
+        when(mockSessionRepository.get(any())) thenReturn Future.successful(Some(emptyUserAnswers))
         val request = FakeRequest(GET, cRSThresholdsRoute)
 
         val result = route(application, request).value
@@ -74,8 +75,8 @@ class CRSThresholdsControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserData(userAnswersId)
-        .withPage(FiNamePage, "Test FI")
+      val userAnswers = UserAnswers(userAnswersId)
+        .withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))
         .withPage(CRSThresholdsPage, true)
 
       val application = applicationBuilder(userData = Some(userAnswers))
@@ -100,7 +101,7 @@ class CRSThresholdsControllerSpec extends SpecBase with MockitoSugar {
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
-        applicationBuilder(userData = Some(emptyUserData.withPage(FiNamePage, "Test FI")))
+        applicationBuilder(userData = Some(emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository)
@@ -121,10 +122,10 @@ class CRSThresholdsControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userData = Some(emptyUserData.withPage(FiNamePage, "Test FI")))
+      val application = applicationBuilder(userData = Some(emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))))
         .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
         .build()
-      when(mockSessionRepository.get(any())) thenReturn Future.successful(Some(emptyUserData))
+      when(mockSessionRepository.get(any())) thenReturn Future.successful(Some(emptyUserAnswers))
 
       running(application) {
         val request =

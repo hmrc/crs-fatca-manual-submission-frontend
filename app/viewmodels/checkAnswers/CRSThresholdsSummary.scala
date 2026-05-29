@@ -16,7 +16,7 @@
 
 package viewmodels.checkAnswers
 
-import models.UserData
+import models.UserAnswers
 import pages.elections.CRSDormantAccountsPage
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
@@ -25,7 +25,7 @@ import viewmodels.implicits.*
 
 object CRSThresholdsSummary {
 
-  def row(answers: UserData, reportingYear: Int)(implicit messages: Messages): Option[SummaryListRow] =
+  def row(answers: UserAnswers, reportingYear: Int)(implicit messages: Messages): Option[SummaryListRow] =
     answers.get(CRSDormantAccountsPage).map {
       answer =>
 

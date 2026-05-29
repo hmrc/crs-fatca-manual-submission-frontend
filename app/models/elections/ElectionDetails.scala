@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-package models
+package models.elections
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.*
 
-case class ReadSubmissionRequest(shouldCache: Boolean, fiId: Option[String])
+case class ElectionDetails(
+  crs: Option[CrsElectionsDetails],
+  fatca: Option[FatcaElectionsDetails],
+  reportingPeriod: String
+)
 
-object ReadSubmissionRequest {
-  implicit val format: OFormat[ReadSubmissionRequest] = Json.format[ReadSubmissionRequest]
-}
+object ElectionDetails:
+  given OFormat[ElectionDetails] = Json.format[ElectionDetails]

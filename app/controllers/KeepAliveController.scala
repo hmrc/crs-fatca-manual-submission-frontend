@@ -34,7 +34,7 @@ class KeepAliveController @Inject() (
 
   def keepAlive(): Action[AnyContent] = (identify andThen getData).async {
     implicit request =>
-      request.userData
+      request.maybeAnswers
         .map {
           answers =>
             sessionRepository

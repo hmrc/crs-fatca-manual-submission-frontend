@@ -36,7 +36,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
       val mockService = mock[CheckYourAnswersValidatorService]
 
-      val application = applicationBuilder(userData = Some(emptyUserData))
+      val application = applicationBuilder(userData = Some(emptyUserAnswers))
         .overrides(bind[CheckYourAnswersValidatorService].toInstance(mockService))
         .build()
 
@@ -58,7 +58,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
       val mockService = mock[CheckYourAnswersValidatorService]
 
-      val application = applicationBuilder(userData = Some(emptyUserData))
+      val application = applicationBuilder(userData = Some(emptyUserAnswers))
         .overrides(bind[CheckYourAnswersValidatorService].toInstance(mockService))
         .build()
 
