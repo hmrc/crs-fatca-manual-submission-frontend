@@ -46,10 +46,12 @@ class NavigatorSpec extends SpecBase {
 
       "from IsApplyingThresholdsPage" - {
 
-        "must go to JourneyRecovery regardless of year" in {
-          val userData = UserData("id")
-          navigator.nextPage(IsApplyingThresholdsPage, NormalMode, userData, Some(year)) mustBe
-            routes.JourneyRecoveryController.onPageLoad()
+        "must go to /check-your-answers page when year is valid" in {
+          val userAnswers   = emptyUserData.withPage(CrsGrossProceedsPage, false)
+          val reportingYear = 2026
+          navigator.nextPage(CrsGrossProceedsPage, NormalMode, userAnswers, Some(reportingYear)) mustBe routes.CheckYourAnswersController.onPageLoad(
+            reportingYear
+          )
         }
 
         "must go to JourneyRecovery when year is None" in {
