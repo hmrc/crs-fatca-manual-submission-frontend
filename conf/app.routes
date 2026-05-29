@@ -60,4 +60,4 @@ POST       /elections/crs/crs-gross-proceeds                         controllers
 GET        /elections/crs/change-crs-gross-proceeds                  controllers.elections.CrsGrossProceedsController.onPageLoad(mode: Mode = CheckMode, year: Int)
 POST       /elections/crs/change-crs-gross-proceeds                  controllers.elections.CrsGrossProceedsController.onSubmit(mode: Mode = CheckMode, year: Int)
 
-GET        /manage-elections-for-:year                               controllers.ManageElectionsController.onPageLoad(year: Int, fiId: String , fiName:String)
+GET        /elections/manage-elections-for-:year                     controllers.ManageElectionsController.onPageLoad(year: Int, fiId: String , fiName:String)

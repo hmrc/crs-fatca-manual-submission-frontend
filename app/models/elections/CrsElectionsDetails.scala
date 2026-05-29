@@ -16,6 +16,8 @@
 
 package models.elections
 
+import models.elections
+import models.elections.YesNoNa.*
 import play.api.i18n.Messages
 import play.api.libs.json.*
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
@@ -35,14 +37,32 @@ object CrsElectionsDetails:
 
   def rows(details: CrsElectionsDetails, selectedYear: Int)(using messages: Messages): Seq[SummaryListRow] = {
     def maybeCarfRow =
-      if (selectedYear > 2025) // CARF exists 2026 onwards
+      if (selectedYear > 2025)
         Seq(
           SummaryListRowViewModel(
-            key = Key(content = Text(messages("manageElections.crs.hasCARF"))).withCssClass(InputWidth.ThreeQuarters.toString),
+            key = Key(content = Text(messages("manageElections.crs.hasCARF", selectedYear.toString))).withCssClass(InputWidth.ThreeQuarters.toString),
             value = Value(content = Text(details.hasCARF.fold("Not Provided")(_.toString)))
           )
         )
       else Seq.empty
+
+    def getValue: Option[Value] =
+      details.hasCARF match {
+        case Some(Yes) => Some(Value(Text(Yes.toString)))
+        case Some(No)  => Some(Value(Text(No.toString)))
+        case _         => None
+      }
+
+    def maybeGrossProceedsRow =
+      getValue.fold(Seq.empty) {
+        value =>
+          Seq(
+            SummaryListRowViewModel(
+              key = Key(content = Text(messages("manageElections.crs.grossProceeds", selectedYear.toString))).withCssClass(InputWidth.ThreeQuarters.toString),
+              value = value
+            )
+          )
+      }
 
     Seq(
       SummaryListRowViewModel(
@@ -57,6 +77,6 @@ object CrsElectionsDetails:
         key = Key(content = Text(messages("manageElections.crs.hasThresholds"))).withCssClass(InputWidth.ThreeQuarters.toString),
         value = Value(content = Text(details.hasThresholds.fold("Not Provided")(_.toString)))
       )
-    ) ++ maybeCarfRow
+    ) ++ maybeCarfRow ++ maybeGrossProceedsRow
 
   }
