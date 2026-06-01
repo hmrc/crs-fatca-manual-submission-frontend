@@ -33,7 +33,7 @@ class CheckYourAnswersValidatorServiceSpec extends SpecBase {
 
     def crsRedirectUrl(year: Int): String    = controllers.elections.routes.CRSContractsController.onPageLoad(NormalMode, year).url
     def fatcaRedirectUrl(year: Int): String  = controllers.elections.routes.IsUsTreasuryRegulatedController.onPageLoad(NormalMode, year).url
-    def manageElectionUrl(year: Int): String = controllers.routes.ManageElectionsController.onPageLoad(year).url
+    def manageElectionUrl(year: Int): String = controllers.elections.routes.ManageElectionsController.onPageLoad(year).url
 
     "validate - reporting year validation" - {
       val recoveryUrl = controllers.routes.JourneyRecoveryController.onPageLoad().url

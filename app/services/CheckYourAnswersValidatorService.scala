@@ -33,7 +33,7 @@ class CheckYourAnswersValidatorService @Inject() {
 
   private def crsRedirect(reportingYear: Int)   = controllers.elections.routes.CRSContractsController.onPageLoad(NormalMode, reportingYear).url
   private def fatcaRedirect(reportingYear: Int) = controllers.elections.routes.IsUsTreasuryRegulatedController.onPageLoad(NormalMode, reportingYear).url
-  private def manageElectionRedirect(reportingYear: Int) = controllers.routes.ManageElectionsController.onPageLoad(reportingYear).url
+  private def manageElectionRedirect(reportingYear: Int) = controllers.elections.routes.ManageElectionsController.onPageLoad(reportingYear).url
 
   private enum ElectionGroup:
     case CRS, FATCA, NONE

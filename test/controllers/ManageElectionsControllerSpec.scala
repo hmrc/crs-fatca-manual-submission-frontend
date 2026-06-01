@@ -32,7 +32,7 @@ class ManageElectionsControllerSpec extends SpecBase {
       val application = applicationBuilder(userData = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.ManageElectionsController.onPageLoad(year).url)
+        val request = FakeRequest(GET, controllers.elections.routes.ManageElectionsController.onPageLoad(year).url)
 
         val result = route(application, request).value
 
