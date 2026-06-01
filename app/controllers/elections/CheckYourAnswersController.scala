@@ -18,6 +18,7 @@ package controllers.elections
 
 import com.google.inject.Inject
 import controllers.actions.{DataRequiredAction, FrontendDataRetrievalAction, IdentifierAction}
+import controllers.routes
 import pages.FiDetailsPage
 import pages.elections.CRSContractsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -38,15 +39,13 @@ class CheckYourAnswersController @Inject() (
 
   def onPageLoad(year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-
-      val list       = CheckYourAnswersElections(request.userAnswers, year)
-      val crsOrFatca = if (request.userAnswers.get(CRSContractsPage).isEmpty) "fatca" else "crs"
-      val fiName = request.userAnswers
-        .get(FiDetailsPage)
-        .map {
-          fiIdentifiers => fiIdentifiers.fiName
-        }
-        .getOrElse("MISSING FI NAME")
-      Ok(view(list, year, fiName, crsOrFatca))
+      request.userAnswers.get(FiDetailsPage) match {
+        case Some(fiDetails) =>
+          val list   = CheckYourAnswersElections(request.userAnswers, year)
+          val regime = if (request.userAnswers.get(CRSContractsPage).isEmpty) "fatca" else "crs"
+          Ok(view(list, year, fiDetails.fiName, regime))
+        case None =>
+          Redirect(routes.JourneyRecoveryController.onPageLoad())
+      }
   }
 }

@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.elections
 
 import base.SpecBase
+import controllers.routes
+import models.{FiIdentifiers, UserAnswers}
+import pages.FiDetailsPage
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import viewmodels.govuk.SummaryListFluency
 import views.html.CheckYourAnswersView
 
@@ -28,7 +31,14 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userData = Some(emptyUserAnswers)).build()
+      val testFIName = "Test FI Name"
+
+      val userAnswers = UserAnswers(userAnswersId)
+        .set(FiDetailsPage, FiIdentifiers("fiID", testFIName))
+        .success
+        .value
+
+      val application = applicationBuilder(userData = Some(userAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, controllers.elections.routes.CheckYourAnswersController.onPageLoad(2026).url)
@@ -42,7 +52,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
         contentAsString(result) mustEqual view(
           list,
           2026,
-          "MISSING FI NAME",
+          testFIName,
           "fatca"
         )(request, messages(application)).toString
       }

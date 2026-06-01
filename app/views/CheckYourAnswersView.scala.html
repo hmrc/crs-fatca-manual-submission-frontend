@@ -24,11 +24,11 @@
     link: components.Link
 )
 
-@(list: SummaryList, year: Int, fiName: String, fatcaOrCrs: String)(implicit request: Request[_], messages: Messages)
+@(list: SummaryList, year: Int, fiName: String, regime: String)(implicit request: Request[_], messages: Messages)
 
 
 @layout(pageTitle = titleNoForm(
-    if (fatcaOrCrs == "crs") {
+    if (regime == "crs") {
         messages("cyaElections.crs.title", year.toString)
     } else {
         messages("cyaElections.fatca.title", year.toString)
@@ -37,13 +37,14 @@
 
     @formHelper(action = controllers.elections.routes.CheckYourAnswersController.onPageLoad(year)){
 
-    <h1 class="govuk-heading-xl">
-    @if(fatcaOrCrs == "crs") {
-        @messages("cyaElections.crs.heading", fiName, year.toString)
-    } else {
-        @messages("cyaElections.fatca.heading", fiName, year.toString)
-    }
-    </h1>
+        @heading(
+            headingContent =
+                if (regime == "crs") {
+                    messages("cyaElections.crs.heading", fiName, year.toString)
+                } else {
+                    messages("cyaElections.fatca.heading", fiName, year.toString)
+                }
+        )
 
     @govukSummaryList(list)
 
