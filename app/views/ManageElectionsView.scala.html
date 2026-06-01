@@ -29,7 +29,7 @@
         govukSummaryList: GovukSummaryList
 )
 
-@(electionYears: Seq[Int], electionsRows: ElectionsRows, selectedYear: Int, fiName: String)(implicit request: Request[_], messages: Messages)
+@(electionYears: Seq[Int], electionsRows: ElectionsRows, selectedYear: Int, fiName: String, fiId: String)(implicit request: Request[_], messages: Messages)
 
     @emailLink = {@link(href="mailto:aeoi.enquiries@hmrc.gov.uk", messages("manageElections.link.1"), asPara = false)}
     @year = @{selectedYear.toString}
@@ -38,14 +38,14 @@
     @heading(messages("manageElections.heading", fiName, year))
     @para("manageElections.para.1", htmlArgs = Seq(emailLink))
 
-<div class="reduce-pagination-padding govuk-!-margin-bottom-7">
-    @pagination(electionYears, selectedYear, 3, selectedYear => routes.ManageElectionsController.onPageLoad(selectedYear, "fiId", fiName))
-</div>
+    <div class="reduce-pagination-padding govuk-!-margin-bottom-7">
+        @pagination(electionYears, selectedYear, 2, selectedYear => routes.ManageElectionsController.onPageLoad(selectedYear, "fiId", fiName))
+    </div>
 
     @heading(messages("manageElections.subheading.crs", year), size = "m", level = "h2")
     @if(electionsRows.crsRows.rows.isEmpty) {
         @para(messages("manageElections.noelections"))
-        @link("#", messages("manageElections.noelections.crs"))
+        @link(controllers.elections.routes.CRSContractsController.onPageLoad(NormalMode, selectedYear).url, messages("manageElections.noelections.crs"))
     } else {
         @govukSummaryList(electionsRows.crsRows)
     }
@@ -54,13 +54,15 @@
     @heading(messages("manageElections.subheading.fatca", year), size = "m", level = "h2")
     @if(electionsRows.fatcaRows.rows.isEmpty) {
         @para(messages("manageElections.noelections"))
-        @link("#", messages("manageElections.noelections.fatca"))
+        @link(controllers.elections.routes.IsUsTreasuryRegulatedController.onPageLoad(NormalMode, selectedYear).url, messages("manageElections.noelections.fatca"))
     } else {
         @govukSummaryList(electionsRows.fatcaRows)
     }
 
-    @link("#", messages("manageElections.back.reports", fiName), asPara = true, paraClasses = "govuk-!-margin-bottom-1")
-    @link("#", messages("manageElections.back.manageReports"), asPara = true)
+    @defining(java.time.LocalDate.now.getYear - 1) { CYminusOne =>
+        @link(controllers.routes.ViewSubmissionsController.onPageLoad(CYminusOne, fiId).url, messages("manageElections.back.reports", fiName), asPara = true, paraClasses = "govuk-!-margin-bottom-1")
+    }
+    @link(config.yourFIsLink, messages("manageElections.back.manageReports"), asPara = true)
 
 
 }

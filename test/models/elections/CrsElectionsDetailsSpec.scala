@@ -18,7 +18,6 @@ package models.elections
 
 import base.SpecBase
 import models.elections.YesNoNa.*
-import models.elections.{CrsElectionsDetails, YesNoNa}
 
 class CrsElectionsDetailsSpec extends SpecBase {
 

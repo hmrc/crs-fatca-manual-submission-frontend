@@ -27,7 +27,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ElectionsService @Inject() (connector: ElectionsConnector)(using ec: ExecutionContext) {
 
-  def getElectionsRows(fiId: String, year: Int)(using hc: HeaderCarrier, messages: Messages): Future[ElectionsRows] =
+  def getElectionsRows(fiId: String, year: Int)(implicit hc: HeaderCarrier, messages: Messages): Future[ElectionsRows] =
     connector
       .viewElections(fiId, Some(year))
       .map(_.headOption)

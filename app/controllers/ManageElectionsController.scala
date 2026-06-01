@@ -39,13 +39,13 @@ class ManageElectionsController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(year: Int, fiId: String, fiName: String): Action[AnyContent] = identify.async {
+  def onPageLoad(year: Int, fiId: String, fiName: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       val currentYear = LocalDate.now().getYear
       val years       = currentYear - 12 to currentYear
 
       for {
         rows <- service.getElectionsRows(fiId, year)
-      } yield Ok(view(years, rows, year, fiName))
+      } yield Ok(view(years, rows, year, fiName, fiId))
   }
 }

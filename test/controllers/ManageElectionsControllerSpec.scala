@@ -17,28 +17,63 @@
 package controllers
 
 import base.SpecBase
+import org.mockito.ArgumentMatchersSugar.*
+import org.mockito.MockitoSugar.when
+import play.api.inject.bind
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
+import services.{ElectionsRows, ElectionsService}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
+import uk.gov.hmrc.http.HeaderCarrier
 import views.html.ManageElectionsView
+
+import java.time.LocalDate
+import scala.concurrent.Future
 
 class ManageElectionsControllerSpec extends SpecBase {
 
-//  "ManageElections Controller" - {
-//
-//    "must return OK and the correct view for a GET" in {
-//
-//      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
-//
-//      running(application) {
-//        val request = FakeRequest(GET, routes.ManageElectionsController.onPageLoad().url)
-//
-//        val result = route(application, request).value
-//
-//        val view = application.injector.instanceOf[ManageElectionsView]
-//
-//        status(result) mustEqual OK
-//        contentAsString(result) mustEqual view()(request, messagesForApp(application)).toString
-//      }
-//    }
-//  }
+  val year   = 2027
+  val fiid   = "654321"
+  val finame = "testFi"
+
+  val currentYear: Int = LocalDate.now().getYear
+  val years: Seq[Int]  = currentYear - 12 to currentYear
+
+  val emptyElectionsRows = ElectionsRows(
+    crsRows = SummaryList(rows = Seq.empty),
+    fatcaRows = SummaryList(rows = Seq.empty)
+  )
+  val mockService: ElectionsService   = mock[ElectionsService]
+  val mockHeaerCarrier: HeaderCarrier = mock[HeaderCarrier]
+
+  "ManageElections Controller" - {
+
+    "must return OK and the correct view for a GET" in {
+
+      when(mockService.getElectionsRows(any(), any())(any(), any()))
+        .thenReturn(Future.successful(emptyElectionsRows))
+
+      val application = applicationBuilder(userData = Some(emptyUserAnswers))
+        .overrides(bind[ElectionsService].toInstance(mockService))
+        .build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.ManageElectionsController.onPageLoad(year, fiid, finame).url)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[ManageElectionsView]
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(
+          electionYears = years,
+          electionsRows = emptyElectionsRows,
+          selectedYear = year,
+          fiName = finame,
+          fiId = fiid
+        )(request, messages(application)).toString
+      }
+    }
+  }
+
 }
