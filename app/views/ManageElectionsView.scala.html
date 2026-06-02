@@ -39,7 +39,7 @@
     @para("manageElections.para.1", htmlArgs = Seq(emailLink))
 
     <div class="reduce-pagination-padding govuk-!-margin-bottom-7">
-        @pagination(electionYears, selectedYear, 2, selectedYear => routes.ManageElectionsController.onPageLoad(selectedYear, "fiId", fiName))
+        @pagination(electionYears, selectedYear, 2, selectedYear => controllers.elections.routes.ManageElectionsController.onPageLoad(selectedYear, "fiId", fiName))
     </div>
 
     @heading(messages("manageElections.subheading.crs", year), size = "m", level = "h2")

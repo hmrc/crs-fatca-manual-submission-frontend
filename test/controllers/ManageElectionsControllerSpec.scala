@@ -58,7 +58,7 @@ class ManageElectionsControllerSpec extends SpecBase {
         .build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.ManageElectionsController.onPageLoad(year, fiid, finame).url)
+        val request = FakeRequest(GET, controllers.elections.routes.ManageElectionsController.onPageLoad(year, fiid, finame).url)
 
         val result = route(application, request).value
 

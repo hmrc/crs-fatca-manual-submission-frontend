@@ -17,7 +17,6 @@
 package views
 
 import base.SpecBase
-import config.FrontendAppConfig
 import org.jsoup.Jsoup
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
