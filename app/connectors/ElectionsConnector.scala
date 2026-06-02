@@ -34,7 +34,7 @@ class ElectionsConnector @Inject() (client: HttpClientV2, config: FrontendAppCon
 
   def viewElections(fiId: String, reportingYear: Option[Int] = None)(implicit hc: HeaderCarrier): Future[Seq[ElectionDetails]] =
     val endpoint = reportingYear.fold(url"$url/crs-fatca-reporting/elections/view/$fiId")(
-      reportingYear => url"$url/crs-fatca-reporting/elections/view/$fiId/?year=$reportingYear"
+      reportingYear => url"$url/crs-fatca-reporting/elections/view/$fiId?year=$reportingYear"
     )
     client
       .get(endpoint)
