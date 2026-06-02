@@ -20,12 +20,15 @@ import com.google.inject.Inject
 import config.FrontendAppConfig
 import models.ServiceErrors.Elections_Error
 import models.elections.ElectionDetails
+import models.requests.ElectionsSubmissionDetails
 import play.api.Logging
-import play.api.http.Status.OK
+import play.api.http.Status.{NO_CONTENT, OK}
 import play.api.libs.json.*
 import uk.gov.hmrc.http.HttpReads.Implicits.*
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException, StringContextOps}
+import play.api.libs.json.Json
+import play.api.libs.ws.writeableOf_JsValue
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -44,5 +47,21 @@ class ElectionsConnector @Inject() (client: HttpClientV2, config: FrontendAppCon
           response.status match
             case OK => Future.successful(response.json.as[Seq[ElectionDetails]])
             case _  => Future.failed(Elections_Error)
+      }
+
+  def submit(requestBody: ElectionsSubmissionDetails)(using hc: HeaderCarrier): Future[Unit] =
+    val endPoint = url"$url/crs-fatca-reporting/elections/submit"
+
+    client
+      .post(endPoint)
+      .withBody(Json.toJson(requestBody))
+      .execute[HttpResponse]
+      .flatMap {
+        response =>
+          response.status match {
+            case NO_CONTENT => Future.successful(())
+            case _ =>
+              Future.failed(InternalServerException("Unable to submit Elections request"))
+          }
       }
 }
