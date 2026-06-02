@@ -17,8 +17,12 @@
 package controllers
 
 import base.SpecBase
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
+import play.api.inject.bind
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
+import services.CheckYourAnswersValidatorService
 import viewmodels.govuk.SummaryListFluency
 import views.html.CheckYourAnswersView
 
@@ -26,12 +30,19 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
   "Check Your Answers Controller" - {
 
+    val year = 2026
+
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userData = Some(emptyUserAnswers)).build()
+      val mockService = mock[CheckYourAnswersValidatorService]
+
+      val application = applicationBuilder(userData = Some(emptyUserAnswers))
+        .overrides(bind[CheckYourAnswersValidatorService].toInstance(mockService))
+        .build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad().url)
+        when(mockService.validate(any(), any())).thenReturn(Right(()))
+        val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad(year).url)
 
         val result = route(application, request).value
 
@@ -43,12 +54,31 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
       }
     }
 
+    "must Redirect when validation fails" in {
+
+      val mockService = mock[CheckYourAnswersValidatorService]
+
+      val application = applicationBuilder(userData = Some(emptyUserAnswers))
+        .overrides(bind[CheckYourAnswersValidatorService].toInstance(mockService))
+        .build()
+
+      running(application) {
+        when(mockService.validate(any(), any())).thenReturn(Left("/error"))
+        val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad(year).url)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value must include("error")
+      }
+    }
+
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
       val application = applicationBuilder(userData = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad().url)
+        val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad(year).url)
 
         val result = route(application, request).value
 
