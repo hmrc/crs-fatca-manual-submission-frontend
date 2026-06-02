@@ -34,7 +34,9 @@ class Navigator @Inject() () {
           y => controllers.elections.routes.IsApplyingThresholdsController.onPageLoad(NormalMode, y)
         )
       case (IsApplyingThresholdsPage, NormalMode) =>
-        routes.JourneyRecoveryController.onPageLoad()
+        year.fold(routes.JourneyRecoveryController.onPageLoad()) {
+          reportingYear => controllers.elections.routes.CheckYourAnswersController.onPageLoad(reportingYear)
+        }
       case (CRSContractsPage, NormalMode) =>
         year.fold(routes.JourneyRecoveryController.onPageLoad()) {
           reportingYear => controllers.elections.routes.CRSDormantAccountsController.onPageLoad(mode, reportingYear)
