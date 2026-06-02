@@ -23,9 +23,12 @@ import pages.FiDetailsPage
 import pages.elections.CRSContractsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.ElectionsService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers.CheckYourAnswersElections
 import views.html.CheckYourAnswersView
+
+import scala.concurrent.ExecutionContext
 
 class CheckYourAnswersController @Inject() (
   override val messagesApi: MessagesApi,
@@ -33,8 +36,10 @@ class CheckYourAnswersController @Inject() (
   getData: FrontendDataRetrievalAction,
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
+  electionsService: ElectionsService,
   view: CheckYourAnswersView
-) extends FrontendBaseController
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad(year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
@@ -47,5 +52,12 @@ class CheckYourAnswersController @Inject() (
         case None =>
           Redirect(routes.JourneyRecoveryController.onPageLoad())
       }
+  }
+
+  def onSubmit(year: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+    implicit request =>
+      for {
+        _ <- electionsService.submit(request.userAnswers, year)
+      } yield Redirect(controllers.elections.routes.ElectionsSentController.onPageLoad().url)
   }
 }

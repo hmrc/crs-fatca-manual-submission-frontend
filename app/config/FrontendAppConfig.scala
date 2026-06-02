@@ -51,4 +51,5 @@ class FrontendAppConfig @Inject() (configuration: Configuration, servicesConfig:
   val crsFatcaManualBackendUrl: String    = servicesConfig.baseUrl("crs-fatca-manual-submission")
   val crsFatcaReportingBackendUrl: String = servicesConfig.baseUrl("crs-fatca-reporting")
   val fIManagementUrl: String             = servicesConfig.baseUrl("crs-fatca-fi-management")
+  val enquiryEmail: String                = configuration.get[String]("enquiry.email")
 }

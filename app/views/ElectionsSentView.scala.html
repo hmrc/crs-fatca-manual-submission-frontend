@@ -1,4 +1,4 @@
-/*
+@*
  * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,21 +12,22 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *@
 
-package pages
+@this(
+layout: templates.Layout,
+govukButton: GovukButton,
+govukPanel: GovukPanel,
+link: components.Link,
+paragraph: components.ParagraphWithHtml
+)
 
-import pages.elections.{CRSContractsPage, CRSDormantAccountsPage, CRSThresholdsPage}
+@(regime: String, fiName: String, reportingYear: String, emailId : String)(implicit request: Request[_], messages: Messages)
 
-import scala.language.implicitConversions
+@layout(pageTitle = titleNoForm(messages("electionSent.title")), showBackLink = false) {
 
-trait Page
+@govukPanel(Panel(title = Text(messages("electionSent.heading", regime, fiName, reportingYear))))
 
-object Page {
+@paragraph(Html(messages("electionSent.p1" ,link(s"mailto:emailId", emailId, asPara = false))))
 
-  implicit def toString(page: Page): String =
-    page.toString
-
-  val electionCRSPages   = Seq(CRSContractsPage, CRSDormantAccountsPage, CRSThresholdsPage, CarfGrossProceedsPage, CrsGrossProceedsPage)
-  val electionFATCAPages = Seq(IsApplyingThresholdsPage, IsUsTreasuryRegulatedPage)
 }

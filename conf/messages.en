@@ -135,3 +135,7 @@ cyaElections.h2 = Now send your elections
 cyaElections.p1 = By sending these details, you are confirming that the information is correct and complete to the best of your knowledge.
 cyaElections.button = Confirm and send
 cyaElections.backLink = Back to manage elections for {0}
+
+electionSent.title = electionSent
+electionSent.heading = {0} elections sent for {1} for {2}
+electionSent.p1 = We’ll contact you if we have any questions about your elections. If you need to change or remove these elections in the future, then you’ll need to email {0}.
