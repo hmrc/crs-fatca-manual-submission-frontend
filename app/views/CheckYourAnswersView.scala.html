@@ -24,7 +24,7 @@
     link: components.Link
 )
 
-@(list: SummaryList, year: Int, fiName: String, regime: String)(implicit request: Request[_], messages: Messages)
+@(list: SummaryList, year: Int, fiName: String, regime: String, fiId: String)(implicit request: Request[_], messages: Messages)
 
 
 @layout(pageTitle = titleNoForm(
@@ -56,6 +56,6 @@
      ButtonViewModel(messages("cyaElections.button"))
      .withAttribute("id" -> "submit")
     )
-    @link(href = "To be added as part of DAC6-4275", message = messages("cyaElections.backLink", fiName))
+    @link(href = controllers.elections.routes.ManageElectionsController.onPageLoad(year, fiId).url, message = messages("cyaElections.backLink", fiName))
 }
 }

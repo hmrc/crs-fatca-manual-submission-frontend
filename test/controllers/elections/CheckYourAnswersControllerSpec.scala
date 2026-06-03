@@ -61,7 +61,8 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
           list,
           2026,
           testFIName,
-          "fatca"
+          "fatca",
+          "fiID"
         )(request, messages(application)).toString
       }
     }
