@@ -14,36 +14,30 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.elections
 
-import com.google.inject.Inject
-import controllers.actions.{DataRequiredAction, FrontendDataRetrievalAction, IdentifierAction}
+import controllers.actions.*
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.CheckYourAnswersValidatorService
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
+import uk.gov.hmrc.play.bootstrap.binders.{OnlyRelative, RedirectUrl}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.govuk.summarylist.*
-import views.html.CheckYourAnswersView
+import views.html.ElectionInformationIsMissingView
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl.idFunctor
 
-class CheckYourAnswersController @Inject() (
+import javax.inject.Inject
+
+class ElectionInformationIsMissingController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
-  getData: FrontendDataRetrievalAction,
+  getData: DataRetrievalAction,
   requireData: DataRequiredAction,
-  validator: CheckYourAnswersValidatorService,
   val controllerComponents: MessagesControllerComponents,
-  view: CheckYourAnswersView
+  view: ElectionInformationIsMissingView
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(redirectUrl: RedirectUrl): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      validator.validate(request.userAnswers, year) match {
-        case Left(redirectUrl) => Redirect(controllers.elections.routes.ElectionInformationIsMissingController.onPageLoad(RedirectUrl(redirectUrl)))
-        case Right(()) =>
-          val list = SummaryListViewModel(rows = Seq.empty)
-          Ok(view(list))
-      }
+      Ok(view(redirectUrl.get(OnlyRelative).url))
   }
 }

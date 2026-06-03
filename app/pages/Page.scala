@@ -16,12 +16,16 @@
 
 package pages
 
+import pages.elections.{CRSContractsPage, CRSDormantAccountsPage, CRSThresholdsPage}
+
 import scala.language.implicitConversions
 
 trait Page
 
 object Page {
 
-  implicit def toString(page: Page): String =
-    page.toString
+  implicit def toString(page: Page): String = page.toString
+
+  val electionCRSPages   = Seq(CRSContractsPage, CRSDormantAccountsPage, CRSThresholdsPage, CarfGrossProceedsPage, CrsGrossProceedsPage)
+  val electionFATCAPages = Seq(IsApplyingThresholdsPage, IsUsTreasuryRegulatedPage)
 }
