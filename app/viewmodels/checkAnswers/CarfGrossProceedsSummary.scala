@@ -24,6 +24,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListR
 import viewmodels.InputWidth
 import viewmodels.govuk.summarylist.*
 import viewmodels.implicits.*
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 
 object CarfGrossProceedsSummary {
 
@@ -38,7 +39,7 @@ object CarfGrossProceedsSummary {
           value = ValueViewModel(value),
           actions = Seq(
             ActionItemViewModel(
-              "site.change",
+              HtmlContent(s"""<span aria-hidden="true">${messages("site.change")}</span>"""),
               controllers.elections.routes.CarfGrossProceedsController.onPageLoad(CheckMode, year).url
             ).withVisuallyHiddenText(messages("carfGrossProceeds.change.hidden"))
           )

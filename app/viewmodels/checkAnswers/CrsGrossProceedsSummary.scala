@@ -23,6 +23,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListR
 import viewmodels.InputWidth
 import viewmodels.govuk.summarylist.*
 import viewmodels.implicits.*
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 
 object CrsGrossProceedsSummary {
 
@@ -36,8 +37,10 @@ object CrsGrossProceedsSummary {
           key = Key(messages("crsGrossProceeds.checkYourAnswersLabel")).withCssClass(InputWidth.TwoThirds.toString),
           value = ValueViewModel(value),
           actions = Seq(
-            ActionItemViewModel("site.change", controllers.elections.routes.CrsGrossProceedsController.onPageLoad(CheckMode, year).url)
-              .withVisuallyHiddenText(messages("crsGrossProceeds.change.hidden"))
+            ActionItemViewModel(
+              HtmlContent(s"""<span aria-hidden="true">${messages("site.change")}</span>"""),
+              controllers.elections.routes.CrsGrossProceedsController.onPageLoad(CheckMode, year).url
+            ).withVisuallyHiddenText(messages("crsGrossProceeds.change.hidden"))
           )
         )
     }

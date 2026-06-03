@@ -23,6 +23,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListR
 import viewmodels.InputWidth
 import viewmodels.govuk.summarylist.*
 import viewmodels.implicits.*
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 
 object CRSContractsSummary {
 
@@ -36,8 +37,10 @@ object CRSContractsSummary {
           key = Key(messages("crsContracts.checkYourAnswersLabel")).withCssClass(InputWidth.TwoThirds.toString),
           value = ValueViewModel(value),
           actions = Seq(
-            ActionItemViewModel("site.change", controllers.elections.routes.CRSContractsController.onPageLoad(CheckMode, reportingYear).url)
-              .withVisuallyHiddenText(messages("crsContracts.change.hidden"))
+            ActionItemViewModel(
+              HtmlContent("""<span aria-hidden="true">Change</span>"""),
+              controllers.elections.routes.CRSContractsController.onPageLoad(CheckMode, reportingYear).url
+            ).withVisuallyHiddenText(messages("crsContracts.change.hidden"))
           )
         )
     }
