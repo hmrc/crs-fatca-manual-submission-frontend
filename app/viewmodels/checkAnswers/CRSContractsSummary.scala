@@ -19,9 +19,11 @@ package viewmodels.checkAnswers
 import models.{CheckMode, UserAnswers}
 import pages.elections.CRSContractsPage
 import play.api.i18n.Messages
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
+import viewmodels.InputWidth
 import viewmodels.govuk.summarylist.*
 import viewmodels.implicits.*
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 
 object CRSContractsSummary {
 
@@ -32,11 +34,13 @@ object CRSContractsSummary {
         val value = if (answer) "site.yes" else "site.no"
 
         SummaryListRowViewModel(
-          key = "crsContracts.checkYourAnswersLabel",
+          key = Key(messages("crsContracts.checkYourAnswersLabel")).withCssClass(InputWidth.TwoThirds.toString),
           value = ValueViewModel(value),
           actions = Seq(
-            ActionItemViewModel("site.change", controllers.elections.routes.CRSContractsController.onPageLoad(CheckMode, reportingYear).url)
-              .withVisuallyHiddenText(messages("crsContracts.change.hidden"))
+            ActionItemViewModel(
+              HtmlContent("""<span aria-hidden="true">Change</span>"""),
+              controllers.elections.routes.CRSContractsController.onPageLoad(CheckMode, reportingYear).url
+            ).withVisuallyHiddenText(messages("crsContracts.change.hidden"))
           )
         )
     }

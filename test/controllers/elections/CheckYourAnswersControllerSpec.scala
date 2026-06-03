@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.elections
 
 import base.SpecBase
+import controllers.routes
+import models.{FiIdentifiers, UserAnswers}
+import pages.FiDetailsPage
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.inject.bind
 import play.api.test.FakeRequest
-import play.api.test.Helpers.*
 import services.CheckYourAnswersValidatorService
+import play.api.test.Helpers.*
 import viewmodels.govuk.SummaryListFluency
 import views.html.CheckYourAnswersView
 
@@ -35,14 +38,18 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
     "must return OK and the correct view for a GET" in {
 
       val mockService = mock[CheckYourAnswersValidatorService]
-
-      val application = applicationBuilder(userData = Some(emptyUserAnswers))
+      val testFIName  = "Test FI Name"
+      val userAnswers = UserAnswers(userAnswersId)
+        .set(FiDetailsPage, FiIdentifiers("fiID", testFIName))
+        .success
+        .value
+      val application = applicationBuilder(userData = Some(userAnswers))
         .overrides(bind[CheckYourAnswersValidatorService].toInstance(mockService))
         .build()
 
       running(application) {
+        val request = FakeRequest(GET, controllers.elections.routes.CheckYourAnswersController.onPageLoad(year).url)
         when(mockService.validate(any(), any())).thenReturn(Right(()))
-        val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad(year).url)
 
         val result = route(application, request).value
 
@@ -50,7 +57,12 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
         val list = SummaryListViewModel(Seq.empty)
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(list)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(
+          list,
+          2026,
+          testFIName,
+          "fatca"
+        )(request, messages(application)).toString
       }
     }
 
@@ -64,7 +76,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
       running(application) {
         when(mockService.validate(any(), any())).thenReturn(Left("/error"))
-        val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad(year).url)
+        val request = FakeRequest(GET, controllers.elections.routes.CheckYourAnswersController.onPageLoad(year).url)
 
         val result = route(application, request).value
 
@@ -78,7 +90,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
       val application = applicationBuilder(userData = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad(year).url)
+        val request = FakeRequest(GET, controllers.elections.routes.CheckYourAnswersController.onPageLoad(year).url)
 
         val result = route(application, request).value
 

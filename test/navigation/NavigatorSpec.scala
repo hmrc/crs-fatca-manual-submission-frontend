@@ -46,12 +46,10 @@ class NavigatorSpec extends SpecBase {
 
       "from IsApplyingThresholdsPage" - {
 
-        "must go to /check-your-answers page when year is valid" in {
-          val userAnswers   = emptyUserAnswers.withPage(CrsGrossProceedsPage, false)
-          val reportingYear = 2026
-          navigator.nextPage(CrsGrossProceedsPage, NormalMode, userAnswers, Some(reportingYear)) mustBe routes.CheckYourAnswersController.onPageLoad(
-            reportingYear
-          )
+        "must go to Check Your Answers when year is provided" in {
+          val userData = UserAnswers("id")
+          navigator.nextPage(IsApplyingThresholdsPage, NormalMode, userData, Some(year)) mustBe
+            controllers.elections.routes.CheckYourAnswersController.onPageLoad(year)
         }
 
         "must go to JourneyRecovery when year is None" in {
@@ -60,6 +58,7 @@ class NavigatorSpec extends SpecBase {
             routes.JourneyRecoveryController.onPageLoad()
         }
       }
+
       "must go from a page that doesn't exist in the route map to Index" in {
 
         case object UnknownPage extends Page
@@ -79,9 +78,12 @@ class NavigatorSpec extends SpecBase {
         }
 
         "to /check-your-answers when the reporting period is 2025 or earlier" in {
-          val userAnswers: UserAnswers = emptyUserAnswers
-          val reportingYear            = 2025
-          navigator.nextPage(CRSThresholdsPage, NormalMode, userAnswers, Some(reportingYear)) mustBe routes.CheckYourAnswersController.onPageLoad(reportingYear)
+          val reportingYear = 2025
+          navigator.nextPage(CRSThresholdsPage,
+                             NormalMode,
+                             emptyUserAnswers,
+                             Some(reportingYear)
+          ) mustBe controllers.elections.routes.CheckYourAnswersController.onPageLoad(reportingYear)
         }
       }
 
@@ -104,19 +106,23 @@ class NavigatorSpec extends SpecBase {
 
         "to /check-your-answers when the answer is No" in {
           val userAnswers = emptyUserAnswers.withPage(CarfGrossProceedsPage, false)
-          navigator.nextPage(CarfGrossProceedsPage, NormalMode, userAnswers, Some(reportingPeriod)) mustBe routes.CheckYourAnswersController.onPageLoad(
-            reportingPeriod
-          )
+          navigator.nextPage(CarfGrossProceedsPage,
+                             NormalMode,
+                             userAnswers,
+                             Some(reportingPeriod)
+          ) mustBe controllers.elections.routes.CheckYourAnswersController.onPageLoad(reportingPeriod)
         }
       }
 
       "must go from /elections/crs/crs-gross-proceeds" - {
         "to /check-your-answers" in {
-          val userAnswers   = emptyUserAnswers.withPage(CrsGrossProceedsPage, false)
-          val reportingYear = 2026
-          navigator.nextPage(CrsGrossProceedsPage, NormalMode, userAnswers, Some(reportingYear)) mustBe routes.CheckYourAnswersController.onPageLoad(
-            reportingYear
-          )
+          val userAnswers     = emptyUserAnswers.withPage(CrsGrossProceedsPage, false)
+          val reportingPeriod = 2026
+          navigator.nextPage(CrsGrossProceedsPage,
+                             NormalMode,
+                             userAnswers,
+                             Some(reportingPeriod)
+          ) mustBe controllers.elections.routes.CheckYourAnswersController.onPageLoad(reportingPeriod)
         }
 
         "to journey recovery if year is not present" in {
@@ -158,12 +164,6 @@ class NavigatorSpec extends SpecBase {
 
     "in Check mode" - {
 
-      "must go from a page that doesn't exist in the edit route map to CheckYourAnswers" in {
-
-        case object UnknownPage extends Page
-        navigator.nextPage(UnknownPage, CheckMode, UserAnswers("id"), Some(year)) mustBe routes.CheckYourAnswersController.onPageLoad(year)
-      }
-
       "must go from /elections/crs/carf-gross-proceeds page" - {
         val reportingPeriod = 2026
         "to /elections/crs/gross-proceeds when the answer is Yes" in {
@@ -178,9 +178,11 @@ class NavigatorSpec extends SpecBase {
 
         "to /check-your-answers when the answer is No" in {
           val userAnswers = emptyUserAnswers.withPage(CarfGrossProceedsPage, false)
-          navigator.nextPage(CarfGrossProceedsPage, CheckMode, userAnswers, Some(reportingPeriod)) mustBe routes.CheckYourAnswersController.onPageLoad(
-            reportingPeriod
-          )
+          navigator.nextPage(CarfGrossProceedsPage,
+                             CheckMode,
+                             userAnswers,
+                             Some(reportingPeriod)
+          ) mustBe controllers.elections.routes.CheckYourAnswersController.onPageLoad(reportingPeriod)
         }
       }
     }
