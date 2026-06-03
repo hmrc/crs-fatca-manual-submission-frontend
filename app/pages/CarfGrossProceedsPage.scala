@@ -17,6 +17,7 @@
 package pages
 
 import models.UserAnswers
+import pages.Page.electionFATCAPages
 import play.api.libs.json.JsPath
 
 import scala.util.Try
@@ -27,12 +28,15 @@ case object CarfGrossProceedsPage extends QuestionPage[Boolean] {
 
   override def toString: String = "carfGrossProceeds"
 
-  override def cleanup(value: Option[Boolean], userAnswers: UserAnswers): Try[UserAnswers] =
-    value match {
-      case Some(false) =>
-        userAnswers
-          .remove(CrsGrossProceedsPage)
-      case _ =>
-        super.cleanup(value, userAnswers)
+  override def cleanup(value: Option[Boolean], userAnswers: UserAnswers): Try[UserAnswers] = {
+    val clearedFatca = userAnswers.removeAll(electionFATCAPages)
+
+    clearedFatca.flatMap {
+      updatedAnswers =>
+        value match {
+          case Some(false) => updatedAnswers.remove(CrsGrossProceedsPage)
+          case _           => super.cleanup(value, updatedAnswers)
+        }
     }
+  }
 }

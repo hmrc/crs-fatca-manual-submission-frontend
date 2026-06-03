@@ -16,11 +16,18 @@
 
 package pages
 
+import models.UserAnswers
+import pages.Page.electionFATCAPages
 import play.api.libs.json.JsPath
+
+import scala.util.Try
 
 case object CrsGrossProceedsPage extends QuestionPage[Boolean] {
 
   override def path: JsPath = JsPath \ toString
 
   override def toString: String = "crsGrossProceeds"
+
+  override def cleanup(value: Option[Boolean], userAnswers: UserAnswers): Try[UserAnswers] =
+    userAnswers.removeAll(electionFATCAPages)
 }

@@ -10,6 +10,7 @@ GET         /refresh-session                                       controllers.K
 
 GET         /there-is-a-problem                                    controllers.JourneyRecoveryController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)
 
+
 GET         /account/sign-out-survey                               controllers.auth.AuthController.signOut()
 GET         /account/sign-out                                      controllers.auth.AuthController.signOutNoSurvey()
 GET         /account/signed-out                                    controllers.auth.SignedOutController.onPageLoad()
@@ -58,5 +59,8 @@ POST       /elections/crs/crs-gross-proceeds                         controllers
 GET        /elections/crs/change-crs-gross-proceeds                  controllers.elections.CrsGrossProceedsController.onPageLoad(mode: Mode = CheckMode, year: Int)
 POST       /elections/crs/change-crs-gross-proceeds                  controllers.elections.CrsGrossProceedsController.onSubmit(mode: Mode = CheckMode, year: Int)
 
+GET        /elections/check-your-answers                             controllers.CheckYourAnswersController.onPageLoad(year: Int)
 
-GET        /elections/check-your-answers                             controllers.elections.CheckYourAnswersController.onPageLoad(year: Int)
+GET        /problem/elections-information-is-missing                 controllers.elections.ElectionInformationIsMissingController.onPageLoad(redirectUrl: RedirectUrl)
+
+GET        /elections/manage-elections-for-:year                       controllers.elections.ManageElectionsController.onPageLoad(year: Int)

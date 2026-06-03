@@ -127,6 +127,15 @@ crsGrossProceeds.checkYourAnswersLabel = Are they also reporting these gross pro
 crsGrossProceeds.error.required = Select yes if the financial institution is also reporting these gross proceeds for the Cryptoasset Reporting Framework (CARF) under CRS
 crsGrossProceeds.change.hidden = CrsGrossProceeds
 
+electionInformationIsMissing.title = Some information is missing
+electionInformationIsMissing.heading = Some information is missing
+electionInformationIsMissing.p1 = You must provide this information to send these elections.
+
+manageElections.title = manageElections
+manageElections.heading = manageElections
+manageElections.p1 = You must provide this information to send these elections.
+
+
 cyaElections.fatca.title = Check your FATCA elections for the financial institution for {0}
 cyaElections.fatca.heading = Check your FATCA elections for {0} for {1}
 cyaElections.crs.title = Check your CRS elections for the financial institution for {0}
