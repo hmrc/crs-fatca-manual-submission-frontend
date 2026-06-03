@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.elections
 
 import com.google.inject.Inject
+import controllers.routes
+import pages.FiDetailsPage
+import pages.elections.CRSContractsPage
 import controllers.actions.{DataRequiredAction, FrontendDataRetrievalAction, IdentifierAction}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.CheckYourAnswersValidatorService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.govuk.summarylist.*
+import viewmodels.checkAnswers.CheckYourAnswersElections
 import views.html.CheckYourAnswersView
 
 class CheckYourAnswersController @Inject() (
@@ -40,10 +43,23 @@ class CheckYourAnswersController @Inject() (
   def onPageLoad(year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       validator.validate(request.userAnswers, year) match {
-        case Left(redirectUrl) => Redirect(controllers.elections.routes.ElectionInformationIsMissingController.onPageLoad(RedirectUrl(redirectUrl)))
+        case Left(redirectUrl) =>
+          Redirect(
+            controllers.elections.routes.ElectionInformationIsMissingController
+              .onPageLoad(RedirectUrl(redirectUrl))
+          )
+
         case Right(()) =>
-          val list = SummaryListViewModel(rows = Seq.empty)
-          Ok(view(list))
+          request.userAnswers.get(FiDetailsPage) match {
+            case Some(fiDetails) =>
+              val list   = CheckYourAnswersElections(request.userAnswers, year)
+              val regime = if (request.userAnswers.get(CRSContractsPage).isEmpty) "fatca" else "crs"
+
+              Ok(view(list, year, fiDetails.fiName, regime))
+
+            case None =>
+              Redirect(routes.JourneyRecoveryController.onPageLoad())
+          }
       }
   }
 }

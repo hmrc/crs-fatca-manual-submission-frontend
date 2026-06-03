@@ -19,9 +19,11 @@ package viewmodels.checkAnswers
 import models.{CheckMode, UserAnswers}
 import pages.CrsGrossProceedsPage
 import play.api.i18n.Messages
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
-import viewmodels.govuk.summarylist._
-import viewmodels.implicits._
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
+import viewmodels.InputWidth
+import viewmodels.govuk.summarylist.*
+import viewmodels.implicits.*
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 
 object CrsGrossProceedsSummary {
 
@@ -32,11 +34,13 @@ object CrsGrossProceedsSummary {
         val value = if (answer) "site.yes" else "site.no"
 
         SummaryListRowViewModel(
-          key = "crsGrossProceeds.checkYourAnswersLabel",
+          key = Key(messages("crsGrossProceeds.checkYourAnswersLabel")).withCssClass(InputWidth.TwoThirds.toString),
           value = ValueViewModel(value),
           actions = Seq(
-            ActionItemViewModel("site.change", controllers.elections.routes.CrsGrossProceedsController.onPageLoad(CheckMode, year).url)
-              .withVisuallyHiddenText(messages("crsGrossProceeds.change.hidden"))
+            ActionItemViewModel(
+              HtmlContent(s"""<span aria-hidden="true">${messages("site.change")}</span>"""),
+              controllers.elections.routes.CrsGrossProceedsController.onPageLoad(CheckMode, year).url
+            ).withVisuallyHiddenText(messages("crsGrossProceeds.change.hidden"))
           )
         )
     }

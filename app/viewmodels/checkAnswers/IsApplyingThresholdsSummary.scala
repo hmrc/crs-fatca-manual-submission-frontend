@@ -19,9 +19,12 @@ package viewmodels.checkAnswers
 import models.{CheckMode, UserAnswers}
 import pages.IsApplyingThresholdsPage
 import play.api.i18n.Messages
+import uk.gov.hmrc.govukfrontend.views.Aliases.Key
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
+import viewmodels.InputWidth
 import viewmodels.govuk.summarylist.*
 import viewmodels.implicits.*
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 
 object IsApplyingThresholdsSummary {
 
@@ -32,11 +35,13 @@ object IsApplyingThresholdsSummary {
         val value = if (answer) "site.yes" else "site.no"
 
         SummaryListRowViewModel(
-          key = "isApplyingThresholds.checkYourAnswersLabel",
+          key = Key(messages("isApplyingThresholds.checkYourAnswersLabel")).withCssClass(InputWidth.TwoThirds.toString),
           value = ValueViewModel(value),
           actions = Seq(
-            ActionItemViewModel("site.change", controllers.elections.routes.IsApplyingThresholdsController.onPageLoad(CheckMode, year).url)
-              .withVisuallyHiddenText(messages("isApplyingThresholds.change.hidden"))
+            ActionItemViewModel(
+              HtmlContent(s"""<span aria-hidden="true">${messages("site.change")}</span>"""),
+              controllers.elections.routes.IsApplyingThresholdsController.onPageLoad(CheckMode, year).url
+            ).withVisuallyHiddenText(messages("isApplyingThresholds.change.hidden"))
           )
         )
     }
