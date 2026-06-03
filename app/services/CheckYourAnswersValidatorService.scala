@@ -40,7 +40,7 @@ class CheckYourAnswersValidatorService @Inject() {
       .fold(controllers.routes.JourneyRecoveryController.onPageLoad().url) {
         fiIdentifiers =>
           controllers.elections.routes.ManageElectionsController
-            .onPageLoad(reportingYear, fiIdentifiers.fiId, fiIdentifiers.fiName)
+            .onPageLoad(reportingYear, fiIdentifiers.fiId)
             .url
       }
 

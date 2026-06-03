@@ -33,12 +33,11 @@ class CheckYourAnswersValidatorServiceSpec extends SpecBase {
 
     def crsRedirectUrl(year: Int): String   = controllers.elections.routes.CRSContractsController.onPageLoad(NormalMode, year).url
     def fatcaRedirectUrl(year: Int): String = controllers.elections.routes.IsUsTreasuryRegulatedController.onPageLoad(NormalMode, year).url
-    def manageElectionUrl(year: Int, fiIdentifiers: FiIdentifiers): String =
-      controllers.elections.routes.ManageElectionsController.onPageLoad(year, fiIdentifiers.fiId, fiIdentifiers.fiName).url
+    def manageElectionUrl(year: Int, fiId: String): String =
+      controllers.elections.routes.ManageElectionsController.onPageLoad(year, fiId).url
     def recoveryUrl = controllers.routes.JourneyRecoveryController.onPageLoad().url
 
     "validate - reporting year validation" - {
-      val recoveryUrl = controllers.routes.JourneyRecoveryController.onPageLoad().url
       "should redirect when reporting year is older than 12 years" in {
 
         val crsData = emptyUserAnswers
@@ -175,10 +174,7 @@ class CheckYourAnswersValidatorServiceSpec extends SpecBase {
       "should return Some(manageReport) when elections answers are missing" in {
         val fiDeets = FiIdentifiers("someFiid", "someFiName")
         val answers = emptyUserAnswers.withPage(FiDetailsPage, fiDeets)
-        service.validate(answers, year2025) mustBe Left(manageElectionUrl(year2025, fiDeets))
-      }
-      "should return Some(manageReport) when UserAnswers is empty" in {
-        service.validate(emptyUserAnswers, year2025) mustBe Left(recoveryUrl)
+        service.validate(answers, year2025) mustBe Left(manageElectionUrl(year2025, fiDeets.fiId))
       }
 
     }

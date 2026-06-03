@@ -39,13 +39,13 @@
     @para("manageElections.para.1", htmlArgs = Seq(emailLink))
 
     <div class="reduce-pagination-padding govuk-!-margin-bottom-7">
-        @pagination(electionYears, selectedYear, 2, selectedYear => controllers.elections.routes.ManageElectionsController.onPageLoad(selectedYear, "fiId", fiName))
+        @pagination(electionYears, selectedYear, 2, selectedYear => controllers.elections.routes.ManageElectionsController.onPageLoad(selectedYear, fiId))
     </div>
 
     @heading(messages("manageElections.subheading.crs", year), size = "m", level = "h2")
     @if(electionsRows.crsRows.rows.isEmpty) {
-        @para(messages("manageElections.noelections"))
-        @link(controllers.elections.routes.CRSContractsController.onPageLoad(NormalMode, selectedYear).url, messages("manageElections.noelections.crs"))
+        @para(messages("manageElections.noelections"), classes = "govuk-!-margin-bottom-2")
+        @link(controllers.elections.routes.CRSContractsController.onPageLoad(NormalMode, selectedYear).url, messages("manageElections.noelections.crs"), asPara = true, paraClasses = "govuk-!-margin-bottom-8")
     } else {
         @govukSummaryList(electionsRows.crsRows)
     }
@@ -53,8 +53,8 @@
 
     @heading(messages("manageElections.subheading.fatca", year), size = "m", level = "h2")
     @if(electionsRows.fatcaRows.rows.isEmpty) {
-        @para(messages("manageElections.noelections"))
-        @link(controllers.elections.routes.IsUsTreasuryRegulatedController.onPageLoad(NormalMode, selectedYear).url, messages("manageElections.noelections.fatca"))
+        @para(messages("manageElections.noelections"), classes = "govuk-!-margin-bottom-2")
+        @link(controllers.elections.routes.IsUsTreasuryRegulatedController.onPageLoad(NormalMode, selectedYear).url, messages("manageElections.noelections.fatca"), asPara = true, paraClasses = "govuk-!-margin-bottom-8")
     } else {
         @govukSummaryList(electionsRows.fatcaRows)
     }

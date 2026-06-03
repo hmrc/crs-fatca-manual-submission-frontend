@@ -30,7 +30,7 @@
 
 @(cards: Map[String, List[SubmissionCard]], chosenYear: Int, fiName: String , past12SubmissionYears: List[Int] , fiId: String)(implicit request: Request[_], messages: Messages, config:FrontendAppConfig)
 
-@electionsLink = {@link(href=controllers.elections.routes.ManageElectionsController.onPageLoad(chosenYear, fiId, fiName).url, messages("viewSubmissions.manageElections.link", fiName), asPara = false)}
+@electionsLink = {@link(href=controllers.elections.routes.ManageElectionsController.onPageLoad(chosenYear, fiId).url, messages("viewSubmissions.manageElections.link", fiName), asPara = false)}
 
 @layout(pageTitle = titleNoForm(title = messages("viewSubmissions.title", chosenYear.toString))) {
     @heading(messages("viewSubmissions.heading", fiName, chosenYear.toString))
