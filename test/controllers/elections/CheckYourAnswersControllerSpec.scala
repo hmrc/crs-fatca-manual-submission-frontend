@@ -26,8 +26,11 @@ import play.api.inject.bind
 import play.api.test.FakeRequest
 import services.CheckYourAnswersValidatorService
 import play.api.test.Helpers.*
+import services.ElectionsService
 import viewmodels.govuk.SummaryListFluency
 import views.html.CheckYourAnswersView
+
+import scala.concurrent.Future
 
 class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
@@ -98,5 +101,33 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
+
+    "onSubmit" - {
+
+      val onSubmitUrl = controllers.elections.routes.CheckYourAnswersController.onSubmit(2026).url
+      "must redirect when service return success" in {
+
+        val mockService = mock[ElectionsService]
+
+        when(mockService.submit(any(), any())(any())) thenReturn Future.successful(())
+
+        val application =
+          applicationBuilder(userData = Some(emptyUserAnswers))
+            .overrides(
+              inject.bind[ElectionsService].toInstance(mockService)
+            )
+            .build()
+
+        running(application) {
+          val request = FakeRequest(POST, onSubmitUrl)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual controllers.elections.routes.ElectionsSentController.onPageLoad().url
+        }
+      }
+    }
+
   }
 }

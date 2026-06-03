@@ -17,35 +17,53 @@
 package controllers
 
 import base.SpecBase
-import models.SubmissionsConstants.{FATCA1, FATCA4}
-import models.viewModels.InformationVoidedViewModel
-import models.{FatcaVoidCardDetail, FatcaVoidCardModel, FiIdentifiers, ReadSubmissionResponseDetails}
-import pages.{FiDetailsPage, VoidedReportMessageRefIdsPage}
-import play.api.inject
+import models.elections.ElectionsSent
+import models.elections.RegimeType.CRS
+import pages.ElectionsSentPage
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import utils.DateTimeFormats.formatTimeVoidSubmitted
-import views.html.InformationVoidedView
-
-import java.time.{Clock, LocalDateTime, ZoneId}
+import views.html.ElectionsSentView
 
 class ElectionsSentControllerSpec extends SpecBase {
   "ElectionsSent Controller" - {
 
-    //    "must return OK and the correct view for a GET" in {
-    //
-    //      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
-    //
-    //      running(application) {
-    //        val request = FakeRequest(GET, routes.ElectionSentController.onPageLoad().url)
-    //
-    //        val result = route(application, request).value
-    //
-    //        val view = application.injector.instanceOf[ElectionSentView]
-    //
-    //        status(result) mustEqual OK
-    //        contentAsString(result) mustEqual view()(request, messages(application)).toString
-    //      }
-    //    }
+    "must return OK and the correct view for a GET" in {
+      val regime        = CRS
+      val reportingYear = 2026
+      val testFIName    = "Test FI"
+      val enquiryEmail  = "aeoi.enquiries@hmrc.gov.uk"
+
+      val ua = emptyUserAnswers.withPage(ElectionsSentPage, ElectionsSent(regime, reportingYear, testFIName))
+
+      val application = applicationBuilder(userData = Some(ua)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, controllers.elections.routes.ElectionsSentController.onPageLoad().url)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[ElectionsSentView]
+
+        status(result) mustEqual OK
+
+        contentAsString(result) mustEqual
+          view(regime.toString, testFIName, reportingYear.toString, enquiryEmail)(request, messages(application)).toString
+      }
+    }
+
+    "must return REDIRECT when ElectionSentPage not present" in {
+
+      val application = applicationBuilder(userData = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, controllers.elections.routes.ElectionsSentController.onPageLoad().url)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+
+        redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
   }
 }
