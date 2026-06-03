@@ -136,7 +136,7 @@ class CRSContractsControllerSpec extends SpecBase with MockitoSugar {
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
-        applicationBuilder(userData = None)
+        applicationBuilder(userData = Some(emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository)
