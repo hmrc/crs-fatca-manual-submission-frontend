@@ -17,7 +17,6 @@
 package controllers.elections
 
 import com.google.inject.Inject
-import controllers.actions.{DataRequiredAction, FrontendDataRetrievalAction, IdentifierAction}
 import controllers.routes
 import pages.FiDetailsPage
 import pages.elections.CRSContractsPage
@@ -28,7 +27,6 @@ import services.CheckYourAnswersValidatorService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers.CheckYourAnswersElections
-import viewmodels.govuk.summarylist.*
 import views.html.CheckYourAnswersView
 
 class CheckYourAnswersController @Inject() (

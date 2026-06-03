@@ -24,7 +24,6 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.inject.bind
 import play.api.test.FakeRequest
-import play.api.test.Helpers.*
 import services.CheckYourAnswersValidatorService
 import play.api.test.Helpers.*
 import viewmodels.govuk.SummaryListFluency
@@ -39,23 +38,18 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
     "must return OK and the correct view for a GET" in {
 
       val mockService = mock[CheckYourAnswersValidatorService]
-
-      val application = applicationBuilder(userData = Some(emptyUserAnswers))
-        .overrides(bind[CheckYourAnswersValidatorService].toInstance(mockService))
-        .build()
-      val testFIName = "Test FI Name"
-
+      val testFIName  = "Test FI Name"
       val userAnswers = UserAnswers(userAnswersId)
         .set(FiDetailsPage, FiIdentifiers("fiID", testFIName))
         .success
         .value
-
-      val application = applicationBuilder(userData = Some(userAnswers)).build()
+      val application = applicationBuilder(userData = Some(userAnswers))
+        .overrides(bind[CheckYourAnswersValidatorService].toInstance(mockService))
+        .build()
 
       running(application) {
-        val request = FakeRequest(GET, controllers.elections.routes.CheckYourAnswersController.onPageLoad(2026).url)
+        val request = FakeRequest(GET, controllers.elections.routes.CheckYourAnswersController.onPageLoad(year).url)
         when(mockService.validate(any(), any())).thenReturn(Right(()))
-        val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad(year).url)
 
         val result = route(application, request).value
 
@@ -82,7 +76,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
       running(application) {
         when(mockService.validate(any(), any())).thenReturn(Left("/error"))
-        val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad(year).url)
+        val request = FakeRequest(GET, controllers.elections.routes.CheckYourAnswersController.onPageLoad(year).url)
 
         val result = route(application, request).value
 
@@ -96,7 +90,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
       val application = applicationBuilder(userData = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, controllers.elections.routes.CheckYourAnswersController.onPageLoad(2026).url)
+        val request = FakeRequest(GET, controllers.elections.routes.CheckYourAnswersController.onPageLoad(year).url)
 
         val result = route(application, request).value
 
