@@ -26,13 +26,13 @@ GET         /fatca-void/information-voided                         controllers.I
 
 GET         /elections/fatca/us-treasury-regulations               controllers.elections.IsUsTreasuryRegulatedController.onPageLoad(mode: Mode = NormalMode, year: Int)
 POST        /elections/fatca/us-treasury-regulations               controllers.elections.IsUsTreasuryRegulatedController.onSubmit(mode: Mode = NormalMode, year: Int)
-GET         /elections/fatca/change/us-treasury-regulations        controllers.elections.IsUsTreasuryRegulatedController.onPageLoad(mode: Mode = CheckMode, year: Int)
-POST        /elections/fatca/change/us-treasury-regulations        controllers.elections.IsUsTreasuryRegulatedController.onSubmit(mode: Mode = CheckMode, year: Int)
+GET         /elections/fatca/change-us-treasury-regulations        controllers.elections.IsUsTreasuryRegulatedController.onPageLoad(mode: Mode = CheckMode, year: Int)
+POST        /elections/fatca/change-us-treasury-regulations        controllers.elections.IsUsTreasuryRegulatedController.onSubmit(mode: Mode = CheckMode, year: Int)
 
 GET         /elections/fatca/thresholds                            controllers.elections.IsApplyingThresholdsController.onPageLoad(mode: Mode = NormalMode, year: Int)
 POST        /elections/fatca/thresholds                            controllers.elections.IsApplyingThresholdsController.onSubmit(mode: Mode = NormalMode, year: Int)
-GET         /elections/fatca/change/thresholds                     controllers.elections.IsApplyingThresholdsController.onPageLoad(mode: Mode = CheckMode, year: Int)
-POST        /elections/fatca/change/thresholds                     controllers.elections.IsApplyingThresholdsController.onSubmit(mode: Mode = CheckMode, year: Int)
+GET         /elections/fatca/change-thresholds                     controllers.elections.IsApplyingThresholdsController.onPageLoad(mode: Mode = CheckMode, year: Int)
+POST        /elections/fatca/change-thresholds                     controllers.elections.IsApplyingThresholdsController.onSubmit(mode: Mode = CheckMode, year: Int)
 
 GET        /elections/crs/contracts                        controllers.elections.CRSContractsController.onPageLoad(mode: Mode = NormalMode, year: Int)
 POST       /elections/crs/contracts                        controllers.elections.CRSContractsController.onSubmit(mode: Mode = NormalMode, year: Int)
