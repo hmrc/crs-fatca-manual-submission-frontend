@@ -24,6 +24,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.*
 import viewmodels.InputWidth
 import viewmodels.govuk.all.{FluentKey, SummaryListRowViewModel}
+import utils.ReportingConstants.REPORTING_THRESHOLD_YEAR
 
 case class CrsElectionsDetails(
   hasCARF: Option[YesNoNa],
@@ -37,7 +38,7 @@ object CrsElectionsDetails:
 
   def rows(details: CrsElectionsDetails, selectedYear: Int)(using messages: Messages): Seq[SummaryListRow] = {
     def maybeCarfRow =
-      if (selectedYear > 2025)
+      if (selectedYear >= REPORTING_THRESHOLD_YEAR)
         Seq(
           SummaryListRowViewModel(
             key = Key(content = Text(messages("manageElections.crs.hasCARF", selectedYear.toString))).withCssClass(InputWidth.ThreeQuarters.toString),

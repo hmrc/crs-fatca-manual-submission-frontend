@@ -136,7 +136,7 @@ manageElections.para.1 = You can view and make elections in the service. If you 
 manageElections.link.1 = aeoi.enquiries@hmrc.gov.uk
 
 manageElections.subheading.crs = CRS elections for {0}
-manageElections.crs.hasCARF = Are they reporting gross proceeds under the Cryptoasset Reporting Framework (CARF) for {0} ?
+manageElections.crs.hasCARF = Are they reporting gross proceeds under the Cryptoasset Reporting Framework (CARF) for {0}?
 manageElections.crs.grossProceeds = Are they also reporting these gross proceeds for the CARF under CRS?
 manageElections.crs.hasContracts = Are they excluding cash value insurance contracts or annuity contracts from their reporting for CRS?
 manageElections.crs.hasDormantAccounts = Are they treating dormant accounts as not being reportable accounts for CRS?
