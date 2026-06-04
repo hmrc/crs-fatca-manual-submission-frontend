@@ -86,13 +86,13 @@ isUsTreasuryRegulated.title = Is the financial institution using due diligence p
 isUsTreasuryRegulated.heading = Is {0} using due diligence procedures from US Treasury Regulations for FATCA?
 isUsTreasuryRegulated.checkYourAnswersLabel = Are they using due diligence procedures from US Treasury Regulations for FATCA?
 isUsTreasuryRegulated.error.required = Select yes if the financial institution is using due diligence procedures from US Treasury Regulations for FATCA
-isUsTreasuryRegulated.change.hidden = Are they using due diligence procedures from US Treasury Regulations for FATCA?
+isUsTreasuryRegulated.change.hidden =  Change if they are using due diligence procedures from US Treasury Regulations for FATCA
 
 isApplyingThresholds.title = Is the financial institution applying thresholds to any of their accounts in their due diligence process for FATCA?
 isApplyingThresholds.heading = Is {0} applying thresholds to any of their accounts in their due diligence process for FATCA?
 isApplyingThresholds.checkYourAnswersLabel = Are they applying thresholds to any of their accounts in their due diligence process for FATCA?
 isApplyingThresholds.error.required = Select yes if the financial institution is applying thresholds to any of their accounts in their due diligence process for FATCA
-isApplyingThresholds.change.hidden = Are they applying thresholds to any of their accounts in their due diligence process for FATCA?
+isApplyingThresholds.change.hidden =  Change if they are applying thresholds to any of their accounts in their due diligence process for FATCA
 fatca.elections.caption = FATCA elections for {0}
 
 crs.elections.caption = CRS elections for {0}
@@ -101,31 +101,31 @@ crsContracts.title = Is the financial institution excluding cash value insurance
 crsContracts.heading = Is {0} excluding cash value insurance contracts or annuity contracts from their reporting for CRS?
 crsContracts.checkYourAnswersLabel = Are they excluding cash value insurance contracts or annuity contracts from their reporting for CRS?
 crsContracts.error.required = Select yes if the financial institution is excluding cash value insurance contracts or annuity contracts from their reporting for CRS
-crsContracts.change.hidden = Are they excluding cash value insurance contracts or annuity contracts from their reporting for CRS?
+crsContracts.change.hidden =  Change if they are excluding cash value insurance contracts or annuity contracts from their reporting for CRS
 
 crsDormantAccounts.title = Is the financial institution treating dormant accounts as not being reportable accounts for CRS?
 crsDormantAccounts.heading = Is {0} treating dormant accounts as not being reportable accounts for CRS?
 crsDormantAccounts.checkYourAnswersLabel = Are they treating dormant accounts as not being reportable accounts for CRS?
 crsDormantAccounts.error.required = Select yes if the financial institution is treating dormant accounts as not being reportable accounts for CRS
-crsDormantAccounts.change.hidden = Are they treating dormant accounts as not being reportable accounts for CRS?
+crsDormantAccounts.change.hidden =  Change if they are treating dormant accounts as not being reportable accounts for CRS
 
 crsThresholds.title = Is the financial institution applying thresholds to any of their accounts in their due diligence process for CRS?
 crsThresholds.heading = Is {0} applying thresholds to any of their accounts in their due diligence process for CRS?
 crsThresholds.checkYourAnswersLabel = Are they applying thresholds to any of their accounts in their due diligence process for CRS?
 crsThresholds.error.required = Select yes if the financial institution is applying thresholds to any of their accounts in their due diligence process for CRS
-crsThresholds.change.hidden = Are they applying thresholds to any of their accounts in their due diligence process for CRS?
+crsThresholds.change.hidden =  Change if they are applying thresholds to any of their accounts in their due diligence process for CRS
 
 carfGrossProceeds.title = Is the financial institution reporting gross proceeds under the Cryptoasset Reporting Framework (CARF) for {0}?
 carfGrossProceeds.heading = Is {0} reporting gross proceeds under the Cryptoasset Reporting Framework (CARF) for {1}?
 carfGrossProceeds.checkYourAnswersLabel = Are they reporting gross proceeds under the Cryptoasset Reporting Framework (CARF) for {0}?
 carfGrossProceeds.error.required = Select yes if the financial institution is reporting gross proceeds under the Cryptoasset Reporting Framework (CARF) for {0}?
-carfGrossProceeds.change.hidden = Are they reporting gross proceeds under the Cryptoasset Reporting Framework (CARF) for {0}?
+carfGrossProceeds.change.hidden =  Change if they are reporting gross proceeds under the Cryptoasset Reporting Framework (CARF) for {0}?
 
 crsGrossProceeds.title = Is the financial institution also reporting these gross proceeds for the Cryptoasset Reporting Framework (CARF) under CRS?
 crsGrossProceeds.heading = Is {0} also reporting these gross proceeds for the Cryptoasset Reporting Framework (CARF) under CRS?
 crsGrossProceeds.checkYourAnswersLabel = Are they also reporting these gross proceeds for the CARF under CRS?
 crsGrossProceeds.error.required = Select yes if the financial institution is also reporting these gross proceeds for the Cryptoasset Reporting Framework (CARF) under CRS
-crsGrossProceeds.change.hidden = CrsGrossProceeds
+crsGrossProceeds.change.hidden =  Change if they are also reporting these gross proceeds for the Cryptoasset Reporting Framework (CARF) under CRS
 
 electionInformationIsMissing.title = Some information is missing
 electionInformationIsMissing.heading = Some information is missing
