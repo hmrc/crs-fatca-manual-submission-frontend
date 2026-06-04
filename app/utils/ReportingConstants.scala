@@ -15,6 +15,6 @@
  */
 
 package utils
-
+//todo move shared constants to app config files
 object ReportingConstants:
   val REPORTING_THRESHOLD_YEAR: Int = 2026
