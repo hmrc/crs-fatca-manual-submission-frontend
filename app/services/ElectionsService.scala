@@ -34,7 +34,7 @@ class ElectionsService @Inject() (connector: ElectionsConnector, sessionReposito
 
   private case class RequestWithFiName(electionsSubmissionDetails: ElectionsSubmissionRequest, fiName: String)
 
-  def submit(userAnswers: UserAnswers, reportingYear: Int)(implicit
+  def submitAndDeleteElectionData(userAnswers: UserAnswers, reportingYear: Int)(implicit
     hc: HeaderCarrier
   ): Future[Unit] = for {
     requestBodyWithFIName <- toRequest(userAnswers, reportingYear)

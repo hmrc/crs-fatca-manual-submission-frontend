@@ -110,7 +110,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
         val mockService = mock[ElectionsService]
 
-        when(mockService.submit(any(), any())(any())) thenReturn Future.successful(())
+        when(mockService.submitAndDeleteElectionData(any(), any())(any())) thenReturn Future.successful(())
 
         val application =
           applicationBuilder(userData = Some(emptyUserAnswers))

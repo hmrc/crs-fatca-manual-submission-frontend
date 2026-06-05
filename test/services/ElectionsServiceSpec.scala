@@ -47,7 +47,7 @@ class ElectionsServiceSpec extends SpecBase {
         .withPage(CRSDormantAccountsPage, true)
         .withPage(CRSThresholdsPage, true)
 
-      val exception = service.submit(userAnswers, 2026).failed.futureValue
+      val exception = service.submitAndDeleteElectionData(userAnswers, 2026).failed.futureValue
 
       exception mustBe a[InternalServerException]
       exception.getMessage mustBe "Unable to find FI Details"
@@ -61,7 +61,7 @@ class ElectionsServiceSpec extends SpecBase {
         .withPage(CRSThresholdsPage, true)
       when(mockConnector.submit(any())(using any[HeaderCarrier])).thenReturn(Future.failed(RuntimeException("Failed")))
 
-      val exception = service.submit(userAnswers, 2026).failed.futureValue
+      val exception = service.submitAndDeleteElectionData(userAnswers, 2026).failed.futureValue
 
       exception mustBe a[RuntimeException]
       exception.getMessage mustBe "Failed"
@@ -76,7 +76,7 @@ class ElectionsServiceSpec extends SpecBase {
       when(mockConnector.submit(any())(using any[HeaderCarrier])).thenReturn(Future.successful(()))
       when(mockRepository.set(any())).thenReturn(Future.failed(RuntimeException("Failed")))
 
-      val exception = service.submit(userAnswers, 2026).failed.futureValue
+      val exception = service.submitAndDeleteElectionData(userAnswers, 2026).failed.futureValue
 
       exception mustBe a[RuntimeException]
       exception.getMessage mustBe "Failed"
@@ -91,7 +91,7 @@ class ElectionsServiceSpec extends SpecBase {
       when(mockConnector.submit(any())(using any[HeaderCarrier])).thenReturn(Future.successful(()))
       when(mockRepository.set(any())).thenReturn(Future.successful(true))
 
-      service.submit(userAnswers, 2026).futureValue mustBe ()
+      service.submitAndDeleteElectionData(userAnswers, 2026).futureValue mustBe ()
 
       verify(mockConnector, times(1)).submit(any[ElectionsSubmissionRequest])(using any[HeaderCarrier])
     }
