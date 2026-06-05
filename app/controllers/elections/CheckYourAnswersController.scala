@@ -55,7 +55,7 @@ class CheckYourAnswersController @Inject() (
               val list   = CheckYourAnswersElections(request.userAnswers, year)
               val regime = if (request.userAnswers.get(CRSContractsPage).isEmpty) "fatca" else "crs"
 
-              Ok(view(list, year, fiDetails.fiName, regime))
+              Ok(view(list, year, fiDetails, regime))
 
             case None =>
               Redirect(routes.JourneyRecoveryController.onPageLoad())
