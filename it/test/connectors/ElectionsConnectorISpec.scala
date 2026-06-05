@@ -18,7 +18,7 @@ package connectors
 
 import models.ServiceErrors.Elections_Error
 import models.elections.{CrsElectionsDetails, ElectionDetails, FatcaElectionsDetails, YesNoNa}
-import models.requests.ElectionsSubmissionDetails
+import models.requests.ElectionsSubmissionRequest
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers.{a, include, must, mustBe, mustEqual}
 import play.api.http.Status.*
@@ -82,7 +82,7 @@ class ElectionsConnectorISpec extends AnyFreeSpec with ISpecBase {
       val testFiId = "TestFIID"
       val reportingYear = "2026"
 
-      val request = ElectionsSubmissionDetails(testFiId, reportingYear, None, None)
+      val request = ElectionsSubmissionRequest(testFiId, reportingYear, None, None)
 
       "should return the Response when Backend return successful Response" in {
         stubPostResponse(submitUrl, NO_CONTENT)

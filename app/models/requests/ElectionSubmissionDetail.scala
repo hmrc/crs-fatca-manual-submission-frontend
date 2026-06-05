@@ -18,22 +18,22 @@ package models.requests
 
 import play.api.libs.json.{Json, OFormat}
 
-case class CrsElectionsDetails(hasCARF: Option[Boolean], hasContracts: Option[Boolean], hasDormantAccounts: Option[Boolean], hasThresholds: Option[Boolean])
+case class CrsElectionsRequest(hasCARF: Option[Boolean], hasContracts: Boolean, hasDormantAccounts: Boolean, hasThresholds: Boolean)
 
-object CrsElectionsDetails:
-  given OFormat[CrsElectionsDetails] = Json.format[CrsElectionsDetails]
+object CrsElectionsRequest:
+  given OFormat[CrsElectionsRequest] = Json.format[CrsElectionsRequest]
 
-case class FatcaElectionsDetails(hasThresholds: Option[Boolean], hasTreasuryRegulations: Option[Boolean])
+case class FatcaElectionsRequest(hasThresholds: Boolean, hasTreasuryRegulations: Boolean)
 
-object FatcaElectionsDetails:
-  given OFormat[FatcaElectionsDetails] = Json.format[FatcaElectionsDetails]
+object FatcaElectionsRequest:
+  given OFormat[FatcaElectionsRequest] = Json.format[FatcaElectionsRequest]
 
-case class ElectionsSubmissionDetails(
+case class ElectionsSubmissionRequest(
   fiId: String,
   reportingPeriod: String,
-  crsDetails: Option[CrsElectionsDetails],
-  fatcaDetails: Option[FatcaElectionsDetails]
+  crsDetails: Option[CrsElectionsRequest],
+  fatcaDetails: Option[FatcaElectionsRequest]
 )
 
-object ElectionsSubmissionDetails:
-  given OFormat[ElectionsSubmissionDetails] = Json.format[ElectionsSubmissionDetails]
+object ElectionsSubmissionRequest:
+  given OFormat[ElectionsSubmissionRequest] = Json.format[ElectionsSubmissionRequest]

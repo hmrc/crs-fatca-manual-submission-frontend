@@ -22,6 +22,7 @@ import models.{FiIdentifiers, UserAnswers}
 import pages.FiDetailsPage
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
+import play.api.inject
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import services.CheckYourAnswersValidatorService

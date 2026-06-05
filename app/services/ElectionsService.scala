@@ -21,9 +21,9 @@ import connectors.ElectionsConnector
 import models.UserAnswers
 import models.elections.ElectionsSent
 import models.elections.RegimeType.{CRS, FATCA}
-import models.requests.{CrsElectionsDetails, ElectionsSubmissionDetails, FatcaElectionsDetails}
+import models.requests.{CrsElectionsRequest, ElectionsSubmissionRequest, FatcaElectionsRequest}
+import pages.*
 import pages.Page.{electionCRSPages, electionFATCAPages}
-import pages.{CarfGrossProceedsPage, CrsGrossProceedsPage, ElectionsSentPage, FiDetailsPage, IsApplyingThresholdsPage, IsUsTreasuryRegulatedPage}
 import pages.elections.*
 import repositories.SessionRepository
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
@@ -32,7 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ElectionsService @Inject() (connector: ElectionsConnector, sessionRepository: SessionRepository)(implicit ec: ExecutionContext) {
 
-  private case class RequestWithFiName(electionsSubmissionDetails: ElectionsSubmissionDetails, fiName: String)
+  private case class RequestWithFiName(electionsSubmissionDetails: ElectionsSubmissionRequest, fiName: String)
 
   def submit(userAnswers: UserAnswers, reportingYear: Int)(implicit
     hc: HeaderCarrier
@@ -54,7 +54,7 @@ class ElectionsService @Inject() (connector: ElectionsConnector, sessionReposito
       case Some(fiDetail) =>
         Future.successful(
           RequestWithFiName(
-            ElectionsSubmissionDetails(
+            ElectionsSubmissionRequest(
               fiId = fiDetail.fiId,
               reportingPeriod = reportingYear.toString,
               crsDetails = buildCRSDetails(userAnswers),
@@ -66,29 +66,20 @@ class ElectionsService @Inject() (connector: ElectionsConnector, sessionReposito
       case None => Future.failed(InternalServerException("Unable to find FI Details"))
     }
 
-  private def buildCRSDetails(userAnswers: UserAnswers): Option[CrsElectionsDetails] =
+  private def buildCRSDetails(userAnswers: UserAnswers): Option[CrsElectionsRequest] =
     for {
-      hasContracts <- userAnswers.get(CRSContractsPage)
+      hasContracts       <- userAnswers.get(CRSContractsPage)
+      hasDormantAccounts <- userAnswers.get(CRSDormantAccountsPage)
+      hasThresholds      <- userAnswers.get(CRSThresholdsPage)
     } yield {
-      val hasCARF =
-        userAnswers.get(CarfGrossProceedsPage).flatMap {
-          _ =>
-            userAnswers.get(CrsGrossProceedsPage)
-        }
-      CrsElectionsDetails(
-        hasCARF = hasCARF,
-        hasContracts = Some(hasContracts),
-        hasDormantAccounts = userAnswers.get(CRSDormantAccountsPage),
-        hasThresholds = userAnswers.get(CRSThresholdsPage)
-      )
+      val hasCARF = userAnswers.get(CrsGrossProceedsPage)
+      CrsElectionsRequest(hasCARF = hasCARF, hasContracts = hasContracts, hasDormantAccounts = hasDormantAccounts, hasThresholds = hasThresholds)
     }
 
-  private def buildFATCADetails(userAnswers: UserAnswers): Option[FatcaElectionsDetails] =
+  private def buildFATCADetails(userAnswers: UserAnswers): Option[FatcaElectionsRequest] =
     for {
-      treasuryRegulated <- userAnswers.get(IsUsTreasuryRegulatedPage)
-    } yield FatcaElectionsDetails(
-      hasThresholds = userAnswers.get(IsApplyingThresholdsPage),
-      hasTreasuryRegulations = Some(treasuryRegulated)
-    )
+      hasTreasuryRegulations <- userAnswers.get(IsUsTreasuryRegulatedPage)
+      hasThresholds          <- userAnswers.get(IsApplyingThresholdsPage)
+    } yield FatcaElectionsRequest(hasThresholds = hasThresholds, hasTreasuryRegulations = hasTreasuryRegulations)
 
 }

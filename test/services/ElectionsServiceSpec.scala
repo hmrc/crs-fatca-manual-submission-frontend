@@ -19,7 +19,7 @@ package services
 import base.SpecBase
 import connectors.ElectionsConnector
 import models.FiIdentifiers
-import models.requests.ElectionsSubmissionDetails
+import models.requests.ElectionsSubmissionRequest
 import org.mockito.ArgumentMatchers.*
 import org.mockito.Mockito.{reset, times, verify, when}
 import pages.FiDetailsPage
@@ -93,7 +93,7 @@ class ElectionsServiceSpec extends SpecBase {
 
       service.submit(userAnswers, 2026).futureValue mustBe ()
 
-      verify(mockConnector, times(1)).submit(any[ElectionsSubmissionDetails])(using any[HeaderCarrier])
+      verify(mockConnector, times(1)).submit(any[ElectionsSubmissionRequest])(using any[HeaderCarrier])
     }
   }
 

@@ -20,7 +20,7 @@ import com.google.inject.Inject
 import config.FrontendAppConfig
 import models.ServiceErrors.Elections_Error
 import models.elections.ElectionDetails
-import models.requests.ElectionsSubmissionDetails
+import models.requests.ElectionsSubmissionRequest
 import play.api.Logging
 import play.api.http.Status.{NO_CONTENT, OK}
 import play.api.libs.json.*
@@ -49,7 +49,7 @@ class ElectionsConnector @Inject() (client: HttpClientV2, config: FrontendAppCon
             case _  => Future.failed(Elections_Error)
       }
 
-  def submit(requestBody: ElectionsSubmissionDetails)(using hc: HeaderCarrier): Future[Unit] =
+  def submit(requestBody: ElectionsSubmissionRequest)(using hc: HeaderCarrier): Future[Unit] =
     val endPoint = url"$url/crs-fatca-reporting/elections/submit"
 
     client
