@@ -39,8 +39,9 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
       val mockService = mock[CheckYourAnswersValidatorService]
       val testFIName  = "Test FI Name"
+      val identifiers = FiIdentifiers("fiID", testFIName)
       val userAnswers = UserAnswers(userAnswersId)
-        .set(FiDetailsPage, FiIdentifiers("fiID", testFIName))
+        .set(FiDetailsPage, identifiers)
         .success
         .value
       val application = applicationBuilder(userData = Some(userAnswers))
@@ -60,9 +61,8 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
         contentAsString(result) mustEqual view(
           list,
           2026,
-          testFIName,
-          "fatca",
-          "fiID"
+          identifiers,
+          "fatca"
         )(request, messages(application)).toString
       }
     }

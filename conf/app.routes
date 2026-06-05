@@ -26,13 +26,13 @@ GET         /fatca-void/information-voided                         controllers.I
 
 GET         /elections/fatca/us-treasury-regulations               controllers.elections.IsUsTreasuryRegulatedController.onPageLoad(mode: Mode = NormalMode, year: Int)
 POST        /elections/fatca/us-treasury-regulations               controllers.elections.IsUsTreasuryRegulatedController.onSubmit(mode: Mode = NormalMode, year: Int)
-GET         /elections/fatca/change/us-treasury-regulations        controllers.elections.IsUsTreasuryRegulatedController.onPageLoad(mode: Mode = CheckMode, year: Int)
-POST        /elections/fatca/change/us-treasury-regulations        controllers.elections.IsUsTreasuryRegulatedController.onSubmit(mode: Mode = CheckMode, year: Int)
+GET         /elections/fatca/change-us-treasury-regulations        controllers.elections.IsUsTreasuryRegulatedController.onPageLoad(mode: Mode = CheckMode, year: Int)
+POST        /elections/fatca/change-us-treasury-regulations        controllers.elections.IsUsTreasuryRegulatedController.onSubmit(mode: Mode = CheckMode, year: Int)
 
 GET         /elections/fatca/thresholds                            controllers.elections.IsApplyingThresholdsController.onPageLoad(mode: Mode = NormalMode, year: Int)
 POST        /elections/fatca/thresholds                            controllers.elections.IsApplyingThresholdsController.onSubmit(mode: Mode = NormalMode, year: Int)
-GET         /elections/fatca/change/thresholds                     controllers.elections.IsApplyingThresholdsController.onPageLoad(mode: Mode = CheckMode, year: Int)
-POST        /elections/fatca/change/thresholds                     controllers.elections.IsApplyingThresholdsController.onSubmit(mode: Mode = CheckMode, year: Int)
+GET         /elections/fatca/change-thresholds                     controllers.elections.IsApplyingThresholdsController.onPageLoad(mode: Mode = CheckMode, year: Int)
+POST        /elections/fatca/change-thresholds                     controllers.elections.IsApplyingThresholdsController.onSubmit(mode: Mode = CheckMode, year: Int)
 
 GET        /elections/crs/contracts                        controllers.elections.CRSContractsController.onPageLoad(mode: Mode = NormalMode, year: Int)
 POST       /elections/crs/contracts                        controllers.elections.CRSContractsController.onSubmit(mode: Mode = NormalMode, year: Int)
@@ -59,7 +59,7 @@ POST       /elections/crs/crs-gross-proceeds                         controllers
 GET        /elections/crs/change-crs-gross-proceeds                  controllers.elections.CrsGrossProceedsController.onPageLoad(mode: Mode = CheckMode, year: Int)
 POST       /elections/crs/change-crs-gross-proceeds                  controllers.elections.CrsGrossProceedsController.onSubmit(mode: Mode = CheckMode, year: Int)
 
-GET        /elections/check-your-answers                             controllers.elections.CheckYourAnswersController.onPageLoad(year: Int)
+GET        /elections/check-answers                             controllers.elections.CheckYourAnswersController.onPageLoad(year: Int)
 
 GET        /problem/elections-information-is-missing                 controllers.elections.ElectionInformationIsMissingController.onPageLoad(redirectUrl: RedirectUrl)
 

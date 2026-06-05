@@ -41,7 +41,7 @@ object CarfGrossProceedsSummary {
             ActionItemViewModel(
               HtmlContent(s"""<span aria-hidden="true">${messages("site.change")}</span>"""),
               controllers.elections.routes.CarfGrossProceedsController.onPageLoad(CheckMode, year).url
-            ).withVisuallyHiddenText(messages("carfGrossProceeds.change.hidden"))
+            ).withVisuallyHiddenText(messages("carfGrossProceeds.change.hidden", year.toString))
           )
         )
     }

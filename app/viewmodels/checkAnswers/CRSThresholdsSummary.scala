@@ -16,7 +16,7 @@
 
 package viewmodels.checkAnswers
 
-import models.UserAnswers
+import models.{CheckMode, UserAnswers}
 import pages.elections.CRSDormantAccountsPage
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
@@ -39,7 +39,7 @@ object CRSThresholdsSummary {
           actions = Seq(
             ActionItemViewModel(
               HtmlContent(s"""<span aria-hidden="true">${messages("site.change")}</span>"""),
-              controllers.elections.routes.CheckYourAnswersController.onPageLoad(reportingYear).url
+              controllers.elections.routes.CRSThresholdsController.onPageLoad(CheckMode, reportingYear).url
             ).withVisuallyHiddenText(messages("crsThresholds.change.hidden"))
           )
         )
