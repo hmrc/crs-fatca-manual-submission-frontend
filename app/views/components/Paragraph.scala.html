@@ -16,6 +16,12 @@
 
 @this()
 
-@(messageKey: String, args: Seq[Any] = Seq.empty, classes: String = "", id: Option[String] = None)(implicit messages: Messages)
+@(messageKey: String, args: Seq[Any] = Seq.empty, classes: String = "", id: Option[String] = None, htmlArgs: Seq[Html] = Seq.empty)(implicit messages: Messages)
 
-<p class="@classes govuk-body wrappable" @id.map{id => id="@id"}>@messages(messageKey, args.map(_.asInstanceOf[AnyRef]): _*)</p>
+<p class="@classes govuk-body wrappable" @id.map{id => id="@id"}>
+    @if(htmlArgs.nonEmpty) {
+    @Html(messages(messageKey, htmlArgs.map(_.toString): _*))
+    } else {
+    @messages(messageKey, args.map(_.asInstanceOf[AnyRef]): _*)
+    }
+</p>

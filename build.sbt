@@ -38,6 +38,7 @@ lazy val microservice = (project in file("."))
       "-Wconf:cat=feature:w",
       "-Wconf:src=target/.*:s"
     ),
+    scalacOptions ~= (_.distinct),
     libraryDependencies ++= AppDependencies(),
     retrieveManaged := true,
     pipelineStages := Seq(digest),

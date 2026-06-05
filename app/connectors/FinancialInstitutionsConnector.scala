@@ -31,7 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class FinancialInstitutionsConnector @Inject() (http: HttpClientV2, config: FrontendAppConfig)(using ec: ExecutionContext) extends Logging {
 
-  def viewFi(subscriptionId: String, fiId: String)(using
+  def viewFi(subscriptionId: String, fiId: String)(implicit
     hc: HeaderCarrier
   ): Future[Option[FIDetail]] =
     http

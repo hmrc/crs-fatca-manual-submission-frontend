@@ -22,96 +22,106 @@
         govukButton: GovukButton,
         paragraphMessageWithLink: ParagraphMessageWithLink,
         heading: components.Heading,
-        pagi:    components.PaginationWithYear
+        pagi:    components.PaginationWithYear,
+        link: components.Link,
+        para: components.Paragraph
 )
 
 
 @(cards: Map[String, List[SubmissionCard]], chosenYear: Int, fiName: String , past12SubmissionYears: List[Int] , fiId: String)(implicit request: Request[_], messages: Messages, config:FrontendAppConfig)
 
+@electionsLink = {@link(href=controllers.elections.routes.ManageElectionsController.onPageLoad(chosenYear, fiId).url, messages("viewSubmissions.manageElections.link", fiName), asPara = false)}
 
 @layout(pageTitle = titleNoForm(title = messages("viewSubmissions.title", chosenYear.toString))) {
-@heading(messages("viewSubmissions.heading", fiName, chosenYear.toString))
-@paragraphMessageWithLink(message1 = Some(messages("viewSubmissions.body.1")),
+    @heading(messages("viewSubmissions.heading", fiName, chosenYear.toString))
+    @paragraphMessageWithLink(message1 = Some(messages("viewSubmissions.body.1")),
     linkMessage = messages("viewSubmissions.body.link.1"),
     message2 = Some(messages("viewSubmissions.body.2")),
     linkUrl = config.fileUploadUrl, secondaryLinkUrl = Some(controllers.routes.JourneyRecoveryController.onPageLoad().url),
     secondaryLinkMessage = Some(messages("viewSubmissions.body.link.2")), linkFullStop = true)
-@pagi(past12SubmissionYears, chosenYear, fiId, fiName)
-@heading(headingContent= messages("viewSubmissions.crs.submit", chosenYear.toString), size= "m" , level = "h2")
-    @if(cards.values.flatten.exists(_.fileType.value.contains("CRS"))) {
-        @for((originalMessageRefId, cardList) <- cards) {
-            @if(cardList.exists(_.fileType.value.contains("CRS"))) {
-                <div class="govuk-summary-card">
-                    <div class="govuk-summary-card__title-wrapper">
-                        <h2 class="govuk-summary-card__title">
-                        @cardList.head.title
-                        </h2>
-                    </div>
-                    <div class="govuk-summary-card__content">
-                        <dl class="govuk-summary-list">
-                        @for(card <- cardList) {
-                            <div class="govuk-summary-list__row">
-                                <dt class="govuk-summary-list__key">
-                                @card.summaryKey
-                                </dt>
-                                <dd class="govuk-summary-list__value">
-                                @card.summaryValue
-                                </dd>
-                            </div>
-                        }
-                        </dl>
-                    </div>
-                </div>
-            }
-        }
-    } else {
-        <h2  class="govuk-body">@messages("viewSubmissions.noReport.text")</h2>
-    }
-@heading(headingContent= messages("viewSubmissions.fatca.submit", chosenYear.toString), size= "m" , level = "h2")
-    @if(cards.values.flatten.exists(_.fileType.value.contains("FATCA"))) {
-        @for((originalMessageRefId, cardList) <- cards) {
-            @if(cardList.exists(_.fileType.value.contains("FATCA"))) {
 
-                <div class="govuk-summary-card">
-                    <div class="govuk-summary-card__title-wrapper">
-                    @if(cardList.exists(_.fileType.value.contains("FATCA3"))) {
-                        <h2 class="govuk-summary-card__title">
+    @pagi(past12SubmissionYears, chosenYear, 2, year => routes.ViewSubmissionsController.onPageLoad(year, fiId))
+
+    @if(past12SubmissionYears.contains(chosenYear)) {
+        @heading(headingContent= messages("viewSubmissions.manageElections.heading"), size= "m" , level = "h2")
+        @para("viewSubmissions.manageElections.para", htmlArgs = Seq(electionsLink))
+    }
+
+    @heading(headingContent= messages("viewSubmissions.crs.submit", chosenYear.toString), size= "m" , level = "h2")
+        @if(cards.values.flatten.exists(_.fileType.value.contains("CRS"))) {
+            @for((originalMessageRefId, cardList) <- cards) {
+                @if(cardList.exists(_.fileType.value.contains("CRS"))) {
+                    <div class="govuk-summary-card">
+                        <div class="govuk-summary-card__title-wrapper">
+                            <h2 class="govuk-summary-card__title">
                             @cardList.head.title
-                            <strong class="govuk-tag govuk-tag--grey">@messages("viewSubmissions.voided")</strong>
-                        </h2>
-                    } else {
-                        <h2 class="govuk-summary-card__title">
-                        @cardList.head.title
-                        </h2>
-                        <div class="govuk-summary-card__actions">
-                            <a class="govuk-link govuk-link--no-visited-state"
-                               href="@routes.VoidingFatcaInformationController.onPageLoad(originalMessageRefId)">
-                                @messages("viewSubmissions.voidThisReport.link")
-                            </a>
-                            <span class="govuk-visually-hidden"> (@originalMessageRefId)</span>
-                            </a>
+                            </h2>
                         </div>
-                    }
+                        <div class="govuk-summary-card__content">
+                            <dl class="govuk-summary-list">
+                            @for(card <- cardList) {
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                    @card.summaryKey
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                    @card.summaryValue
+                                    </dd>
+                                </div>
+                            }
+                            </dl>
+                        </div>
                     </div>
-                    <div class="govuk-summary-card__content">
-                        <dl class="govuk-summary-list">
-                        @for(card <- cardList) {
-                            <div class="govuk-summary-list__row">
-                                <dt class="govuk-summary-list__key">
-                                @card.summaryKey
-                                </dt>
-                                <dd class="govuk-summary-list__value">
-                                @card.summaryValue
-                                </dd>
+                }
+            }
+        } else {
+            <h2  class="govuk-body">@messages("viewSubmissions.noReport.text")</h2>
+        }
+    @heading(headingContent= messages("viewSubmissions.fatca.submit", chosenYear.toString), size= "m" , level = "h2")
+        @if(cards.values.flatten.exists(_.fileType.value.contains("FATCA"))) {
+            @for((originalMessageRefId, cardList) <- cards) {
+                @if(cardList.exists(_.fileType.value.contains("FATCA"))) {
+
+                    <div class="govuk-summary-card">
+                        <div class="govuk-summary-card__title-wrapper">
+                        @if(cardList.exists(_.fileType.value.contains("FATCA3"))) {
+                            <h2 class="govuk-summary-card__title">
+                                @cardList.head.title
+                                <strong class="govuk-tag govuk-tag--grey">@messages("viewSubmissions.voided")</strong>
+                            </h2>
+                        } else {
+                            <h2 class="govuk-summary-card__title">
+                            @cardList.head.title
+                            </h2>
+                            <div class="govuk-summary-card__actions">
+                                <a class="govuk-link govuk-link--no-visited-state"
+                                   href="@routes.VoidingFatcaInformationController.onPageLoad(originalMessageRefId)">
+                                    @messages("viewSubmissions.voidThisReport.link")
+                                </a>
+                                <span class="govuk-visually-hidden"> (@originalMessageRefId)</span>
+                                </a>
                             </div>
                         }
-                        </dl>
+                        </div>
+                        <div class="govuk-summary-card__content">
+                            <dl class="govuk-summary-list">
+                            @for(card <- cardList) {
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                    @card.summaryKey
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                    @card.summaryValue
+                                    </dd>
+                                </div>
+                            }
+                            </dl>
+                        </div>
                     </div>
-                </div>
+                }
             }
+        } else {
+            <h2  class="govuk-body">@messages("viewSubmissions.noReport.text")</h2>
         }
-    } else {
-        <h2  class="govuk-body">@messages("viewSubmissions.noReport.text")</h2>
-    }
-  @paragraphMessageWithLink(linkMessage =messages("viewSubmissions.manageFisLink") , linkUrl = config.manageReportsLink)
+    @paragraphMessageWithLink(linkMessage =messages("viewSubmissions.manageFisLink") , linkUrl = config.manageReportsLink)
 }
