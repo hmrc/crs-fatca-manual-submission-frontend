@@ -41,14 +41,14 @@ class ElectionsService @Inject() (connector: ElectionsConnector, sessionReposito
   ): Future[Unit] = for {
     requestBodyWithFIName <- toRequest(userAnswers, reportingYear)
     _                     <- connector.submit(requestBodyWithFIName.electionsSubmissionDetails)
-    updatedUA             <- updateUA(userAnswers, reportingYear, requestBodyWithFIName.fiName)
+    updatedUA             <- updateUA(userAnswers, reportingYear, requestBodyWithFIName.fiName, requestBodyWithFIName.electionsSubmissionDetails.fiId)
     _                     <- sessionRepository.set(updatedUA)
   } yield ()
 
-  private def updateUA(userAnswers: UserAnswers, reportingYear: Int, fiName: String): Future[UserAnswers] =
+  private def updateUA(userAnswers: UserAnswers, reportingYear: Int, fiName: String, fiId: String): Future[UserAnswers] =
     Future.fromTry(userAnswers.get(CRSContractsPage) match {
-      case Some(_) => userAnswers.removeAll(electionCRSPages).flatMap(_.set(ElectionsSentPage, ElectionsSent(CRS, reportingYear, fiName)))
-      case None    => userAnswers.removeAll(electionFATCAPages).flatMap(_.set(ElectionsSentPage, ElectionsSent(FATCA, reportingYear, fiName)))
+      case Some(_) => userAnswers.removeAll(electionCRSPages).flatMap(_.set(ElectionsSentPage, ElectionsSent(CRS, reportingYear, fiName, fiId)))
+      case None    => userAnswers.removeAll(electionFATCAPages).flatMap(_.set(ElectionsSentPage, ElectionsSent(FATCA, reportingYear, fiName, fiId)))
     })
 
   private def toRequest(userAnswers: UserAnswers, reportingYear: Int): Future[RequestWithFiName] =

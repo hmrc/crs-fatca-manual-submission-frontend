@@ -38,9 +38,10 @@ class ElectionsSentViewSpec extends SpecBase {
 
     "should render page components" - {
 
+      val fiId                                = "12345"
       val reportingYear                       = "2027"
       val regime                              = "FATCA"
-      val renderedHtml: HtmlFormat.Appendable = view(regime, "Test FI", reportingYear, "test@test.com")
+      val renderedHtml: HtmlFormat.Appendable = view(regime, "Test FI", reportingYear, "test@test.com", fiId)
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
       "must display title" in {
@@ -71,7 +72,9 @@ class ElectionsSentViewSpec extends SpecBase {
           .anyMatch(_.attr("href").contains("/manage-your-crs-and-fatca-financial-institutions")) mustBe true
         pragraphText
           .stream()
-          .anyMatch(_.attr("href").contains("#")) mustBe true // TODO : DAC6-4282
+          .anyMatch(
+            _.attr("href").contains("/crs-fatca-manual-submission-frontend/elections/manage-elections-for-2027?fiId=12345")
+          ) mustBe true
       }
 
     }

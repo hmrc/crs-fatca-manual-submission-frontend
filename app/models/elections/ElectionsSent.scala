@@ -40,7 +40,7 @@ object RegimeType:
 
   implicit val format: Format[RegimeType] = Format(reads, writes)
 
-case class ElectionsSent(regime: RegimeType, reportingYear: Int, fiName: String)
+case class ElectionsSent(regime: RegimeType, reportingYear: Int, fiName: String, fiId: String)
 
 object ElectionsSent:
   implicit val format: OFormat[ElectionsSent] = Json.format[ElectionsSent]
