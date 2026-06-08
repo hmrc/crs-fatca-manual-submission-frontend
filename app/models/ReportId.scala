@@ -19,10 +19,13 @@ package models
 import models.SubmissionsConstants.RegimeType
 import play.api.libs.json.{Json, OFormat}
 
-import java.time.LocalDateTime
+import java.time.{LocalDateTime, ZoneOffset}
 
-case class ReportId (regime:RegimeType, reportingYear: Int, originalMessageRefId: Option[String],
-                     lastSubmission: Option[LocalDateTime], fiId: String)
+case class ReportId(regime: RegimeType, reportingYear: Int, uploadedTime: Option[LocalDateTime]= None, fiId: String) {
+  def time: LocalDateTime = uploadedTime.getOrElse(LocalDateTime.now())
+  val mongoKey = s"${regime.value}-${reportingYear.toString}-${time.toInstant(ZoneOffset.UTC).toEpochMilli.toString}-$fiId"
+}
+
 object ReportId {
   implicit val format: OFormat[ReportId] = Json.format[ReportId]
 }

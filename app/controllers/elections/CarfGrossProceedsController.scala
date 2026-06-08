@@ -18,16 +18,14 @@ package controllers.elections
 
 import controllers.actions.*
 import forms.CarfGrossProceedsFormProvider
-import models.SubmissionsConstants.FATCA
-import models.{Mode, ReportEntry, ReportId}
+import models.Mode
 import navigation.Navigator
-import pages.{CarfGrossProceedsPage, FiDetailsPage, ReportPage}
+import pages.{CarfGrossProceedsPage, FiDetailsPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CarfGrossProceedsView
-
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -44,7 +42,7 @@ class CarfGrossProceedsController @Inject() (
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
-  val page = ReportPage[String]("someStringPage")
+
 
   def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
@@ -69,7 +67,6 @@ class CarfGrossProceedsController @Inject() (
         .get(FiDetailsPage)
         .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))) {
           fiDetail =>
-            val x = ReportEntry(reportId = ReportId(FATCA, 2012, None, None, "fi1"), value = "somevalue")
             form
               .bindFromRequest()
               .fold(
@@ -77,7 +74,6 @@ class CarfGrossProceedsController @Inject() (
                 value =>
                   for {
                     updatedAnswers <- Future.fromTry(request.userAnswers.set(CarfGrossProceedsPage, value))
-                    updatedAnswers <- Future.fromTry(updatedAnswers.set(page, x))
                     _              <- sessionRepository.set(updatedAnswers)
                   } yield Redirect(navigator.nextPage(CarfGrossProceedsPage, mode, updatedAnswers, Some(year)))
               )

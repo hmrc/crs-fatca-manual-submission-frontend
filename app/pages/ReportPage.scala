@@ -16,13 +16,14 @@
 
 package pages
 
-
-
-import models.ReportEntry
+import models.ReportId
 import play.api.libs.json.JsPath
 
-final case class ReportPage[A](name: String) extends QuestionPage[ReportEntry[A]] {
-  override def path: JsPath = JsPath \ name
-  override def toString: String = name
-}
+final case class ReportPage[A](fieldName: String)(implicit reportId:ReportId) extends QuestionPage[A] {
 
+  override def path: JsPath =
+    JsPath \ reportId.mongoKey \ fieldName
+
+  override def toString: String =
+    s"${reportId.mongoKey}.$fieldName"
+}
