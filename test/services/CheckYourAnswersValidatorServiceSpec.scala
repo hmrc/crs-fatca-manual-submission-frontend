@@ -74,6 +74,37 @@ class CheckYourAnswersValidatorServiceSpec extends SpecBase {
         service.validate(crsData, year2025) mustBe Right(())
       }
 
+      "should return Some(CRSRedirectUrl) when reporting year is 2025 & crs pages are not complete" in {
+
+        val crsData = emptyUserAnswers
+          .withPage(CRSDormantAccountsPage, true)
+          .withPage(CRSThresholdsPage, true)
+
+        service.validate(crsData, year2025) mustBe Left(crsRedirectUrl(year2025))
+      }
+
+      "should return Some(CRSRedirectUrl) when reporting year is 2025 & crs pages has CarfGrossProceedsPage" in {
+
+        val crsData = emptyUserAnswers
+          .withPage(CRSContractsPage, true)
+          .withPage(CRSDormantAccountsPage, true)
+          .withPage(CRSThresholdsPage, true)
+          .withPage(CarfGrossProceedsPage, false)
+
+        service.validate(crsData, year2025) mustBe Left(crsRedirectUrl(year2025))
+      }
+
+      "should return Some(CRSRedirectUrl) when reporting year is 2025 & crs pages has CrsGrossProceedsPage" in {
+
+        val crsData = emptyUserAnswers
+          .withPage(CRSContractsPage, true)
+          .withPage(CRSDormantAccountsPage, true)
+          .withPage(CRSThresholdsPage, true)
+          .withPage(CrsGrossProceedsPage, false)
+
+        service.validate(crsData, year2025) mustBe Left(crsRedirectUrl(year2025))
+      }
+
       val currentYear = Year.now().getValue
       "should return None when reporting year is 2026 & crs pages are complete & carfGross is false" in {
 

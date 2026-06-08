@@ -49,6 +49,8 @@ class CheckYourAnswersValidatorService @Inject() {
 
   private def hasAny(pages: Set[QuestionPage[Boolean]], userAnswers: UserAnswers): Boolean = pages.exists(userAnswers.get(_).isDefined)
 
+  private def hasNone(pages: Set[QuestionPage[Boolean]], userAnswers: UserAnswers): Boolean = pages.forall(userAnswers.get(_).isEmpty)
+
   private def allPresent(pages: Set[QuestionPage[Boolean]], userAnswers: UserAnswers): Boolean = pages.forall(userAnswers.get(_).isDefined)
 
   private def electionGroup(userAnswers: UserAnswers): ElectionGroup =
@@ -69,7 +71,7 @@ class CheckYourAnswersValidatorService @Inject() {
   private def isCrsPagesComplete(userAnswers: UserAnswers, reportingYear: Int): Boolean = {
     val baseComplete = allPresent(crsBasePages, userAnswers)
 
-    if reportingYear < REPORTING_THRESHOLD_YEAR then baseComplete
+    if reportingYear < REPORTING_THRESHOLD_YEAR then baseComplete && hasNone(crsOptionalPages, userAnswers)
     else {
       userAnswers.get(CarfGrossProceedsPage) match {
         case None        => false
