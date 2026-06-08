@@ -27,7 +27,6 @@ import play.api.test.Helpers.*
 import repositories.SessionRepository
 import services.{ElectionsRows, ElectionsService, ViewFIService}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
-import uk.gov.hmrc.http.HeaderCarrier
 import views.html.ManageElectionsView
 
 import java.time.LocalDate
