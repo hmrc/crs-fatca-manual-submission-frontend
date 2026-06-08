@@ -16,16 +16,73 @@
 
 package services
 
+import com.google.inject.Inject
 import connectors.ElectionsConnector
-import models.elections.{CrsElectionsDetails, ElectionDetails, FatcaElectionsDetails}
+import models.UserAnswers
+import models.elections.RegimeType.{CRS, FATCA}
+import models.elections.{CrsElectionsDetails, ElectionDetails, ElectionsSent, FatcaElectionsDetails}
+import models.requests.{CrsElectionsRequest, ElectionsSubmissionRequest, FatcaElectionsRequest}
+import pages.*
+import pages.Page.{electionCRSPages, electionFATCAPages}
+import pages.elections.*
 import play.api.i18n.Messages
+import repositories.SessionRepository
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ElectionsService @Inject() (connector: ElectionsConnector)(using ec: ExecutionContext) {
+class ElectionsService @Inject() (connector: ElectionsConnector, sessionRepository: SessionRepository)(implicit ec: ExecutionContext) {
+
+  private case class RequestWithFiName(electionsSubmissionDetails: ElectionsSubmissionRequest, fiName: String)
+
+  def submitAndDeleteElectionData(userAnswers: UserAnswers, reportingYear: Int)(implicit
+    hc: HeaderCarrier
+  ): Future[Unit] = for {
+    requestBodyWithFIName <- toRequest(userAnswers, reportingYear)
+    _                     <- connector.submit(requestBodyWithFIName.electionsSubmissionDetails)
+    updatedUA             <- updateUA(userAnswers, reportingYear, requestBodyWithFIName.fiName)
+    _                     <- sessionRepository.set(updatedUA)
+  } yield ()
+
+  private def updateUA(userAnswers: UserAnswers, reportingYear: Int, fiName: String): Future[UserAnswers] =
+    Future.fromTry(userAnswers.get(CRSContractsPage) match {
+      case Some(_) => userAnswers.removeAll(electionCRSPages).flatMap(_.set(ElectionsSentPage, ElectionsSent(CRS, reportingYear, fiName)))
+      case None    => userAnswers.removeAll(electionFATCAPages).flatMap(_.set(ElectionsSentPage, ElectionsSent(FATCA, reportingYear, fiName)))
+    })
+
+  private def toRequest(userAnswers: UserAnswers, reportingYear: Int): Future[RequestWithFiName] =
+    userAnswers.get(FiDetailsPage) match {
+      case Some(fiDetail) =>
+        Future.successful(
+          RequestWithFiName(
+            ElectionsSubmissionRequest(
+              fiId = fiDetail.fiId,
+              reportingPeriod = reportingYear.toString,
+              crsDetails = buildCRSDetails(userAnswers),
+              fatcaDetails = buildFATCADetails(userAnswers)
+            ),
+            fiDetail.fiName
+          )
+        )
+      case None => Future.failed(InternalServerException("Unable to find FI Details"))
+    }
+
+  private def buildCRSDetails(userAnswers: UserAnswers): Option[CrsElectionsRequest] =
+    for {
+      hasContracts       <- userAnswers.get(CRSContractsPage)
+      hasDormantAccounts <- userAnswers.get(CRSDormantAccountsPage)
+      hasThresholds      <- userAnswers.get(CRSThresholdsPage)
+    } yield {
+      val hasCARF = userAnswers.get(CrsGrossProceedsPage)
+      CrsElectionsRequest(hasCARF = hasCARF, hasContracts = hasContracts, hasDormantAccounts = hasDormantAccounts, hasThresholds = hasThresholds)
+    }
+
+  private def buildFATCADetails(userAnswers: UserAnswers): Option[FatcaElectionsRequest] =
+    for {
+      hasTreasuryRegulations <- userAnswers.get(IsUsTreasuryRegulatedPage)
+      hasThresholds          <- userAnswers.get(IsApplyingThresholdsPage)
+    } yield FatcaElectionsRequest(hasThresholds = hasThresholds, hasTreasuryRegulations = hasTreasuryRegulations)
 
   def getElectionsRows(fiId: String, year: Int)(implicit hc: HeaderCarrier, messages: Messages): Future[ElectionsRows] =
     connector
@@ -53,6 +110,7 @@ class ElectionsService @Inject() (connector: ElectionsConnector)(using ec: Execu
       fatcaRows = SummaryList(rows = fatcaRows)
     )
   }
+
 }
 
 case class ElectionsRows(

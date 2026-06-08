@@ -18,11 +18,16 @@ package connectors
 
 import models.ServiceErrors.Elections_Error
 import models.elections.{CrsElectionsDetails, ElectionDetails, FatcaElectionsDetails, YesNoNa}
+import models.requests.ElectionsSubmissionRequest
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers.{a, include, must, mustBe, mustEqual}
 import play.api.http.Status.*
 import play.api.libs.json.Json
+import uk.gov.hmrc.http.InternalServerException
 import utils.ISpecBase
+
+import scala.concurrent.duration.DurationInt
+import scala.concurrent.Await
 
 class ElectionsConnectorISpec extends AnyFreeSpec with ISpecBase {
 
@@ -69,6 +74,34 @@ class ElectionsConnectorISpec extends AnyFreeSpec with ISpecBase {
         private val result = connector.viewElections(fiid)
 
         result.failed.futureValue mustBe Elections_Error
+      }
+    }
+
+    "submit" - {
+      val submitUrl = "/crs-fatca-reporting/elections/submit"
+      val testFiId = "TestFIID"
+      val reportingYear = "2026"
+
+      val request = ElectionsSubmissionRequest(testFiId, reportingYear, None, None)
+
+      "should return the Response when Backend return successful Response" in {
+        stubPostResponse(submitUrl, NO_CONTENT)
+
+        val result = Await.result(connector.submit(request), 2.seconds)
+
+        result mustBe()
+      }
+
+      "should return Future Failure When Backend return non 200 response" in {
+        stubPostResponse(submitUrl, INTERNAL_SERVER_ERROR)
+
+        val result = connector.submit(request)
+
+        val exception = result.failed.futureValue
+
+        exception mustBe a[InternalServerException]
+        exception.getMessage must include("Unable to submit Elections request")
+
       }
     }
   }
