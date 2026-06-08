@@ -74,7 +74,7 @@ class CheckYourAnswersValidatorServiceSpec extends SpecBase {
         service.validate(crsData, year2025) mustBe Right(())
       }
 
-      "should return Some(CRSRedirectUrl) when reporting year is 2025 & crs pages are not complete" in {
+"should return the url for CRS Contracts page when reporting year is 2025 & crs pages are not complete" in {
 
         val crsData = emptyUserAnswers
           .withPage(CRSDormantAccountsPage, true)
