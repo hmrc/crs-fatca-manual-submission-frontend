@@ -20,9 +20,10 @@ import models.ReadSubmissionResponseDetails
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers.{a, include, must, mustBe}
 import play.api.http.Status.*
-import play.api.libs.json.Json
+import play.api.libs.json.{JsResultException, Json}
 import uk.gov.hmrc.http.InternalServerException
 import utils.ISpecBase
+
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, Future}
 

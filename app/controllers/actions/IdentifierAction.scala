@@ -47,7 +47,7 @@ class AuthenticatedIdentifierAction @Inject() (
   override def invokeBlock[A](request: Request[A], block: IdentifierRequest[A] => Future[Result]): Future[Result] = {
 
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
-
+//    request.queryString("fiID")
     authorised(AuthProviders(GovernmentGateway))
       .retrieve(Retrievals.affinityGroup and Retrievals.allEnrolments and Retrievals.internalId) {
         case Some(affinity) ~ enrolments ~ Some(internalId) => getSubscriptionId(request, enrolments, internalId, affinity, block)
