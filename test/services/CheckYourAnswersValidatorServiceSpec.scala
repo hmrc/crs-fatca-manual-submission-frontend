@@ -74,7 +74,7 @@ class CheckYourAnswersValidatorServiceSpec extends SpecBase {
         service.validate(crsData, year2025) mustBe Right(())
       }
 
-"should return the url for CRS Contracts page when reporting year is 2025 & crs pages are not complete" in {
+      "should return CRS Contracts page url when reporting year is 2025 & crs pages are not complete" in {
 
         val crsData = emptyUserAnswers
           .withPage(CRSDormantAccountsPage, true)
@@ -83,7 +83,7 @@ class CheckYourAnswersValidatorServiceSpec extends SpecBase {
         service.validate(crsData, year2025) mustBe Left(crsRedirectUrl(year2025))
       }
 
-      "should return Some(CRSRedirectUrl) when reporting year is 2025 & crs pages has CarfGrossProceedsPage" in {
+      "should return CRS Contracts page url when reporting year is 2025 & crs pages has CarfGrossProceedsPage" in {
 
         val crsData = emptyUserAnswers
           .withPage(CRSContractsPage, true)
@@ -94,7 +94,7 @@ class CheckYourAnswersValidatorServiceSpec extends SpecBase {
         service.validate(crsData, year2025) mustBe Left(crsRedirectUrl(year2025))
       }
 
-      "should return Some(CRSRedirectUrl) when reporting year is 2025 & crs pages has CrsGrossProceedsPage" in {
+      "should return CRS Contracts page url when reporting year is 2025 & crs pages has CrsGrossProceedsPage" in {
 
         val crsData = emptyUserAnswers
           .withPage(CRSContractsPage, true)
@@ -129,7 +129,7 @@ class CheckYourAnswersValidatorServiceSpec extends SpecBase {
         service.validate(crsData, currentYear) mustBe Right(())
       }
 
-      "should return Some(CRSRedirectUrl) when reporting year is 2026 & carfGross is true & crsGross is None" in {
+      "should return CRS Contracts page url when reporting year is 2026 & carfGross is true & crsGross is None" in {
 
         val crsData = emptyUserAnswers
           .withPage(CRSContractsPage, true)
@@ -140,7 +140,7 @@ class CheckYourAnswersValidatorServiceSpec extends SpecBase {
         service.validate(crsData, currentYear) mustBe Left(crsRedirectUrl(currentYear))
       }
 
-      "should return Some(CRSRedirectUrl) when reporting year is 2026 & carfGross is None" in {
+      "should return CRS Contracts page url when reporting year is 2026 & carfGross is None" in {
 
         val crsData = emptyUserAnswers
           .withPage(CRSContractsPage, true)
@@ -150,7 +150,7 @@ class CheckYourAnswersValidatorServiceSpec extends SpecBase {
         service.validate(crsData, currentYear) mustBe Left(crsRedirectUrl(currentYear))
       }
 
-      "should return Some(CRSRedirectUrl) when reporting year is 2026 & crsContract is None" in {
+      "should return CRS Contracts page url when reporting year is 2026 & crsContract is None" in {
 
         val crsData = emptyUserAnswers
           .withPage(CRSDormantAccountsPage, true)
@@ -159,7 +159,7 @@ class CheckYourAnswersValidatorServiceSpec extends SpecBase {
         service.validate(crsData, currentYear) mustBe Left(crsRedirectUrl(currentYear))
       }
 
-      "should return Some(CRSRedirectUrl) when reporting year is 2026 & crsDormant is None" in {
+      "should return CRS Contracts page url when reporting year is 2026 & crsDormant is None" in {
 
         val crsData = emptyUserAnswers
           .withPage(CRSContractsPage, true)
@@ -168,7 +168,7 @@ class CheckYourAnswersValidatorServiceSpec extends SpecBase {
         service.validate(crsData, currentYear) mustBe Left(crsRedirectUrl(currentYear))
       }
 
-      "should return Some(CRSRedirectUrl) when reporting year is 2026 & crsTheshold is None" in {
+      "should return CRS Contracts page url when reporting year is 2026 & crsTheshold is None" in {
 
         val crsData = emptyUserAnswers
           .withPage(CRSContractsPage, true)
@@ -186,14 +186,14 @@ class CheckYourAnswersValidatorServiceSpec extends SpecBase {
 
         service.validate(fatcaData, year2025) mustBe Right(())
       }
-      "should return Some(fatcaRedirect) when IsApplyingThreshold Page is None" in {
+      "should return FATCA US Treasury Url when IsApplyingThreshold Page is None" in {
 
         val fatcaData = emptyUserAnswers
           .withPage(IsUsTreasuryRegulatedPage, true)
 
         service.validate(fatcaData, year2025) mustBe Left(fatcaRedirectUrl(year2025))
       }
-      "should return Some(fatcaRedirect) when IsUsTreasuryRegulatedPage Page is None" in {
+      "should return FATCA US Treasury Url when IsUsTreasuryRegulatedPage Page is None" in {
 
         val fatcaData = emptyUserAnswers
           .withPage(IsApplyingThresholdsPage, true)
@@ -202,7 +202,7 @@ class CheckYourAnswersValidatorServiceSpec extends SpecBase {
       }
     }
     "validate - No Regime" - {
-      "should return Some(manageReport) when elections answers are missing" in {
+      "should return manage election url when elections answers are missing" in {
         val fiDeets = FiIdentifiers("someFiid", "someFiName")
         val answers = emptyUserAnswers.withPage(FiDetailsPage, fiDeets)
         service.validate(answers, year2025) mustBe Left(manageElectionUrl(year2025, fiDeets.fiId))
