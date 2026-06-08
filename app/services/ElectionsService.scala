@@ -84,7 +84,6 @@ class ElectionsService @Inject() (connector: ElectionsConnector, sessionReposito
       hasThresholds          <- userAnswers.get(IsApplyingThresholdsPage)
     } yield FatcaElectionsRequest(hasThresholds = hasThresholds, hasTreasuryRegulations = hasTreasuryRegulations)
 
-
   def getElectionsRows(fiId: String, year: Int)(implicit hc: HeaderCarrier, messages: Messages): Future[ElectionsRows] =
     connector
       .viewElections(fiId, Some(year))

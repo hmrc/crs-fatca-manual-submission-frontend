@@ -38,8 +38,8 @@ import scala.concurrent.Future
 class ElectionsServiceSpec extends SpecBase {
   private val mockConnector  = mock[ElectionsConnector]
   private val mockRepository = mock[SessionRepository]
-  private val fiId: String                      = "testFiId"
-  private val year: Int                         = 2024
+  private val fiId: String   = "testFiId"
+  private val year: Int      = 2024
   private val service        = new ElectionsService(mockConnector, mockRepository)
 
   given HeaderCarrier = HeaderCarrier()
@@ -186,7 +186,7 @@ class ElectionsServiceSpec extends SpecBase {
         when(mockConnector.submit(any())(using any[HeaderCarrier])).thenReturn(Future.successful(()))
         when(mockRepository.set(any())).thenReturn(Future.successful(true))
 
-        service.submitAndDeleteElectionData(userAnswers, 2026).futureValue mustBe()
+        service.submitAndDeleteElectionData(userAnswers, 2026).futureValue mustBe ()
 
         verify(mockConnector, times(1)).submit(any[ElectionsSubmissionRequest])(using any[HeaderCarrier])
       }
