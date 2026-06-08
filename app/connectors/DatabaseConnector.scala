@@ -19,6 +19,7 @@ package connectors
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import models.ServiceErrors.Downstream_Error
+import models.SubmissionsConstants.RegimeType
 import models.UserAnswers
 import play.api.Logging
 import play.api.http.Status.*
@@ -43,5 +44,18 @@ class DatabaseConnector @Inject() (client: HttpClientV2, config: FrontendAppConf
             case _         => Future.failed(Downstream_Error)
           }
       }
+    
+  //service layer
+//  def getDocument(regime: RegimeType, reportingYear: Int)(implicit headerCarrier: HeaderCarrier) ={
+//    val empty= List(Report(regime, reportingYear, None, None))
+////    val x = get().map(_.map(_.get(ReportsPage).getOrElse(Reports(empty))))
+//     val s =  get().map{maybeUserAnswers =>
+//        maybeUserAnswers.flatMap{userAnswers=>
+//          userAnswers.get(ReportsPage).map(_.allReports.filter(_.reportingYear == reportingYear).filter(_.regime == regime))
+//        }
+//        }
+
+  
+  
 
 }

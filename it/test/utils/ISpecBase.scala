@@ -59,6 +59,11 @@ trait ISpecBase
     submissionDeleteStatus = None,
     originalMessageRefId = None
   )
+  
+  val mockResponse = 
+  """
+    |          {"submissionsList":[{"fiId":"SAR5797336789","fiName":"Test FI Name","fileName":"GB2023GB-SAR1625999529-SVTEST3799","submissionStatus":"FAILED","uploadDateTime":"2026-06-02T15:05:48.724Z","reportingYear":"2023","submissionCaseId":"CRS-SUB-46014","submissionType":"XML","messageRefId":"GB2023GB-SAR5797336789-SVTEST3799","submissionFileType":"CRS701","regime":"CRS"},{"fiId":"SAR5797336789","fiName":"Test FI Name","fileName":"GB2023GB-SAR5797336789-SVTEST3799","submissionStatus":"PASSED","uploadDateTime":"2026-06-02T11:08:02.915Z","reportingYear":"2023","submissionCaseId":"CRS-SUB-45015","submissionType":"XML","messageRefId":"GB2023GB-SAR5797336789-SVTEST3799","submissionFileType":"CRS701","regime":"CRS"},{"fiId":"SAR5797336789","fiName":"Barclays","fileName":"GB2023GB-SAR5797336789-SWTEST605161","submissionStatus":"PASSED","uploadDateTime":"2026-06-02T11:20:56.973Z","reportingYear":"2023","submissionCaseId":"FAT-SUB-5009","submissionType":"XML","messageRefId":"GB2023GB-SAR5797336789-SWTEST605161","submissionFileType":"FATCA1","regime":"FATCA","submissionDeleteStatus":true}]} 
+    |""".stripMargin
   val repository: SessionRepository = app.injector.instanceOf[SessionRepository]
   implicit val hc: HeaderCarrier    = HeaderCarrier()
 
