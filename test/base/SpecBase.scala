@@ -29,6 +29,7 @@ import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Writes
 import play.api.test.FakeRequest
+import play.api.test.Helpers.stubMessages
 import queries.Settable
 
 trait SpecBase
@@ -41,6 +42,8 @@ trait SpecBase
     with MockitoSugar
     with BeforeAndAfterEach
     with TestConstants {
+  given msgs: Messages = stubMessages()
+
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
   protected def applicationBuilder(userData: Option[UserAnswers] = None): GuiceApplicationBuilder =

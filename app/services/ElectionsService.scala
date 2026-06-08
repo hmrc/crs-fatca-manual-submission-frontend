@@ -19,13 +19,15 @@ package services
 import com.google.inject.Inject
 import connectors.ElectionsConnector
 import models.UserAnswers
-import models.elections.ElectionsSent
 import models.elections.RegimeType.{CRS, FATCA}
+import models.elections.{CrsElectionsDetails, ElectionDetails, ElectionsSent, FatcaElectionsDetails}
 import models.requests.{CrsElectionsRequest, ElectionsSubmissionRequest, FatcaElectionsRequest}
 import pages.*
 import pages.Page.{electionCRSPages, electionFATCAPages}
 import pages.elections.*
+import play.api.i18n.Messages
 import repositories.SessionRepository
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -82,4 +84,37 @@ class ElectionsService @Inject() (connector: ElectionsConnector, sessionReposito
       hasThresholds          <- userAnswers.get(IsApplyingThresholdsPage)
     } yield FatcaElectionsRequest(hasThresholds = hasThresholds, hasTreasuryRegulations = hasTreasuryRegulations)
 
+
+  def getElectionsRows(fiId: String, year: Int)(implicit hc: HeaderCarrier, messages: Messages): Future[ElectionsRows] =
+    connector
+      .viewElections(fiId, Some(year))
+      .map(_.headOption)
+      .map {
+        case Some(elections) => prepareElectionsRows(elections, year)
+        case None =>
+          ElectionsRows(
+            crsRows = SummaryList(rows = Seq.empty),
+            fatcaRows = SummaryList(rows = Seq.empty)
+          )
+      }
+
+  private def prepareElectionsRows(electionsDetails: ElectionDetails, year: Int)(using messages: Messages): ElectionsRows = {
+    val crsRows = electionsDetails.crs.fold(Seq.empty[SummaryListRow])(
+      details => CrsElectionsDetails.rows(details, year)
+    )
+    val fatcaRows = electionsDetails.fatca.fold(Seq.empty[SummaryListRow])(
+      details => FatcaElectionsDetails.rows(details)
+    )
+
+    ElectionsRows(
+      crsRows = SummaryList(rows = crsRows),
+      fatcaRows = SummaryList(rows = fatcaRows)
+    )
+  }
+
 }
+
+case class ElectionsRows(
+  crsRows: SummaryList,
+  fatcaRows: SummaryList
+)

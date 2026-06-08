@@ -38,6 +38,7 @@ class FrontendAppConfig @Inject() (configuration: Configuration, servicesConfig:
   val signOutUrl: String        = configuration.get[String]("urls.signOut")
   val fileUploadUrl: String     = configuration.get[String]("urls.fileUpload")
   val manageReportsLink: String = configuration.get[String]("urls.manageFI")
+  val yourFIsLink: String       = configuration.get[String]("urls.yourFIs")
 
   private val exitSurveyBaseUrl: String = configuration.get[Service]("microservice.services.feedback-frontend").baseUrl
 

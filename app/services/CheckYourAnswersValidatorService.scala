@@ -16,9 +16,9 @@
 
 package services
 
-import models.{NormalMode, UserAnswers}
-import pages.elections.{CRSContractsPage, CRSDormantAccountsPage, CRSThresholdsPage}
+import models.{FiIdentifiers, NormalMode, UserAnswers}
 import pages.*
+import pages.elections.{CRSContractsPage, CRSDormantAccountsPage, CRSThresholdsPage}
 import utils.ReportingConstants.REPORTING_THRESHOLD_YEAR
 
 import java.time.Year
@@ -33,7 +33,16 @@ class CheckYourAnswersValidatorService @Inject() {
 
   private def crsRedirect(reportingYear: Int)   = controllers.elections.routes.CRSContractsController.onPageLoad(NormalMode, reportingYear).url
   private def fatcaRedirect(reportingYear: Int) = controllers.elections.routes.IsUsTreasuryRegulatedController.onPageLoad(NormalMode, reportingYear).url
-  private def manageElectionRedirect(reportingYear: Int) = controllers.elections.routes.ManageElectionsController.onPageLoad(reportingYear).url
+
+  private def manageElectionRedirect(reportingYear: Int, userAnswers: UserAnswers) =
+    userAnswers
+      .get(FiDetailsPage)
+      .fold(controllers.routes.JourneyRecoveryController.onPageLoad().url) {
+        fiIdentifiers =>
+          controllers.elections.routes.ManageElectionsController
+            .onPageLoad(reportingYear, fiIdentifiers.fiId)
+            .url
+      }
 
   private enum ElectionGroup:
     case CRS, FATCA, NONE
@@ -74,6 +83,6 @@ class CheckYourAnswersValidatorService @Inject() {
     electionGroup(userAnswers) match
       case ElectionGroup.CRS   => Either.cond(isCrsPagesComplete(userAnswers, reportingYear), (), crsRedirect(reportingYear))
       case ElectionGroup.FATCA => Either.cond(allPresent(fatcaPages, userAnswers), (), fatcaRedirect(reportingYear))
-      case ElectionGroup.NONE  => Left(manageElectionRedirect(reportingYear))
+      case ElectionGroup.NONE  => Left(manageElectionRedirect(reportingYear, userAnswers))
 
 }

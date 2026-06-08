@@ -21,6 +21,11 @@ import play.api.libs.json.*
 enum YesNoNa:
   case Yes, No, NA
 
+  override def toString: String = this match
+    case Yes => "Yes"
+    case No  => "No"
+    case NA  => "Not Applicable"
+
 object YesNoNa:
 
   given Format[YesNoNa] = Format(

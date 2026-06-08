@@ -16,7 +16,12 @@
 
 package models.elections
 
+import play.api.i18n.Messages
 import play.api.libs.json.*
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.*
+import viewmodels.InputWidth
+import viewmodels.govuk.all.{FluentKey, SummaryListRowViewModel}
 
 case class FatcaElectionsDetails(
   hasThresholds: Option[YesNoNa],
@@ -25,3 +30,15 @@ case class FatcaElectionsDetails(
 
 object FatcaElectionsDetails:
   given OFormat[FatcaElectionsDetails] = Json.format[FatcaElectionsDetails]
+
+  def rows(details: FatcaElectionsDetails)(using messages: Messages): Seq[SummaryListRow] =
+    Seq(
+      SummaryListRowViewModel(
+        key = Key(content = Text(messages("manageElections.fatca.hasThresholds"))).withCssClass(InputWidth.ThreeQuarters.toString),
+        value = Value(content = Text(details.hasThresholds.fold("Not Provided")(_.toString)))
+      ),
+      SummaryListRowViewModel(
+        key = Key(content = Text(messages("manageElections.fatca.hasTreasuryRegulations"))).withCssClass(InputWidth.ThreeQuarters.toString),
+        value = Value(content = Text(details.hasTreasuryRegulations.fold("Not Provided")(_.toString)))
+      )
+    )

@@ -34,7 +34,7 @@ class ElectionsConnectorISpec extends AnyFreeSpec with ISpecBase {
   lazy val connector: ElectionsConnector = app.injector.instanceOf[ElectionsConnector]
 
   val fiid = "1234567890"
-  val url  = s"/elections/view/$fiid"
+  val url  = s"/crs-fatca-reporting/elections/view/$fiid"
 
   override def beforeEach(): Unit =
     server.resetAll()
@@ -51,7 +51,7 @@ class ElectionsConnectorISpec extends AnyFreeSpec with ISpecBase {
 
       "should return a list of ElectionDetails from particular reporting year" in new TestContext {
         val year = 2023
-        val url  = s"/elections/view/$fiid/$year"
+        val url  = s"/crs-fatca-reporting/elections/view/$fiid?year=$year"
 
         stubGetResponse(url, OK, Json.toJson(Seq(detailsFrom2023)).toString)
 

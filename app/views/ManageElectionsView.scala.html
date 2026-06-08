@@ -14,14 +14,55 @@
  * limitations under the License.
  *@
 
+@import config.FrontendAppConfig
+@import services.ElectionsRows
+
+
 @this(
         layout: templates.Layout,
-        govukButton: GovukButton
+        govukButton: GovukButton,
+        heading: components.Heading,
+        para: components.Paragraph,
+        pagination: components.PaginationWithYear,
+        config: FrontendAppConfig,
+        link: components.Link,
+        govukSummaryList: GovukSummaryList
 )
 
-@()(implicit request: Request[_], messages: Messages)
+@(electionYears: Seq[Int], electionsRows: ElectionsRows, selectedYear: Int, fiName: String, fiId: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("manageElections.title"))) {
+    @emailLink = {@link(href="mailto:aeoi.enquiries@hmrc.gov.uk", messages("manageElections.link.1"), asPara = false)}
+    @year = @{selectedYear.toString}
 
-    <h1 class="govuk-heading-xl">@messages("manageElections.heading")</h1>
+@layout(pageTitle = titleNoForm(messages("manageElections.title", year))) {
+    @heading(messages("manageElections.heading", fiName, year))
+    @para("manageElections.para.1", htmlArgs = Seq(emailLink))
+
+    <div class="reduce-pagination-padding govuk-!-margin-bottom-7">
+        @pagination(electionYears, selectedYear, 2, selectedYear => controllers.elections.routes.ManageElectionsController.onPageLoad(selectedYear, fiId))
+    </div>
+
+    @heading(messages("manageElections.subheading.crs", year), size = "m", level = "h2")
+    @if(electionsRows.crsRows.rows.isEmpty) {
+        @para(messages("manageElections.noelections"), classes = "govuk-!-margin-bottom-2")
+        @link(controllers.elections.routes.CRSContractsController.onPageLoad(NormalMode, selectedYear).url, messages("manageElections.noelections.crs"), asPara = true, paraClasses = "govuk-!-margin-bottom-8")
+    } else {
+        @govukSummaryList(electionsRows.crsRows)
+    }
+
+
+    @heading(messages("manageElections.subheading.fatca", year), size = "m", level = "h2")
+    @if(electionsRows.fatcaRows.rows.isEmpty) {
+        @para(messages("manageElections.noelections"), classes = "govuk-!-margin-bottom-2")
+        @link(controllers.elections.routes.IsUsTreasuryRegulatedController.onPageLoad(NormalMode, selectedYear).url, messages("manageElections.noelections.fatca"), asPara = true, paraClasses = "govuk-!-margin-bottom-8")
+    } else {
+        @govukSummaryList(electionsRows.fatcaRows)
+    }
+
+    @defining(java.time.LocalDate.now.getYear - 1) { CYminusOne =>
+        @link(controllers.routes.ViewSubmissionsController.onPageLoad(CYminusOne, fiId).url, messages("manageElections.back.reports", fiName), asPara = true, paraClasses = "govuk-!-margin-bottom-1")
+    }
+    @link(config.yourFIsLink, messages("manageElections.back.manageReports"), asPara = true)
+
+
 }

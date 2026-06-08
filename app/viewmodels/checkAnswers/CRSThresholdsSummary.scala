@@ -17,7 +17,7 @@
 package viewmodels.checkAnswers
 
 import models.{CheckMode, UserAnswers}
-import pages.elections.CRSDormantAccountsPage
+import pages.elections.CRSThresholdsPage
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
 import viewmodels.InputWidth
@@ -28,7 +28,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 object CRSThresholdsSummary {
 
   def row(answers: UserAnswers, reportingYear: Int)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(CRSDormantAccountsPage).map {
+    answers.get(CRSThresholdsPage).map {
       answer =>
 
         val value = if (answer) "site.yes" else "site.no"

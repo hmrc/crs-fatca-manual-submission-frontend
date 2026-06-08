@@ -14,6 +14,8 @@
  * limitations under the License.
  *@
 
+@import models.FiIdentifiers
+
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
@@ -24,7 +26,7 @@
     link: components.Link
 )
 
-@(list: SummaryList, year: Int, fiName: String, regime: String)(implicit request: Request[_], messages: Messages)
+@(list: SummaryList, year: Int, identifiers: FiIdentifiers, regime: String)(implicit request: Request[_], messages: Messages)
 
 
 @layout(pageTitle = titleNoForm(
@@ -40,9 +42,9 @@
         @heading(
             headingContent =
                 if (regime == "crs") {
-                    messages("cyaElections.crs.heading", fiName, year.toString)
+                    messages("cyaElections.crs.heading", identifiers.fiName, year.toString)
                 } else {
-                    messages("cyaElections.fatca.heading", fiName, year.toString)
+                    messages("cyaElections.fatca.heading", identifiers.fiName, year.toString)
                 }
         )
 
@@ -56,6 +58,6 @@
      ButtonViewModel(messages("cyaElections.button"))
      .withAttribute("id" -> "submit")
     )
-    @link(href = "To be added as part of DAC6-4275", message = messages("cyaElections.backLink", fiName))
+    @link(href=controllers.elections.routes.ManageElectionsController.onPageLoad(year, identifiers.fiId).url, message = messages("cyaElections.backLink", identifiers.fiName))
 }
 }
