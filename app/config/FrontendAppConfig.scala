@@ -45,14 +45,14 @@ class FrontendAppConfig @Inject() (configuration: Configuration, servicesConfig:
   val exitSurveyUrl: String = s"$exitSurveyBaseUrl/feedback/crs-fatca-manual-submission-frontend"
   val timeout: Int          = configuration.get[Int]("timeout-dialog.timeout")
 
-  val countdown: Int                      = configuration.get[Int]("timeout-dialog.countdown")
-  val cacheTtl: Long                      = configuration.get[Int]("mongodb.timeToLiveInSeconds")
-  val enrolmentKey: String                = configuration.get[String]("keys.enrolmentKey.crsFatca")
-  lazy val registerUrl: String            = configuration.get[String]("urls.register")
-  val crsFatcaManualBackendUrl: String    = servicesConfig.baseUrl("crs-fatca-manual-submission")
-  val crsFatcaReportingBackendUrl: String = servicesConfig.baseUrl("crs-fatca-reporting")
-  val fIManagementUrl: String             = servicesConfig.baseUrl("crs-fatca-fi-management")
-  val enquiryEmail: String                = configuration.get[String]("enquiry.email")
+  val countdown: Int                           = configuration.get[Int]("timeout-dialog.countdown")
+  val cacheTtl: Long                           = configuration.get[Int]("mongodb.timeToLiveInSeconds")
+  val enrolmentKey: String                     = configuration.get[String]("keys.enrolmentKey.crsFatca")
+  lazy val registerUrl: String                 = configuration.get[String]("urls.register")
+  val crsFatcaManualBackendUrl: String         = servicesConfig.baseUrl("crs-fatca-manual-submission")
+  val crsFatcaReportingBackendUrl: String      = servicesConfig.baseUrl("crs-fatca-reporting")
+  val fIManagementUrl: String                  = servicesConfig.baseUrl("crs-fatca-fi-management")
+  val enquiryEmail: String                     = configuration.get[String]("enquiry.email")
   private lazy val registrationBaseUrl: String = servicesConfig.baseUrl("crs-fatca-registration")
   lazy val registrationUrl: String             = registrationBaseUrl + configuration.get[String]("microservice.services.crs-fatca-registration.base-path")
 }
