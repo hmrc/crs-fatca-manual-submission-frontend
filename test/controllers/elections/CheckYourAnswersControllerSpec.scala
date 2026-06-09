@@ -28,6 +28,7 @@ import play.api.test.FakeRequest
 import services.CheckYourAnswersValidatorService
 import play.api.test.Helpers.*
 import services.ElectionsService
+import uk.gov.hmrc.http.InternalServerException
 import viewmodels.govuk.SummaryListFluency
 import views.html.CheckYourAnswersView
 
@@ -107,7 +108,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
     "onSubmit" - {
 
       val onSubmitUrl = controllers.elections.routes.CheckYourAnswersController.onSubmit(2026).url
-      "must redirect when service return success" in {
+      "must redirect To Election Sent Page when service return success" in {
 
         val mockService = mock[ElectionsService]
 
@@ -127,6 +128,29 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual controllers.elections.routes.ElectionsSentController.onPageLoad().url
+        }
+      }
+
+      "must redirect To Journey Recovery when service return failure" in {
+
+        val mockService = mock[ElectionsService]
+
+        when(mockService.submitAndDeleteElectionData(any(), any())(any())) thenReturn Future.failed(InternalServerException("Failed"))
+
+        val application =
+          applicationBuilder(userData = Some(emptyUserAnswers))
+            .overrides(
+              inject.bind[ElectionsService].toInstance(mockService)
+            )
+            .build()
+
+        running(application) {
+          val request = FakeRequest(POST, onSubmitUrl)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
         }
       }
     }
