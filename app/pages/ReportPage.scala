@@ -19,7 +19,7 @@ package pages
 import models.ReportId
 import play.api.libs.json.JsPath
 
-final case class ReportPage[A](fieldName: String)(implicit reportId:ReportId) extends QuestionPage[A] {
+final case class ReportPage[A](fieldName: String)(implicit reportId: ReportId) extends QuestionPage[A] {
 
   override def path: JsPath =
     JsPath \ reportId.mongoKey \ fieldName
