@@ -6,7 +6,9 @@ lazy val appName: String = "crs-fatca-manual-submission-frontend"
 
 ThisBuild / majorVersion := 0
 ThisBuild / scalaVersion := "3.3.5"
-
+routesImport += "models.SubmissionsConstants.RegimeType"
+routesImport += "queries.PathBinders.given"
+routesImport += "java.time.LocalDateTime"
 lazy val microservice = (project in file("."))
   .enablePlugins(PlayScala, SbtDistributablesPlugin)
   .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427
