@@ -18,19 +18,22 @@ package controllers.elections
 
 import controllers.actions.*
 import forms.elections.CRSThresholdsFormProvider
-import models.Mode
+import models.{Mode, UserAnswers}
 import navigation.Navigator
-import pages.FiDetailsPage
+import pages.{CarfGrossProceedsPage, CrsGrossProceedsPage, FiDetailsPage}
 import pages.elections.CRSThresholdsPage
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.ReportingConstants
+import utils.ReportingConstants.REPORTING_THRESHOLD_YEAR
 import views.html.CRSThresholdsView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Success, Try}
 
 class CRSThresholdsController @Inject() (
   override val messagesApi: MessagesApi,
@@ -81,9 +84,15 @@ class CRSThresholdsController @Inject() (
                 value =>
                   for {
                     updatedAnswers <- Future.fromTry(request.userAnswers.set(CRSThresholdsPage, value))
-                    _              <- sessionRepository.set(updatedAnswers)
+                    cleanedUA      <- Future.fromTry(checkAndCleanUpCarfPages(updatedAnswers, year))
+                    _              <- sessionRepository.set(cleanedUA)
                   } yield Redirect(navigator.nextPage(CRSThresholdsPage, mode, updatedAnswers, Some(year)))
               )
         }
   }
+
+  private def checkAndCleanUpCarfPages(answers: UserAnswers, year: Int): Try[UserAnswers] =
+    if (year < REPORTING_THRESHOLD_YEAR) {
+      answers.removeAll(Seq(CarfGrossProceedsPage, CrsGrossProceedsPage))
+    } else Success(answers)
 }
