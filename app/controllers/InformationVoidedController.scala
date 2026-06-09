@@ -42,13 +42,12 @@ class InformationVoidedController @Inject() (
     with I18nSupport
     with Logging {
 
-  def onPageLoad(originalMessageId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(originalMessageId: String, emails: Seq[String]): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       (for {
         fiDetail     <- request.userAnswers.get(FiDetailsPage)
         voidedReport <- request.userAnswers.get(VoidedReportMessageRefIdsPage)
       } yield
-        val emails = Seq("email1@test.com") // TODO: [DAC6-4271]
 
         val infoVoidedViewModel = InformationVoidedViewModel(
           fiName = fiDetail.fiName,
