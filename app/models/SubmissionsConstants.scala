@@ -31,7 +31,7 @@ object SubmissionsConstants:
 
   case object CRFA extends RegimeType:
     def value = "CRFA"
-  
+
   sealed trait SubmissionStatus:
     def value: String
 

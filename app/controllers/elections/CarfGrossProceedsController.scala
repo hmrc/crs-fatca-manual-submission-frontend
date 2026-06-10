@@ -43,7 +43,6 @@ class CarfGrossProceedsController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-
   def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       request.userAnswers
