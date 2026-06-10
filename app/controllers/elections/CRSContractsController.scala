@@ -37,7 +37,7 @@ class CRSContractsController @Inject() (
   sessionRepository: SessionRepository,
   navigator: Navigator,
   identify: IdentifierAction,
-  setData: DataCreationAction,
+  requireData: DataRequiredAction,
   getData: FrontendDataRetrievalAction,
   formProvider: CRSContractsFormProvider,
   val controllerComponents: MessagesControllerComponents,
@@ -48,7 +48,7 @@ class CRSContractsController @Inject() (
 
   val form: Form[Boolean] = formProvider()
 
-  def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen setData) {
+  def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       request.userAnswers
         .get(FiDetailsPage)
@@ -63,7 +63,7 @@ class CRSContractsController @Inject() (
         }
   }
 
-  def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen setData).async {
+  def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       request.userAnswers
         .get(FiDetailsPage)

@@ -39,8 +39,9 @@ class ElectionsSentController @Inject() (
   def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       request.userAnswers.get(ElectionsSentPage) match {
-        case Some(electionSent) => Ok(view(electionSent.regime.toString, electionSent.fiName, electionSent.reportingYear.toString, appConfig.enquiryEmail))
-        case None               => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)
+        case Some(electionSent) =>
+          Ok(view(electionSent.regime.toString, electionSent.fiName, electionSent.reportingYear.toString, appConfig.enquiryEmail, electionSent.fiId))
+        case None => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)
       }
   }
 }
