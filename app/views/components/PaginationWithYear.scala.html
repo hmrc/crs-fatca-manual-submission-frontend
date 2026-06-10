@@ -21,27 +21,26 @@
 @(sortedYears: Seq[Int], chosenYear: Int, visibleOptions: Int, pageUrl: Int => Call)(implicit messages: Messages, request: RequestHeader)
 
 @defining(sortedYears.indexOf(chosenYear)) { currentIdx =>
-@defining({
+  @defining({
     val lastIdx = sortedYears.length - 1
 
     if (lastIdx <= 0) {
-        List(Right(sortedYears.head): Either[String, Int])
+      List(Right(sortedYears.head): Either[String, Int])
     } else {
+      val half         = visibleOptions / 2
+      val rawStart     = currentIdx - half
+      val clampedStart = Math.max(1, Math.min(rawStart, lastIdx - visibleOptions))
+      val clampedEnd   = Math.min(lastIdx - 1, clampedStart + visibleOptions - 1)
 
-        val half         = visibleOptions / 2
-        val rawStart     = currentIdx - half
-        val clampedEnd   = Math.min(lastIdx - 1, rawStart + visibleOptions - 1)
-        val clampedStart = Math.max(1, clampedEnd - visibleOptions + 1)
+      val first         = List[Either[String, Int]](Right(sortedYears.head))
+      val leftEllipsis  = if (clampedStart > 1)           List[Either[String, Int]](Left("ellipsis")) else Nil
+      val middle        = (clampedStart to clampedEnd).map(i => Right(sortedYears(i)): Either[String, Int]).toList
+      val rightEllipsis = if (clampedEnd   < lastIdx - 1) List[Either[String, Int]](Left("ellipsis")) else Nil
+      val last          = List[Either[String, Int]](Right(sortedYears(lastIdx)))
 
-        val first        = List[Either[String, Int]](Right(sortedYears.head))
-        val leftEllipsis = if (clampedStart > 1)           List[Either[String, Int]](Left("ellipsis")) else Nil
-        val middle       = (clampedStart to clampedEnd).map(i => Right(sortedYears(i)): Either[String, Int]).toList
-        val rightEllipsis= if (clampedEnd   < lastIdx - 1) List[Either[String, Int]](Left("ellipsis")) else Nil
-        val last         = List[Either[String, Int]](Right(sortedYears(lastIdx)))
-
-        first ++ leftEllipsis ++ middle ++ rightEllipsis ++ last
+      first ++ leftEllipsis ++ middle ++ rightEllipsis ++ last
     }
-}) { paginationItems =>
+  }) { paginationItems =>
 
     @govukPagination(Pagination(
       items = Some(
