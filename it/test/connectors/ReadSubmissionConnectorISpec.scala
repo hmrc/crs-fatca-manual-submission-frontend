@@ -20,7 +20,7 @@ import models.ReadSubmissionResponseDetails
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers.{a, include, must, mustBe}
 import play.api.http.Status.*
-import play.api.libs.json.{JsResultException, Json}
+import play.api.libs.json.Json
 import uk.gov.hmrc.http.InternalServerException
 import utils.ISpecBase
 
