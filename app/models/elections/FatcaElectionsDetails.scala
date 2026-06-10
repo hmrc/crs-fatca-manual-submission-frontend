@@ -35,10 +35,10 @@ object FatcaElectionsDetails:
     Seq(
       SummaryListRowViewModel(
         key = Key(content = Text(messages("manageElections.fatca.hasThresholds"))).withCssClass(InputWidth.ThreeQuarters.toString),
-        value = Value(content = Text(details.hasThresholds.fold("Not Provided")(_.toString)))
+        value = Value(content = Text(details.hasThresholds.fold("Not provided")(_.toString)))
       ),
       SummaryListRowViewModel(
         key = Key(content = Text(messages("manageElections.fatca.hasTreasuryRegulations"))).withCssClass(InputWidth.ThreeQuarters.toString),
-        value = Value(content = Text(details.hasTreasuryRegulations.fold("Not Provided")(_.toString)))
+        value = Value(content = Text(details.hasTreasuryRegulations.fold("Not provided")(_.toString)))
       )
     )

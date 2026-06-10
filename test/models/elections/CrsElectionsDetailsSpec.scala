@@ -46,7 +46,7 @@ class CrsElectionsDetailsSpec extends SpecBase {
 
       "showing 'Not Provided' when values are None" in {
         val result = CrsElectionsDetails.rows(details(), year2025)
-        result.count(_.value.content.asHtml.body == "Not Provided") mustBe 3
+        result.count(_.value.content.asHtml.body == "Not provided") mustBe 3
       }
 
       "showing the value when set" in {
@@ -85,7 +85,7 @@ class CrsElectionsDetailsSpec extends SpecBase {
       "displays 'Not Provided' when hasCARF is None" in {
         val result  = CrsElectionsDetails.rows(details(hasCARF = None), year2026)
         val carfRow = result.find(_.key.content.asHtml.body == msgs("manageElections.crs.hasCARF", year2026.toString))
-        carfRow.value.value.content.asHtml.body mustBe "Not Provided"
+        carfRow.value.value.content.asHtml.body mustBe "Not provided"
       }
     }
 

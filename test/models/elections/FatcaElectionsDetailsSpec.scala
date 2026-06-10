@@ -37,7 +37,7 @@ class FatcaElectionsDetailsSpec extends SpecBase {
       "displays 'Not Provided' when None" in {
         val result = FatcaElectionsDetails.rows(details(hasThresholds = None))
         val row    = result.find(_.key.content.asHtml.body == msgs("manageElections.fatca.hasThresholds"))
-        row.value.value.content.asHtml.body mustBe "Not Provided"
+        row.value.value.content.asHtml.body mustBe "Not provided"
       }
 
       "displays Yes when set to Yes" in {
@@ -64,7 +64,7 @@ class FatcaElectionsDetailsSpec extends SpecBase {
       "displays 'Not Provided' when None" in {
         val result = FatcaElectionsDetails.rows(details(hasTreasuryRegulations = None))
         val row    = result.find(_.key.content.asHtml.body == msgs("manageElections.fatca.hasTreasuryRegulations"))
-        row.value.value.content.asHtml.body mustBe "Not Provided"
+        row.value.value.content.asHtml.body mustBe "Not provided"
       }
 
       "displays Yes when set to Yes" in {

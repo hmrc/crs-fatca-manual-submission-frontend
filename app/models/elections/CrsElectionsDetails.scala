@@ -42,7 +42,7 @@ object CrsElectionsDetails:
         Seq(
           SummaryListRowViewModel(
             key = Key(content = Text(messages("manageElections.crs.hasCARF", selectedYear.toString))).withCssClass(InputWidth.ThreeQuarters.toString),
-            value = Value(content = Text(details.hasCARF.fold("Not Provided")(_.toString)))
+            value = Value(content = Text(details.hasCARF.fold("Not provided")(_.toString)))
           )
         )
       else Seq.empty
@@ -68,15 +68,15 @@ object CrsElectionsDetails:
     Seq(
       SummaryListRowViewModel(
         key = Key(content = Text(messages("manageElections.crs.hasContracts"))).withCssClass(InputWidth.ThreeQuarters.toString),
-        value = Value(content = Text(details.hasContracts.fold("Not Provided")(_.toString)))
+        value = Value(content = Text(details.hasContracts.fold("Not provided")(_.toString)))
       ),
       SummaryListRowViewModel(
         key = Key(content = Text(messages("manageElections.crs.hasDormantAccounts"))).withCssClass(InputWidth.ThreeQuarters.toString),
-        value = Value(content = Text(details.hasDormantAccounts.fold("Not Provided")(_.toString)))
+        value = Value(content = Text(details.hasDormantAccounts.fold("Not provided")(_.toString)))
       ),
       SummaryListRowViewModel(
         key = Key(content = Text(messages("manageElections.crs.hasThresholds"))).withCssClass(InputWidth.ThreeQuarters.toString),
-        value = Value(content = Text(details.hasThresholds.fold("Not Provided")(_.toString)))
+        value = Value(content = Text(details.hasThresholds.fold("Not provided")(_.toString)))
       )
     ) ++ maybeCarfRow ++ maybeGrossProceedsRow
 
