@@ -53,10 +53,10 @@ POST       /elections/crs/carf-gross-proceeds                       controllers.
 GET        /elections/crs/change-carf-gross-proceeds                controllers.elections.CarfGrossProceedsController.onPageLoad(mode: Mode = CheckMode, year: Int)
 POST       /elections/crs/change-carf-gross-proceeds                controllers.elections.CarfGrossProceedsController.onSubmit(mode: Mode = CheckMode, year: Int)
 
-GET        /elections/crs/crs-gross-proceeds                        controllers.elections.CrsGrossProceedsController.onPageLoad(mode: Mode = NormalMode, year: Int)
-POST       /elections/crs/crs-gross-proceeds                        controllers.elections.CrsGrossProceedsController.onSubmit(mode: Mode = NormalMode, year: Int)
-GET        /elections/crs/change-crs-gross-proceeds                 controllers.elections.CrsGrossProceedsController.onPageLoad(mode: Mode = CheckMode, year: Int)
-POST       /elections/crs/change-crs-gross-proceeds                 controllers.elections.CrsGrossProceedsController.onSubmit(mode: Mode = CheckMode, year: Int)
+GET        /elections/crs/gross-proceeds                        controllers.elections.CrsGrossProceedsController.onPageLoad(mode: Mode = NormalMode, year: Int)
+POST       /elections/crs/gross-proceeds                        controllers.elections.CrsGrossProceedsController.onSubmit(mode: Mode = NormalMode, year: Int)
+GET        /elections/crs/change-gross-proceeds                 controllers.elections.CrsGrossProceedsController.onPageLoad(mode: Mode = CheckMode, year: Int)
+POST       /elections/crs/change-gross-proceeds                 controllers.elections.CrsGrossProceedsController.onSubmit(mode: Mode = CheckMode, year: Int)
 
 GET        /elections/check-answers                                 controllers.elections.CheckYourAnswersController.onPageLoad(year: Int)
 POST       /elections/check-answers                                 controllers.elections.CheckYourAnswersController.onSubmit(year: Int)
