@@ -43,5 +43,4 @@ class DatabaseConnector @Inject() (client: HttpClientV2, config: FrontendAppConf
             case _         => Future.failed(Downstream_Error)
           }
       }
-
 }
