@@ -34,12 +34,20 @@
     @emailLink = {@link(href="mailto:aeoi.enquiries@hmrc.gov.uk", messages("manageElections.link.1"), asPara = false)}
     @year = @{selectedYear.toString}
 
+    <style>
+        .reduce-pagination-padding li {
+            padding-left: 0.5em !important;
+            padding-right: 0.5em !important;
+        }
+    </style>
+
+
 @layout(pageTitle = titleNoForm(messages("manageElections.title", year))) {
     @heading(messages("manageElections.heading", fiName, year))
     @para("manageElections.para.1", htmlArgs = Seq(emailLink))
 
     <div class="reduce-pagination-padding govuk-!-margin-bottom-7">
-        @pagination(electionYears, selectedYear, 2, selectedYear => controllers.elections.routes.ManageElectionsController.onPageLoad(selectedYear, fiId))
+        @pagination(electionYears, selectedYear, 3, selectedYear => controllers.elections.routes.ManageElectionsController.onPageLoad(selectedYear, fiId))
     </div>
 
     <div class="govuk-!-margin-bottom-8">
