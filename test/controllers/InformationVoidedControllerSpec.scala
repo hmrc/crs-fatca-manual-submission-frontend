@@ -19,8 +19,8 @@ package controllers
 import base.SpecBase
 import models.SubmissionsConstants.{FATCA1, FATCA4}
 import models.viewModels.InformationVoidedViewModel
-import models.{FatcaVoidCardDetail, FatcaVoidCardModel, FiIdentifiers, ReadSubmissionResponseDetails}
-import pages.{FiDetailsPage, VoidedReportMessageRefIdsPage}
+import models.{FatcaVoidCardDetail, FatcaVoidCardModel, FiIdentifiers, ReadSubmissionResponseDetails, VoidedReportData}
+import pages.{FiDetailsPage, VoidedReportDataPage}
 import play.api.inject
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
@@ -39,6 +39,7 @@ class InformationVoidedControllerSpec extends SpecBase {
   private val fiName             = "someFiName"
   private val fiId               = "some-fiId"
   private val emailString        = "email1@test.com"
+  private val emails             = Seq(emailString)
   private val cardDetail1        = FatcaVoidCardDetail("GB2026GB-ABC1234567890-FATCA_003", "Sent 30 May 2027 at 11:59", FATCA1)
   private val cardDetail2        = FatcaVoidCardDetail("GB2026GB-ABC1234567890-FATCA_003_2", "Sent 28 May 2027 at 09:25", FATCA4)
   private val fatcaVoidCardModel = FatcaVoidCardModel(Seq(cardDetail1, cardDetail2))
@@ -61,6 +62,12 @@ class InformationVoidedControllerSpec extends SpecBase {
   val fiDetails                      = FiIdentifiers(report1.fiId, fiName)
   val voidedMessageRefs: Seq[String] = Seq(report1.messageRefId, report2.messageRefId)
 
+  val voidedReportData =
+    VoidedReportData(
+      messageRefIds = voidedMessageRefs,
+      emails = emails
+    )
+
   "InformationVoided Controller" - {
     "must return OK and the correct view for a GET" in {
 
@@ -68,7 +75,7 @@ class InformationVoidedControllerSpec extends SpecBase {
         Some(
           emptyUserAnswers
             .withPage(FiDetailsPage, fiDetails)
-            .withPage(VoidedReportMessageRefIdsPage, voidedMessageRefs)
+            .withPage(VoidedReportDataPage, voidedReportData)
         )
       )
         .overrides(
@@ -86,7 +93,7 @@ class InformationVoidedControllerSpec extends SpecBase {
       }
     }
     "must redirect to Journey Recovery for a GET if no FI detail is found" in {
-      val application = applicationBuilder(userData = Some(emptyUserAnswers.withPage(VoidedReportMessageRefIdsPage, voidedMessageRefs)))
+      val application = applicationBuilder(userData = Some(emptyUserAnswers.withPage(VoidedReportDataPage, voidedReportData)))
         .build()
 
       running(application) {

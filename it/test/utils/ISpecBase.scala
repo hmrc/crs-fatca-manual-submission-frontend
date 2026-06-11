@@ -74,7 +74,9 @@ trait ISpecBase
     "microservice.services.crs-fatca-fi-management.host"     -> WireMockConstants.stubHost,
     "microservice.services.crs-fatca-reporting.port" -> WireMockConstants.stubPort.toString,
     "mongodb.uri"                                            -> mongoUri,
-    "play.filters.csrf.header.bypassHeaders.Csrf-Token"      -> "nocheck"
+    "play.filters.csrf.header.bypassHeaders.Csrf-Token"      -> "nocheck",
+    "microservice.services.crs-fatca-registration.host" -> WireMockConstants.stubHost,
+    "microservice.services.crs-fatca-registration.port" -> WireMockConstants.stubPort.toString,
     //    "logger.root"                                             -> "INFO",
     //    "logger.controllers"                                      -> "DEBUG"
   )
