@@ -70,7 +70,7 @@ class ConfirmationEmailRecipientsServiceSpec extends SpecBase {
         when(mockViewFIService.getFIDetail(any[String](), any[String]())(using any[HeaderCarrier]()))
           .thenReturn(Future.successful(fiDetail))
 
-        when(mockSubscriptionService.subscription(any[SubscriptionID]())(using any[HeaderCarrier](), any[ExecutionContext]()))
+        when(mockSubscriptionService.subscription(any[SubscriptionID]())(using any[HeaderCarrier]()))
           .thenReturn(Future.successful(subscription))
 
         val result = service.getEmailRecipients(fiId, subscriptionId).futureValue
@@ -98,7 +98,7 @@ class ConfirmationEmailRecipientsServiceSpec extends SpecBase {
         when(mockViewFIService.getFIDetail(any[String](), any[String]())(using any[HeaderCarrier]()))
           .thenReturn(Future.successful(fiDetail))
 
-        when(mockSubscriptionService.subscription(any[SubscriptionID]())(using any[HeaderCarrier](), any[ExecutionContext]()))
+        when(mockSubscriptionService.subscription(any[SubscriptionID]())(using any[HeaderCarrier]()))
           .thenReturn(Future.successful(subscription))
 
         val result = service.getEmailRecipients(fiId, subscriptionId).futureValue
@@ -128,7 +128,7 @@ class ConfirmationEmailRecipientsServiceSpec extends SpecBase {
         when(mockViewFIService.getFIDetail(any[String](), any[String]())(using any[HeaderCarrier]()))
           .thenReturn(Future.successful(fiDetail))
 
-        when(mockSubscriptionService.subscription(any[SubscriptionID]())(using any[HeaderCarrier](), any[ExecutionContext]()))
+        when(mockSubscriptionService.subscription(any[SubscriptionID]())(using any[HeaderCarrier]()))
           .thenReturn(Future.successful(subscription))
 
         val result = service.getEmailRecipients(fiId, subscriptionId).futureValue
@@ -156,7 +156,7 @@ class ConfirmationEmailRecipientsServiceSpec extends SpecBase {
         when(mockViewFIService.getFIDetail(any[String](), any[String]())(using any[HeaderCarrier]()))
           .thenReturn(Future.successful(fiDetail))
 
-        when(mockSubscriptionService.subscription(any[SubscriptionID]())(using any[HeaderCarrier](), any[ExecutionContext]()))
+        when(mockSubscriptionService.subscription(any[SubscriptionID]())(using any[HeaderCarrier]()))
           .thenReturn(Future.successful(subscription))
 
         val result = service.getEmailRecipients(fiId, subscriptionId).futureValue

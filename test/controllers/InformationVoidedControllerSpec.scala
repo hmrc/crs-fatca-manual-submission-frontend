@@ -19,8 +19,8 @@ package controllers
 import base.SpecBase
 import models.SubmissionsConstants.{FATCA1, FATCA4}
 import models.viewModels.InformationVoidedViewModel
-import models.{FatcaVoidCardDetail, FatcaVoidCardModel, FiIdentifiers, ReadSubmissionResponseDetails}
-import pages.{FiDetailsPage, VoidedReportMessageRefIdsPage}
+import models.{FatcaVoidCardDetail, FatcaVoidCardModel, FiIdentifiers, ReadSubmissionResponseDetails, VoidedReportData}
+import pages.{FiDetailsPage, VoidedReportDataPage}
 import play.api.inject
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
@@ -62,6 +62,12 @@ class InformationVoidedControllerSpec extends SpecBase {
   val fiDetails                      = FiIdentifiers(report1.fiId, fiName)
   val voidedMessageRefs: Seq[String] = Seq(report1.messageRefId, report2.messageRefId)
 
+  val voidedReportData =
+    VoidedReportData(
+      messageRefIds = voidedMessageRefs,
+      emails = emails
+    )
+
   "InformationVoided Controller" - {
     "must return OK and the correct view for a GET" in {
 
@@ -69,7 +75,7 @@ class InformationVoidedControllerSpec extends SpecBase {
         Some(
           emptyUserAnswers
             .withPage(FiDetailsPage, fiDetails)
-            .withPage(VoidedReportMessageRefIdsPage, voidedMessageRefs)
+            .withPage(VoidedReportDataPage, voidedReportData)
         )
       )
         .overrides(
@@ -78,7 +84,7 @@ class InformationVoidedControllerSpec extends SpecBase {
         .build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.InformationVoidedController.onPageLoad(originalMessageId, emails).url)
+        val request = FakeRequest(GET, routes.InformationVoidedController.onPageLoad(originalMessageId).url)
         val result  = route(application, request).value
         val view    = application.injector.instanceOf[InformationVoidedView]
 
@@ -87,11 +93,11 @@ class InformationVoidedControllerSpec extends SpecBase {
       }
     }
     "must redirect to Journey Recovery for a GET if no FI detail is found" in {
-      val application = applicationBuilder(userData = Some(emptyUserAnswers.withPage(VoidedReportMessageRefIdsPage, voidedMessageRefs)))
+      val application = applicationBuilder(userData = Some(emptyUserAnswers.withPage(VoidedReportDataPage, voidedReportData)))
         .build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.InformationVoidedController.onPageLoad(originalMessageId, emails).url)
+        val request = FakeRequest(GET, routes.InformationVoidedController.onPageLoad(originalMessageId).url)
         val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
@@ -105,7 +111,7 @@ class InformationVoidedControllerSpec extends SpecBase {
         .build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.InformationVoidedController.onPageLoad(originalMessageId, emails).url)
+        val request = FakeRequest(GET, routes.InformationVoidedController.onPageLoad(originalMessageId).url)
         val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER

@@ -69,7 +69,7 @@ class SubscriptionServiceSpec extends SpecBase {
 
       "must call the connector with a ReadSubscriptionRequest built from the subscription id" in {
         when(
-          mockConnector.readSubscription(any[ReadSubscriptionRequest])(using any[HeaderCarrier], any[ExecutionContext])
+          mockConnector.readSubscription(any[ReadSubscriptionRequest])(using any[HeaderCarrier])
         ).thenReturn(Future.successful(response))
 
         service.subscription(subscriptionId).futureValue mustBe response

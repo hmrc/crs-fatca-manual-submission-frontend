@@ -16,11 +16,12 @@
 
 package pages
 
+import models.VoidedReportData
 import play.api.libs.json.JsPath
 
-case object VoidedReportMessageRefIdsPage extends QuestionPage[Seq[String]] {
+case object VoidedReportDataPage extends QuestionPage[VoidedReportData] {
 
   override def path: JsPath = JsPath \ toString
 
-  override def toString: String = "voidedReportMessageRefIds"
+  override def toString: String = "voidedReportData"
 }

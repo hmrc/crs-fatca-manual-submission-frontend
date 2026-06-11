@@ -22,11 +22,11 @@ import models.subscription.{DisplaySubscriptionResponse, ReadSubscriptionRequest
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Singleton
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 @Singleton
 class SubscriptionService @Inject() (val subscriptionConnector: SubscriptionConnector) {
 
-  def subscription(subscriptionId: SubscriptionID)(using headerCarrier: HeaderCarrier, ec: ExecutionContext): Future[DisplaySubscriptionResponse] =
+  def subscription(subscriptionId: SubscriptionID)(using headerCarrier: HeaderCarrier): Future[DisplaySubscriptionResponse] =
     subscriptionConnector.readSubscription(ReadSubscriptionRequest(subscriptionId.value))
 }

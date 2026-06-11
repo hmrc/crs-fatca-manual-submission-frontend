@@ -19,12 +19,13 @@ package controllers
 import base.SpecBase
 import forms.VoidingFatcaInformationFormProvider
 import models.SubmissionsConstants.*
-import models.{FatcaVoidCardDetail, FatcaVoidCardModel, FiIdentifiers, ReadSubmissionResponseDetails, SubmissionsConstants, SubmittedReport, VoidReportDetails}
+import models.{FatcaVoidCardDetail, FatcaVoidCardModel, FiIdentifiers, ReadSubmissionResponseDetails, UserAnswers, VoidReportDetails, VoidedReportData}
+import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchersSugar.eqTo
 import org.mockito.Mockito.*
 import org.scalatestplus.mockito.MockitoSugar
-import pages.FiDetailsPage
+import pages.{FiDetailsPage, VoidedReportDataPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -39,7 +40,7 @@ import scala.concurrent.Future
 
 class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
+  def onwardRoute: Call = Call("GET", "/foo")
 
   private val mockVoidService              = mock[VoidService]
   private val mockSubmissionHistoryService = mock[SubmissionHistoryService]
@@ -47,8 +48,11 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
   private val form                         = formProvider()
   private val originalMessageId            = "Some-OMId"
 
-  private lazy val voidingFatcaInformationRoute     = routes.VoidingFatcaInformationController.onPageLoad(originalMessageId).url
-  private lazy val voidingFatcaInformationPostRoute = routes.VoidingFatcaInformationController.onSubmit(originalMessageId).url
+  private lazy val voidingFatcaInformationRoute =
+    routes.VoidingFatcaInformationController.onPageLoad(originalMessageId).url
+
+  private lazy val voidingFatcaInformationPostRoute =
+    routes.VoidingFatcaInformationController.onSubmit(originalMessageId).url
 
   private val mockConfirmationEmailRecipientsService =
     mock[ConfirmationEmailRecipientsService]
@@ -58,7 +62,9 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
     reset(mockVoidService)
     reset(mockConfirmationEmailRecipientsService)
   }
+
   "VoidingFatcaInformation Controller" - {
+
     val fiName          = "ABC Bank plc"
     val year            = "2027"
     val uploadDateTime1 = LocalDateTime.of(2027, 5, 30, 11, 59)
@@ -82,13 +88,26 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
         submissionFileType = FATCA4
       )
 
-    val fatcaCardDetail1   = FatcaVoidCardDetail("GB2026GB-ABC1234567890-FATCA_003", uploadDateTime1.formatTimeSent, FATCA1)
-    val fatcaCardDetail2   = FatcaVoidCardDetail("GB2026GB-ABC1234567890-FATCA_003_2", uploadDateTime2.formatTimeSent, FATCA4)
+    val fatcaCardDetail1 =
+      FatcaVoidCardDetail(
+        "GB2026GB-ABC1234567890-FATCA_003",
+        uploadDateTime1.formatTimeSent,
+        FATCA1
+      )
+
+    val fatcaCardDetail2 =
+      FatcaVoidCardDetail(
+        "GB2026GB-ABC1234567890-FATCA_003_2",
+        uploadDateTime2.formatTimeSent,
+        FATCA4
+      )
+
     val fatcaVoidCardModel = FatcaVoidCardModel(Seq(fatcaCardDetail1, fatcaCardDetail2))
 
     val submissions             = ReadSubmissionResponseDetails(List(report1, report2))
     val voidReportDetail        = VoidReportDetails(fatcaVoidCardModel, fiName, report1.fiId, year)
     val userAnswersWithFiDetail = emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers(report1.fiId, fiName))
+
     "GET" - {
 
       "must return OK and the correct view for a GET" in {
@@ -99,15 +118,22 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
             bind[VoidService].toInstance(mockVoidService)
           )
           .build()
-        when(mockSubmissionHistoryService.getSubmissionHistory(eqTo(report1.fiId))(any())).thenReturn(Future.successful(submissions))
-        when(mockVoidService.getVoidFatcaReportDetails(eqTo(originalMessageId), eqTo(submissions.submissionsList))).thenReturn(Some(voidReportDetail))
+
+        when(mockSubmissionHistoryService.getSubmissionHistory(eqTo(report1.fiId))(any()))
+          .thenReturn(Future.successful(submissions))
+
+        when(mockVoidService.getVoidFatcaReportDetails(eqTo(originalMessageId), eqTo(submissions.submissionsList)))
+          .thenReturn(Some(voidReportDetail))
+
         running(application) {
           val request = FakeRequest(GET, voidingFatcaInformationRoute)
           val result  = route(application, request).value
           val view    = application.injector.instanceOf[VoidingFatcaInformationView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form, report1.fiName, fatcaVoidCardModel, originalMessageId)(request, messages(application)).toString
+
+          contentAsString(result) mustEqual
+            view(form, report1.fiName, fatcaVoidCardModel, originalMessageId)(request, messages(application)).toString
         }
       }
 
@@ -118,7 +144,9 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
             bind[SubmissionHistoryService].toInstance(mockSubmissionHistoryService)
           )
           .build()
-        when(mockSubmissionHistoryService.getSubmissionHistory(eqTo(report1.fiId))(any())).thenReturn(Future.failed(Exception("something")))
+
+        when(mockSubmissionHistoryService.getSubmissionHistory(eqTo(report1.fiId))(any()))
+          .thenReturn(Future.failed(new RuntimeException("something")))
 
         running(application) {
           val request = FakeRequest(GET, voidingFatcaInformationRoute)
@@ -130,14 +158,19 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
       }
 
       "must redirect to Journey Recovery for a GET if no matching void card is returned" in {
+
         val application = applicationBuilder(userData = Some(userAnswersWithFiDetail))
           .overrides(
             bind[SubmissionHistoryService].toInstance(mockSubmissionHistoryService),
             bind[VoidService].toInstance(mockVoidService)
           )
           .build()
-        when(mockSubmissionHistoryService.getSubmissionHistory(eqTo(report1.fiId))(any())).thenReturn(Future.successful(submissions))
-        when(mockVoidService.getVoidFatcaReportDetails(eqTo(originalMessageId), eqTo(submissions.submissionsList))).thenReturn(None)
+
+        when(mockSubmissionHistoryService.getSubmissionHistory(eqTo(report1.fiId))(any()))
+          .thenReturn(Future.successful(submissions))
+
+        when(mockVoidService.getVoidFatcaReportDetails(eqTo(originalMessageId), eqTo(submissions.submissionsList)))
+          .thenReturn(None)
 
         running(application) {
           val request = FakeRequest(GET, voidingFatcaInformationRoute)
@@ -151,25 +184,26 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
 
     "POST" - {
 
-      "must redirect to the next page when user submits true" in {
+      "must redirect to the next page when user submits true and save voided report data" in {
+
         val mockSession = mock[SessionRepository]
         val emails      = Seq("email1@test.com")
 
         when(mockSubmissionHistoryService.getSubmissionHistory(eqTo(report1.fiId))(any()))
           .thenReturn(Future.successful(submissions))
 
-        when(mockVoidService.fatcaVoid(any(), any())(any()))
-          .thenReturn(Future.successful(()))
-
-        when(mockSession.set(any()))
-          .thenReturn(Future.successful(true))
-
         when(mockVoidService.getVoidFatcaReportDetails(eqTo(originalMessageId), any()))
-          .thenReturn(Some(VoidReportDetails(fatcaVoidCardModel, fiName, report1.fiId, year)))
+          .thenReturn(Some(voidReportDetail))
 
         when(
           mockConfirmationEmailRecipientsService.getEmailRecipients(eqTo(report1.fiId), any())(any())
         ).thenReturn(Future.successful(emails))
+
+        when(mockVoidService.fatcaVoid(eqTo(originalMessageId), eqTo(report1.fiId))(any()))
+          .thenReturn(Future.successful(()))
+
+        when(mockSession.set(any()))
+          .thenReturn(Future.successful(true))
 
         val application =
           applicationBuilder(userData = Some(userAnswersWithFiDetail))
@@ -191,19 +225,163 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual SEE_OTHER
 
           redirectLocation(result).value mustEqual
-            routes.InformationVoidedController.onPageLoad(originalMessageId, emails).url
+            routes.InformationVoidedController.onPageLoad(originalMessageId).url
+
+          val userAnswersCaptor: ArgumentCaptor[UserAnswers] =
+            ArgumentCaptor.forClass(classOf[UserAnswers])
+
+          verify(mockSession).set(userAnswersCaptor.capture())
+
+          val savedVoidedReportData =
+            userAnswersCaptor.getValue.get(VoidedReportDataPage).value
+
+          savedVoidedReportData mustEqual VoidedReportData(
+            messageRefIds = Seq(
+              "GB2026GB-ABC1234567890-FATCA_003",
+              "GB2026GB-ABC1234567890-FATCA_003_2"
+            ),
+            emails = emails
+          )
 
           verify(mockVoidService).fatcaVoid(eqTo(originalMessageId), eqTo(report1.fiId))(any())
-          verify(mockSession, atMostOnce()).set(any())
           verify(mockConfirmationEmailRecipientsService).getEmailRecipients(eqTo(report1.fiId), any())(any())
         }
       }
 
+      "must redirect to Journey Recovery when email recipients cannot be retrieved" in {
+
+        val mockSession = mock[SessionRepository]
+
+        when(mockSubmissionHistoryService.getSubmissionHistory(eqTo(report1.fiId))(any()))
+          .thenReturn(Future.successful(submissions))
+
+        when(mockVoidService.getVoidFatcaReportDetails(eqTo(originalMessageId), any()))
+          .thenReturn(Some(voidReportDetail))
+
+        when(
+          mockConfirmationEmailRecipientsService.getEmailRecipients(eqTo(report1.fiId), any())(any())
+        ).thenReturn(Future.failed(new RuntimeException("email failure")))
+
+        val application =
+          applicationBuilder(userData = Some(userAnswersWithFiDetail))
+            .overrides(
+              bind[SubmissionHistoryService].toInstance(mockSubmissionHistoryService),
+              bind[SessionRepository].toInstance(mockSession),
+              bind[VoidService].toInstance(mockVoidService),
+              bind[ConfirmationEmailRecipientsService].toInstance(mockConfirmationEmailRecipientsService)
+            )
+            .build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, voidingFatcaInformationPostRoute)
+              .withFormUrlEncodedBody(("value", "true"))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+
+          verify(mockVoidService, never()).fatcaVoid(any(), any())(any())
+          verify(mockSession, never()).set(any())
+        }
+      }
+
+      "must redirect to Journey Recovery when the FATCA void call fails" in {
+
+        val mockSession = mock[SessionRepository]
+        val emails      = Seq("email1@test.com")
+
+        when(mockSubmissionHistoryService.getSubmissionHistory(eqTo(report1.fiId))(any()))
+          .thenReturn(Future.successful(submissions))
+
+        when(mockVoidService.getVoidFatcaReportDetails(eqTo(originalMessageId), any()))
+          .thenReturn(Some(voidReportDetail))
+
+        when(
+          mockConfirmationEmailRecipientsService.getEmailRecipients(eqTo(report1.fiId), any())(any())
+        ).thenReturn(Future.successful(emails))
+
+        when(mockVoidService.fatcaVoid(eqTo(originalMessageId), eqTo(report1.fiId))(any()))
+          .thenReturn(Future.failed(new RuntimeException("void failure")))
+
+        val application =
+          applicationBuilder(userData = Some(userAnswersWithFiDetail))
+            .overrides(
+              bind[SubmissionHistoryService].toInstance(mockSubmissionHistoryService),
+              bind[SessionRepository].toInstance(mockSession),
+              bind[VoidService].toInstance(mockVoidService),
+              bind[ConfirmationEmailRecipientsService].toInstance(mockConfirmationEmailRecipientsService)
+            )
+            .build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, voidingFatcaInformationPostRoute)
+              .withFormUrlEncodedBody(("value", "true"))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+
+          verify(mockSession, never()).set(any())
+        }
+      }
+
+      "must redirect to Journey Recovery when saving voided report data fails" in {
+
+        val mockSession = mock[SessionRepository]
+        val emails      = Seq("email1@test.com")
+
+        when(mockSubmissionHistoryService.getSubmissionHistory(eqTo(report1.fiId))(any()))
+          .thenReturn(Future.successful(submissions))
+
+        when(mockVoidService.getVoidFatcaReportDetails(eqTo(originalMessageId), any()))
+          .thenReturn(Some(voidReportDetail))
+
+        when(
+          mockConfirmationEmailRecipientsService.getEmailRecipients(eqTo(report1.fiId), any())(any())
+        ).thenReturn(Future.successful(emails))
+
+        when(mockVoidService.fatcaVoid(eqTo(originalMessageId), eqTo(report1.fiId))(any()))
+          .thenReturn(Future.successful(()))
+
+        when(mockSession.set(any()))
+          .thenReturn(Future.failed(new RuntimeException("session failure")))
+
+        val application =
+          applicationBuilder(userData = Some(userAnswersWithFiDetail))
+            .overrides(
+              bind[SubmissionHistoryService].toInstance(mockSubmissionHistoryService),
+              bind[SessionRepository].toInstance(mockSession),
+              bind[VoidService].toInstance(mockVoidService),
+              bind[ConfirmationEmailRecipientsService].toInstance(mockConfirmationEmailRecipientsService)
+            )
+            .build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, voidingFatcaInformationPostRoute)
+              .withFormUrlEncodedBody(("value", "true"))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+
+          verify(mockVoidService).fatcaVoid(eqTo(originalMessageId), eqTo(report1.fiId))(any())
+          verify(mockSession).set(any())
+        }
+      }
+
       "must redirect to back to manage-reports when user submits false" in {
-        when(mockSubmissionHistoryService.getSubmissionHistory(eqTo(report1.fiId))(any())).thenReturn(Future.successful(submissions))
-        when(mockVoidService.getVoidFatcaReportDetails(eqTo(originalMessageId), any())) thenReturn Some(
-          VoidReportDetails(fatcaVoidCardModel, fiName, report1.fiId, year)
-        )
+
+        when(mockSubmissionHistoryService.getSubmissionHistory(eqTo(report1.fiId))(any()))
+          .thenReturn(Future.successful(submissions))
+
+        when(mockVoidService.getVoidFatcaReportDetails(eqTo(originalMessageId), any()))
+          .thenReturn(Some(voidReportDetail))
 
         val application =
           applicationBuilder(userData = Some(userAnswersWithFiDetail))
@@ -221,17 +399,29 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual controllers.routes.ViewSubmissionsController.onPageLoad(LocalDate.now().getYear - 1, report1.fiId).url
+
+          redirectLocation(result).value mustEqual
+            controllers.routes.ViewSubmissionsController.onPageLoad(LocalDate.now().getYear - 1, report1.fiId).url
 
           verify(mockVoidService, never()).fatcaVoid(eqTo(originalMessageId), eqTo(report1.fiId))(any())
         }
       }
 
       "must return a Bad Request and error when invalid data is submitted" in {
-        when(mockSubmissionHistoryService.getSubmissionHistory(eqTo(report1.fiId))(any())).thenReturn(Future.successful(submissions))
-        val application = applicationBuilder(userData = Some(userAnswersWithFiDetail))
-          .overrides(bind[SubmissionHistoryService].toInstance(mockSubmissionHistoryService))
-          .build()
+
+        when(mockSubmissionHistoryService.getSubmissionHistory(eqTo(report1.fiId))(any()))
+          .thenReturn(Future.successful(submissions))
+
+        when(mockVoidService.getVoidFatcaReportDetails(eqTo(originalMessageId), any()))
+          .thenReturn(Some(voidReportDetail))
+
+        val application =
+          applicationBuilder(userData = Some(userAnswersWithFiDetail))
+            .overrides(
+              bind[SubmissionHistoryService].toInstance(mockSubmissionHistoryService),
+              bind[VoidService].toInstance(mockVoidService)
+            )
+            .build()
 
         running(application) {
           val request =
@@ -243,13 +433,67 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
           val result    = route(application, request).value
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, report1.fiName, fatcaVoidCardModel, originalMessageId)(request, messages(application)).toString
+
+          contentAsString(result) mustEqual
+            view(boundForm, report1.fiName, fatcaVoidCardModel, originalMessageId)(request, messages(application)).toString
         }
       }
 
       "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
         val application = applicationBuilder(userData = None).build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, voidingFatcaInformationPostRoute)
+              .withFormUrlEncodedBody(("value", "true"))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+      }
+
+      "must redirect to Journey Recovery for a POST if no matching void card is returned" in {
+
+        when(mockSubmissionHistoryService.getSubmissionHistory(eqTo(report1.fiId))(any()))
+          .thenReturn(Future.successful(submissions))
+
+        when(mockVoidService.getVoidFatcaReportDetails(eqTo(originalMessageId), any()))
+          .thenReturn(None)
+
+        val application =
+          applicationBuilder(userData = Some(userAnswersWithFiDetail))
+            .overrides(
+              bind[SubmissionHistoryService].toInstance(mockSubmissionHistoryService),
+              bind[VoidService].toInstance(mockVoidService)
+            )
+            .build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, voidingFatcaInformationPostRoute)
+              .withFormUrlEncodedBody(("value", "true"))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+      }
+
+      "must redirect to Journey Recovery for a POST if submission history cannot be retrieved" in {
+
+        when(mockSubmissionHistoryService.getSubmissionHistory(eqTo(report1.fiId))(any()))
+          .thenReturn(Future.failed(new RuntimeException("submission history failure")))
+
+        val application =
+          applicationBuilder(userData = Some(userAnswersWithFiDetail))
+            .overrides(
+              bind[SubmissionHistoryService].toInstance(mockSubmissionHistoryService)
+            )
+            .build()
 
         running(application) {
           val request =

@@ -17,32 +17,52 @@
 package connectors
 
 import config.FrontendAppConfig
+import models.ServiceErrors.Downstream_Error
 import models.subscription.{DisplaySubscriptionResponse, ReadSubscriptionRequest}
 import play.api.Logging
-import play.api.libs.json.Json
+import play.api.http.Status.OK
+import play.api.libs.json.{JsError, JsSuccess, Json}
 import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
-import uk.gov.hmrc.http as StringContextOps
-import uk.gov.hmrc.http.HttpErrorFunctions.is2xx
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success, Try}
 
-class SubscriptionConnector @Inject() (val config: FrontendAppConfig, val http: HttpClientV2) extends Logging {
+class SubscriptionConnector @Inject() (
+  val config: FrontendAppConfig,
+  val http: HttpClientV2
+)(implicit ec: ExecutionContext)
+    extends Logging {
 
   def readSubscription(
     readSubscriptionRequest: ReadSubscriptionRequest
-  )(using hc: HeaderCarrier, ec: ExecutionContext): Future[DisplaySubscriptionResponse] =
-    val readSubscription = url"${config.registrationUrl}/subscription/read-subscription"
+  )(using hc: HeaderCarrier): Future[DisplaySubscriptionResponse] = {
+    val readSubscriptionUrl = url"${config.registrationUrl}/subscription/read-subscription"
+
     http
-      .post(readSubscription)
+      .post(readSubscriptionUrl)
       .withBody(Json.toJson(readSubscriptionRequest))
       .execute[HttpResponse]
-      .map {
-        res =>
-          if is2xx(res.status) then res.json.as[DisplaySubscriptionResponse]
-          else throw UpstreamErrorResponse(s"Unexpected status: ${res.status}", res.status)
+      .flatMap {
+        case res if res.status == OK =>
+          Try(res.json.validate[DisplaySubscriptionResponse]) match {
+            case Success(JsSuccess(displaySubscriptionResponse, _)) =>
+              Future.successful(displaySubscriptionResponse)
+
+            case Success(JsError(errors)) =>
+              logger.error(s"Invalid JSON returned from read-subscription: $errors")
+              Future.failed(Downstream_Error)
+
+            case Failure(exception) =>
+              logger.error("Unable to parse JSON returned from read-subscription", exception)
+              Future.failed(Downstream_Error)
+          }
+
+        case res =>
+          Future.failed(Downstream_Error)
       }
+  }
 }

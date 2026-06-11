@@ -32,23 +32,13 @@ class ConfirmationEmailRecipientsService @Inject() (
       fiDetail     <- viewFIService.getFIDetail(subscriptionId, fiId)
       subscription <- subscriptionService.subscription(SubscriptionID(subscriptionId))
     } yield {
-      val subscriptionDetails = subscription.success.crfaSubscriptionDetails
+      val details = subscription.success.crfaSubscriptionDetails
 
-      val userEmails = Seq(
-        Some(subscriptionDetails.primaryContact.email),
-        subscriptionDetails.secondaryContact.map(_.email)
-      )
-
-      val fiEmails =
-        if (fiDetail.IsFIUser) {
-          Set.empty
-        } else {
-          Seq(
-            fiDetail.PrimaryContactDetails.map(_.EmailAddress),
-            fiDetail.SecondaryContactDetails.map(_.EmailAddress)
-          )
-        }
-
-      (userEmails ++ fiEmails).flatten.distinct
+      Seq(
+        Some(details.primaryContact.email),
+        details.secondaryContact.map(_.email),
+        Option.when(!fiDetail.IsFIUser)(fiDetail.PrimaryContactDetails.map(_.EmailAddress)).flatten,
+        Option.when(!fiDetail.IsFIUser)(fiDetail.SecondaryContactDetails.map(_.EmailAddress)).flatten
+      ).flatten.distinct
     }
 }

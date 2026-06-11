@@ -19,7 +19,8 @@ package controllers
 import cats.data.OptionT.{fromOption, liftF}
 import controllers.actions.*
 import forms.VoidingFatcaInformationFormProvider
-import pages.{FiDetailsPage, VoidedReportMessageRefIdsPage}
+import models.VoidedReportData
+import pages.{FiDetailsPage, VoidedReportDataPage}
 import play.api.Logging
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -92,16 +93,16 @@ class VoidingFatcaInformationController @Inject() (
               for {
                 emails <- confirmationEmailRecipientsService.getEmailRecipients(reportBeingVoided.fiId, request.fatcaId)
                 _      <- voidService.fatcaVoid(originalMessageRefId, reportBeingVoided.fiId)
-                voidedReportData <-
-                  Future.fromTry(
-                    request.userAnswers.set(
-                      VoidedReportMessageRefIdsPage,
-                      reportBeingVoided.cardModel.cardDetailList.map(_.messageRefId)
-                    )
-                  )
-                _ <- sessionRepository.set(voidedReportData)
+                voidedData = VoidedReportData(
+                  messageRefIds = reportBeingVoided.cardModel.cardDetailList.map(_.messageRefId),
+                  emails = emails
+                )
+                updatedAnswers <- Future.fromTry(
+                  request.userAnswers.set(VoidedReportDataPage, voidedData)
+                )
+                _ <- sessionRepository.set(updatedAnswers)
               } yield Redirect(
-                controllers.routes.InformationVoidedController.onPageLoad(originalMessageRefId, emails)
+                controllers.routes.InformationVoidedController.onPageLoad(originalMessageRefId)
               )
             } else {
               Future.successful(
@@ -114,5 +115,9 @@ class VoidingFatcaInformationController @Inject() (
         ))
         .getOrElse(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())))
         .flatMap(identity)
+        .recover {
+          case _ =>
+            Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+        }
   }
 }

@@ -18,7 +18,7 @@ package controllers
 
 import controllers.actions.*
 import models.viewModels.InformationVoidedViewModel
-import pages.{FiDetailsPage, VoidedReportMessageRefIdsPage}
+import pages.{FiDetailsPage, VoidedReportDataPage}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -42,18 +42,18 @@ class InformationVoidedController @Inject() (
     with I18nSupport
     with Logging {
 
-  def onPageLoad(originalMessageId: String, emails: Seq[String]): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(originalMessageId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       (for {
         fiDetail     <- request.userAnswers.get(FiDetailsPage)
-        voidedReport <- request.userAnswers.get(VoidedReportMessageRefIdsPage)
+        voidedReport <- request.userAnswers.get(VoidedReportDataPage)
       } yield
 
         val infoVoidedViewModel = InformationVoidedViewModel(
           fiName = fiDetail.fiName,
           dateTime = LocalDateTime.now(clock).formatTimeVoidSubmitted,
-          messageRefIds = voidedReport.reverse,
-          emailString = formatEmailList(emails),
+          messageRefIds = voidedReport.messageRefIds.reverse,
+          emailString = formatEmailList(voidedReport.emails),
           fiId = fiDetail.fiId
         )
         Ok(view(infoVoidedViewModel))

@@ -21,7 +21,7 @@ GET         /manage-reports-for-:year                               controllers.
 GET         /fatca-void/voiding-fatca-information                   controllers.VoidingFatcaInformationController.onPageLoad(originalMessageRefId: String)
 POST        /fatca-void/voiding-fatca-information                   controllers.VoidingFatcaInformationController.onSubmit(originalMessageRefId: String)
 
-GET         /fatca-void/information-voided                         controllers.InformationVoidedController.onPageLoad(originalMessageRefId: String, emails: Seq[String])
+GET         /fatca-void/information-voided                         controllers.InformationVoidedController.onPageLoad(originalMessageRefId: String)
 
 GET         /elections/fatca/us-treasury-regulations                controllers.elections.IsUsTreasuryRegulatedController.onPageLoad(mode: Mode = NormalMode, year: Int)
 POST        /elections/fatca/us-treasury-regulations                controllers.elections.IsUsTreasuryRegulatedController.onSubmit(mode: Mode = NormalMode, year: Int)

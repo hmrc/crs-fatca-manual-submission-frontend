@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-package utils
+package models
 
-def formatEmailList(emails: Seq[String]): String = emails match {
-  case Seq(a)       => a
-  case Seq(a, b)    => s"$a and $b"
-  case head :+ last => head.mkString(", ") + s" and $last"
-  case _            => ""
+import play.api.libs.json.{Json, OFormat}
+
+case class VoidedReportData(
+  messageRefIds: Seq[String],
+  emails: Seq[String]
+)
+
+object VoidedReportData {
+  implicit val format: OFormat[VoidedReportData] = Json.format[VoidedReportData]
 }
