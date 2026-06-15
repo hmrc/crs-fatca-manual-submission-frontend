@@ -22,6 +22,7 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers.{a, include, must, mustBe, mustEqual}
 import play.api.http.Status.*
 import play.api.libs.json.{JsValue, Json}
+import uk.gov.hmrc.http.InternalServerException
 import utils.ISpecBase
 
 import scala.concurrent.Await
@@ -59,6 +60,25 @@ class DatabaseConnectorISpec extends ISpecBase {
 
         val result = connector.get()
         result.failed.futureValue mustEqual Downstream_Error
+      }
+    }
+    "set" - {
+      val setUrl = "/crs-fatca-manual-submission/user-answer/save"
+      "should return Unit When api returns 200" in {
+        stubPostResponse(setUrl, OK)
+        emptyUserAnswers
+
+        val result: Unit = Await.result(connector.set(emptyUserAnswers), 2.seconds)
+        result mustBe ()
+      }
+
+      "should return Future failure When api returns other than 200" in {
+        stubPostResponse(setUrl, INTERNAL_SERVER_ERROR)
+
+        val exception = connector.set(emptyUserAnswers).failed.futureValue
+
+        exception mustBe a[InternalServerException]
+        exception.getMessage must include("Unable to save UserAnswer")
       }
     }
   }
