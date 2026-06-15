@@ -66,3 +66,5 @@ GET        /elections/elections-sent                                controllers.
 GET        /problem/elections-information-is-missing                controllers.elections.ElectionInformationIsMissingController.onPageLoad(redirectUrl: RedirectUrl)
 
 GET        /elections/manage-elections-for-:year                    controllers.elections.ManageElectionsController.onPageLoad(year: Int, fiId: String)
+
+GET        /under-construction                                  controllers.UnderConstructionController.onPageLoad()
