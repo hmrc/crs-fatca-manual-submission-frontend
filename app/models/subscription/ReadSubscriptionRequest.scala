@@ -1,5 +1,5 @@
 /*
- * Copyright 2026 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package pages
+package models.subscription
 
-import play.api.libs.json.JsPath
+import play.api.libs.json.{Json, OFormat}
 
-case object VoidedReportMessageRefIdsPage extends QuestionPage[Seq[String]] {
+case class ReadSubscriptionRequest(idNumber: String)
 
-  override def path: JsPath = JsPath \ toString
-
-  override def toString: String = "voidedReportMessageRefIds"
-}
+object ReadSubscriptionRequest:
+  given format: OFormat[ReadSubscriptionRequest] = Json.format[ReadSubscriptionRequest]
