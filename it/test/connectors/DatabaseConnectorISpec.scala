@@ -31,7 +31,7 @@ import scala.concurrent.duration.DurationInt
 class DatabaseConnectorISpec extends ISpecBase {
 
   lazy val connector: DatabaseConnector = app.injector.instanceOf[DatabaseConnector]
-  val url                               = "/crs-fatca-manual-submission/submissionList"
+  val getUrl                               = "/crs-fatca-manual-submission/user-answer/get"
   val jsValue: JsValue                  = Json.toJson(emptyUserAnswers)
 
   override def beforeEach(): Unit =
@@ -40,7 +40,7 @@ class DatabaseConnectorISpec extends ISpecBase {
 
     "get" - {
       "should return the Response when mongo return some data in Response" in {
-        stubGetResponse(url, OK, jsValue.toString)
+        stubGetResponse(getUrl, OK, jsValue.toString)
 
         val result = Await.result(connector.get(), 2.seconds)
         val expectedResult: UserAnswers = jsValue.as[UserAnswers]
@@ -48,7 +48,7 @@ class DatabaseConnectorISpec extends ISpecBase {
       }
 
       "should return None when mongo return no data" in {
-        stubGetResponse(url, NOT_FOUND)
+        stubGetResponse(getUrl, NOT_FOUND)
 
         val result = Await.result(connector.get(), 2.seconds)
 
@@ -56,7 +56,7 @@ class DatabaseConnectorISpec extends ISpecBase {
       }
 
       "should Downstream_Error when mongo return an error" in {
-        stubGetResponse(url, INTERNAL_SERVER_ERROR, "")
+        stubGetResponse(getUrl, INTERNAL_SERVER_ERROR, "")
 
         val result = connector.get()
         result.failed.futureValue mustEqual Downstream_Error

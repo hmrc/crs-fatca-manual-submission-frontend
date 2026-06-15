@@ -31,11 +31,11 @@ import play.api.libs.ws.writeableOf_JsValue
 import scala.concurrent.{ExecutionContext, Future}
 
 class DatabaseConnector @Inject() (client: HttpClientV2, config: FrontendAppConfig)(implicit ec: ExecutionContext) extends Logging {
-  private val url = config.crsFatcaManualBackendUrl
+  private val baseUrl = s"${config.crsFatcaManualBackendUrl}/crs-fatca-manual-submission/user-answer"
 
   def get()(implicit headerCarrier: HeaderCarrier): Future[Option[UserAnswers]] =
     client
-      .get(url"$url/crs-fatca-manual-submission/submissionList")
+      .get(url"$baseUrl/get")
       .execute[HttpResponse](using readRaw, ec)
       .flatMap {
         response =>
@@ -48,7 +48,7 @@ class DatabaseConnector @Inject() (client: HttpClientV2, config: FrontendAppConf
 
   def set(userAnswers: UserAnswers)(implicit headerCarrier: HeaderCarrier): Future[Unit] =
     client
-      .post(url"$url/crs-fatca-manual-submission/user-answer/save")
+      .post(url"$baseUrl/save")
       .withBody(Json.toJson(userAnswers))
       .execute[HttpResponse]
       .flatMap {
