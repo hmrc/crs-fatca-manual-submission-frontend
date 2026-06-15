@@ -23,7 +23,7 @@
     appConfig: config.FrontendAppConfig
 )
 
-@(regime: String, fiName: String, reportingYear: String, emailId : String)(implicit request: Request[_], messages: Messages)
+@(regime: String, fiName: String, reportingYear: String, emailId : String, fiId: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("electionSent.title", regime, reportingYear)), showBackLink = false) {
 
@@ -31,7 +31,7 @@
 
 @paragraph(Html(messages("electionSent.p1" ,link(s"mailto:${emailId}", emailId, asPara = false))))
 
-@link("#", s"Back to manage elections for ${fiName}", id = Some("manage-elections-link"), paraClasses = "govuk-!-padding-top-3 govuk-!-margin-bottom-2") @** TODO : update in DAC6-4282 **@
+@link(href=controllers.elections.routes.ManageElectionsController.onPageLoad(reportingYear.toInt, fiId).url, message = messages("cyaElections.backLink", fiName), id = Some("manage-elections-link"), paraClasses = "govuk-!-padding-top-3 govuk-!-margin-bottom-2")
 
 @link(appConfig.manageReportsLink, "Back to manage your CRS and FATCA reports", id = Some("manage-reports-link"))
 

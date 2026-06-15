@@ -32,8 +32,9 @@ class ElectionsSentControllerSpec extends SpecBase {
       val reportingYear = 2026
       val testFIName    = "Test FI"
       val enquiryEmail  = "aeoi.enquiries@hmrc.gov.uk"
+      val fiId          = "test-fi-id"
 
-      val ua = emptyUserAnswers.withPage(ElectionsSentPage, ElectionsSent(regime, reportingYear, testFIName))
+      val ua = emptyUserAnswers.withPage(ElectionsSentPage, ElectionsSent(regime, reportingYear, testFIName, fiId))
 
       val application = applicationBuilder(userData = Some(ua)).build()
 
@@ -47,7 +48,7 @@ class ElectionsSentControllerSpec extends SpecBase {
         status(result) mustEqual OK
 
         contentAsString(result) mustEqual
-          view(regime.toString, testFIName, reportingYear.toString, enquiryEmail)(request, messages(application)).toString
+          view(regime.toString, testFIName, reportingYear.toString, enquiryEmail, fiId)(request, messages(application)).toString
       }
     }
 

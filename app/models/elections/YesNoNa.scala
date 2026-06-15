@@ -24,7 +24,7 @@ enum YesNoNa:
   override def toString: String = this match
     case Yes => "Yes"
     case No  => "No"
-    case NA  => "Not Applicable"
+    case NA  => "Not applicable"
 
 object YesNoNa:
 

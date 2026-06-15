@@ -15,6 +15,7 @@ object CodeCoverageSettings {
     "module.*",
     "pages.*",
     "viewmodels.*",
+    "queries.*",
     ".*Routes.*",
     "testOnly.*",
     "testOnlyDoNotUseInAppConf.*"
