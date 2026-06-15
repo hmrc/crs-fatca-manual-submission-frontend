@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-package utils
+package pages
 
-def formatEmailList(emails: Seq[String]): String = emails match {
-  case Seq(a)       => a
-  case Seq(a, b)    => s"$a and $b"
-  case head :+ last => head.mkString(", ") + s" and $last"
-  case _            => ""
+import models.VoidedReportData
+import play.api.libs.json.JsPath
+
+case object VoidedReportDataPage extends QuestionPage[VoidedReportData] {
+
+  override def path: JsPath = JsPath \ toString
+
+  override def toString: String = "voidedReportData"
 }
