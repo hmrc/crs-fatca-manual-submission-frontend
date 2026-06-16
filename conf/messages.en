@@ -167,3 +167,7 @@ cyaElections.backLink = Back to manage elections for {0}
 electionSent.title = {0} elections sent for the financial institution for {1}
 electionSent.heading = {0} elections sent for {1} for {2}
 electionSent.p1 = We’ll contact you if we have any questions about your elections. If you need to change or remove these elections in the future, then you’ll need to email {0}.
+
+underConstruction.title = Under construction
+underConstruction.heading = Under construction
+underConstruction.p1 = This page has not been built yet. This page is being used as a temporary placeholder.
