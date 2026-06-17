@@ -22,18 +22,20 @@ import models.ServiceErrors.Downstream_Error
 import models.UserAnswers
 import play.api.Logging
 import play.api.http.Status.*
+import play.api.libs.json.Json
 import uk.gov.hmrc.http.*
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import uk.gov.hmrc.http.client.HttpClientV2
+import play.api.libs.ws.writeableOf_JsValue
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class DatabaseConnector @Inject() (client: HttpClientV2, config: FrontendAppConfig)(implicit ec: ExecutionContext) extends Logging {
-  private val url = config.crsFatcaManualBackendUrl
+  private val baseUrl = s"${config.crsFatcaManualBackendUrl}/crs-fatca-manual-submission/user-answer"
 
   def get()(implicit headerCarrier: HeaderCarrier): Future[Option[UserAnswers]] =
     client
-      .get(url"$url/crs-fatca-manual-submission/submissionList")
+      .get(url"$baseUrl/get")
       .execute[HttpResponse](using readRaw, ec)
       .flatMap {
         response =>
@@ -41,6 +43,20 @@ class DatabaseConnector @Inject() (client: HttpClientV2, config: FrontendAppConf
             case OK        => Future.successful(Some(response.json.as[UserAnswers]))
             case NOT_FOUND => Future.successful(None)
             case _         => Future.failed(Downstream_Error)
+          }
+      }
+
+  def set(userAnswers: UserAnswers)(implicit headerCarrier: HeaderCarrier): Future[Unit] =
+    client
+      .post(url"$baseUrl/save")
+      .withBody(Json.toJson(userAnswers))
+      .execute[HttpResponse]
+      .flatMap {
+        response =>
+          response.status match {
+            case OK => Future.successful(())
+            case _ =>
+              Future.failed(InternalServerException("Unable to save UserAnswer"))
           }
       }
 }

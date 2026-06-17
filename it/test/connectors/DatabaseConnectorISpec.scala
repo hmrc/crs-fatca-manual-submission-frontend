@@ -22,6 +22,7 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers.{a, include, must, mustBe, mustEqual}
 import play.api.http.Status.*
 import play.api.libs.json.{JsValue, Json}
+import uk.gov.hmrc.http.InternalServerException
 import utils.ISpecBase
 
 import scala.concurrent.Await
@@ -30,7 +31,7 @@ import scala.concurrent.duration.DurationInt
 class DatabaseConnectorISpec extends ISpecBase {
 
   lazy val connector: DatabaseConnector = app.injector.instanceOf[DatabaseConnector]
-  val url                               = "/crs-fatca-manual-submission/submissionList"
+  val getUrl                               = "/crs-fatca-manual-submission/user-answer/get"
   val jsValue: JsValue                  = Json.toJson(emptyUserAnswers)
 
   override def beforeEach(): Unit =
@@ -39,7 +40,7 @@ class DatabaseConnectorISpec extends ISpecBase {
 
     "get" - {
       "should return the Response when mongo return some data in Response" in {
-        stubGetResponse(url, OK, jsValue.toString)
+        stubGetResponse(getUrl, OK, jsValue.toString)
 
         val result = Await.result(connector.get(), 2.seconds)
         val expectedResult: UserAnswers = jsValue.as[UserAnswers]
@@ -47,7 +48,7 @@ class DatabaseConnectorISpec extends ISpecBase {
       }
 
       "should return None when mongo return no data" in {
-        stubGetResponse(url, NOT_FOUND)
+        stubGetResponse(getUrl, NOT_FOUND)
 
         val result = Await.result(connector.get(), 2.seconds)
 
@@ -55,10 +56,29 @@ class DatabaseConnectorISpec extends ISpecBase {
       }
 
       "should Downstream_Error when mongo return an error" in {
-        stubGetResponse(url, INTERNAL_SERVER_ERROR, "")
+        stubGetResponse(getUrl, INTERNAL_SERVER_ERROR, "")
 
         val result = connector.get()
         result.failed.futureValue mustEqual Downstream_Error
+      }
+    }
+    "set" - {
+      val setUrl = "/crs-fatca-manual-submission/user-answer/save"
+      "should return Unit When api returns 200" in {
+        stubPostResponse(setUrl, OK)
+        emptyUserAnswers
+
+        val result: Unit = Await.result(connector.set(emptyUserAnswers), 2.seconds)
+        result mustBe ()
+      }
+
+      "should return Future failure When api returns other than 200" in {
+        stubPostResponse(setUrl, INTERNAL_SERVER_ERROR)
+
+        val exception = connector.set(emptyUserAnswers).failed.futureValue
+
+        exception mustBe a[InternalServerException]
+        exception.getMessage must include("Unable to save UserAnswer")
       }
     }
   }
