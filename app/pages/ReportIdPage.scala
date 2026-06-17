@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-package models.requests
+package pages
 
-import models.{ReportId, UserAnswers}
-import play.api.mvc.{Request, WrappedRequest}
+import models.ReportId
+import play.api.libs.json.JsPath
 
-case class OptionalDataRequest[A](request: Request[A], userId: String, maybeAnswers: Option[UserAnswers], fatcaId: String) extends WrappedRequest[A](request)
+case object ReportIdPage extends QuestionPage[ReportId] {
 
-case class DataRequest[A](request: Request[A], userId: String, userAnswers: UserAnswers, fatcaId: String) extends WrappedRequest[A](request)
+  override def path: JsPath = JsPath \ toString
 
-case class ReportIdRequest[A](
-  request: Request[A],
-  userId: String,
-  userAnswers: UserAnswers,
-  fatcaId: String,
-  reportId: ReportId
-) extends WrappedRequest[A](request)
+  override def toString: String = "reportId"
+}
