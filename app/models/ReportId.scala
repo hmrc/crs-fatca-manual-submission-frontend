@@ -22,8 +22,21 @@ import play.api.libs.json.{Json, OFormat}
 import java.time.{LocalDateTime, ZoneOffset}
 
 case class ReportId(regime: RegimeType, reportingYear: Int, uploadedTime: Option[LocalDateTime] = None, fiId: String) {
-  def time: LocalDateTime = uploadedTime.getOrElse(LocalDateTime.now())
-  val mongoKey            = s"${regime.value}-${reportingYear.toString}-${time.toInstant(ZoneOffset.UTC).toEpochMilli.toString}-$fiId"
+
+  private def mayBeUploadedTimeStampInKey: Option[String] =
+    uploadedTime.map {
+      t =>
+        t.toInstant(ZoneOffset.UTC).toEpochMilli.toString
+    }
+
+  val mongoKey: String =
+    mayBeUploadedTimeStampInKey match {
+      case Some(ts) =>
+        s"${regime.value}-$reportingYear-$ts-$fiId"
+      case None =>
+        s"${regime.value}-$reportingYear-$fiId"
+    }
+
 }
 
 object ReportId {

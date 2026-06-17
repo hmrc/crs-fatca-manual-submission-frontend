@@ -27,7 +27,7 @@ class UnderConstructionControllerSpec extends SpecBase {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userData = None).build()
+      val application = applicationBuilder(maybeUserAnswers = None).build()
 
       running(application) {
         val request = FakeRequest(GET, routes.UnderConstructionController.onPageLoad().url)

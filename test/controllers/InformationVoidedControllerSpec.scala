@@ -71,7 +71,7 @@ class InformationVoidedControllerSpec extends SpecBase {
   "InformationVoided Controller" - {
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userData =
+      val application = applicationBuilder(maybeUserAnswers =
         Some(
           emptyUserAnswers
             .withPage(FiDetailsPage, fiDetails)
@@ -93,7 +93,7 @@ class InformationVoidedControllerSpec extends SpecBase {
       }
     }
     "must redirect to Journey Recovery for a GET if no FI detail is found" in {
-      val application = applicationBuilder(userData = Some(emptyUserAnswers.withPage(VoidedReportDataPage, voidedReportData)))
+      val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers.withPage(VoidedReportDataPage, voidedReportData)))
         .build()
 
       running(application) {
@@ -107,7 +107,7 @@ class InformationVoidedControllerSpec extends SpecBase {
 
     "must redirect to Journey Recovery for a GET if no voided message ref data is found in mongo" in {
 
-      val application = applicationBuilder(userData = Some(emptyUserAnswers.withPage(FiDetailsPage, fiDetails)))
+      val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers.withPage(FiDetailsPage, fiDetails)))
         .build()
 
       running(application) {

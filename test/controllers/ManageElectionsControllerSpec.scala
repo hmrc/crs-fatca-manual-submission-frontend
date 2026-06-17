@@ -60,7 +60,7 @@ class ManageElectionsControllerSpec extends SpecBase {
           .thenReturn(Future.successful(emptyElectionsRows))
         when(mockFiService.getFIDetail(any(), eqTo(fiid))(using any())).thenReturn(Future.successful(fiDetail))
 
-        val application = applicationBuilder(userData = Some(emptyUserAnswers))
+        val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[ElectionsService].toInstance(mockElectionsService),
             bind[ViewFIService].toInstance(mockFiService),
@@ -92,7 +92,7 @@ class ManageElectionsControllerSpec extends SpecBase {
         when(mockElectionsService.getElectionsRows(any(), any())(any(), any()))
           .thenReturn(Future.successful(emptyElectionsRows))
 
-        val application = applicationBuilder(userData = Some(answers))
+        val application = applicationBuilder(maybeUserAnswers = Some(answers))
           .overrides(
             bind[ElectionsService].toInstance(mockElectionsService),
             bind[ViewFIService].toInstance(mockFiService),

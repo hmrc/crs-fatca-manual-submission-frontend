@@ -17,7 +17,6 @@
 package controllers.actions
 
 import connectors.DatabaseConnector
-import models.UserAnswers
 import models.requests.{IdentifierRequest, OptionalDataRequest}
 import play.api.mvc.ActionTransformer
 import uk.gov.hmrc.http.HeaderCarrier
@@ -34,8 +33,7 @@ class DataRetrievalActionImpl @Inject() (
   override protected def transform[A](request: IdentifierRequest[A]): Future[OptionalDataRequest[A]] =
     given hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
     userDataConnector.get().map {
-      data =>
-        OptionalDataRequest(request.request, request.userId, Some(data.getOrElse(UserAnswers(request.fatcaId))), request.fatcaId)
+      OptionalDataRequest(request.request, request.userId, _, request.fatcaId)
     }
 
 }

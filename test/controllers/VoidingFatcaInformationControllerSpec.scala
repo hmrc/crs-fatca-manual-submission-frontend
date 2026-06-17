@@ -112,7 +112,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
 
       "must return OK and the correct view for a GET" in {
 
-        val application = applicationBuilder(userData = Some(userAnswersWithFiDetail))
+        val application = applicationBuilder(maybeUserAnswers = Some(userAnswersWithFiDetail))
           .overrides(
             bind[SubmissionHistoryService].toInstance(mockSubmissionHistoryService),
             bind[VoidService].toInstance(mockVoidService)
@@ -139,7 +139,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
 
       "must redirect to Journey Recovery for a GET if no matching submissions are found for GET" in {
 
-        val application = applicationBuilder(userData = Some(userAnswersWithFiDetail))
+        val application = applicationBuilder(maybeUserAnswers = Some(userAnswersWithFiDetail))
           .overrides(
             bind[SubmissionHistoryService].toInstance(mockSubmissionHistoryService)
           )
@@ -159,7 +159,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
 
       "must redirect to Journey Recovery for a GET if no matching void card is returned" in {
 
-        val application = applicationBuilder(userData = Some(userAnswersWithFiDetail))
+        val application = applicationBuilder(maybeUserAnswers = Some(userAnswersWithFiDetail))
           .overrides(
             bind[SubmissionHistoryService].toInstance(mockSubmissionHistoryService),
             bind[VoidService].toInstance(mockVoidService)
@@ -206,7 +206,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
           .thenReturn(Future.successful(true))
 
         val application =
-          applicationBuilder(userData = Some(userAnswersWithFiDetail))
+          applicationBuilder(maybeUserAnswers = Some(userAnswersWithFiDetail))
             .overrides(
               bind[SubmissionHistoryService].toInstance(mockSubmissionHistoryService),
               bind[SessionRepository].toInstance(mockSession),
@@ -263,7 +263,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
         ).thenReturn(Future.failed(new RuntimeException("email failure")))
 
         val application =
-          applicationBuilder(userData = Some(userAnswersWithFiDetail))
+          applicationBuilder(maybeUserAnswers = Some(userAnswersWithFiDetail))
             .overrides(
               bind[SubmissionHistoryService].toInstance(mockSubmissionHistoryService),
               bind[SessionRepository].toInstance(mockSession),
@@ -306,7 +306,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
           .thenReturn(Future.failed(new RuntimeException("void failure")))
 
         val application =
-          applicationBuilder(userData = Some(userAnswersWithFiDetail))
+          applicationBuilder(maybeUserAnswers = Some(userAnswersWithFiDetail))
             .overrides(
               bind[SubmissionHistoryService].toInstance(mockSubmissionHistoryService),
               bind[SessionRepository].toInstance(mockSession),
@@ -351,7 +351,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
           .thenReturn(Future.failed(new RuntimeException("session failure")))
 
         val application =
-          applicationBuilder(userData = Some(userAnswersWithFiDetail))
+          applicationBuilder(maybeUserAnswers = Some(userAnswersWithFiDetail))
             .overrides(
               bind[SubmissionHistoryService].toInstance(mockSubmissionHistoryService),
               bind[SessionRepository].toInstance(mockSession),
@@ -384,7 +384,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
           .thenReturn(Some(voidReportDetail))
 
         val application =
-          applicationBuilder(userData = Some(userAnswersWithFiDetail))
+          applicationBuilder(maybeUserAnswers = Some(userAnswersWithFiDetail))
             .overrides(
               bind[SubmissionHistoryService].toInstance(mockSubmissionHistoryService),
               bind[VoidService].toInstance(mockVoidService)
@@ -416,7 +416,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
           .thenReturn(Some(voidReportDetail))
 
         val application =
-          applicationBuilder(userData = Some(userAnswersWithFiDetail))
+          applicationBuilder(maybeUserAnswers = Some(userAnswersWithFiDetail))
             .overrides(
               bind[SubmissionHistoryService].toInstance(mockSubmissionHistoryService),
               bind[VoidService].toInstance(mockVoidService)
@@ -441,7 +441,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
 
       "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
-        val application = applicationBuilder(userData = None).build()
+        val application = applicationBuilder(maybeUserAnswers = None).build()
 
         running(application) {
           val request =
@@ -464,7 +464,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
           .thenReturn(None)
 
         val application =
-          applicationBuilder(userData = Some(userAnswersWithFiDetail))
+          applicationBuilder(maybeUserAnswers = Some(userAnswersWithFiDetail))
             .overrides(
               bind[SubmissionHistoryService].toInstance(mockSubmissionHistoryService),
               bind[VoidService].toInstance(mockVoidService)
@@ -489,7 +489,7 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
           .thenReturn(Future.failed(new RuntimeException("submission history failure")))
 
         val application =
-          applicationBuilder(userData = Some(userAnswersWithFiDetail))
+          applicationBuilder(maybeUserAnswers = Some(userAnswersWithFiDetail))
             .overrides(
               bind[SubmissionHistoryService].toInstance(mockSubmissionHistoryService)
             )

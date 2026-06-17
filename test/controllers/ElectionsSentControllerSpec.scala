@@ -36,7 +36,7 @@ class ElectionsSentControllerSpec extends SpecBase {
 
       val ua = emptyUserAnswers.withPage(ElectionsSentPage, ElectionsSent(regime, reportingYear, testFIName, fiId))
 
-      val application = applicationBuilder(userData = Some(ua)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
 
       running(application) {
         val request = FakeRequest(GET, controllers.elections.routes.ElectionsSentController.onPageLoad().url)
@@ -54,7 +54,7 @@ class ElectionsSentControllerSpec extends SpecBase {
 
     "must return REDIRECT when ElectionSentPage not present" in {
 
-      val application = applicationBuilder(userData = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, controllers.elections.routes.ElectionsSentController.onPageLoad().url)
