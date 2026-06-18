@@ -34,7 +34,7 @@ case class ReportId(regime: RegimeType, reportingYear: Int, uploadedTime: Option
       case Some(ts) =>
         s"${regime.value}-$reportingYear-$ts-$fiId"
       case None =>
-        s"${regime.value}-$reportingYear-$fiId"
+        s"${regime.value}-$reportingYear-NONE-$fiId"
     }
 
 }
