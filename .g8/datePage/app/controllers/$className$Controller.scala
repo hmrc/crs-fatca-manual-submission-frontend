@@ -27,10 +27,9 @@ class $className$Controller @Inject()(
                                         view: $className$View
                                       )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
-  val form = formProvider()
-
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
     implicit request =>
+      val form = formProvider()
 
       implicit val reportId: ReportId = request.reportId
 
@@ -44,6 +43,7 @@ class $className$Controller @Inject()(
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
     implicit request =>
+      val form = formProvider()
 
       implicit val reportId: ReportId = request.reportId
 

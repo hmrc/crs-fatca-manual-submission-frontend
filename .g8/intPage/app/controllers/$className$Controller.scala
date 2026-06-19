@@ -8,7 +8,6 @@ import navigation.ManualSubmissionNavigator
 import pages.$className$Page
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import repositories.SessionRepository
 import connectors.DatabaseConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.$className$View
@@ -28,10 +27,9 @@ class $className$Controller @Inject()(
                                         view: $className$View
                                       )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
-  val form = formProvider()
-
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
     implicit request =>
+      val form = formProvider()
 
       implicit val reportId: ReportId = request.reportId
 
@@ -46,6 +44,7 @@ class $className$Controller @Inject()(
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
     implicit request =>
+      val form = formProvider()
 
       implicit val reportId: ReportId = request.reportId
 
