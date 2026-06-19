@@ -4,7 +4,7 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import forms.$className$FormProvider
 import models.SubmissionsConstants.CRS
-import models.{NormalMode, ReportId, UserAnswers}
+import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
