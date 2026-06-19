@@ -5,7 +5,7 @@ import java.time.{LocalDate, ZoneOffset}
 import base.SpecBase
 import forms.$className$FormProvider
 import models.SubmissionsConstants.CRS
-import models.{NormalMode, ReportId}
+import models.{NormalMode, ReportId, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
