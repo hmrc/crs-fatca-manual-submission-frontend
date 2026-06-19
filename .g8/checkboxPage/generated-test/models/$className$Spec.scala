@@ -1,6 +1,6 @@
 package models
 
-import generators.ModelGenerators
+import generators.{ModelGenerators, arbitrary$className$}
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import org.scalatest.freespec.AnyFreeSpec

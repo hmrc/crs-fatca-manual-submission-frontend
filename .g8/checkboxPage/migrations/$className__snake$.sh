@@ -23,7 +23,18 @@ echo "$className;format="decap"$.error.required = Select $className;format="deca
 echo "$className;format="decap"$.change.hidden = $className$" >> ../conf/messages.en
 
 echo "Adding to ModelGenerators"
-awk '/trait ModelGenerators/ {\
+awk '
+  BEGIN {
+    added_imports = 0
+  }
+
+  /trait ModelGenerators/ {
+    if (!added_imports) {
+      print "import models.'$className$'"
+      print "import org.scalacheck.{Arbitrary, Gen}"
+      print ""
+      added_imports = 1
+    }
     print;\
     print "";\
     print "  implicit lazy val arbitrary$className$: Arbitrary[$className$] =";\

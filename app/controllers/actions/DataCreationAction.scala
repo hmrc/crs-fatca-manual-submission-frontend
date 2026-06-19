@@ -28,7 +28,7 @@ class DataCreationActionImpl @Inject() (implicit val executionContext: Execution
   override protected def transform[A](request: OptionalDataRequest[A]): Future[DataRequest[A]] =
     request.maybeAnswers match {
       case None =>
-        Future.successful(DataRequest(request.request, request.userId, UserAnswers(request.userId), request.fatcaId))
+        Future.successful(DataRequest(request.request, request.userId, UserAnswers(request.fatcaId), request.fatcaId))
       case Some(data) => Future.successful(DataRequest(request.request, request.userId, data, request.fatcaId))
     }
 }

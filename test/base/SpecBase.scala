@@ -46,13 +46,13 @@ trait SpecBase
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
-  protected def applicationBuilder(userData: Option[UserAnswers] = None): GuiceApplicationBuilder =
+  protected def applicationBuilder(maybeUserAnswers: Option[UserAnswers] = None): GuiceApplicationBuilder =
     new GuiceApplicationBuilder()
       .overrides(
         bind[DataRequiredAction].to[DataRequiredActionImpl],
-        bind[FrontendDataRetrievalAction].to(new FakeFrontendDataRetrievalAction(userData)),
+        bind[FrontendDataRetrievalAction].to(new FakeFrontendDataRetrievalAction(maybeUserAnswers)),
         bind[IdentifierAction].to[FakeIdentifierAction],
-        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userData))
+        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(maybeUserAnswers))
       )
 
   implicit class UserAnswersExtension(userData: UserAnswers) {

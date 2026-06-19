@@ -57,7 +57,7 @@ class ViewSubmissionsControllerSpec extends SpecBase {
 
     "must return OK and the correct view for a GET when FI data is already stored in mongo" in {
 
-      val application = applicationBuilder(userData = Some(emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers(fiId, fiName))))
+      val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers(fiId, fiName))))
         .overrides(bind[SubmissionHistoryService].toInstance(mockSubmissionService), bind[SessionRepository].toInstance(mockSessionRepository))
         .build()
       implicit val config: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
@@ -79,7 +79,7 @@ class ViewSubmissionsControllerSpec extends SpecBase {
 
     "must return OK and the correct view for a GET no FI data is found in mongo" in {
 
-      val application = applicationBuilder(userData = Some(emptyUserAnswers))
+      val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers))
         .overrides(
           bind[SubmissionHistoryService].toInstance(mockSubmissionService),
           bind[SessionRepository].toInstance(mockSessionRepository),
@@ -105,7 +105,7 @@ class ViewSubmissionsControllerSpec extends SpecBase {
     }
 
     "must redirect to journey recovery if no FI detail can be fetched" in {
-      val application = applicationBuilder(userData = Some(emptyUserAnswers))
+      val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers))
         .overrides(bind[SubmissionHistoryService].toInstance(mockSubmissionService), bind[ViewFIService].toInstance(mockFiService))
         .build()
       when(mockFiService.getFIDetail(any(), eqTo(fiId))(using any())).thenReturn(Future.failed(NoFiDetailFound))
@@ -119,7 +119,7 @@ class ViewSubmissionsControllerSpec extends SpecBase {
     }
 
     "must redirect to journey recovery if call to get submission data fails" in {
-      val application = applicationBuilder(userData = Some(emptyUserAnswers))
+      val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers))
         .overrides(
           bind[SubmissionHistoryService].toInstance(mockSubmissionService),
           bind[SessionRepository].toInstance(mockSessionRepository),
