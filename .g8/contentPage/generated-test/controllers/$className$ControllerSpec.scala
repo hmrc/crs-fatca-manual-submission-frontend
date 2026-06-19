@@ -2,16 +2,20 @@ package controllers
 
 import base.SpecBase
 import play.api.test.FakeRequest
+import models.ReportId
 import play.api.test.Helpers._
 import views.html.$className$View
+import pages.ReportIdPage
 
 class $className$ControllerSpec extends SpecBase {
 
   "$className$ Controller" - {
 
+    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS,2025,None,"testFiID"))
+
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
 
       running(application) {
         val request = FakeRequest(GET, routes.$className$Controller.onPageLoad().url)
