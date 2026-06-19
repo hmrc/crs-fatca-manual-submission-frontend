@@ -34,7 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class ManageElectionsController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
-  getData: DataRetrievalAction,
+  getData: FrontendDataRetrievalAction,
   setData: DataCreationAction,
   val controllerComponents: MessagesControllerComponents,
   view: ManageElectionsView,

@@ -21,6 +21,7 @@ import controllers.routes
 import pages.FiDetailsPage
 import pages.elections.CRSContractsPage
 import controllers.actions.{DataRequiredAction, FrontendDataRetrievalAction, IdentifierAction}
+import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.CheckYourAnswersValidatorService
@@ -43,12 +44,14 @@ class CheckYourAnswersController @Inject() (
   view: CheckYourAnswersView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with Logging {
 
   def onPageLoad(year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       validator.validate(request.userAnswers, year) match {
         case Left(redirectUrl) =>
+          logger.error("Mandatory values are missing in UA")
           Redirect(
             controllers.elections.routes.ElectionInformationIsMissingController
               .onPageLoad(RedirectUrl(redirectUrl))
@@ -63,6 +66,7 @@ class CheckYourAnswersController @Inject() (
               Ok(view(list, year, fiDetails, regime))
 
             case None =>
+              logger.error("Unable to find FIDetailsPage")
               Redirect(routes.JourneyRecoveryController.onPageLoad())
           }
       }
@@ -74,7 +78,9 @@ class CheckYourAnswersController @Inject() (
         _ <- electionsService.submitAndDeleteElectionData(request.userAnswers, year)
       } yield Redirect(controllers.elections.routes.ElectionsSentController.onPageLoad().url))
         .recover {
-          case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+          case err =>
+            logger.error(s"Failed to process the request $err")
+            Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
         }
   }
 }

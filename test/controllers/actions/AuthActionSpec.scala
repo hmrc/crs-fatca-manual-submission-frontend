@@ -54,7 +54,7 @@ class AuthActionSpec extends SpecBase {
 
       "must redirect the user to log in " in {
 
-        val application = applicationBuilder(userData = None).build()
+        val application = applicationBuilder(maybeUserAnswers = None).build()
 
         running(application) {
           val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
@@ -74,7 +74,7 @@ class AuthActionSpec extends SpecBase {
 
       "must redirect the user to log in " in {
 
-        val application = applicationBuilder(userData = None).build()
+        val application = applicationBuilder(maybeUserAnswers = None).build()
 
         running(application) {
           val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
@@ -94,7 +94,7 @@ class AuthActionSpec extends SpecBase {
 
       "must redirect the user to the unauthorised page" in {
 
-        val application = applicationBuilder(userData = None).build()
+        val application = applicationBuilder(maybeUserAnswers = None).build()
 
         running(application) {
           val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
@@ -114,7 +114,7 @@ class AuthActionSpec extends SpecBase {
 
       "must redirect the user to the unauthorised page" in {
 
-        val application = applicationBuilder(userData = None).build()
+        val application = applicationBuilder(maybeUserAnswers = None).build()
 
         running(application) {
           val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
@@ -134,7 +134,7 @@ class AuthActionSpec extends SpecBase {
 
       "must redirect the user to the unauthorised page" in {
 
-        val application = applicationBuilder(userData = None).build()
+        val application = applicationBuilder(maybeUserAnswers = None).build()
 
         running(application) {
           val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
@@ -154,7 +154,7 @@ class AuthActionSpec extends SpecBase {
 
       "must redirect the user to the unauthorised page" in {
 
-        val application = applicationBuilder(userData = None).build()
+        val application = applicationBuilder(maybeUserAnswers = None).build()
 
         running(application) {
           val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
@@ -174,7 +174,7 @@ class AuthActionSpec extends SpecBase {
 
       "must redirect the user to the unauthorised page" in {
 
-        val application = applicationBuilder(userData = None).build()
+        val application = applicationBuilder(maybeUserAnswers = None).build()
 
         running(application) {
           val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
@@ -193,7 +193,7 @@ class AuthActionSpec extends SpecBase {
 
       "must allow the user through when they have a valid FATCA ID" in {
 
-        val application = applicationBuilder(userData = None).build()
+        val application = applicationBuilder(maybeUserAnswers = None).build()
 
         running(application) {
           val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
@@ -216,7 +216,7 @@ class AuthActionSpec extends SpecBase {
 
       "must redirect to register when user has no FATCA ID" in {
 
-        val application = applicationBuilder(userData = None).build()
+        val application = applicationBuilder(maybeUserAnswers = None).build()
 
         running(application) {
           val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
@@ -236,7 +236,7 @@ class AuthActionSpec extends SpecBase {
 
       "must redirect to register when FATCA ID is empty" in {
 
-        val application = applicationBuilder(userData = None).build()
+        val application = applicationBuilder(maybeUserAnswers = None).build()
 
         running(application) {
           val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
@@ -260,7 +260,7 @@ class AuthActionSpec extends SpecBase {
 
       "must redirect to register when unable to retrieve any of the fields" in {
 
-        val application = applicationBuilder(userData = None).build()
+        val application = applicationBuilder(maybeUserAnswers = None).build()
 
         running(application) {
           val bodyParsers = application.injector.instanceOf[BodyParsers.Default]

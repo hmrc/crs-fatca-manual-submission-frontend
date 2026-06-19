@@ -1,11 +1,10 @@
 package pages
 
-import models.$className$
-import play.api.libs.json.JsPath
+import models.{ReportId, $className$}
 
-case object $className$Page extends QuestionPage[Set[$className$]] {
-  
-  override def path: JsPath = JsPath \ toString
-  
-  override def toString: String = "$className;format="decap"$"
+object $className$Page {
+
+  def apply()(implicit reportId: ReportId): ReportPage[Set[$className$]] =
+    ReportPage("$className;format="decap"$")
 }
+

@@ -55,7 +55,7 @@ class CarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the correct view for a GET" in {
       val useranswers = emptyUserAnswers.withPage(FiDetailsPage, fiDetails)
-      val application = applicationBuilder(userData = Some(useranswers)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(useranswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, carfGrossProceedsRoute)
@@ -71,7 +71,7 @@ class CarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to journey recovery if finame is not in user answers" in {
 
-      val application = applicationBuilder(userData = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, carfGrossProceedsRoute)
@@ -89,7 +89,7 @@ class CarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
         .withPage(FiDetailsPage, fiDetails)
         .withPage(CarfGrossProceedsPage, true)
 
-      val application = applicationBuilder(userData = Some(userData))
+      val application = applicationBuilder(maybeUserAnswers = Some(userData))
         .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
         .build()
 
@@ -115,7 +115,7 @@ class CarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
-        applicationBuilder(userData = Some(userData))
+        applicationBuilder(maybeUserAnswers = Some(userData))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository)
@@ -137,7 +137,7 @@ class CarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
     "must return a Bad Request and errors when invalid data is submitted" in {
       val userData = emptyUserAnswers.withPage(FiDetailsPage, fiDetails)
 
-      val application = applicationBuilder(userData = Some(userData)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(userData)).build()
 
       running(application) {
         val request =
@@ -157,7 +157,7 @@ class CarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
-      val application = applicationBuilder(userData = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
         val request =

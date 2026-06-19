@@ -49,7 +49,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
         .set(FiDetailsPage, identifiers)
         .success
         .value
-      val application = applicationBuilder(userData = Some(userAnswers))
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
         .overrides(bind[CheckYourAnswersValidatorService].toInstance(mockService))
         .build()
 
@@ -76,7 +76,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
       val mockService = mock[CheckYourAnswersValidatorService]
 
-      val application = applicationBuilder(userData = Some(emptyUserAnswers))
+      val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers))
         .overrides(bind[CheckYourAnswersValidatorService].toInstance(mockService))
         .build()
 
@@ -93,7 +93,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
-      val application = applicationBuilder(userData = None).build()
+      val application = applicationBuilder(maybeUserAnswers = None).build()
 
       running(application) {
         val request = FakeRequest(GET, controllers.elections.routes.CheckYourAnswersController.onPageLoad(year).url)
@@ -115,7 +115,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
         when(mockService.submitAndDeleteElectionData(any(), any())(any())) thenReturn Future.successful(())
 
         val application =
-          applicationBuilder(userData = Some(emptyUserAnswers))
+          applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers))
             .overrides(
               inject.bind[ElectionsService].toInstance(mockService)
             )
@@ -138,7 +138,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
         when(mockService.submitAndDeleteElectionData(any(), any())(any())) thenReturn Future.failed(InternalServerException("Failed"))
 
         val application =
-          applicationBuilder(userData = Some(emptyUserAnswers))
+          applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers))
             .overrides(
               inject.bind[ElectionsService].toInstance(mockService)
             )
