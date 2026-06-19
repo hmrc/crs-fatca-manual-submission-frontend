@@ -1,6 +1,7 @@
 package controllers
 
 import base.SpecBase
+import models.SubmissionsConstants.CRS
 import play.api.test.FakeRequest
 import models.ReportId
 import play.api.test.Helpers._

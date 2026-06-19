@@ -2,7 +2,8 @@ package controllers
 
 import base.SpecBase
 import forms.$className$FormProvider
-import models.{NormalMode, ReportId, UserAnswers}
+import models.SubmissionsConstants.CRS
+import models.{NormalMode, ReportId}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -74,7 +75,7 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar {
       when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
 
       val application =
-        applicationBuilder(userAnswers = Some(ua))
+        applicationBuilder(maybeUserAnswers = Some(ua))
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
             bind[DatabaseConnector].toInstance(mockSessionRepository)

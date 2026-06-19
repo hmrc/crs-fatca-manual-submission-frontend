@@ -55,7 +55,7 @@ class $className$Controller @Inject()(
           for {
             updatedAnswers <- Future.fromTry(request.userAnswers.set($className$Page(), value))
             _              <- repository.set(updatedAnswers)
-          } yield Redirect(navigator.nextPage($className$Page, mode, updatedAnswers))
+          } yield Redirect(navigator.nextPage($className$Page(), mode, updatedAnswers))
       )
   }
 }
