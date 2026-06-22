@@ -68,3 +68,13 @@ GET        /problem/elections-information-is-missing                controllers.
 GET        /elections/manage-elections-for-:year                    controllers.elections.ManageElectionsController.onPageLoad(year: Int, fiId: String)
 
 GET        /under-construction                                  controllers.UnderConstructionController.onPageLoad()
+
+GET        /report-details/year                  controllers.ReportingYearController.onPageLoad(mode: Mode = NormalMode)
+POST       /report-details/year                  controllers.ReportingYearController.onSubmit(mode: Mode = NormalMode)
+GET        /report-details/change-year                        controllers.ReportingYearController.onPageLoad(mode: Mode = CheckMode)
+POST       /report-details/change-year                        controllers.ReportingYearController.onSubmit(mode: Mode = CheckMode)
+
+GET        /report-details/crs-or-fatca                        controllers.CrsOrFatcaController.onPageLoad(mode: Mode = NormalMode)
+POST       /report-details/crs-or-fatca                        controllers.CrsOrFatcaController.onSubmit(mode: Mode = NormalMode)
+GET        /report-details/change-crs-or-fatca                  controllers.CrsOrFatcaController.onPageLoad(mode: Mode = CheckMode)
+POST       /report-details/change-crs-or-fatca                  controllers.CrsOrFatcaController.onSubmit(mode: Mode = CheckMode)

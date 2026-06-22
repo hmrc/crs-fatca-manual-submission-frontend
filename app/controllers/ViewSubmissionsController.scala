@@ -37,7 +37,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class ViewSubmissionsController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
-  getData: DataRetrievalAction,
+  getData: FrontendDataRetrievalAction,
   setData: DataCreationAction,
   sessionRepository: SessionRepository,
   historyService: SubmissionHistoryService,

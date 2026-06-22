@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-package navigation
+package forms
 
-import controllers.routes
-import models.*
-import pages.*
-import play.api.mvc.Call
+import javax.inject.Inject
 
-import javax.inject.{Inject, Singleton}
+import forms.mappings.Mappings
+import play.api.data.Form
+import models.CrsOrFatca
 
-@Singleton
-class ManualSubmissionNavigator @Inject() () {
+class CrsOrFatcaFormProvider @Inject() extends Mappings {
 
-  def nextPage(page: Page, mode: Mode, userData: UserAnswers): Call =
-    (page, mode) match {
-      case (CrsOrFatcaPage, NormalMode)    => routes.ReportingYearController.onPageLoad(mode)
-      case (ReportingYearPage, NormalMode) => routes.UnderConstructionController.onPageLoad()
-      case _                               => routes.IndexController.onPageLoad()
-    }
+  def apply(): Form[CrsOrFatca] =
+    Form(
+      "value" -> enumerable[CrsOrFatca]("crsOrFatca.error.required")
+    )
 }
