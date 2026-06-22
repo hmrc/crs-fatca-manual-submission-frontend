@@ -2,11 +2,10 @@ package pages
 
 import java.time.LocalDate
 
-import play.api.libs.json.JsPath
+import models.ReportId
 
-case object $className$Page extends QuestionPage[LocalDate] {
+object $className$Page {
 
-  override def path: JsPath = JsPath \ toString
-
-  override def toString: String = "$className;format="decap"$"
+  def apply()(implicit reportId: ReportId): ReportPage[LocalDate] =
+    ReportPage("$className;format="decap"$")
 }
