@@ -68,3 +68,5 @@ GET        /problem/elections-information-is-missing                controllers.
 GET        /elections/manage-elections-for-:year                    controllers.elections.ManageElectionsController.onPageLoad(year: Int, fiId: String)
 
 GET        /under-construction                                  controllers.UnderConstructionController.onPageLoad()
+
+GET        /manual/send-a-report                                controllers.SendAReportController.onPageLoad()
