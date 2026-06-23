@@ -14,100 +14,80 @@
  * limitations under the License.
  *@
 
+@import models.viewModels.SendAReportSection
+@import models.viewModels.SendAReportSections
+@import models.viewModels.TaskStatus
+@import models.viewModels.TaskStatus._
+
 @this(
         layout: templates.Layout,
         govukTaskList: GovukTaskList,
         govukButton: GovukButton
 )
 
-@()(implicit request: Request[_], messages: Messages)
+@(model: SendAReportSections)(implicit request: Request[_], messages: Messages)
 
 @underConstructionUrl = @{controllers.routes.UnderConstructionController.onPageLoad().url}
 
-@notStarted = @{
- TaskListItemStatus(
-  content = Text(messages("sendAReport.status.notStarted"))
- )
+@taskStatus(status: TaskStatus) = @{
+ status match {
+  case NotStarted =>
+   TaskListItemStatus(
+    content = Text(messages("sendAReport.status.notStarted"))
+   )
+
+  case Completed =>
+   TaskListItemStatus(
+    content = Text(messages("sendAReport.status.completed"))
+   )
+
+  case Incomplete =>
+   TaskListItemStatus(
+    tag = Some(Tag(
+     content = Text(messages("sendAReport.status.incomplete")),
+     classes = "govuk-tag--blue"
+    ))
+   )
+
+  case NoStatus =>
+   TaskListItemStatus(
+    content = Empty
+   )
+ }
 }
 
-@completed = @{
- TaskListItemStatus(
-  content = Text(messages("sendAReport.status.completed"))
- )
+@taskListItems(section: SendAReportSection) = @{
+ section.tasks.map { task =>
+  TaskListItem(
+   title = TaskListItemTitle(
+    content = Text(messages(task.titleKey))
+   ),
+   href = Some(underConstructionUrl),
+   status = taskStatus(task.status)
+  )
+ }
 }
 
-@incomplete = @{
- TaskListItemStatus(
-  tag = Some(Tag(
-   content = Text(messages("sendAReport.status.incomplete")),
-   classes = "govuk-tag--blue"
-  ))
- )
-}
-
-
-@taskItem(messageKey: String, status: TaskListItemStatus) = @{
- TaskListItem(
-  title = TaskListItemTitle(
-   content = Text(messages(messageKey))
-  ),
-  status = status,
-  href = Some(underConstructionUrl)
- )
+@sectionHeadingClass(index: Int) = @{
+ if (index == 0) {
+  "govuk-heading-m"
+ } else {
+  "govuk-heading-m govuk-!-margin-top-5"
+ }
 }
 
 @layout(pageTitle = titleNoForm(messages("sendAReport.title"))) {
 
- <h1 class="govuk-heading-l">@messages("sendAReport.heading")</h1>
+ <h1 class="govuk-heading-xl">@messages("sendAReport.heading")</h1>
 
- <h2 class="govuk-heading-m">@messages("sendAReport.reportDetails.heading")</h2>
+ @for((section, index) <- model.sections.zipWithIndex) {
+  <h2 class="@sectionHeadingClass(index)">@messages(section.headingKey)</h2>
 
- @govukTaskList(TaskList(
-  idPrefix = "report-details",
-  items = Seq(
-   taskItem("sendAReport.reportDetails.subHeading", notStarted)
-  )
- ))
-
- <h2 class="govuk-heading-m govuk-!-margin-top-5">@messages("sendAReport.financialInstitution.heading")</h2>
-
- @govukTaskList(TaskList(
-  idPrefix = "financial-institution",
-  items = Seq(
-   taskItem("sendAReport.financialInstitution.subHeading", notStarted)
-  )
- ))
-
- <h2 class="govuk-heading-m govuk-!-margin-top-5">@messages("sendAReport.sponsor.heading")</h2>
-
- @govukTaskList(TaskList(
-  idPrefix = "sponsor",
-  items = Seq(
-   taskItem("sendAReport.sponsor.subHeading", notStarted)
-  )
- ))
-
- <h2 class="govuk-heading-m govuk-!-margin-top-5">@messages("sendAReport.filerCategory.heading")</h2>
-
- @govukTaskList(TaskList(
-  idPrefix = "filer-category",
-  items = Seq(
-   taskItem("sendAReport.filerCategory.subHeading", notStarted)
-  )
- ))
-
- <h2 class="govuk-heading-m govuk-!-margin-top-5">@messages("sendAReport.accountsInformation.heading")</h2>
-
- @govukTaskList(TaskList(
-  idPrefix = "accounts-information",
-  items = Seq(
-   taskItem("sendAReport.accountsInformation.accounts", notStarted),
-   taskItem("sendAReport.accountsInformation.accountHolders", notStarted),
-   taskItem("sendAReport.accountsInformation.controllingPersons", completed),
-   taskItem("sendAReport.accountsInformation.tbc1", incomplete),
-   taskItem("sendAReport.accountsInformation.tbc2", incomplete)
-  )
- ))
+  @govukTaskList(TaskList(
+   idPrefix = section.idPrefix,
+   items = taskListItems(section)
+  ))
+ }
 
  <div class="govuk-button-group">
  @govukButton(Button(

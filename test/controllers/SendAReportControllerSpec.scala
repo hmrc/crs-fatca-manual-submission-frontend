@@ -17,32 +17,37 @@
 package controllers
 
 import base.SpecBase
-import models.SubmissionsConstants.CRS
-import play.api.test.FakeRequest
 import models.ReportId
+import models.SubmissionsConstants.CRS
+import models.viewModels.SendAReportSections
+import models.viewModels.TaskStatus._
+import pages.ReportIdPage
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.SendAReportView
-import pages.ReportIdPage
 
 class SendAReportControllerSpec extends SpecBase {
-
   "SendAReport Controller" - {
-
     val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "testFiID"))
-
+    val sections = SendAReportSections(
+      reportDetails = Some(NotStarted),
+      financialInstitutionDetails = Some(NotStarted),
+      sponsorDetails = Some(NotStarted),
+      filerCategory = Some(NotStarted),
+      accounts = Some(NotStarted),
+      accountHolders = Some(NoStatus),
+      controllingPersons = Some(Completed),
+      tbc1 = Some(Incomplete),
+      tbc2 = Some(Incomplete)
+    )
     "must return OK and the correct view for a GET" in {
-
       val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
-
       running(application) {
         val request = FakeRequest(GET, routes.SendAReportController.onPageLoad().url)
-
-        val result = route(application, request).value
-
-        val view = application.injector.instanceOf[SendAReportView]
-
+        val result  = route(application, request).value
+        val view    = application.injector.instanceOf[SendAReportView]
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view()(request, messages(application)).toString
+        contentAsString(result) mustEqual view(sections)(request, messages(application)).toString
       }
     }
   }

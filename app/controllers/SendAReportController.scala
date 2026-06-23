@@ -22,6 +22,8 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.SendAReportView
+import models.viewModels.SendAReportSections
+import models.viewModels.TaskStatus._
 
 class SendAReportController @Inject() (
   override val messagesApi: MessagesApi,
@@ -36,6 +38,18 @@ class SendAReportController @Inject() (
 
   def onPageLoad: Action[AnyContent] = identify {
     implicit request =>
-      Ok(view())
+      val sections = SendAReportSections(
+        reportDetails = Some(NotStarted),
+        financialInstitutionDetails = Some(NotStarted),
+        sponsorDetails = Some(NotStarted),
+        filerCategory = Some(NotStarted),
+        accounts = Some(NotStarted),
+        accountHolders = Some(NoStatus),
+        controllingPersons = Some(Completed),
+        tbc1 = Some(Incomplete),
+        tbc2 = Some(Incomplete)
+      )
+
+      Ok(view(sections))
   }
 }
