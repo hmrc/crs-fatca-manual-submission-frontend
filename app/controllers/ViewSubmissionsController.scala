@@ -28,6 +28,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import services.{SubmissionHistoryService, ViewFIService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.ReportingConstants.REPORTING_START_YEAR
 import views.html.ViewSubmissionsView
 
 import java.time.LocalDate
@@ -68,7 +69,7 @@ class ViewSubmissionsController @Inject() (
         submissions <- liftF(historyService.getSubmissionHistory(fiId))
         cards           = historyService.prepareSubmissionHistoryCards(submissions.submissionsList, chosenYear)
         currentYear     = LocalDate.now().getYear
-        submissionYears = (currentYear - 12 to currentYear).toList.sorted
+        submissionYears = (REPORTING_START_YEAR to currentYear).toList.sorted
       } yield Ok(view(cards, chosenYear, fiName, submissionYears, fiId)))
         .getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
         .recover {
