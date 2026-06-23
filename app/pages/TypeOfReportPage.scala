@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package generators
+package pages
 
-import models.TypeOfReport
-import org.scalacheck.{Arbitrary, Gen}
+import models.{ReportId, TypeOfReport}
 
-trait ModelGenerators {
+object TypeOfReportPage {
 
-  implicit lazy val arbitraryTypeOfReport: Arbitrary[TypeOfReport] =
-    Arbitrary {
-      Gen.oneOf(TypeOfReport.values.toSeq)
-    }
+  def apply()(implicit reportId: ReportId): ReportPage[TypeOfReport] =
+    ReportPage("typeOfReport")
 }

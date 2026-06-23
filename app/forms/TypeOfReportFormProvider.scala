@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package generators
+package forms
 
+import javax.inject.Inject
+
+import forms.mappings.Mappings
+import play.api.data.Form
 import models.TypeOfReport
-import org.scalacheck.{Arbitrary, Gen}
 
-trait ModelGenerators {
+class TypeOfReportFormProvider @Inject() extends Mappings {
 
-  implicit lazy val arbitraryTypeOfReport: Arbitrary[TypeOfReport] =
-    Arbitrary {
-      Gen.oneOf(TypeOfReport.values.toSeq)
-    }
+  def apply(): Form[TypeOfReport] =
+    Form(
+      "value" -> enumerable[TypeOfReport]("typeOfReport.error.required")
+    )
 }

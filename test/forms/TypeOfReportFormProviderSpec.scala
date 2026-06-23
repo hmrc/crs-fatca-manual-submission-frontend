@@ -14,15 +14,32 @@
  * limitations under the License.
  */
 
-package generators
+package forms
 
+import forms.behaviours.OptionFieldBehaviours
 import models.TypeOfReport
-import org.scalacheck.{Arbitrary, Gen}
+import play.api.data.FormError
 
-trait ModelGenerators {
+class TypeOfReportFormProviderSpec extends OptionFieldBehaviours {
 
-  implicit lazy val arbitraryTypeOfReport: Arbitrary[TypeOfReport] =
-    Arbitrary {
-      Gen.oneOf(TypeOfReport.values.toSeq)
-    }
+  val form = new TypeOfReportFormProvider()()
+
+  ".value" - {
+
+    val fieldName = "value"
+    val requiredKey = "typeOfReport.error.required"
+
+    behave like optionsField[TypeOfReport](
+      form,
+      fieldName,
+      validValues  = TypeOfReport.values,
+      invalidError = FormError(fieldName, "error.invalid")
+    )
+
+    behave like mandatoryField(
+      form,
+      fieldName,
+      requiredError = FormError(fieldName, requiredKey)
+    )
+  }
 }

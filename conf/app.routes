@@ -68,3 +68,8 @@ GET        /problem/elections-information-is-missing                controllers.
 GET        /elections/manage-elections-for-:year                    controllers.elections.ManageElectionsController.onPageLoad(year: Int, fiId: String)
 
 GET        /under-construction                                  controllers.UnderConstructionController.onPageLoad()
+
+GET        /report-details/type-of-report                        controllers.TypeOfReportController.onPageLoad(mode: Mode = NormalMode)
+POST       /report-details/type-of-report                        controllers.TypeOfReportController.onSubmit(mode: Mode = NormalMode)
+GET        /report-details/change-type-of-report                  controllers.TypeOfReportController.onPageLoad(mode: Mode = CheckMode)
+POST       /report-details/change-type-of-report                 controllers.TypeOfReportController.onSubmit(mode: Mode = CheckMode)
