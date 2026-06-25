@@ -22,7 +22,9 @@
 @this(
         layout: templates.Layout,
         govukTaskList: GovukTaskList,
-        govukButton: GovukButton
+        govukButton: GovukButton,
+        para: components.Paragraph,
+        link: components.Link
 )
 
 @(model: SendAReportSections)(implicit request: Request[_], messages: Messages)
@@ -78,7 +80,10 @@
 
 @layout(pageTitle = titleNoForm(messages("sendAReport.title"))) {
 
- <h1 class="govuk-heading-xl">@messages("sendAReport.heading")</h1>
+ <h1 class="govuk-heading-l">@messages("sendAReport.heading")</h1>
+
+ @para("sendAReport.p1")
+
 
  @for((section, index) <- model.sections.zipWithIndex) {
   <h2 class="@sectionHeadingClass(index)">@messages(section.headingKey)</h2>
@@ -88,11 +93,8 @@
    items = taskListItems(section)
   ))
  }
+ @link(href=controllers.routes.UnderConstructionController.onPageLoad().url, message = messages("sendAReport.link.1"))
+ @link(href=controllers.routes.UnderConstructionController.onPageLoad().url, message = messages("sendAReport.link.2"))
+ @link(href=controllers.routes.UnderConstructionController.onPageLoad().url, message = messages("sendAReport.link.3", "FI name"))
 
- <div class="govuk-button-group">
- @govukButton(Button(
-  content = Text(messages("sendAReport.apply")),
-  href = Some(underConstructionUrl)
- ))
- </div>
 }

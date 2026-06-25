@@ -63,6 +63,12 @@ class SendAReportViewSpec extends SpecBase {
         doc.select("h1").text() mustBe "Manual journey index page - design TBC"
       }
 
+      "must display draft saved paragraph" in {
+        doc.text() must include(
+          "This draft will be saved from 28 days of the date you last saved any manual report information for any financial institution"
+        )
+      }
+
       "must display section headings" in {
         val headings = doc.select("h2").eachText()
 
@@ -98,9 +104,14 @@ class SendAReportViewSpec extends SpecBase {
         doc.select(".govuk-tag.govuk-tag--blue").eachText() must contain("Incomplete")
       }
 
-      "must display apply button" in {
-        doc.select(".govuk-button").text() mustBe "Apply"
+      "must display action links" in {
+        val links = doc.select("a").eachText()
+
+        links must contain("Discard this draft")
+        links must contain("Delete this report")
+        links must contain("Back to manage reports for FI name")
       }
+
     }
 
     "must not display sections when no tasks are present" in {
