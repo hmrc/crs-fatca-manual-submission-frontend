@@ -20,7 +20,7 @@ import forms.mappings.Mappings
 
 import javax.inject.Inject
 import play.api.data.Form
-import utils.ReportingConstants.MANUAL_REPORTING_MINIMUM_THRESHOLD_YEAR
+import utils.ReportingConstants.REPORTING_START_YEAR
 
 import java.time.Year
 
@@ -30,7 +30,7 @@ class ReportingYearFormProvider @Inject() extends Mappings {
     Form(
       "value" -> int("reportingYear.error.required", "reportingYear.error.wholeNumber", "reportingYear.error.nonNumeric")
         .verifying(
-          minimumValue(MANUAL_REPORTING_MINIMUM_THRESHOLD_YEAR, "reportingYear.error.minimum"),
+          minimumValue(REPORTING_START_YEAR, "reportingYear.error.minimum"),
           maximumValue(Year.now.getValue, "reportingYear.error.maximum")
         )
     )
