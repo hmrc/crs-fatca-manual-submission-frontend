@@ -14,22 +14,14 @@
  * limitations under the License.
  */
 
-package navigation
+package pages
 
-import controllers.routes
-import models.*
-import pages.*
-import play.api.mvc.Call
+import models.CrsOrFatca
+import play.api.libs.json.JsPath
 
-import javax.inject.{Inject, Singleton}
+case object CrsOrFatcaPage extends QuestionPage[CrsOrFatca] {
 
-@Singleton
-class ManualSubmissionNavigator @Inject() () {
+  override def path: JsPath = JsPath \ toString
 
-  def nextPage(page: Page, mode: Mode, userData: UserAnswers): Call =
-    (page, mode) match {
-      case (CrsOrFatcaPage, NormalMode)    => routes.ReportingYearController.onPageLoad(mode)
-      case (ReportingYearPage, NormalMode) => routes.UnderConstructionController.onPageLoad()
-      case _                               => routes.IndexController.onPageLoad()
-    }
+  override def toString: String = "crsOrFatca"
 }

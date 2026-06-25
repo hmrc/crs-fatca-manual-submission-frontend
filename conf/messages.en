@@ -202,3 +202,22 @@ sendAReport.status.incomplete = Incomplete
 sendAReport.accountsInformation.tbc1 = TBC
 sendAReport.accountsInformation.tbc2 = TBC
 sendAReport.apply = Apply
+
+reportingYear.title = Which year are you reporting for?
+reportingYear.heading = Which year are you reporting for?
+reportingYear.heading.hint = For example, 2025.
+reportingYear.checkYourAnswersLabel = Which year are you reporting for?
+reportingYear.error.nonNumeric = Year must only include numbers 0 to 9
+reportingYear.error.required = Enter the year you are reporting for
+reportingYear.error.wholeNumber = Year must only include numbers 0 to 9
+reportingYear.error.minimum = Year cannot be before 2014
+reportingYear.error.maximum = Year cannot be after the current year
+reportingYear.change.hidden = ReportingYear
+
+crsOrFatca.title = Is this a CRS or FATCA report?
+crsOrFatca.heading = Is this a CRS or FATCA report?
+crsOrFatca.crs = CRS
+crsOrFatca.fatca = FATCA
+crsOrFatca.checkYourAnswersLabel = Is this a CRS or FATCA report?
+crsOrFatca.error.required = Select whether this is a CRS or FATCA report
+crsOrFatca.change.hidden = CrsOrFatca

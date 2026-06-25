@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
-package navigation
+package forms
 
-import controllers.routes
-import models.*
-import pages.*
-import play.api.mvc.Call
+import forms.mappings.Mappings
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
+import play.api.data.Form
+import utils.ReportingConstants.REPORTING_START_YEAR
 
-@Singleton
-class ManualSubmissionNavigator @Inject() () {
+import java.time.Year
 
-  def nextPage(page: Page, mode: Mode, userData: UserAnswers): Call =
-    (page, mode) match {
-      case (CrsOrFatcaPage, NormalMode)    => routes.ReportingYearController.onPageLoad(mode)
-      case (ReportingYearPage, NormalMode) => routes.UnderConstructionController.onPageLoad()
-      case _                               => routes.IndexController.onPageLoad()
-    }
+class ReportingYearFormProvider @Inject() extends Mappings {
+
+  def apply(): Form[Int] =
+    Form(
+      "value" -> int("reportingYear.error.required", "reportingYear.error.wholeNumber", "reportingYear.error.nonNumeric")
+        .verifying(
+          minimumValue(REPORTING_START_YEAR, "reportingYear.error.minimum"),
+          maximumValue(Year.now.getValue, "reportingYear.error.maximum")
+        )
+    )
 }

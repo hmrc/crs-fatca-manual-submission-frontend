@@ -1,44 +1,61 @@
+/*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package controllers
 
 import base.SpecBase
-import forms.$className$FormProvider
-import models.SubmissionsConstants.CRS
-import models.{NormalMode, ReportId, $className$}
+import forms.ReportingYearFormProvider
+import models.{NormalMode, UserAnswers}
+import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
+import pages.ReportingYearPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import views.html.$className$View
-import connectors.DatabaseConnector
-import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
-import pages.{ReportIdPage, $className$Page}
+import play.api.test.Helpers.*
+import repositories.SessionRepository
+import views.html.ReportingYearView
+
 import scala.concurrent.Future
 
-class $className$ControllerSpec extends SpecBase with MockitoSugar {
+class ReportingYearControllerSpec extends SpecBase with MockitoSugar {
+
+  val formProvider = new ReportingYearFormProvider()
+  val form         = formProvider()
 
   def onwardRoute = Call("GET", "/foo")
 
-  lazy val $className;format="decap"$Route = routes.$className$Controller.onPageLoad(NormalMode).url
+  val validAnswer = 2014
 
-  val formProvider = new $className$FormProvider()
-  val form = formProvider()
+  lazy val reportingYearRoute = routes.ReportingYearController.onPageLoad(NormalMode).url
 
-  "$className$ Controller" - {
-    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS,2025,None,"TestfiID"))
+  "ReportingYear Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, $className;format="decap"$Route)
+        val request = FakeRequest(GET, reportingYearRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[$className$View]
+        val view = application.injector.instanceOf[ReportingYearView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
@@ -46,41 +63,41 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-      implicit val reportId = ReportId(CRS,2025,None,"TestfiID")
-      val userAnswers = ua.set($className$Page(), $className$.values.head).success.value
+
+      val userAnswers = UserAnswers(userAnswersId).set(ReportingYearPage, validAnswer).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, $className;format="decap"$Route)
+        val request = FakeRequest(GET, reportingYearRoute)
 
-        val view = application.injector.instanceOf[$className$View]
+        val view = application.injector.instanceOf[ReportingYearView]
 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill($className$.values.head), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode)(request, messages(application)).toString
       }
     }
 
     "must redirect to the next page when valid data is submitted" in {
 
-      val mockSessionRepository = mock[DatabaseConnector]
+      val mockSessionRepository = mock[SessionRepository]
 
-      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
-        applicationBuilder(maybeUserAnswers = Some(ua))
+        applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockSessionRepository)
+            bind[SessionRepository].toInstance(mockSessionRepository)
           )
           .build()
 
       running(application) {
         val request =
-          FakeRequest(POST, $className;format="decap"$Route)
-            .withFormUrlEncodedBody(("value", $className$.values.head.toString))
+          FakeRequest(POST, reportingYearRoute)
+            .withFormUrlEncodedBody(("value", validAnswer.toString))
 
         val result = route(application, request).value
 
@@ -91,16 +108,16 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
         val request =
-          FakeRequest(POST, $className;format="decap"$Route)
+          FakeRequest(POST, reportingYearRoute)
             .withFormUrlEncodedBody(("value", "invalid value"))
 
         val boundForm = form.bind(Map("value" -> "invalid value"))
 
-        val view = application.injector.instanceOf[$className$View]
+        val view = application.injector.instanceOf[ReportingYearView]
 
         val result = route(application, request).value
 
@@ -114,7 +131,7 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(maybeUserAnswers = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, $className;format="decap"$Route)
+        val request = FakeRequest(GET, reportingYearRoute)
 
         val result = route(application, request).value
 
@@ -123,14 +140,14 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "redirect to Journey Recovery for a POST if no existing data is found" in {
-      
+    "must redirect to Journey Recovery for a POST if no existing data is found" in {
+
       val application = applicationBuilder(maybeUserAnswers = None).build()
 
       running(application) {
         val request =
-          FakeRequest(POST, $className;format="decap"$Route)
-            .withFormUrlEncodedBody(("value", $className$.values.head.toString))
+          FakeRequest(POST, reportingYearRoute)
+            .withFormUrlEncodedBody(("value", validAnswer.toString))
 
         val result = route(application, request).value
 
