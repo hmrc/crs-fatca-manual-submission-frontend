@@ -54,7 +54,7 @@ class ViewSubmissionsControllerSpec extends SpecBase {
   val mockFiService: ViewFIService                           = mock[ViewFIService]
   val mockSessionRepository: SessionRepository               = mock[SessionRepository]
   "ViewSubmissions Controller" - {
-
+    val reportStartYear = 2014
     "must return OK and the correct view for a GET when FI data is already stored in mongo" in {
 
       val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers(fiId, fiName))))
@@ -71,8 +71,8 @@ class ViewSubmissionsControllerSpec extends SpecBase {
         val view = application.injector.instanceOf[ViewSubmissionsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(mappedCards, 2016, fiName, (currentYear - 12 to currentYear).toList, fiId)(request,
-                                                                                                                          messages(application)
+        contentAsString(result) mustEqual view(mappedCards, 2016, fiName, (reportStartYear to currentYear).toList, fiId)(request,
+                                                                                                                         messages(application)
         ).toString
       }
     }
@@ -98,8 +98,8 @@ class ViewSubmissionsControllerSpec extends SpecBase {
         val view = application.injector.instanceOf[ViewSubmissionsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(mappedCards, 2016, fiName, (currentYear - 12 to currentYear).toList, fiId)(request,
-                                                                                                                          messages(application)
+        contentAsString(result) mustEqual view(mappedCards, 2016, fiName, (reportStartYear to currentYear).toList, fiId)(request,
+                                                                                                                         messages(application)
         ).toString
       }
     }
