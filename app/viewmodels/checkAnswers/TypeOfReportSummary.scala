@@ -28,8 +28,8 @@ import viewmodels.implicits._
 
 object TypeOfReportSummary  {
 
-  def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
-    answers.get(TypeOfReportPage()).map {
+  def row(year: Int, answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
+    answers.get(TypeOfReportPage).map {
       answer =>
 
         val value = ValueViewModel(
@@ -42,7 +42,7 @@ object TypeOfReportSummary  {
           key     = "typeOfReport.checkYourAnswersLabel",
           value   = value,
           actions = Seq(
-            ActionItemViewModel("site.change", routes.TypeOfReportController.onPageLoad(CheckMode).url)
+            ActionItemViewModel("site.change", routes.TypeOfReportController.onPageLoad(year, CheckMode).url)
               .withVisuallyHiddenText(messages("typeOfReport.change.hidden"))
           )
         )

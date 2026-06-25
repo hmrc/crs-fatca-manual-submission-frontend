@@ -21,8 +21,8 @@ import models.TypeOfReport
 import play.api.data.FormError
 
 class TypeOfReportFormProviderSpec extends OptionFieldBehaviours {
-
-  val form = new TypeOfReportFormProvider()()
+  val year = 2026
+  val form = new TypeOfReportFormProvider()(year)
 
   ".value" - {
 

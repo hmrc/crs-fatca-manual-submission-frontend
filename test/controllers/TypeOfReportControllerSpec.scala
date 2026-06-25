@@ -17,33 +17,35 @@
 package controllers
 
 import base.SpecBase
+import connectors.DatabaseConnector
 import forms.TypeOfReportFormProvider
 import models.SubmissionsConstants.CRS
 import models.{NormalMode, ReportId, TypeOfReport}
+import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
+import pages.{ReportIdPage, TypeOfReportPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import views.html.TypeOfReportView
-import connectors.DatabaseConnector
-import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
-import pages.{ReportIdPage, TypeOfReportPage}
+
 import scala.concurrent.Future
 
 class TypeOfReportControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
-
-  lazy val typeOfReportRoute = routes.TypeOfReportController.onPageLoad(NormalMode).url
+  val year = 2026
+  val fiName                 = "name"
+  lazy val typeOfReportRoute = routes.TypeOfReportController.onPageLoad(year, NormalMode).url
 
   val formProvider = new TypeOfReportFormProvider()
-  val form = formProvider()
+  val form         = formProvider(year)
 
   "TypeOfReport Controller" - {
-    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS,2025,None,"TestfiID"))
+    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
 
     "must return OK and the correct view for a GET" in {
 
@@ -57,13 +59,13 @@ class TypeOfReportControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[TypeOfReportView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, fiName, year)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-      implicit val reportId = ReportId(CRS,2025,None,"TestfiID")
-      val userAnswers = ua.set(TypeOfReportPage(), TypeOfReport.values.head).success.value
+      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
+      val userAnswers       = ua.set(TypeOfReportPage, TypeOfReport.values.head).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
@@ -75,7 +77,7 @@ class TypeOfReportControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(TypeOfReport.values.head), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(TypeOfReport.values.head), NormalMode, fiName, year)(request, messages(application)).toString
       }
     }
 
@@ -121,7 +123,7 @@ class TypeOfReportControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, fiName, year)(request, messages(application)).toString
       }
     }
 

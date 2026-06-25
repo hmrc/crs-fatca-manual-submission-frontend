@@ -16,10 +16,13 @@
 
 package pages
 
-import models.{ReportId, TypeOfReport}
+import models.TypeOfReport
+import play.api.libs.json.JsPath
 
-object TypeOfReportPage {
+case object TypeOfReportPage extends QuestionPage[TypeOfReport] {
 
-  def apply()(implicit reportId: ReportId): ReportPage[TypeOfReport] =
-    ReportPage("typeOfReport")
+  override def path: JsPath = JsPath \ toString
+
+  override def toString: String = "typeOfReport"
+
 }

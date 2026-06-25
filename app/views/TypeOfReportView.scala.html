@@ -19,23 +19,33 @@
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
     govukRadios: GovukRadios,
-    govukButton: GovukButton
+    govukButton: GovukButton,
+    heading: components.Heading,
+    para: components.Paragraph,
+
+
 )
 
-@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, fiName: String, reportingYear: Int)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("typeOfReport.title"))) {
 
-    @formHelper(action = routes.TypeOfReportController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+    @formHelper(action = routes.TypeOfReportController.onSubmit(reportingYear, mode), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form,  errorLinkOverrides = Map("value" -> "value_0")))
         }
 
+        @heading(messages("typeOfReport.heading"))
+
+        @para(messages("typeOfReport.para", fiName, reportingYear.toString))
+
+        @heading(messages("typeOfReport.subheading", fiName, reportingYear.toString), size = "m", level = "h2")
+
         @govukRadios(
             RadiosViewModel(
                 field  = form("value"),
-                legend = LegendViewModel(messages("typeOfReport.heading")).asPageHeading(),
+                legend = LegendViewModel(messages("typeOfReport.heading")).withCssClass("govuk-visually-hidden govuk-!-display-block"),
                 items  = TypeOfReport.options
             )
         )

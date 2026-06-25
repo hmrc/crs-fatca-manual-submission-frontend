@@ -16,16 +16,16 @@
 
 package forms
 
-import javax.inject.Inject
-
 import forms.mappings.Mappings
-import play.api.data.Form
 import models.TypeOfReport
+import play.api.data.Form
+
+import javax.inject.Inject
 
 class TypeOfReportFormProvider @Inject() extends Mappings {
 
-  def apply(): Form[TypeOfReport] =
+  def apply(year: Int): Form[TypeOfReport] =
     Form(
-      "value" -> enumerable[TypeOfReport]("typeOfReport.error.required")
+      "value" -> enumerable[TypeOfReport]("typeOfReport.error.required", args = Seq(year.toString))
     )
 }

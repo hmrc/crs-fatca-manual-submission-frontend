@@ -16,58 +16,65 @@
 
 package controllers
 
-import controllers.actions._
+import connectors.DatabaseConnector
+import controllers.actions.*
 import forms.TypeOfReportFormProvider
-import javax.inject.Inject
-import models.{Mode, ReportId}
+import models.Mode
 import navigation.ManualSubmissionNavigator
-import pages.TypeOfReportPage
+import pages.{FiDetailsPage, TypeOfReportPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import connectors.DatabaseConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.TypeOfReportView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class TypeOfReportController @Inject()(
-                                       override val messagesApi: MessagesApi,
-                                       sessionRepository: DatabaseConnector,
-                                       navigator: ManualSubmissionNavigator,
-                                       identify: IdentifierAction,
-                                       getData: DataRetrievalAction,
-                                       requireData: DataRequiredAction,
-                                       reportIdAction: ReportIdRequiredAction,
-                                       formProvider: TypeOfReportFormProvider,
-                                       val controllerComponents: MessagesControllerComponents,
-                                       view: TypeOfReportView
-                                     )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+class TypeOfReportController @Inject() (
+  override val messagesApi: MessagesApi,
+  sessionRepository: DatabaseConnector,
+  navigator: ManualSubmissionNavigator,
+  identify: IdentifierAction,
+  getData: FrontendDataRetrievalAction,
+  requireData: DataRequiredAction,
+  reportIdAction: ReportIdRequiredAction,
+  formProvider: TypeOfReportFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: TypeOfReportView
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
+    with I18nSupport {
 
-  val form = formProvider()
-
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
+  def onPageLoad(year: Int, mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      implicit val reportId: ReportId = request.reportId
-      val preparedForm = request.userAnswers.get(TypeOfReportPage()) match {
-        case None => form
-        case Some(value) => form.fill(value)
-      }
+      val form = formProvider(year)
+      request.userAnswers
+        .get(FiDetailsPage)
+        .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)) {
+          fiDetail =>
+            val preparedForm = request.userAnswers.get(TypeOfReportPage) match {
+              case None        => form
+              case Some(value) => form.fill(value)
+            }
 
-      Ok(view(preparedForm, mode))
+            Ok(view(preparedForm, mode, fiDetail.fiName, year))
+        }
+
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
+  def onSubmit(year: Int, mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      implicit val reportId: ReportId = request.reportId
-      form.bindFromRequest().fold(
-        formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors, mode))),
+      val fiName = request.userAnswers.get(FiDetailsPage).get.fiName
 
-        value =>
-          for {
-            updatedAnswers <- Future.fromTry(request.userAnswers.set(TypeOfReportPage(), value))
-            _              <- sessionRepository.set(updatedAnswers)
-          } yield Redirect(navigator.nextPage(TypeOfReportPage(), mode, updatedAnswers))
-      )
+      formProvider(year)
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiName, year))),
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(TypeOfReportPage, value))
+              _              <- sessionRepository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(TypeOfReportPage, mode, updatedAnswers))
+        )
   }
 }
