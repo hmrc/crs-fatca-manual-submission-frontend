@@ -14,22 +14,32 @@
  * limitations under the License.
  */
 
-package generators
+package forms
 
-import models.TypeOfReport
-import org.scalacheck.{Arbitrary, Gen}
+import forms.behaviours.OptionFieldBehaviours
 import models.CrsOrFatca
-import org.scalacheck.{Arbitrary, Gen}
+import play.api.data.FormError
 
-trait ModelGenerators {
+class CrsOrFatcaFormProviderSpec extends OptionFieldBehaviours {
 
-  implicit lazy val arbitraryTypeOfReport: Arbitrary[TypeOfReport] =
-    Arbitrary {
-      Gen.oneOf(TypeOfReport.values.toSeq)
-    }
+  val form = new CrsOrFatcaFormProvider()()
 
-  implicit lazy val arbitraryCrsOrFatca: Arbitrary[CrsOrFatca] =
-    Arbitrary {
-      Gen.oneOf(CrsOrFatca.values)
-    }
+  ".value" - {
+
+    val fieldName   = "value"
+    val requiredKey = "crsOrFatca.error.required"
+
+    behave like optionsField[CrsOrFatca](
+      form,
+      fieldName,
+      validValues = CrsOrFatca.values,
+      invalidError = FormError(fieldName, "error.invalid")
+    )
+
+    behave like mandatoryField(
+      form,
+      fieldName,
+      requiredError = FormError(fieldName, requiredKey)
+    )
+  }
 }

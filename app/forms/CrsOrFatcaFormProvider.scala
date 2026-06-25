@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-package generators
+package forms
 
-import models.TypeOfReport
-import org.scalacheck.{Arbitrary, Gen}
+import javax.inject.Inject
+
+import forms.mappings.Mappings
+import play.api.data.Form
 import models.CrsOrFatca
-import org.scalacheck.{Arbitrary, Gen}
 
-trait ModelGenerators {
+class CrsOrFatcaFormProvider @Inject() extends Mappings {
 
-  implicit lazy val arbitraryTypeOfReport: Arbitrary[TypeOfReport] =
-    Arbitrary {
-      Gen.oneOf(TypeOfReport.values.toSeq)
-    }
-
-  implicit lazy val arbitraryCrsOrFatca: Arbitrary[CrsOrFatca] =
-    Arbitrary {
-      Gen.oneOf(CrsOrFatca.values)
-    }
+  def apply(): Form[CrsOrFatca] =
+    Form(
+      "value" -> enumerable[CrsOrFatca]("crsOrFatca.error.required")
+    )
 }

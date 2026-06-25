@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
-package generators
+package forms
 
-import models.TypeOfReport
-import org.scalacheck.{Arbitrary, Gen}
-import models.CrsOrFatca
-import org.scalacheck.{Arbitrary, Gen}
+import forms.mappings.Mappings
 
-trait ModelGenerators {
+import javax.inject.Inject
+import play.api.data.Form
+import utils.ReportingConstants.REPORTING_START_YEAR
 
-  implicit lazy val arbitraryTypeOfReport: Arbitrary[TypeOfReport] =
-    Arbitrary {
-      Gen.oneOf(TypeOfReport.values.toSeq)
-    }
+import java.time.Year
 
-  implicit lazy val arbitraryCrsOrFatca: Arbitrary[CrsOrFatca] =
-    Arbitrary {
-      Gen.oneOf(CrsOrFatca.values)
-    }
+class ReportingYearFormProvider @Inject() extends Mappings {
+
+  def apply(): Form[Int] =
+    Form(
+      "value" -> int("reportingYear.error.required", "reportingYear.error.wholeNumber", "reportingYear.error.nonNumeric")
+        .verifying(
+          minimumValue(REPORTING_START_YEAR, "reportingYear.error.minimum"),
+          maximumValue(Year.now.getValue, "reportingYear.error.maximum")
+        )
+    )
 }

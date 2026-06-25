@@ -76,3 +76,13 @@ POST       /report-details/change-type-of-report                 controllers.Typ
 
 GET        /report-details/check-answers                       controllers.ReportDetailsCheckAnswersController.onPageLoad()
 POST       /report-details/check-answers                       controllers.ReportDetailsCheckAnswersController.onSaveAndContinue()
+
+GET        /manual/report-details/year                               controllers.ReportingYearController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/report-details/year                               controllers.ReportingYearController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/report-details/change-year                        controllers.ReportingYearController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/report-details/change-year                        controllers.ReportingYearController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/report-details/crs-or-fatca                       controllers.CrsOrFatcaController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/report-details/crs-or-fatca                       controllers.CrsOrFatcaController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/report-details/change-crs-or-fatca                controllers.CrsOrFatcaController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/report-details/change-crs-or-fatca                controllers.CrsOrFatcaController.onSubmit(mode: Mode = CheckMode)

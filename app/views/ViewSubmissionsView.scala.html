@@ -16,6 +16,7 @@
 
 @import views.html.components.{Heading, ParagraphMessageWithLink, PaginationWithYear}
 @import config.FrontendAppConfig
+@import models.NormalMode
 
 @this(
         layout: templates.Layout,
@@ -44,7 +45,7 @@
     @paragraphMessageWithLink(message1 = Some(messages("viewSubmissions.body.1")),
     linkMessage = messages("viewSubmissions.body.link.1"),
     message2 = Some(messages("viewSubmissions.body.2")),
-    linkUrl = config.fileUploadUrl, secondaryLinkUrl = Some(controllers.routes.TypeOfReportController.onPageLoad(chosenYear, NormalMode).url),
+    linkUrl = config.fileUploadUrl, secondaryLinkUrl = Some(controllers.routes.CrsOrFatcaController.onPageLoad(NormalMode).url),
     secondaryLinkMessage = Some(messages("viewSubmissions.body.link.2")), linkFullStop = true)
 
     <div class="reduce-pagination-padding">

@@ -5,7 +5,7 @@ This service is used to manual file upload process.
 
 ## Running the service
 
-Service manager: CRS_FATCA_ALL
+Service manager: CRS_FATCA_MANUAL
 
 Port: 10039
 
