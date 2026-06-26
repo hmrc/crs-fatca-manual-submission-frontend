@@ -22,7 +22,6 @@ import models.{CrsOrFatca, NormalMode, UserAnswers}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import org.scalatestplus.mockito.MockitoSugar
 import pages.CrsOrFatcaPage
 import play.api.inject.bind
 import play.api.mvc.Call
@@ -37,10 +36,10 @@ class CrsOrFatcaControllerSpec extends SpecBase {
 
   def onwardRoute = Call("GET", "/foo")
 
-  lazy val crsOrFatcaRoute = routes.CrsOrFatcaController.onPageLoad(NormalMode).url
+  private lazy val crsOrFatcaRoute = routes.CrsOrFatcaController.onPageLoad(NormalMode).url
 
   val formProvider = new CrsOrFatcaFormProvider()
-  val form         = formProvider()
+  private val form = formProvider()
 
   "CrsOrFatca Controller" - {
 

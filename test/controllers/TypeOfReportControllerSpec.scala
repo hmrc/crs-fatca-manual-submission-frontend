@@ -34,14 +34,14 @@ import scala.concurrent.Future
 
 class TypeOfReportControllerSpec extends SpecBase {
 
-  def onwardRoute            = Call("GET", "/foo")
-  val year                   = 2026
-  val fiName                 = "name"
-  val fiId                   = "TestfiID"
-  lazy val typeOfReportRoute = routes.TypeOfReportController.onPageLoad(NormalMode).url
+  def onwardRoute                    = Call("GET", "/foo")
+  val year                           = 2026
+  val fiName                         = "name"
+  val fiId                           = "TestfiID"
+  private lazy val typeOfReportRoute = routes.TypeOfReportController.onPageLoad(NormalMode).url
 
   val formProvider = new TypeOfReportFormProvider()
-  val form         = formProvider(year)
+  private val form = formProvider(year)
 
   "TypeOfReport Controller" - {
     val ua = emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers(fiId, fiName)).withPage(ReportingYearPage, year)

@@ -30,7 +30,7 @@ class TypeOfReportSpec extends AnyFreeSpec with Matchers with ScalaCheckProperty
 
     "must deserialise valid values" in {
 
-      val gen = Gen.oneOf(TypeOfReport.values.toSeq)
+      val gen = Gen.oneOf(TypeOfReport.values)
 
       forAll(gen) {
         typeOfReport =>
@@ -50,7 +50,7 @@ class TypeOfReportSpec extends AnyFreeSpec with Matchers with ScalaCheckProperty
 
     "must serialise" in {
 
-      val gen = Gen.oneOf(TypeOfReport.values.toSeq)
+      val gen = Gen.oneOf(TypeOfReport.values)
 
       forAll(gen) {
         typeOfReport =>

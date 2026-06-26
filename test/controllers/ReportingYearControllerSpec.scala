@@ -36,13 +36,13 @@ import scala.concurrent.Future
 class ReportingYearControllerSpec extends SpecBase {
 
   val formProvider = new ReportingYearFormProvider()
-  val form         = formProvider()
+  private val form = formProvider()
 
   def onwardRoute = Call("GET", "/foo")
 
   val validAnswer = 2014
 
-  lazy val reportingYearRoute = routes.ReportingYearController.onPageLoad(NormalMode).url
+  private lazy val reportingYearRoute = routes.ReportingYearController.onPageLoad(NormalMode).url
 
   "ReportingYear Controller" - {
 
