@@ -21,6 +21,7 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import viewmodels.checkAnswers.{CrsOrFatcaSummary, ReportingYearSummary, TypeOfReportSummary}
 import viewmodels.govuk.all.SummaryListViewModel
+import viewmodels.govuk.summarylist.FluentSummaryList
 
 import javax.inject.{Inject, Singleton}
 
@@ -30,5 +31,6 @@ class ReportDetailsCheckAnswersUtil @Inject() {
   def getReportDetailsRows(ua: UserAnswers)(implicit messages: Messages): SummaryList =
     SummaryListViewModel(
       rows = Seq(CrsOrFatcaSummary.row(ua), ReportingYearSummary.row(ua), TypeOfReportSummary.row(ua)).flatten
-    )
+    ).withCssClass("govuk-!-margin-bottom-9")
+
 }

@@ -229,7 +229,7 @@ typeOfReport.subheading = What type of report would you like to send for {0} for
 typeOfReport.para = If {0} does not have information to report for {1}, then you do not need to send a report. There is also the option to send a nil report with no reportable information.
 typeOfReport.information = A report with information
 typeOfReport.nilReport = A nil report with no reportable information
-typeOfReport.checkYourAnswersLabel = Type of report
+typeOfReport.checkYourAnswersLabel = What type of report would you like to send?
 typeOfReport.error.required = Select what type of report you would like to send for the financial institution for {0}
 typeOfReport.change.hidden = TypeOfReport
 
