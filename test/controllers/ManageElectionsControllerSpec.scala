@@ -53,69 +53,35 @@ class ManageElectionsControllerSpec extends SpecBase {
   "ManageElections Controller" - {
     when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
 
-    "must return OK and the correct view for a GET" - {
-      "when fi identifiers are not there" in {
+    "must return OK and the correct view for a GET" in {
 
-        when(mockElectionsService.getElectionsRows(any(), any())(any(), any()))
-          .thenReturn(Future.successful(emptyElectionsRows))
-        when(mockFiService.getFIDetail(any(), eqTo(fiid))(using any())).thenReturn(Future.successful(fiDetail))
+      when(mockElectionsService.getElectionsRows(any(), any())(any(), any()))
+        .thenReturn(Future.successful(emptyElectionsRows))
+      when(mockFiService.getFIDetail(any(), eqTo(fiid))(using any())).thenReturn(Future.successful(fiDetail))
 
-        val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers))
-          .overrides(
-            bind[ElectionsService].toInstance(mockElectionsService),
-            bind[ViewFIService].toInstance(mockFiService),
-            bind[SessionRepository].toInstance(mockSessionRepository)
-          )
-          .build()
+      val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[ElectionsService].toInstance(mockElectionsService),
+          bind[ViewFIService].toInstance(mockFiService),
+          bind[SessionRepository].toInstance(mockSessionRepository)
+        )
+        .build()
 
-        running(application) {
-          val request = FakeRequest(GET, controllers.elections.routes.ManageElectionsController.onPageLoad(year, fiid).url)
+      running(application) {
+        val request = FakeRequest(GET, controllers.elections.routes.ManageElectionsController.onPageLoad(year, fiid).url)
 
-          val result = route(application, request).value
+        val result = route(application, request).value
 
-          val view = application.injector.instanceOf[ManageElectionsView]
+        val view = application.injector.instanceOf[ManageElectionsView]
 
-          status(result) mustEqual OK
-          contentAsString(result) mustEqual view(
-            electionYears = years,
-            electionsRows = emptyElectionsRows,
-            selectedYear = year,
-            fiName = finame,
-            fiId = fiid
-          )(request, messages(application)).toString
-        }
-      }
-      "when fi identifiers are present" in {
-
-        val answers = emptyUserAnswers.withPage(FiDetailsPage, fiDeets)
-
-        when(mockElectionsService.getElectionsRows(any(), any())(any(), any()))
-          .thenReturn(Future.successful(emptyElectionsRows))
-
-        val application = applicationBuilder(maybeUserAnswers = Some(answers))
-          .overrides(
-            bind[ElectionsService].toInstance(mockElectionsService),
-            bind[ViewFIService].toInstance(mockFiService),
-            bind[SessionRepository].toInstance(mockSessionRepository)
-          )
-          .build()
-
-        running(application) {
-          val request = FakeRequest(GET, controllers.elections.routes.ManageElectionsController.onPageLoad(year, fiid).url)
-
-          val result = route(application, request).value
-
-          val view = application.injector.instanceOf[ManageElectionsView]
-
-          status(result) mustEqual OK
-          contentAsString(result) mustEqual view(
-            electionYears = years,
-            electionsRows = emptyElectionsRows,
-            selectedYear = year,
-            fiName = finame,
-            fiId = fiid
-          )(request, messages(application)).toString
-        }
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(
+          electionYears = years,
+          electionsRows = emptyElectionsRows,
+          selectedYear = year,
+          fiName = finame,
+          fiId = fiid
+        )(request, messages(application)).toString
       }
     }
   }

@@ -51,19 +51,11 @@ class ManageElectionsController @Inject() (
       val allYears    = currentYear - 12 to currentYear
 
       (for {
-        fiName <- liftF(
-          request.userAnswers
-            .get(FiDetailsPage)
-            .map(_.fiName)
-            .map(Future.successful)
-            .getOrElse(
-              viewFIService.getFIDetail(request.fatcaId, fiId).map(_.FIName)
-            )
-        )
-        fiDetail <- liftF(
+        fiName <- liftF(viewFIService.getFIDetail(request.fatcaId, fiId).map(_.FIName))
+        updatedUA <- liftF(
           Future.fromTry(request.userAnswers.set(FiDetailsPage, FiIdentifiers(fiId, fiName)))
         )
-        _    <- liftF(sessionRepository.set(fiDetail))
+        _    <- liftF(sessionRepository.set(updatedUA))
         rows <- liftF(electionsService.getElectionsRows(fiId, year))
       } yield Ok(view(allYears, rows, year, fiName, fiId)))
         .getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))

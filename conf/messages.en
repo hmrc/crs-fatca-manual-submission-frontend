@@ -173,6 +173,37 @@ underConstruction.title = Under construction
 underConstruction.heading = Under construction
 underConstruction.p1 = This page has not been built yet. This page is being used as a temporary placeholder.
 
+sendAReport.title = Manual journey index page - design TBC
+sendAReport.heading = Manual journey index page - design TBC
+sendAReport.p1 = This draft will be saved from 28 days of the date you last saved any manual report information for any financial institution.
+sendAReport.link.1 = Discard this draft
+sendAReport.link.2 = Delete this report
+sendAReport.link.3 = Back to manage reports for {0}
+
+sendAReport.reportDetails.heading = Set up the report
+sendAReport.reportDetails.subHeading = Report details
+
+sendAReport.financialInstitution.heading = Check the reporting financial institution details
+sendAReport.financialInstitution.subHeading = Reporting financial institution details
+
+sendAReport.sponsor.heading = Add the sponsor (optional)
+sendAReport.sponsor.subHeading = Sponsor details
+
+sendAReport.filerCategory.heading = Provide the filer category
+sendAReport.filerCategory.subHeading = Filer-category
+
+sendAReport.accountsInformation.heading = Add accounts information
+sendAReport.accountsInformation.accounts = Accounts
+sendAReport.accountsInformation.accountHolders = Account holders
+sendAReport.accountsInformation.controllingPersons = Controlling persons or substantial owners
+sendAReport.accountsInformation.TBC = TBC
+sendAReport.status.notStarted = Not started
+sendAReport.status.completed = Completed
+sendAReport.status.incomplete = Incomplete
+sendAReport.accountsInformation.tbc1 = TBC
+sendAReport.accountsInformation.tbc2 = TBC
+sendAReport.apply = Apply
+
 reportingYear.title = Which year are you reporting for?
 reportingYear.heading = Which year are you reporting for?
 reportingYear.heading.hint = For example, 2025.
