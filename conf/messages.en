@@ -6,6 +6,7 @@ site.change = Change
 site.no = No
 site.yes = Yes
 site.continue = Continue
+site.saveContinue = Save and continue
 site.start = Start now
 site.startAgain = Start again
 site.signIn = Sign in
@@ -221,3 +222,16 @@ crsOrFatca.fatca = FATCA
 crsOrFatca.checkYourAnswersLabel = Is this a CRS or FATCA report?
 crsOrFatca.error.required = Select whether this is a CRS or FATCA report
 crsOrFatca.change.hidden = CrsOrFatca
+
+typeOfReport.title = Type of report
+typeOfReport.heading = Type of report
+typeOfReport.subheading = What type of report would you like to send for {0} for {1}?
+typeOfReport.para = If {0} does not have information to report for {1}, then you do not need to send a report. There is also the option to send a nil report with no reportable information.
+typeOfReport.information = A report with information
+typeOfReport.nilReport = A nil report with no reportable information
+typeOfReport.checkYourAnswersLabel = What type of report would you like to send?
+typeOfReport.error.required = Select what type of report you would like to send for the financial institution for {0}
+typeOfReport.change.hidden = TypeOfReport
+
+reportDetailsCheckAnswers.title = Check your report details for {0}
+reportDetailsCheckAnswers.heading = Check your report details for {0}
