@@ -22,13 +22,13 @@
         heading: components.Heading
 )
 
-@(list: SummaryList)(implicit request: Request[_], messages: Messages)
+@(list: SummaryList, fiName: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("reportDetailsCheckAnswers.title"))) {
+@layout(pageTitle = titleNoForm(messages("reportDetailsCheckAnswers.title", fiName))) {
 
     @formHelper(action = controllers.routes.ReportDetailsCheckAnswersController.onSaveAndContinue()){
 
-    @heading(headingContent = messages("reportDetailsCheckAnswers.heading"), size = "l")
+    @heading(headingContent = messages("reportDetailsCheckAnswers.heading", fiName), size = "l")
 
     @govukSummaryList(list)
 

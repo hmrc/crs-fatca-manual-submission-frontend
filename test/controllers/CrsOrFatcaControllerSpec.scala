@@ -33,7 +33,7 @@ import views.html.CrsOrFatcaView
 
 import scala.concurrent.Future
 
-class CrsOrFatcaControllerSpec extends SpecBase with MockitoSugar {
+class CrsOrFatcaControllerSpec extends SpecBase {
 
   def onwardRoute = Call("GET", "/foo")
 

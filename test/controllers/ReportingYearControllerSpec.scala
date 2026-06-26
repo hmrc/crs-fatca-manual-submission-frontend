@@ -33,7 +33,7 @@ import views.html.ReportingYearView
 
 import scala.concurrent.Future
 
-class ReportingYearControllerSpec extends SpecBase with MockitoSugar {
+class ReportingYearControllerSpec extends SpecBase {
 
   val formProvider = new ReportingYearFormProvider()
   val form         = formProvider()

@@ -17,33 +17,90 @@
 package controllers
 
 import base.SpecBase
-import models.ReportId
-import models.SubmissionsConstants.CRS
-import pages.ReportIdPage
+import connectors.DatabaseConnector
+import models.FiIdentifiers
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.{verify, when}
+import org.scalatestplus.mockito.MockitoSugar
+import pages.{FiDetailsPage, ReportingYearPage}
+import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
+import uk.gov.hmrc.http.InternalServerException
+import utils.ReportDetailsCheckAnswersUtil
 import viewmodels.govuk.all.SummaryListViewModel
 import views.html.ReportDetailsCheckAnswersView
+
+import scala.concurrent.Future
 
 class ReportDetailsCheckAnswersControllerSpec extends SpecBase {
 
   "ReportDetailsCheckAnswers Controller" - {
+    val year   = 2026
+    val fiName = "name"
+    val fiId   = "TestfiID"
+    val list   = SummaryListViewModel(Seq.empty)
+    val ua     = emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers(fiId, fiName)).withPage(ReportingYearPage, year)
 
-    val ua   = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "testFiID"))
-    val list = SummaryListViewModel(Seq.empty)
+    import org.mockito.Mockito
+
     "must return OK and the correct view for a GET" in {
+      val mockUtil = mock[ReportDetailsCheckAnswersUtil]
+      when(mockUtil.getReportDetailsRows(any())(any())).thenReturn(SummaryListViewModel(Seq.empty))
 
-      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(ua))
+        .overrides(bind[ReportDetailsCheckAnswersUtil].toInstance(mockUtil))
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, routes.ReportDetailsCheckAnswersController.onPageLoad().url)
-
-        val result = route(application, request).value
-
-        val view = application.injector.instanceOf[ReportDetailsCheckAnswersView]
+        val result  = route(application, request).value
+        val view    = application.injector.instanceOf[ReportDetailsCheckAnswersView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(list)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(list, fiName)(request, messages(application)).toString
+      }
+    }
+
+    "onSaveAndContinue" - {
+
+      "must redirect to UnderConstructionController when saving data succeeds" in {
+
+        val mockDatabaseConnector = mock[DatabaseConnector]
+        when(mockDatabaseConnector.set(any())(any())).thenReturn(Future.successful(()))
+
+        val application = applicationBuilder(maybeUserAnswers = Some(ua))
+          .overrides(bind[DatabaseConnector].toInstance(mockDatabaseConnector))
+          .build()
+
+        running(application) {
+          val request = FakeRequest(POST, routes.ReportDetailsCheckAnswersController.onSaveAndContinue().url)
+          val result  = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual controllers.routes.UnderConstructionController.onPageLoad().url
+
+          verify(mockDatabaseConnector).set(any())(any())
+        }
+      }
+
+      "must log an error and redirect to JourneyRecoveryController when saving data fails" in {
+
+        val mockDatabaseConnector = mock[DatabaseConnector]
+        when(mockDatabaseConnector.set(any())(any()))
+          .thenReturn(Future.failed(new InternalServerException("Unable to save UserAnswer")))
+
+        val application = applicationBuilder(maybeUserAnswers = Some(ua))
+          .overrides(bind[DatabaseConnector].toInstance(mockDatabaseConnector))
+          .build()
+
+        running(application) {
+          val request = FakeRequest(POST, routes.ReportDetailsCheckAnswersController.onSaveAndContinue().url)
+          val result  = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
+        }
       }
     }
   }

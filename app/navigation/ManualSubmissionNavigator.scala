@@ -35,9 +35,9 @@ class ManualSubmissionNavigator @Inject() () {
 
   private def normalRoutes(page: Page, userData: UserAnswers): Call =
     page match {
-      case TypeOfReportPage  => controllers.routes.ReportDetailsCheckAnswersController.onPageLoad()
       case CrsOrFatcaPage    => routes.ReportingYearController.onPageLoad(NormalMode)
-      case ReportingYearPage => routes.UnderConstructionController.onPageLoad()
+      case ReportingYearPage => routes.TypeOfReportController.onPageLoad(NormalMode)
+      case TypeOfReportPage  => controllers.routes.ReportDetailsCheckAnswersController.onPageLoad()
       case _ =>
         routes.IndexController.onPageLoad()
     }

@@ -23,8 +23,7 @@ import models.{FiIdentifiers, NormalMode, TypeOfReport}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import org.scalatestplus.mockito.MockitoSugar
-import pages.{FiDetailsPage, TypeOfReportPage}
+import pages.{FiDetailsPage, ReportingYearPage, TypeOfReportPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -33,19 +32,19 @@ import views.html.TypeOfReportView
 
 import scala.concurrent.Future
 
-class TypeOfReportControllerSpec extends SpecBase with MockitoSugar {
+class TypeOfReportControllerSpec extends SpecBase {
 
   def onwardRoute            = Call("GET", "/foo")
   val year                   = 2026
   val fiName                 = "name"
   val fiId                   = "TestfiID"
-  lazy val typeOfReportRoute = routes.TypeOfReportController.onPageLoad(year, NormalMode).url
+  lazy val typeOfReportRoute = routes.TypeOfReportController.onPageLoad(NormalMode).url
 
   val formProvider = new TypeOfReportFormProvider()
   val form         = formProvider(year)
 
   "TypeOfReport Controller" - {
-    val ua = emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers(fiId, fiName))
+    val ua = emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers(fiId, fiName)).withPage(ReportingYearPage, year)
 
     "must return OK and the correct view for a GET" in {
 

@@ -69,10 +69,10 @@ GET        /elections/manage-elections-for-:year                    controllers.
 
 GET        /under-construction                                  controllers.UnderConstructionController.onPageLoad()
 
-GET        /report-details/type-of-report                        controllers.TypeOfReportController.onPageLoad(year:Int, mode: Mode = NormalMode)
-POST       /report-details/type-of-report                        controllers.TypeOfReportController.onSubmit(year:Int, mode: Mode = NormalMode)
-GET        /report-details/change-type-of-report                  controllers.TypeOfReportController.onPageLoad(year:Int, mode: Mode = CheckMode)
-POST       /report-details/change-type-of-report                 controllers.TypeOfReportController.onSubmit(year:Int, mode: Mode = CheckMode)
+GET        /report-details/type-of-report                        controllers.TypeOfReportController.onPageLoad(mode: Mode = NormalMode)
+POST       /report-details/type-of-report                        controllers.TypeOfReportController.onSubmit(mode: Mode = NormalMode)
+GET        /report-details/change-type-of-report                  controllers.TypeOfReportController.onPageLoad(mode: Mode = CheckMode)
+POST       /report-details/change-type-of-report                 controllers.TypeOfReportController.onSubmit(mode: Mode = CheckMode)
 
 GET        /report-details/check-answers                       controllers.ReportDetailsCheckAnswersController.onPageLoad()
 POST       /report-details/check-answers                       controllers.ReportDetailsCheckAnswersController.onSaveAndContinue()

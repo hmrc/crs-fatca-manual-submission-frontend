@@ -16,42 +16,54 @@
 
 package controllers
 
+import connectors.DatabaseConnector
 import controllers.actions.*
+import pages.{FiDetailsPage, ReportingYearPage}
+import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.checkAnswers.TypeOfReportSummary
-import viewmodels.govuk.all.SummaryListViewModel
+import utils.ReportDetailsCheckAnswersUtil
 import views.html.ReportDetailsCheckAnswersView
 
 import javax.inject.Inject
+import scala.concurrent.ExecutionContext
 
 class ReportDetailsCheckAnswersController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
   getData: FrontendDataRetrievalAction,
   requireData: DataRequiredAction,
-  reportIdAction: ReportIdRequiredAction,
   val controllerComponents: MessagesControllerComponents,
-  view: ReportDetailsCheckAnswersView
-) extends FrontendBaseController
-    with I18nSupport {
+  view: ReportDetailsCheckAnswersView,
+  dbConnector: DatabaseConnector,
+  util: ReportDetailsCheckAnswersUtil
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
+    with I18nSupport
+    with Logging {
 
   def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      val year = 2026 // GET PROPERLY
-      val list = SummaryListViewModel(
-        rows = Seq(
-          TypeOfReportSummary.row(year, request.userAnswers)
-        ).flatten
-      )
-      Ok(view(list))
+      (for {
+        fiDetail <- request.userAnswers.get(FiDetailsPage)
+        year     <- request.userAnswers.get(ReportingYearPage)
+        list = util.getReportDetailsRows(request.userAnswers)
+      } yield Ok(view(list, fiDetail.fiName)))
+        .getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))
 
   }
 
-  def onSaveAndContinue: Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
+  def onSaveAndContinue: Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      Redirect(controllers.routes.UnderConstructionController.onPageLoad())
-
+      (for {
+        _ <- dbConnector.set(request.userAnswers)
+      } yield Redirect(controllers.routes.UnderConstructionController.onPageLoad().url))
+        .recover {
+          case err =>
+            logger.error(s"Failed to process the request $err")
+            Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+        }
   }
+
 }
