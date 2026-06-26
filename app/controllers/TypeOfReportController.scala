@@ -37,7 +37,6 @@ class TypeOfReportController @Inject() (
   identify: IdentifierAction,
   getData: FrontendDataRetrievalAction,
   requireData: DataRequiredAction,
-  reportIdAction: ReportIdRequiredAction,
   formProvider: TypeOfReportFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: TypeOfReportView

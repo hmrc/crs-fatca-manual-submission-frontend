@@ -26,20 +26,20 @@ class TypeOfReportFormProviderSpec extends OptionFieldBehaviours {
 
   ".value" - {
 
-    val fieldName = "value"
+    val fieldName   = "value"
     val requiredKey = "typeOfReport.error.required"
 
     behave like optionsField[TypeOfReport](
       form,
       fieldName,
-      validValues  = TypeOfReport.values,
-      invalidError = FormError(fieldName, "error.invalid")
+      validValues = TypeOfReport.values,
+      invalidError = FormError(fieldName, "error.invalid", List(year.toString))
     )
 
     behave like mandatoryField(
       form,
       fieldName,
-      requiredError = FormError(fieldName, requiredKey)
+      requiredError = FormError(fieldName, requiredKey, List(year.toString))
     )
   }
 }

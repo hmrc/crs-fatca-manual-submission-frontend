@@ -17,16 +17,16 @@
 package viewmodels.checkAnswers
 
 import controllers.routes
-import models.{CheckMode, ReportId, UserAnswers}
+import models.{CheckMode, UserAnswers}
 import pages.TypeOfReportPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
-import viewmodels.govuk.summarylist._
-import viewmodels.implicits._
+import viewmodels.govuk.summarylist.*
+import viewmodels.implicits.*
 
-object TypeOfReportSummary  {
+object TypeOfReportSummary {
 
   def row(year: Int, answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
     answers.get(TypeOfReportPage).map {
@@ -39,8 +39,8 @@ object TypeOfReportSummary  {
         )
 
         SummaryListRowViewModel(
-          key     = "typeOfReport.checkYourAnswersLabel",
-          value   = value,
+          key = "typeOfReport.checkYourAnswersLabel",
+          value = value,
           actions = Seq(
             ActionItemViewModel("site.change", routes.TypeOfReportController.onPageLoad(year, CheckMode).url)
               .withVisuallyHiddenText(messages("typeOfReport.change.hidden"))

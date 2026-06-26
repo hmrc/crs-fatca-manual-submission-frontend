@@ -34,7 +34,6 @@ class TypeOfReportSpec extends AnyFreeSpec with Matchers with ScalaCheckProperty
 
       forAll(gen) {
         typeOfReport =>
-
           JsString(typeOfReport.toString).validate[TypeOfReport].asOpt.value mustEqual typeOfReport
       }
     }
@@ -45,7 +44,6 @@ class TypeOfReportSpec extends AnyFreeSpec with Matchers with ScalaCheckProperty
 
       forAll(gen) {
         invalidValue =>
-
           JsString(invalidValue).validate[TypeOfReport] mustEqual JsError("error.invalid")
       }
     }
@@ -56,7 +54,6 @@ class TypeOfReportSpec extends AnyFreeSpec with Matchers with ScalaCheckProperty
 
       forAll(gen) {
         typeOfReport =>
-
           Json.toJson(typeOfReport) mustEqual JsString(typeOfReport.toString)
       }
     }

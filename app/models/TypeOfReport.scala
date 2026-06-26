@@ -28,18 +28,23 @@ object TypeOfReport extends Enumerable.Implicits {
   case object NilReport extends WithName("nilReport") with TypeOfReport
 
   val values: Seq[TypeOfReport] = Seq(
-    Information, NilReport
+    Information,
+    NilReport
   )
 
   def options(implicit messages: Messages): Seq[RadioItem] = values.zipWithIndex.map {
     case (value, index) =>
       RadioItem(
         content = Text(messages(s"typeOfReport.${value.toString}")),
-        value   = Some(value.toString),
-        id      = Some(s"value_$index")
+        value = Some(value.toString),
+        id = Some(s"value_$index")
       )
   }
 
   implicit val enumerable: Enumerable[TypeOfReport] =
-    Enumerable(values.map(v => v.toString -> v): _*)
+    Enumerable(
+      values.map(
+        v => v.toString -> v
+      ): _*
+    )
 }

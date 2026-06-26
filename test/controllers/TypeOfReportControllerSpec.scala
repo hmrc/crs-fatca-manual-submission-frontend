@@ -19,13 +19,12 @@ package controllers
 import base.SpecBase
 import connectors.DatabaseConnector
 import forms.TypeOfReportFormProvider
-import models.SubmissionsConstants.CRS
-import models.{NormalMode, ReportId, TypeOfReport}
+import models.{FiIdentifiers, NormalMode, TypeOfReport}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{ReportIdPage, TypeOfReportPage}
+import pages.{FiDetailsPage, TypeOfReportPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -36,16 +35,17 @@ import scala.concurrent.Future
 
 class TypeOfReportControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
-  val year = 2026
+  def onwardRoute            = Call("GET", "/foo")
+  val year                   = 2026
   val fiName                 = "name"
+  val fiId                   = "TestfiID"
   lazy val typeOfReportRoute = routes.TypeOfReportController.onPageLoad(year, NormalMode).url
 
   val formProvider = new TypeOfReportFormProvider()
   val form         = formProvider(year)
 
   "TypeOfReport Controller" - {
-    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
+    val ua = emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers(fiId, fiName))
 
     "must return OK and the correct view for a GET" in {
 
@@ -64,10 +64,8 @@ class TypeOfReportControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
-      val userAnswers       = ua.set(TypeOfReportPage, TypeOfReport.values.head).success.value
-
-      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
+      val ua2         = ua.withPage(TypeOfReportPage, TypeOfReport.values.head)
+      val application = applicationBuilder(maybeUserAnswers = Some(ua2)).build()
 
       running(application) {
         val request = FakeRequest(GET, typeOfReportRoute)

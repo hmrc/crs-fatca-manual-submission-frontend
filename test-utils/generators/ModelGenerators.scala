@@ -16,16 +16,14 @@
 
 package generators
 
-import models.TypeOfReport
-import org.scalacheck.{Arbitrary, Gen}
-import models.CrsOrFatca
+import models.{CrsOrFatca, TypeOfReport}
 import org.scalacheck.{Arbitrary, Gen}
 
 trait ModelGenerators {
 
   implicit lazy val arbitraryTypeOfReport: Arbitrary[TypeOfReport] =
     Arbitrary {
-      Gen.oneOf(TypeOfReport.values.toSeq)
+      Gen.oneOf(TypeOfReport.values)
     }
 
   implicit lazy val arbitraryCrsOrFatca: Arbitrary[CrsOrFatca] =

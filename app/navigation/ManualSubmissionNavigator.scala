@@ -30,7 +30,7 @@ class ManualSubmissionNavigator @Inject() () {
     case NormalMode =>
       normalRoutes(page, userData)
     case CheckMode =>
-      routes.IndexController.onPageLoad()
+      routes.UnderConstructionController.onPageLoad()
   }
 
   private def normalRoutes(page: Page, userData: UserAnswers): Call =

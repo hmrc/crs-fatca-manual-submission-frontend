@@ -39,13 +39,13 @@ class ReportDetailsCheckAnswersController @Inject() (
 
   def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-    val year = 2026 //GET PROPERLY
-    val list = SummaryListViewModel(
-      rows = Seq(
-        TypeOfReportSummary.row(year, request.userAnswers)
-      ).flatten
-    )
-    Ok(view(list))
+      val year = 2026 // GET PROPERLY
+      val list = SummaryListViewModel(
+        rows = Seq(
+          TypeOfReportSummary.row(year, request.userAnswers)
+        ).flatten
+      )
+      Ok(view(list))
 
   }
 
