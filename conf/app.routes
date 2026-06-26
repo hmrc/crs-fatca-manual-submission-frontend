@@ -69,6 +69,7 @@ GET        /elections/manage-elections-for-:year                    controllers.
 
 GET        /under-construction                                  controllers.UnderConstructionController.onPageLoad()
 
+GET        /manual/send-a-report                                controllers.SendAReportController.onPageLoad()
 GET        /manual/report-details/year                               controllers.ReportingYearController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/report-details/year                               controllers.ReportingYearController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/report-details/change-year                        controllers.ReportingYearController.onPageLoad(mode: Mode = CheckMode)

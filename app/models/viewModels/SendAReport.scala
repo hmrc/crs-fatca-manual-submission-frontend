@@ -1,0 +1,88 @@
+/*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package models.viewModels
+
+sealed trait TaskStatus
+
+object TaskStatus {
+  case object NotStarted extends TaskStatus
+  case object Completed extends TaskStatus
+  case object Incomplete extends TaskStatus
+  case object NoStatus extends TaskStatus
+}
+
+final case class SendAReportSections(
+  reportDetails: Option[TaskStatus],
+  financialInstitutionDetails: Option[TaskStatus],
+  sponsorDetails: Option[TaskStatus],
+  filerCategory: Option[TaskStatus],
+  accounts: Option[TaskStatus],
+  accountHolders: Option[TaskStatus],
+  controllingPersons: Option[TaskStatus],
+  tbc1: Option[TaskStatus],
+  tbc2: Option[TaskStatus]
+) {
+
+  private def task(titleKey: String, status: Option[TaskStatus]): Seq[SendAReportTask] =
+    status.map(SendAReportTask(titleKey, _)).toSeq
+
+  val sections: Seq[SendAReportSection] =
+    Seq(
+      SendAReportSection(
+        headingKey = "sendAReport.reportDetails.heading",
+        idPrefix = "report-details",
+        tasks = task("sendAReport.reportDetails.subHeading", reportDetails)
+      ),
+      SendAReportSection(
+        headingKey = "sendAReport.financialInstitution.heading",
+        idPrefix = "financial-institution",
+        tasks = task("sendAReport.financialInstitution.subHeading", financialInstitutionDetails)
+      ),
+      SendAReportSection(
+        headingKey = "sendAReport.sponsor.heading",
+        idPrefix = "sponsor",
+        tasks = task("sendAReport.sponsor.subHeading", sponsorDetails)
+      ),
+      SendAReportSection(
+        headingKey = "sendAReport.filerCategory.heading",
+        idPrefix = "filer-category",
+        tasks = task("sendAReport.filerCategory.subHeading", filerCategory)
+      ),
+      SendAReportSection(
+        headingKey = "sendAReport.accountsInformation.heading",
+        idPrefix = "accounts-information",
+        tasks = Seq(
+          task("sendAReport.accountsInformation.accounts", accounts),
+          task("sendAReport.accountsInformation.accountHolders", accountHolders),
+          task("sendAReport.accountsInformation.controllingPersons", controllingPersons),
+          task("sendAReport.accountsInformation.tbc1", tbc1),
+          task("sendAReport.accountsInformation.tbc2", tbc2)
+        ).flatten
+      )
+    ).filter(_.tasks.nonEmpty)
+}
+
+final case class SendAReportSection(
+  headingKey: String,
+  idPrefix: String,
+  tasks: Seq[SendAReportTask]
+)
+
+final case class SendAReportTask(
+  titleKey: String,
+  status: TaskStatus
+)
