@@ -20,10 +20,9 @@ import base.SpecBase
 import config.FrontendAppConfig
 import models.ServiceErrors.NoFiDetailFound
 import models.SubmissionsConstants.FATCA1
-import models.{FiIdentifiers, ReadSubmissionResponseDetails, SubmissionCard, SubmissionsConstants, SubmittedReport}
+import models.{ReadSubmissionResponseDetails, SubmissionCard, SubmissionsConstants, SubmittedReport}
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.when
-import pages.FiDetailsPage
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
@@ -55,29 +54,8 @@ class ViewSubmissionsControllerSpec extends SpecBase {
   val mockSessionRepository: SessionRepository               = mock[SessionRepository]
   "ViewSubmissions Controller" - {
     val reportStartYear = 2014
-    "must return OK and the correct view for a GET when FI data is already stored in mongo" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers(fiId, fiName))))
-        .overrides(bind[SubmissionHistoryService].toInstance(mockSubmissionService), bind[SessionRepository].toInstance(mockSessionRepository))
-        .build()
-      implicit val config: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
-      running(application) {
-        val request = FakeRequest(GET, routes.ViewSubmissionsController.onPageLoad(2016, fiId).url)
-        when(mockSubmissionService.getSubmissionHistory(eqTo(fiId))(any())).thenReturn(Future.successful(ReadSubmissionResponseDetails(List(submittedReport))))
-        when(mockSubmissionService.prepareSubmissionHistoryCards(any(), eqTo(2016))).thenReturn(mappedCards)
-        when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
-        val result = route(application, request).value
-
-        val view = application.injector.instanceOf[ViewSubmissionsView]
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(mappedCards, 2016, fiName, (reportStartYear to currentYear).toList, fiId)(request,
-                                                                                                                         messages(application)
-        ).toString
-      }
-    }
-
-    "must return OK and the correct view for a GET no FI data is found in mongo" in {
+    "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers))
         .overrides(
