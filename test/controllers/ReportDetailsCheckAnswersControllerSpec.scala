@@ -66,7 +66,7 @@ class ReportDetailsCheckAnswersControllerSpec extends SpecBase {
 
     "onSaveAndContinue" - {
 
-      "must redirect to [UNDER CONSTRUCTION] when saving data succeeds" in {
+      "must redirect to /send-a-report when saving data succeeds" in {
 
         val mockDatabaseConnector = mock[DatabaseConnector]
         when(mockDatabaseConnector.get()(any())).thenReturn(Future(None))
@@ -81,7 +81,7 @@ class ReportDetailsCheckAnswersControllerSpec extends SpecBase {
           val result  = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual controllers.routes.UnderConstructionController.onPageLoad().url
+          redirectLocation(result).value mustEqual controllers.routes.SendAReportController.onPageLoad().url
 
           verify(mockDatabaseConnector).set(any())(any())
         }

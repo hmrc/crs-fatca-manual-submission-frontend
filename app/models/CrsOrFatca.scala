@@ -46,7 +46,7 @@ object CrsOrFatca extends Enumerable.Implicits {
         id = Some(s"value_$index")
       )
   }
-  
+
   implicit val enumerable: Enumerable[CrsOrFatca] =
     Enumerable(
       values.map(

@@ -69,7 +69,7 @@ class ReportDetailsCheckAnswersController @Inject() (
             dbAnswers        <- dbConnector.get().map(_.getOrElse(UserAnswers(request.fatcaId)))
             updatedDbAnswers <- Future.fromTry(dbAnswers.set(ReportIdPage, reportId))
             _                <- dbConnector.set(updatedDbAnswers)
-          } yield Redirect(controllers.routes.UnderConstructionController.onPageLoad().url))
+          } yield Redirect(controllers.routes.SendAReportController.onPageLoad().url))
             .recover {
               case err =>
                 logger.error("Failed to process onSaveAndContinue request", err)
