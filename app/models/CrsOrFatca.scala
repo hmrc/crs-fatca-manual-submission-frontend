@@ -20,7 +20,13 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 
-sealed trait CrsOrFatca
+sealed trait CrsOrFatca {
+
+  def toRegime: SubmissionsConstants.RegimeType = this match {
+    case CrsOrFatca.Crs   => SubmissionsConstants.CRS
+    case CrsOrFatca.Fatca => SubmissionsConstants.FATCA
+  }
+}
 
 object CrsOrFatca extends Enumerable.Implicits {
 
@@ -40,7 +46,7 @@ object CrsOrFatca extends Enumerable.Implicits {
         id = Some(s"value_$index")
       )
   }
-
+  
   implicit val enumerable: Enumerable[CrsOrFatca] =
     Enumerable(
       values.map(

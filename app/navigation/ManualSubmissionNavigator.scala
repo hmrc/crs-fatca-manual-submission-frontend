@@ -37,7 +37,7 @@ class ManualSubmissionNavigator @Inject() () {
     page match {
       case CrsOrFatcaPage    => routes.ReportingYearController.onPageLoad(NormalMode)
       case ReportingYearPage => routes.TypeOfReportController.onPageLoad(NormalMode)
-      case TypeOfReportPage  => controllers.routes.ReportDetailsCheckAnswersController.onPageLoad()
+      case TypeOfReportPage  => routes.ReportDetailsCheckAnswersController.onPageLoad()
       case _ =>
         routes.IndexController.onPageLoad()
     }

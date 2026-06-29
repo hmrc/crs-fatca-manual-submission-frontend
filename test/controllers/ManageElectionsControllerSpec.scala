@@ -20,7 +20,6 @@ import base.SpecBase
 import models.FiIdentifiers
 import org.mockito.ArgumentMatchersSugar.*
 import org.mockito.MockitoSugar.when
-import pages.FiDetailsPage
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
@@ -37,7 +36,6 @@ class ManageElectionsControllerSpec extends SpecBase {
   private val year    = 2027
   private val fiid    = fiDetail.FIID
   private val finame  = fiDetail.FIName
-  private val fiDeets = FiIdentifiers(fiid, finame)
 
   private val currentYear: Int = LocalDate.now().getYear
   private val years: Seq[Int]  = currentYear - 12 to currentYear

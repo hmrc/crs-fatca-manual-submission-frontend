@@ -22,7 +22,6 @@ import models.{NormalMode, UserAnswers}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportingYearPage
 import play.api.inject.bind
 import play.api.mvc.Call

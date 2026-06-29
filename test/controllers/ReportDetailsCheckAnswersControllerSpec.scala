@@ -18,11 +18,12 @@ package controllers
 
 import base.SpecBase
 import connectors.DatabaseConnector
+import models.CrsOrFatca.Crs
 import models.FiIdentifiers
 import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito
 import org.mockito.Mockito.{verify, when}
-import org.scalatestplus.mockito.MockitoSugar
-import pages.{FiDetailsPage, ReportingYearPage}
+import pages.{CrsOrFatcaPage, FiDetailsPage, ReportingYearPage}
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
@@ -40,9 +41,10 @@ class ReportDetailsCheckAnswersControllerSpec extends SpecBase {
     val fiName = "name"
     val fiId   = "TestfiID"
     val list   = SummaryListViewModel(Seq.empty)
-    val ua     = emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers(fiId, fiName)).withPage(ReportingYearPage, year)
-
-    import org.mockito.Mockito
+    val ua = emptyUserAnswers
+      .withPage(FiDetailsPage, FiIdentifiers(fiId, fiName))
+      .withPage(ReportingYearPage, year)
+      .withPage(CrsOrFatcaPage, Crs)
 
     "must return OK and the correct view for a GET" in {
       val mockUtil = mock[ReportDetailsCheckAnswersUtil]
@@ -64,9 +66,10 @@ class ReportDetailsCheckAnswersControllerSpec extends SpecBase {
 
     "onSaveAndContinue" - {
 
-      "must redirect to UnderConstructionController when saving data succeeds" in {
+      "must redirect to [UNDER CONSTRUCTION] when saving data succeeds" in {
 
         val mockDatabaseConnector = mock[DatabaseConnector]
+        when(mockDatabaseConnector.get()(any())).thenReturn(Future(None))
         when(mockDatabaseConnector.set(any())(any())).thenReturn(Future.successful(()))
 
         val application = applicationBuilder(maybeUserAnswers = Some(ua))
@@ -84,9 +87,10 @@ class ReportDetailsCheckAnswersControllerSpec extends SpecBase {
         }
       }
 
-      "must log an error and redirect to JourneyRecoveryController when saving data fails" in {
+      "must redirect to JourneyRecoveryController when saving data fails" in {
 
         val mockDatabaseConnector = mock[DatabaseConnector]
+        when(mockDatabaseConnector.get()(any())).thenReturn(Future(None))
         when(mockDatabaseConnector.set(any())(any()))
           .thenReturn(Future.failed(new InternalServerException("Unable to save UserAnswer")))
 

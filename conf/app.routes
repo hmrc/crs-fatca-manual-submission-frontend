@@ -81,10 +81,10 @@ POST       /manual/report-details/crs-or-fatca                       controllers
 GET        /manual/report-details/change-crs-or-fatca                controllers.CrsOrFatcaController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/report-details/change-crs-or-fatca                controllers.CrsOrFatcaController.onSubmit(mode: Mode = CheckMode)
 
-GET        /report-details/type-of-report                        controllers.TypeOfReportController.onPageLoad(mode: Mode = NormalMode)
-POST       /report-details/type-of-report                        controllers.TypeOfReportController.onSubmit(mode: Mode = NormalMode)
-GET        /report-details/change-type-of-report                  controllers.TypeOfReportController.onPageLoad(mode: Mode = CheckMode)
-POST       /report-details/change-type-of-report                 controllers.TypeOfReportController.onSubmit(mode: Mode = CheckMode)
+GET        /manual/report-details/type-of-report                        controllers.TypeOfReportController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/report-details/type-of-report                        controllers.TypeOfReportController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/report-details/change-type-of-report                  controllers.TypeOfReportController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/report-details/change-type-of-report                 controllers.TypeOfReportController.onSubmit(mode: Mode = CheckMode)
 
-GET        /report-details/check-answers                       controllers.ReportDetailsCheckAnswersController.onPageLoad()
-POST       /report-details/check-answers                       controllers.ReportDetailsCheckAnswersController.onSaveAndContinue()
+GET        /manual/report-details/check-answers                       controllers.ReportDetailsCheckAnswersController.onPageLoad()
+POST       /manual/report-details/check-answers                       controllers.ReportDetailsCheckAnswersController.onSaveAndContinue()

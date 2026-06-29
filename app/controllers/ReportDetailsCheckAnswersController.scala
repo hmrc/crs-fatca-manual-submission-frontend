@@ -18,16 +18,17 @@ package controllers
 
 import connectors.DatabaseConnector
 import controllers.actions.*
-import pages.{FiDetailsPage, ReportingYearPage}
+import models.{ReportId, UserAnswers}
+import pages.{CrsOrFatcaPage, FiDetailsPage, ReportIdPage, ReportingYearPage}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.ReportDetailsCheckAnswersUtil
 import views.html.ReportDetailsCheckAnswersView
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class ReportDetailsCheckAnswersController @Inject() (
   override val messagesApi: MessagesApi,
@@ -56,14 +57,25 @@ class ReportDetailsCheckAnswersController @Inject() (
 
   def onSaveAndContinue: Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      (for {
-        _ <- dbConnector.set(request.userAnswers)
-      } yield Redirect(controllers.routes.UnderConstructionController.onPageLoad().url))
-        .recover {
-          case err =>
-            logger.error(s"Failed to process the request $err")
-            Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
-        }
+
+      val reportId: Option[ReportId] = for {
+        crsOrFatca <- request.userAnswers.get(CrsOrFatcaPage)
+        year       <- request.userAnswers.get(ReportingYearPage)
+      } yield ReportId(crsOrFatca.toRegime, year, None, request.fatcaId)
+
+      reportId.fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))) {
+        reportId =>
+          (for {
+            dbAnswers        <- dbConnector.get().map(_.getOrElse(UserAnswers(request.fatcaId)))
+            updatedDbAnswers <- Future.fromTry(dbAnswers.set(ReportIdPage, reportId))
+            _                <- dbConnector.set(updatedDbAnswers)
+          } yield Redirect(controllers.routes.UnderConstructionController.onPageLoad().url))
+            .recover {
+              case err =>
+                logger.error("Failed to process onSaveAndContinue request", err)
+                Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+            }
+      }
   }
 
 }
