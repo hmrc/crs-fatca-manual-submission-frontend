@@ -22,6 +22,9 @@ import play.api.mvc.Call
 
 class FakeManualSubmissionNavigator(desiredRoute: Call) extends ManualSubmissionNavigator {
 
-  override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers)(using reportId: Option[ReportId]): Call =
+  override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers)(using reportId: ReportId): Call =
+    desiredRoute
+
+  override def nextPageWithoutReportId(page: Page, mode: Mode, userAnswers: UserAnswers): Call =
     desiredRoute
 }

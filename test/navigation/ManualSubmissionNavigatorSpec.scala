@@ -25,43 +25,40 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
   val navigator = new ManualSubmissionNavigator
 
   "ManualSubmissionNavigator in NormalMode " - {
-
     "without reportId" - {
       "CrsOrFatcaPage" - {
         "must go to Reporting Year Page when Normal Mode" in {
           val userData = UserAnswers("id")
-          navigator.nextPage(CrsOrFatcaPage, NormalMode, userData) mustBe
+          navigator.nextPageWithoutReportId(CrsOrFatcaPage, NormalMode, userData) mustBe
             controllers.routes.ReportingYearController.onPageLoad(NormalMode)
         }
-
       }
 
       "ReportingYearPage" - {
         "must go to TypeOfReport Page when Normal Mode" in {
           val userData = UserAnswers("id")
-          navigator.nextPage(ReportingYearPage, NormalMode, userData) mustBe
+          navigator.nextPageWithoutReportId(ReportingYearPage, NormalMode, userData) mustBe
             controllers.routes.TypeOfReportController.onPageLoad(NormalMode)
         }
-
       }
 
       "TypeOfReportPage" - {
         "must go to ReportDetailsCheckAnswers" in {
           val ua = UserAnswers("id")
-          navigator.nextPage(TypeOfReportPage, NormalMode, ua) mustBe
+          navigator.nextPageWithoutReportId(TypeOfReportPage, NormalMode, ua) mustBe
             controllers.routes.ReportDetailsCheckAnswersController.onPageLoad()
         }
       }
     }
+
     "with reportId" - {
-      val year                                    = 2025
-      implicit val reportId: ReportId             = ReportId(SubmissionsConstants.CRS, year, None, "test123456789")
-      implicit val someReportId: Option[ReportId] = Some(ReportId(SubmissionsConstants.CRS, year, None, "test123456789"))
+      val year                        = 2025
+      implicit val reportId: ReportId = ReportId(SubmissionsConstants.CRS, year, None, "test123456789")
 
       "WhatIsGIINForSponsorPage" - {
         "must go to IsSponsorBasedInUK" in {
           val ua = UserAnswers("id")
-          navigator.nextPage(WhatIsGIINForSponsorPage()(reportId), NormalMode, ua) mustBe
+          navigator.nextPage(WhatIsGIINForSponsorPage(), NormalMode, ua) mustBe
             controllers.routes.IsSponsorBasedInUKController.onPageLoad(NormalMode)
         }
       }
@@ -72,7 +69,6 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           navigator.nextPage(IsSponsorBasedInUKPage(), NormalMode, ua) mustBe
             controllers.routes.UnderConstructionController.onPageLoad()
         }
-
       }
     }
   }

@@ -67,7 +67,7 @@ class ReportingYearController @Inject() (
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(ReportingYearPage, value))
               _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(ReportingYearPage, mode, updatedAnswers))
+            } yield Redirect(navigator.nextPageWithoutReportId(ReportingYearPage, mode, updatedAnswers))
         )
   }
 }

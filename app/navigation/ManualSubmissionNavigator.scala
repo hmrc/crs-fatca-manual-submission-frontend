@@ -26,11 +26,16 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class ManualSubmissionNavigator @Inject() () {
 
-  def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers)(implicit reportId: Option[ReportId] = None): Call = mode match {
-    case NormalMode if reportId.isDefined =>
-      normalRoutesWithReportId(page, userAnswers)(reportId.get)
+  def nextPageWithoutReportId(page: Page, mode: Mode, userAnswers: UserAnswers): Call = mode match {
     case NormalMode =>
       normalRoutes(page, userAnswers)
+    case CheckMode =>
+      routes.UnderConstructionController.onPageLoad()
+  }
+
+  def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId): Call = mode match {
+    case NormalMode =>
+      normalRoutesWithReportId(page, userAnswers)
     case CheckMode =>
       routes.UnderConstructionController.onPageLoad()
   }

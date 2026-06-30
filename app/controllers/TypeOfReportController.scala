@@ -74,7 +74,7 @@ class TypeOfReportController @Inject() (
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(TypeOfReportPage, value))
               _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(TypeOfReportPage, mode, updatedAnswers))
+            } yield Redirect(navigator.nextPageWithoutReportId(TypeOfReportPage, mode, updatedAnswers))
         )).getOrElse(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)))
   }
 }
