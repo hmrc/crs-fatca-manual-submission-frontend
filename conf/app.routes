@@ -79,3 +79,13 @@ GET        /manual/report-details/crs-or-fatca                       controllers
 POST       /manual/report-details/crs-or-fatca                       controllers.CrsOrFatcaController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/report-details/change-crs-or-fatca                controllers.CrsOrFatcaController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/report-details/change-crs-or-fatca                controllers.CrsOrFatcaController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/sponsor/where-are-they-based                         controllers.IsSponsorBasedInUKController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/sponsor/where-are-they-based                         controllers.IsSponsorBasedInUKController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/sponsor/change-where-are-they-based                  controllers.IsSponsorBasedInUKController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/sponsor/change-where-are-they-based                  controllers.IsSponsorBasedInUKController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/sponsor/giin                                         controllers.WhatIsGIINForSponsorController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/sponsor/giin                                         controllers.WhatIsGIINForSponsorController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/sponsor/change-giin                                  controllers.WhatIsGIINForSponsorController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/sponsor/change-giin                                  controllers.WhatIsGIINForSponsorController.onSubmit(mode: Mode = CheckMode)
