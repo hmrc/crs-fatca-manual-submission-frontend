@@ -61,7 +61,8 @@ class ReportDetailsCheckAnswersController @Inject() (
       val reportId: Option[ReportId] = for {
         crsOrFatca <- request.userAnswers.get(CrsOrFatcaPage)
         year       <- request.userAnswers.get(ReportingYearPage)
-      } yield ReportId(crsOrFatca.toRegime, year, None, request.fatcaId)
+        fiDetails  <- request.userAnswers.get(FiDetailsPage)
+      } yield ReportId(crsOrFatca.toRegime, year, None, fiDetails.fiId)
 
       reportId.fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))) {
         reportId =>
