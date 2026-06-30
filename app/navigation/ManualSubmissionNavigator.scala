@@ -26,18 +26,30 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class ManualSubmissionNavigator @Inject() () {
 
-  def nextPage(page: Page, mode: Mode, userData: UserAnswers): Call = mode match {
+  def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers)(implicit reportId: Option[ReportId] = None): Call = mode match {
+    case NormalMode if reportId.isDefined =>
+      normalRoutesWithReportId(page, userAnswers)(reportId.get)
     case NormalMode =>
-      normalRoutes(page, userData)
+      normalRoutes(page, userAnswers)
     case CheckMode =>
       routes.UnderConstructionController.onPageLoad()
   }
 
-  private def normalRoutes(page: Page, userData: UserAnswers): Call =
+  private def normalRoutes(page: Page, userAnswers: UserAnswers): Call =
     page match {
       case CrsOrFatcaPage    => routes.ReportingYearController.onPageLoad(NormalMode)
       case ReportingYearPage => routes.TypeOfReportController.onPageLoad(NormalMode)
       case TypeOfReportPage  => routes.ReportDetailsCheckAnswersController.onPageLoad()
+      case _ =>
+        routes.IndexController.onPageLoad()
+    }
+
+  private def normalRoutesWithReportId(page: Page, userAnswers: UserAnswers)(implicit reportId: ReportId): Call =
+    page match {
+      case p if p == WhatIsGIINForSponsorPage() =>
+        routes.IsSponsorBasedInUKController.onPageLoad(NormalMode)
+      case p if p == IsSponsorBasedInUKPage() =>
+        routes.UnderConstructionController.onPageLoad()
       case _ =>
         routes.IndexController.onPageLoad()
     }
