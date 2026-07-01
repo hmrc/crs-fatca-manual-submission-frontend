@@ -21,10 +21,12 @@
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
     govukInput: GovukInput,
-    govukButton: GovukButton
+    govukButton: GovukButton,
+    heading: components.Heading,
+    para: components.Paragraph
 )
 
-@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, sponsorName: String = "SPONSOR")(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("whatIsGIINForSponsor.title"))) {
 
@@ -34,12 +36,19 @@
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
+        @heading(messages("whatIsGIINForSponsor.heading"))
+
+        @para(messages("whatIsGIINForSponsor.para.1", sponsorName))
+
+        @para(messages("whatIsGIINForSponsor.para.2", sponsorName))
+
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(messages("whatIsGIINForSponsor.heading")).asPageHeading()
+                label = LabelViewModel(messages("whatIsGIINForSponsor.subheading", sponsorName)).withCssClass("govuk-label  govuk-label--m")
             )
-            .withWidth(Full)
+            .withWidth(Fixed20)
+            .withHint(HintViewModel(HtmlContent(messages("whatIsGIINForSponsor.hint"))))
         )
 
         @govukButton(

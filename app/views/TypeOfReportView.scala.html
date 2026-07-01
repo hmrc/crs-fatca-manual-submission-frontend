@@ -43,7 +43,7 @@
         @govukRadios(
             RadiosViewModel(
                 field  = form("value"),
-                legend = LegendViewModel(messages("typeOfReport.subheading", fiName, reportingYear.toString)).withCssClass("govuk-label  govuk-label--l"),
+                legend = LegendViewModel(messages("typeOfReport.subheading", fiName, reportingYear.toString)).withCssClass("govuk-fieldset__legend govuk-fieldset__legend--m"),
                 items  = TypeOfReport.options
             )
         )

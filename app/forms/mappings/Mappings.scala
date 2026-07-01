@@ -54,4 +54,14 @@ trait Mappings extends Formatters with Constraints {
                          args: Seq[String] = Seq.empty
   ): FieldMapping[BigDecimal] =
     of(currencyFormatter(requiredKey, invalidNumeric, nonNumericKey, args))
+
+  protected def mandatoryGIIN(
+    requiredKey: String,
+    lengthKey: String,
+    invalidKey: String,
+    formatKey: String,
+    invalidCharKey: String
+  ): FieldMapping[String] =
+    of(mandatoryGIINFormatter(requiredKey, lengthKey, invalidKey, formatKey, invalidCharKey))
+
 }
