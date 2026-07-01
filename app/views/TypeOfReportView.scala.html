@@ -45,7 +45,7 @@
         @govukRadios(
             RadiosViewModel(
                 field  = form("value"),
-                legend = LegendViewModel(messages("typeOfReport.heading")).withCssClass("govuk-visually-hidden govuk-!-display-block"),
+                legend = LegendViewModel(messages("typeOfReport.subheading", fiName, reportingYear.toString)).withCssClass("govuk-visually-hidden govuk-!-display-block"),
                 items  = TypeOfReport.options
             )
         )
