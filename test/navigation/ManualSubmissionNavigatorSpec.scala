@@ -23,36 +23,33 @@ import pages.*
 class ManualSubmissionNavigatorSpec extends SpecBase {
 
   val navigator = new ManualSubmissionNavigator
-  "ManualSubmissionNavigator" - {
 
-    "from CrsOrFatcaPage" - {
-
+  "ManualSubmissionNavigator in NormalMode" - {
+    "CrsOrFatcaPage" - {
       "must go to Reporting Year Page when Normal Mode" in {
         val userData = UserAnswers("id")
         navigator.nextPage(CrsOrFatcaPage, NormalMode, userData) mustBe
           controllers.routes.ReportingYearController.onPageLoad(NormalMode)
       }
 
-      "must go to IndexController Page when Check Mode" in {
-        val userData = UserAnswers("id")
-        navigator.nextPage(CrsOrFatcaPage, CheckMode, userData) mustBe
-          controllers.routes.IndexController.onPageLoad()
-      }
     }
 
-    "from ReportingYear Page" - {
-
-      "must go to UnderConstruction Page when Normal Mode" in {
+    "ReportingYearPage" - {
+      "must go to TypeOfReport Page when Normal Mode" in {
         val userData = UserAnswers("id")
         navigator.nextPage(ReportingYearPage, NormalMode, userData) mustBe
-          controllers.routes.UnderConstructionController.onPageLoad()
+          controllers.routes.TypeOfReportController.onPageLoad(NormalMode)
       }
 
-      "must go to IndexController Page when Check Mode" in {
-        val userData = UserAnswers("id")
-        navigator.nextPage(ReportingYearPage, CheckMode, userData) mustBe
-          controllers.routes.IndexController.onPageLoad()
+    }
+
+    "TypeOfReportPage" - {
+      "must go to ReportDetailsCheckAnswers" in {
+        val ua = UserAnswers("id")
+        navigator.nextPage(TypeOfReportPage, NormalMode, ua) mustBe
+          controllers.routes.ReportDetailsCheckAnswersController.onPageLoad()
       }
+
     }
   }
 }

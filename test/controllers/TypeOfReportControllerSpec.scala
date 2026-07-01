@@ -17,84 +17,85 @@
 package controllers
 
 import base.SpecBase
-import forms.CrsOrFatcaFormProvider
-import models.{CrsOrFatca, NormalMode, UserAnswers}
+import connectors.DatabaseConnector
+import forms.TypeOfReportFormProvider
+import models.{FiIdentifiers, NormalMode, TypeOfReport}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import pages.CrsOrFatcaPage
+import pages.{FiDetailsPage, ReportingYearPage, TypeOfReportPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import repositories.SessionRepository
-import views.html.CrsOrFatcaView
+import views.html.TypeOfReportView
 
 import scala.concurrent.Future
 
-class CrsOrFatcaControllerSpec extends SpecBase {
+class TypeOfReportControllerSpec extends SpecBase {
 
-  def onwardRoute = Call("GET", "/foo")
+  def onwardRoute                    = Call("GET", "/foo")
+  val year                           = 2026
+  val fiName                         = "name"
+  val fiId                           = "TestfiID"
+  private lazy val typeOfReportRoute = routes.TypeOfReportController.onPageLoad(NormalMode).url
 
-  private lazy val crsOrFatcaRoute = routes.CrsOrFatcaController.onPageLoad(NormalMode).url
+  val formProvider = new TypeOfReportFormProvider()
+  private val form = formProvider(year)
 
-  val formProvider = new CrsOrFatcaFormProvider()
-  private val form = formProvider()
-
-  "CrsOrFatca Controller" - {
+  "TypeOfReport Controller" - {
+    val ua = emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers(fiId, fiName)).withPage(ReportingYearPage, year)
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
 
       running(application) {
-        val request = FakeRequest(GET, crsOrFatcaRoute)
+        val request = FakeRequest(GET, typeOfReportRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[CrsOrFatcaView]
+        val view = application.injector.instanceOf[TypeOfReportView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, fiName, year)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-
-      val userAnswers = UserAnswers(userAnswersId).set(CrsOrFatcaPage, CrsOrFatca.values.head).success.value
-
-      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
+      val ua2         = ua.withPage(TypeOfReportPage, TypeOfReport.values.head)
+      val application = applicationBuilder(maybeUserAnswers = Some(ua2)).build()
 
       running(application) {
-        val request = FakeRequest(GET, crsOrFatcaRoute)
+        val request = FakeRequest(GET, typeOfReportRoute)
 
-        val view = application.injector.instanceOf[CrsOrFatcaView]
+        val view = application.injector.instanceOf[TypeOfReportView]
 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(CrsOrFatca.values.head), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(TypeOfReport.values.head), NormalMode, fiName, year)(request, messages(application)).toString
       }
     }
 
     "must redirect to the next page when valid data is submitted" in {
 
-      val mockSessionRepository = mock[SessionRepository]
+      val mockSessionRepository = mock[DatabaseConnector]
 
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
 
       val application =
-        applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers))
+        applicationBuilder(maybeUserAnswers = Some(ua))
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository)
+            bind[DatabaseConnector].toInstance(mockSessionRepository)
           )
           .build()
 
       running(application) {
         val request =
-          FakeRequest(POST, crsOrFatcaRoute)
-            .withFormUrlEncodedBody(("value", CrsOrFatca.values.head.toString))
+          FakeRequest(POST, typeOfReportRoute)
+            .withFormUrlEncodedBody(("value", TypeOfReport.values.head.toString))
 
         val result = route(application, request).value
 
@@ -105,21 +106,21 @@ class CrsOrFatcaControllerSpec extends SpecBase {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
 
       running(application) {
         val request =
-          FakeRequest(POST, crsOrFatcaRoute)
+          FakeRequest(POST, typeOfReportRoute)
             .withFormUrlEncodedBody(("value", "invalid value"))
 
         val boundForm = form.bind(Map("value" -> "invalid value"))
 
-        val view = application.injector.instanceOf[CrsOrFatcaView]
+        val view = application.injector.instanceOf[TypeOfReportView]
 
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, fiName, year)(request, messages(application)).toString
       }
     }
 
@@ -128,7 +129,7 @@ class CrsOrFatcaControllerSpec extends SpecBase {
       val application = applicationBuilder(maybeUserAnswers = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, crsOrFatcaRoute)
+        val request = FakeRequest(GET, typeOfReportRoute)
 
         val result = route(application, request).value
 
@@ -143,8 +144,8 @@ class CrsOrFatcaControllerSpec extends SpecBase {
 
       running(application) {
         val request =
-          FakeRequest(POST, crsOrFatcaRoute)
-            .withFormUrlEncodedBody(("value", CrsOrFatca.values.head.toString))
+          FakeRequest(POST, typeOfReportRoute)
+            .withFormUrlEncodedBody(("value", TypeOfReport.values.head.toString))
 
         val result = route(application, request).value
 
