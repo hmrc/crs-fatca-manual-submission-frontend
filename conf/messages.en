@@ -213,7 +213,7 @@ reportingYear.error.required = Enter the year you are reporting for
 reportingYear.error.wholeNumber = Year must only include numbers 0 to 9
 reportingYear.error.minimum = Year cannot be before 2014
 reportingYear.error.maximum = Year cannot be after the current year
-reportingYear.change.hidden = ReportingYear
+reportingYear.change.hidden =  Change which year you are reporting for
 
 crsOrFatca.title = Is this a CRS or FATCA report?
 crsOrFatca.heading = Is this a CRS or FATCA report?
@@ -221,7 +221,7 @@ crsOrFatca.crs = CRS
 crsOrFatca.fatca = FATCA
 crsOrFatca.checkYourAnswersLabel = Is this a CRS or FATCA report?
 crsOrFatca.error.required = Select whether this is a CRS or FATCA report
-crsOrFatca.change.hidden = CrsOrFatca
+crsOrFatca.change.hidden =  Change if this is a CRS or FATCA report
 
 typeOfReport.title = Type of report
 typeOfReport.heading = Type of report
@@ -231,7 +231,7 @@ typeOfReport.information = A report with information
 typeOfReport.nilReport = A nil report with no reportable information
 typeOfReport.checkYourAnswersLabel = What type of report would you like to send?
 typeOfReport.error.required = Select what type of report you would like to send for the financial institution for {0}
-typeOfReport.change.hidden = TypeOfReport
+typeOfReport.change.hidden =  Change what type of report you would like to send
 
 reportDetailsCheckAnswers.title = Check your report details for {0}
 reportDetailsCheckAnswers.heading = Check your report details for {0}
