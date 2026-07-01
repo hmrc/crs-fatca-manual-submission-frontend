@@ -22,7 +22,6 @@ import models.{NormalMode, UserAnswers}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportingYearPage
 import play.api.inject.bind
 import play.api.mvc.Call
@@ -33,16 +32,16 @@ import views.html.ReportingYearView
 
 import scala.concurrent.Future
 
-class ReportingYearControllerSpec extends SpecBase with MockitoSugar {
+class ReportingYearControllerSpec extends SpecBase {
 
   val formProvider = new ReportingYearFormProvider()
-  val form         = formProvider()
+  private val form = formProvider()
 
   def onwardRoute = Call("GET", "/foo")
 
   val validAnswer = 2014
 
-  lazy val reportingYearRoute = routes.ReportingYearController.onPageLoad(NormalMode).url
+  private lazy val reportingYearRoute = routes.ReportingYearController.onPageLoad(NormalMode).url
 
   "ReportingYear Controller" - {
 

@@ -67,7 +67,7 @@ class CrsOrFatcaController @Inject() (
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(CrsOrFatcaPage, value))
               _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(CrsOrFatcaPage, mode, updatedAnswers))
+            } yield Redirect(navigator.nextPageWithoutReportId(CrsOrFatcaPage, mode, updatedAnswers))
         )
   }
 }

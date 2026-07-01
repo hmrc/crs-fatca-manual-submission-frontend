@@ -26,10 +26,36 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class ManualSubmissionNavigator @Inject() () {
 
-  def nextPage(page: Page, mode: Mode, userData: UserAnswers): Call =
-    (page, mode) match {
-      case (CrsOrFatcaPage, NormalMode)    => routes.ReportingYearController.onPageLoad(mode)
-      case (ReportingYearPage, NormalMode) => routes.UnderConstructionController.onPageLoad()
-      case _                               => routes.IndexController.onPageLoad()
+  def nextPageWithoutReportId(page: Page, mode: Mode, userAnswers: UserAnswers): Call = mode match {
+    case NormalMode =>
+      normalRoutes(page, userAnswers)
+    case CheckMode =>
+      routes.UnderConstructionController.onPageLoad()
+  }
+
+  def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId): Call = mode match {
+    case NormalMode =>
+      normalRoutesWithReportId(page, userAnswers)
+    case CheckMode =>
+      routes.UnderConstructionController.onPageLoad()
+  }
+
+  private def normalRoutes(page: Page, userAnswers: UserAnswers): Call =
+    page match {
+      case CrsOrFatcaPage    => routes.ReportingYearController.onPageLoad(NormalMode)
+      case ReportingYearPage => routes.TypeOfReportController.onPageLoad(NormalMode)
+      case TypeOfReportPage  => routes.ReportDetailsCheckAnswersController.onPageLoad()
+      case _ =>
+        routes.IndexController.onPageLoad()
+    }
+
+  private def normalRoutesWithReportId(page: Page, userAnswers: UserAnswers)(implicit reportId: ReportId): Call =
+    page match {
+      case p if p == WhatIsGIINForSponsorPage() =>
+        routes.IsSponsorBasedInUKController.onPageLoad(NormalMode)
+      case p if p == IsSponsorBasedInUKPage() =>
+        routes.UnderConstructionController.onPageLoad()
+      case _ =>
+        routes.IndexController.onPageLoad()
     }
 }

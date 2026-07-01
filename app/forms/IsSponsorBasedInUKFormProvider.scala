@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-package generators
+package forms
 
-import models.{CrsOrFatca, TypeOfReport}
-import org.scalacheck.{Arbitrary, Gen}
+import javax.inject.Inject
 
-trait ModelGenerators {
+import forms.mappings.Mappings
+import play.api.data.Form
 
-  implicit lazy val arbitraryTypeOfReport: Arbitrary[TypeOfReport] =
-    Arbitrary {
-      Gen.oneOf(TypeOfReport.values)
-    }
+class IsSponsorBasedInUKFormProvider @Inject() extends Mappings {
 
-  implicit lazy val arbitraryCrsOrFatca: Arbitrary[CrsOrFatca] =
-    Arbitrary {
-      Gen.oneOf(CrsOrFatca.values)
-    }
+  def apply(): Form[Boolean] =
+    Form(
+      "value" -> boolean("isSponsorBasedInUK.error.required")
+    )
 }

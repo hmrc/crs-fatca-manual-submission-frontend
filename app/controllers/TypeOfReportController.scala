@@ -16,58 +16,65 @@
 
 package controllers
 
-import controllers.actions._
-import forms.ReportingYearFormProvider
-import javax.inject.Inject
+import controllers.actions.*
+import forms.TypeOfReportFormProvider
 import models.Mode
 import navigation.ManualSubmissionNavigator
-import pages.ReportingYearPage
+import pages.{FiDetailsPage, ReportingYearPage, TypeOfReportPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.ReportingYearView
+import views.html.TypeOfReportView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ReportingYearController @Inject() (
+class TypeOfReportController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: ManualSubmissionNavigator,
   identify: IdentifierAction,
   getData: FrontendDataRetrievalAction,
   requireData: DataRequiredAction,
-  formProvider: ReportingYearFormProvider,
+  formProvider: TypeOfReportFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: ReportingYearView
+  view: TypeOfReportView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  val form = formProvider()
-
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
+      (for {
+        fiDetail <- request.userAnswers.get(FiDetailsPage)
+        year     <- request.userAnswers.get(ReportingYearPage)
+      } yield {
+        val form = formProvider(year)
 
-      val preparedForm = request.userAnswers.get(ReportingYearPage) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
+        val preparedForm = request.userAnswers.get(TypeOfReportPage) match {
+          case None        => form
+          case Some(value) => form.fill(value)
+        }
 
-      Ok(view(preparedForm, mode))
+        Ok(view(preparedForm, mode, fiDetail.fiName, year))
+      }).getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      form
+      (for {
+        fiDetail <- request.userAnswers.get(FiDetailsPage)
+        year     <- request.userAnswers.get(ReportingYearPage)
+      } yield formProvider(year)
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiDetail.fiName, year))),
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(ReportingYearPage, value))
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(TypeOfReportPage, value))
               _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPageWithoutReportId(ReportingYearPage, mode, updatedAnswers))
-        )
+            } yield Redirect(navigator.nextPageWithoutReportId(TypeOfReportPage, mode, updatedAnswers))
+        )).getOrElse(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)))
   }
 }

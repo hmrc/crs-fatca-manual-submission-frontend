@@ -118,4 +118,37 @@ trait Generators extends ModelGenerators {
         Instant.ofEpochMilli(millis).atOffset(ZoneOffset.UTC).toLocalDate
     }
   }
+
+  def validGIIN: Gen[String] = {
+    val alphaNumNoOChar: Gen[Char] =
+      Gen.oneOf(
+        ('0' to '9') ++
+          ('A' to 'Z').filterNot(_ == 'O') ++
+          ('a' to 'z').filterNot(_ == 'o')
+      )
+    val alphaNoOChar: Gen[Char] =
+      Gen.oneOf(
+        ('A' to 'Z').filterNot(_ == 'O') ++
+          ('a' to 'z').filterNot(_ == 'o')
+      )
+    for {
+      pt1 <- Gen.listOfN(6, alphaNumNoOChar).map(_.mkString)
+      pt2 <- Gen.listOfN(5, alphaNumNoOChar).map(_.mkString)
+      pt3 <- Gen.listOfN(2, alphaNoOChar).map(_.mkString)
+      pt4 <- Gen.listOfN(3, Gen.numChar).map(_.mkString)
+    } yield s"$pt1.$pt2.$pt3.$pt4"
+  }
+
+  def stringsLongerThanAlpha(minLength: Int): Gen[String] = for {
+    maxLength <- (minLength * 2).max(100)
+    length    <- Gen.chooseNum(minLength + 1, maxLength)
+    chars     <- listOfN(length, Gen.alphaChar)
+  } yield chars.mkString
+
+  def stringsShorterThanAlpha(minLength: Int): Gen[String] = for {
+    lowestPossibleLength <- 1
+    length               <- Gen.chooseNum(lowestPossibleLength, minLength - 1)
+    chars                <- listOfN(length, Gen.alphaChar)
+  } yield chars.mkString
+
 }

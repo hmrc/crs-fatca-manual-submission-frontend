@@ -14,20 +14,27 @@
  * limitations under the License.
  */
 
-package generators
+package forms
 
-import models.{CrsOrFatca, TypeOfReport}
-import org.scalacheck.{Arbitrary, Gen}
+import forms.mappings.Mappings
+import play.api.data.Forms.{of, single}
+import play.api.data.{FieldMapping, Form}
 
-trait ModelGenerators {
+import javax.inject.Inject
 
-  implicit lazy val arbitraryTypeOfReport: Arbitrary[TypeOfReport] =
-    Arbitrary {
-      Gen.oneOf(TypeOfReport.values)
-    }
+class WhatIsGIINForSponsorFormProvider @Inject() extends Mappings {
 
-  implicit lazy val arbitraryCrsOrFatca: Arbitrary[CrsOrFatca] =
-    Arbitrary {
-      Gen.oneOf(CrsOrFatca.values)
-    }
+  def apply(): Form[String] =
+    Form(
+      single(
+        "value" -> mandatoryGIIN(
+          "whatIsGIINForSponsor.error.required",
+          "whatIsGIINForSponsor.error.length",
+          "whatIsGIINForSponsor.error.notReal",
+          "whatIsGIINForSponsor.error.invalidFormat",
+          "whatIsGIINForSponsor.error.invalidChar"
+        )
+      )
+    )
+
 }

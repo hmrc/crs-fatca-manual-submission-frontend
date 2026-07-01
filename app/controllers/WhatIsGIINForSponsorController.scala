@@ -17,39 +17,42 @@
 package controllers
 
 import controllers.actions._
-import forms.ReportingYearFormProvider
+import forms.WhatIsGIINForSponsorFormProvider
 import javax.inject.Inject
-import models.Mode
+import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.ReportingYearPage
+import pages.WhatIsGIINForSponsorPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import repositories.SessionRepository
+import connectors.DatabaseConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.ReportingYearView
+import views.html.WhatIsGIINForSponsorView
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ReportingYearController @Inject() (
+class WhatIsGIINForSponsorController @Inject() (
   override val messagesApi: MessagesApi,
-  sessionRepository: SessionRepository,
+  repository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
   identify: IdentifierAction,
-  getData: FrontendDataRetrievalAction,
+  getData: DataRetrievalAction,
   requireData: DataRequiredAction,
-  formProvider: ReportingYearFormProvider,
+  reportIdAction: ReportIdRequiredAction,
+  formProvider: WhatIsGIINForSponsorFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: ReportingYearView
+  view: WhatIsGIINForSponsorView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
     implicit request =>
 
-      val preparedForm = request.userAnswers.get(ReportingYearPage) match {
+      implicit val reportId: ReportId = request.reportId
+
+      val preparedForm = request.userAnswers.get(WhatIsGIINForSponsorPage()) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
@@ -57,17 +60,20 @@ class ReportingYearController @Inject() (
       Ok(view(preparedForm, mode))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
     implicit request =>
+
+      implicit val reportId: ReportId = request.reportId
+
       form
         .bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(ReportingYearPage, value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPageWithoutReportId(ReportingYearPage, mode, updatedAnswers))
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(WhatIsGIINForSponsorPage(), value))
+              _              <- repository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(WhatIsGIINForSponsorPage(), mode, updatedAnswers))
         )
   }
 }

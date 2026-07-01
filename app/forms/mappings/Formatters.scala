@@ -16,9 +16,9 @@
 
 package forms.mappings
 
+import models.Enumerable
 import play.api.data.FormError
 import play.api.data.format.Formatter
-import models.Enumerable
 
 import scala.util.control.Exception.nonFatalCatch
 
@@ -133,4 +133,35 @@ trait Formatters {
       override def unbind(key: String, value: BigDecimal): Map[String, String] =
         baseFormatter.unbind(key, value.toString)
     }
+
+  private[mappings] def mandatoryGIINFormatter(
+    requiredKey: String,
+    lengthKey: String,
+    invalidKey: String,
+    formatKey: String,
+    invalidCharKey: String
+  ): Formatter[String] = new Formatter[String] {
+
+    private val giinLength       = 19
+    private val giinAllowedChars = """^[A-Za-z0-9.]*$"""
+    private val giinFormatRegex  = "^(?i:[A-NP-Z0-9]{6}\\.[A-NP-Z0-9]{5}\\.[A-NP-Z]{2}\\.[0-9]{3})$"
+    private val exampleGIIN      = "98O96B.00000.LE.350"
+
+    override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], String] =
+      data
+        .get(key)
+        .map(
+          s => s.toUpperCase.trim.replaceAll(" ", "")
+        ) match {
+        case None | Some("")                         => Left(Seq(FormError(key, requiredKey)))
+        case Some(v) if !v.matches(giinAllowedChars) => Left(Seq(FormError(key, invalidCharKey)))
+        case Some(v) if v.length != giinLength       => Left(Seq(FormError(key, lengthKey)))
+        case Some(v) if v == exampleGIIN             => Left(Seq(FormError(key, invalidKey)))
+        case Some(v) if !v.matches(giinFormatRegex)  => Left(Seq(FormError(key, formatKey)))
+        case Some(v)                                 => Right(v)
+      }
+
+    override def unbind(key: String, value: String): Map[String, String] =
+      Map(key -> value)
+  }
 }

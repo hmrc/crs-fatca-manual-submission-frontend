@@ -23,35 +23,52 @@ import pages.*
 class ManualSubmissionNavigatorSpec extends SpecBase {
 
   val navigator = new ManualSubmissionNavigator
-  "ManualSubmissionNavigator" - {
 
-    "from CrsOrFatcaPage" - {
-
-      "must go to Reporting Year Page when Normal Mode" in {
-        val userData = UserAnswers("id")
-        navigator.nextPage(CrsOrFatcaPage, NormalMode, userData) mustBe
-          controllers.routes.ReportingYearController.onPageLoad(NormalMode)
+  "ManualSubmissionNavigator in NormalMode " - {
+    "without reportId" - {
+      "CrsOrFatcaPage" - {
+        "must go to Reporting Year Page when Normal Mode" in {
+          val userData = UserAnswers("id")
+          navigator.nextPageWithoutReportId(CrsOrFatcaPage, NormalMode, userData) mustBe
+            controllers.routes.ReportingYearController.onPageLoad(NormalMode)
+        }
       }
 
-      "must go to IndexController Page when Check Mode" in {
-        val userData = UserAnswers("id")
-        navigator.nextPage(CrsOrFatcaPage, CheckMode, userData) mustBe
-          controllers.routes.IndexController.onPageLoad()
+      "ReportingYearPage" - {
+        "must go to TypeOfReport Page when Normal Mode" in {
+          val userData = UserAnswers("id")
+          navigator.nextPageWithoutReportId(ReportingYearPage, NormalMode, userData) mustBe
+            controllers.routes.TypeOfReportController.onPageLoad(NormalMode)
+        }
+      }
+
+      "TypeOfReportPage" - {
+        "must go to ReportDetailsCheckAnswers" in {
+          val ua = UserAnswers("id")
+          navigator.nextPageWithoutReportId(TypeOfReportPage, NormalMode, ua) mustBe
+            controllers.routes.ReportDetailsCheckAnswersController.onPageLoad()
+        }
       }
     }
 
-    "from ReportingYear Page" - {
+    "with reportId" - {
+      val year                        = 2025
+      implicit val reportId: ReportId = ReportId(SubmissionsConstants.CRS, year, None, "test123456789")
 
-      "must go to UnderConstruction Page when Normal Mode" in {
-        val userData = UserAnswers("id")
-        navigator.nextPage(ReportingYearPage, NormalMode, userData) mustBe
-          controllers.routes.UnderConstructionController.onPageLoad()
+      "WhatIsGIINForSponsorPage" - {
+        "must go to IsSponsorBasedInUK" in {
+          val ua = UserAnswers("id")
+          navigator.nextPage(WhatIsGIINForSponsorPage(), NormalMode, ua) mustBe
+            controllers.routes.IsSponsorBasedInUKController.onPageLoad(NormalMode)
+        }
       }
 
-      "must go to IndexController Page when Check Mode" in {
-        val userData = UserAnswers("id")
-        navigator.nextPage(ReportingYearPage, CheckMode, userData) mustBe
-          controllers.routes.IndexController.onPageLoad()
+      "IsSponsorBasedInUKPage" - {
+        "must go to UNDERCONSTRUCTION" in {
+          val ua = UserAnswers("id")
+          navigator.nextPage(IsSponsorBasedInUKPage(), NormalMode, ua) mustBe
+            controllers.routes.UnderConstructionController.onPageLoad()
+        }
       }
     }
   }

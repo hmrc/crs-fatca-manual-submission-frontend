@@ -16,12 +16,15 @@
 
 package navigation
 
-import models.{Mode, UserAnswers}
+import models.{Mode, ReportId, UserAnswers}
 import pages.*
 import play.api.mvc.Call
 
 class FakeManualSubmissionNavigator(desiredRoute: Call) extends ManualSubmissionNavigator {
 
-  override def nextPage(page: Page, mode: Mode, userData: UserAnswers): Call =
+  override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers)(using reportId: ReportId): Call =
+    desiredRoute
+
+  override def nextPageWithoutReportId(page: Page, mode: Mode, userAnswers: UserAnswers): Call =
     desiredRoute
 }

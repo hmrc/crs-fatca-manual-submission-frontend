@@ -17,42 +17,46 @@
 package controllers
 
 import base.SpecBase
-import forms.CrsOrFatcaFormProvider
-import models.{CrsOrFatca, NormalMode, UserAnswers}
+import connectors.DatabaseConnector
+import forms.IsSponsorBasedInUKFormProvider
+import models.SubmissionsConstants.CRS
+import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import pages.CrsOrFatcaPage
+import org.scalatestplus.mockito.MockitoSugar
+import pages.{IsSponsorBasedInUKPage, ReportIdPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers.*
-import repositories.SessionRepository
-import views.html.CrsOrFatcaView
+import play.api.test.Helpers._
+import views.html.IsSponsorBasedInUKView
 
 import scala.concurrent.Future
 
-class CrsOrFatcaControllerSpec extends SpecBase {
+class IsSponsorBasedInUKControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  private lazy val crsOrFatcaRoute = routes.CrsOrFatcaController.onPageLoad(NormalMode).url
+  val formProvider = new IsSponsorBasedInUKFormProvider()
+  val form         = formProvider()
 
-  val formProvider = new CrsOrFatcaFormProvider()
-  private val form = formProvider()
+  lazy val isSponsorBasedInUKRoute = routes.IsSponsorBasedInUKController.onPageLoad(NormalMode).url
 
-  "CrsOrFatca Controller" - {
+  "IsSponsorBasedInUK Controller" - {
+
+    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
 
       running(application) {
-        val request = FakeRequest(GET, crsOrFatcaRoute)
+        val request = FakeRequest(GET, isSponsorBasedInUKRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[CrsOrFatcaView]
+        val view = application.injector.instanceOf[IsSponsorBasedInUKView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
@@ -61,40 +65,42 @@ class CrsOrFatcaControllerSpec extends SpecBase {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(CrsOrFatcaPage, CrsOrFatca.values.head).success.value
+      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
+
+      val userAnswers = ua.set(IsSponsorBasedInUKPage(), true).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, crsOrFatcaRoute)
+        val request = FakeRequest(GET, isSponsorBasedInUKRoute)
 
-        val view = application.injector.instanceOf[CrsOrFatcaView]
+        val view = application.injector.instanceOf[IsSponsorBasedInUKView]
 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(CrsOrFatca.values.head), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
       }
     }
 
     "must redirect to the next page when valid data is submitted" in {
 
-      val mockSessionRepository = mock[SessionRepository]
+      val mockSessionRepository = mock[DatabaseConnector]
 
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
 
       val application =
-        applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers))
+        applicationBuilder(maybeUserAnswers = Some(ua))
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository)
+            bind[DatabaseConnector].toInstance(mockSessionRepository)
           )
           .build()
 
       running(application) {
         val request =
-          FakeRequest(POST, crsOrFatcaRoute)
-            .withFormUrlEncodedBody(("value", CrsOrFatca.values.head.toString))
+          FakeRequest(POST, isSponsorBasedInUKRoute)
+            .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
@@ -105,16 +111,16 @@ class CrsOrFatcaControllerSpec extends SpecBase {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
 
       running(application) {
         val request =
-          FakeRequest(POST, crsOrFatcaRoute)
-            .withFormUrlEncodedBody(("value", "invalid value"))
+          FakeRequest(POST, isSponsorBasedInUKRoute)
+            .withFormUrlEncodedBody(("value", ""))
 
-        val boundForm = form.bind(Map("value" -> "invalid value"))
+        val boundForm = form.bind(Map("value" -> ""))
 
-        val view = application.injector.instanceOf[CrsOrFatcaView]
+        val view = application.injector.instanceOf[IsSponsorBasedInUKView]
 
         val result = route(application, request).value
 
@@ -128,7 +134,7 @@ class CrsOrFatcaControllerSpec extends SpecBase {
       val application = applicationBuilder(maybeUserAnswers = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, crsOrFatcaRoute)
+        val request = FakeRequest(GET, isSponsorBasedInUKRoute)
 
         val result = route(application, request).value
 
@@ -137,19 +143,18 @@ class CrsOrFatcaControllerSpec extends SpecBase {
       }
     }
 
-    "redirect to Journey Recovery for a POST if no existing data is found" in {
+    "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
       val application = applicationBuilder(maybeUserAnswers = None).build()
 
       running(application) {
         val request =
-          FakeRequest(POST, crsOrFatcaRoute)
-            .withFormUrlEncodedBody(("value", CrsOrFatca.values.head.toString))
+          FakeRequest(POST, isSponsorBasedInUKRoute)
+            .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }

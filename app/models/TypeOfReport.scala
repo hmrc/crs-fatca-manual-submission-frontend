@@ -20,34 +20,28 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 
-sealed trait CrsOrFatca {
+sealed trait TypeOfReport
 
-  def toRegime: SubmissionsConstants.RegimeType = this match {
-    case CrsOrFatca.Crs   => SubmissionsConstants.CRS
-    case CrsOrFatca.Fatca => SubmissionsConstants.FATCA
-  }
-}
+object TypeOfReport extends Enumerable.Implicits {
 
-object CrsOrFatca extends Enumerable.Implicits {
+  case object Information extends WithName("information") with TypeOfReport
+  case object NilReport extends WithName("nilReport") with TypeOfReport
 
-  case object Crs extends WithName("crs") with CrsOrFatca
-  case object Fatca extends WithName("fatca") with CrsOrFatca
-
-  val values: Seq[CrsOrFatca] = Seq(
-    Crs,
-    Fatca
+  val values: Seq[TypeOfReport] = Seq(
+    Information,
+    NilReport
   )
 
   def options(implicit messages: Messages): Seq[RadioItem] = values.zipWithIndex.map {
     case (value, index) =>
       RadioItem(
-        content = Text(messages(s"crsOrFatca.${value.toString}")),
+        content = Text(messages(s"typeOfReport.${value.toString}")),
         value = Some(value.toString),
         id = Some(s"value_$index")
       )
   }
 
-  implicit val enumerable: Enumerable[CrsOrFatca] =
+  implicit val enumerable: Enumerable[TypeOfReport] =
     Enumerable(
       values.map(
         v => v.toString -> v

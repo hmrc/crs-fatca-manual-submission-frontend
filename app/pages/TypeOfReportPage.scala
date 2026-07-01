@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 
-package generators
+package pages
 
-import models.{CrsOrFatca, TypeOfReport}
-import org.scalacheck.{Arbitrary, Gen}
+import models.TypeOfReport
+import play.api.libs.json.JsPath
 
-trait ModelGenerators {
+case object TypeOfReportPage extends QuestionPage[TypeOfReport] {
 
-  implicit lazy val arbitraryTypeOfReport: Arbitrary[TypeOfReport] =
-    Arbitrary {
-      Gen.oneOf(TypeOfReport.values)
-    }
+  override def path: JsPath = JsPath \ toString
 
-  implicit lazy val arbitraryCrsOrFatca: Arbitrary[CrsOrFatca] =
-    Arbitrary {
-      Gen.oneOf(CrsOrFatca.values)
-    }
+  override def toString: String = "typeOfReport"
+
 }

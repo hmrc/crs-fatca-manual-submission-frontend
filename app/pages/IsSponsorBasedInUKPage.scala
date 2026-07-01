@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-package generators
+package pages
 
-import models.{CrsOrFatca, TypeOfReport}
-import org.scalacheck.{Arbitrary, Gen}
+import models.ReportId
 
-trait ModelGenerators {
+object IsSponsorBasedInUKPage {
 
-  implicit lazy val arbitraryTypeOfReport: Arbitrary[TypeOfReport] =
-    Arbitrary {
-      Gen.oneOf(TypeOfReport.values)
-    }
-
-  implicit lazy val arbitraryCrsOrFatca: Arbitrary[CrsOrFatca] =
-    Arbitrary {
-      Gen.oneOf(CrsOrFatca.values)
-    }
+  def apply()(implicit reportId: ReportId): ReportPage[Boolean] =
+    ReportPage("isSponsorBasedInUK")
 }
