@@ -40,12 +40,10 @@
 
         @para(messages("typeOfReport.para", fiName, reportingYear.toString))
 
-        @heading(messages("typeOfReport.subheading", fiName, reportingYear.toString), size = "m", level = "h2")
-
         @govukRadios(
             RadiosViewModel(
                 field  = form("value"),
-                legend = LegendViewModel(messages("typeOfReport.heading")).withCssClass("govuk-visually-hidden govuk-!-display-block"),
+                legend = LegendViewModel(messages("typeOfReport.subheading", fiName, reportingYear.toString)).withCssClass("govuk-label  govuk-label--l"),
                 items  = TypeOfReport.options
             )
         )
