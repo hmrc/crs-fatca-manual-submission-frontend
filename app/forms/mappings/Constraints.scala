@@ -79,6 +79,12 @@ trait Constraints {
         Invalid(errorKey, regex)
     }
 
+  protected def regexShouldNotContain(regex: String, errorKey: String): Constraint[String] =
+    Constraint {
+      case str if str.matches(regex) => Invalid(errorKey)
+      case _                         => Valid
+    }
+
   protected def maxLength(maximum: Int, errorKey: String): Constraint[String] =
     Constraint {
       case str if str.length <= maximum =>

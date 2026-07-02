@@ -17,14 +17,14 @@
 package views
 
 import base.SpecBase
-import forms.ReportingYearFormProvider
+import forms.manual.reportdetails.ReportingYearFormProvider
 import models.NormalMode
 import org.jsoup.Jsoup
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
-import views.html.ReportingYearView
+import views.html.manual.reportdetails.ReportingYearView
 
 class ReportingYearViewSpec extends SpecBase {
 

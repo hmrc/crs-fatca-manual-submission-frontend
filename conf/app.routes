@@ -69,22 +69,32 @@ GET        /elections/manage-elections-for-:year                    controllers.
 
 GET        /under-construction                                  controllers.UnderConstructionController.onPageLoad()
 
-GET        /manual/send-a-report                                controllers.SendAReportController.onPageLoad()
+GET        /manual/send-a-report                                controllers.manual.SendAReportController.onPageLoad()
 
-GET        /manual/report-details/year                               controllers.ReportingYearController.onPageLoad(mode: Mode = NormalMode)
-POST       /manual/report-details/year                               controllers.ReportingYearController.onSubmit(mode: Mode = NormalMode)
-GET        /manual/report-details/change-year                        controllers.ReportingYearController.onPageLoad(mode: Mode = CheckMode)
-POST       /manual/report-details/change-year                        controllers.ReportingYearController.onSubmit(mode: Mode = CheckMode)
+GET        /manual/report-details/year                               controllers.manual.reportdetails.ReportingYearController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/report-details/year                               controllers.manual.reportdetails.ReportingYearController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/report-details/change-year                        controllers.manual.reportdetails.ReportingYearController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/report-details/change-year                        controllers.manual.reportdetails.ReportingYearController.onSubmit(mode: Mode = CheckMode)
 
-GET        /manual/report-details/crs-or-fatca                       controllers.CrsOrFatcaController.onPageLoad(mode: Mode = NormalMode)
-POST       /manual/report-details/crs-or-fatca                       controllers.CrsOrFatcaController.onSubmit(mode: Mode = NormalMode)
-GET        /manual/report-details/change-crs-or-fatca                controllers.CrsOrFatcaController.onPageLoad(mode: Mode = CheckMode)
-POST       /manual/report-details/change-crs-or-fatca                controllers.CrsOrFatcaController.onSubmit(mode: Mode = CheckMode)
+GET        /manual/report-details/crs-or-fatca                       controllers.manual.reportdetails.CrsOrFatcaController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/report-details/crs-or-fatca                       controllers.manual.reportdetails.CrsOrFatcaController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/report-details/change-crs-or-fatca                controllers.manual.reportdetails.CrsOrFatcaController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/report-details/change-crs-or-fatca                controllers.manual.reportdetails.CrsOrFatcaController.onSubmit(mode: Mode = CheckMode)
 
-GET        /manual/report-details/type-of-report                        controllers.TypeOfReportController.onPageLoad(mode: Mode = NormalMode)
-POST       /manual/report-details/type-of-report                        controllers.TypeOfReportController.onSubmit(mode: Mode = NormalMode)
-GET        /manual/report-details/change-type-of-report                  controllers.TypeOfReportController.onPageLoad(mode: Mode = CheckMode)
-POST       /manual/report-details/change-type-of-report                 controllers.TypeOfReportController.onSubmit(mode: Mode = CheckMode)
+GET        /manual/report-details/type-of-report                        controllers.manual.reportdetails.TypeOfReportController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/report-details/type-of-report                        controllers.manual.reportdetails.TypeOfReportController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/report-details/change-type-of-report                 controllers.manual.reportdetails.TypeOfReportController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/report-details/change-type-of-report                 controllers.manual.reportdetails.TypeOfReportController.onSubmit(mode: Mode = CheckMode)
 
-GET        /manual/report-details/check-answers                       controllers.ReportDetailsCheckAnswersController.onPageLoad()
-POST       /manual/report-details/check-answers                       controllers.ReportDetailsCheckAnswersController.onSaveAndContinue()
+GET        /manual/report-details/check-answers                       controllers.manual.reportdetails.ReportDetailsCheckAnswersController.onPageLoad()
+POST       /manual/report-details/check-answers                       controllers.manual.reportdetails.ReportDetailsCheckAnswersController.onSaveAndContinue()
+
+GET        /manual/sponsor/have-sponsor                        controllers.manual.sponser.HaveSponserController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/sponsor/have-sponsor                        controllers.manual.sponser.HaveSponserController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/sponsor/change-have-sponsor                  controllers.manual.sponser.HaveSponserController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/sponsor/change-have-sponsor                  controllers.manual.sponser.HaveSponserController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/sponsor/name                        controllers.manual.sponser.SponserNameController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/sponsor/name                        controllers.manual.sponser.SponserNameController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/sponsor/change-name                  controllers.manual.sponser.SponserNameController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/sponsor/change-name                  controllers.manual.sponser.SponserNameController.onSubmit(mode: Mode = CheckMode)

@@ -16,9 +16,9 @@
 
 package viewmodels.checkAnswers
 
-import controllers.routes
+import controllers.manual.reportdetails
 import models.{CheckMode, UserAnswers}
-import pages.TypeOfReportPage
+import pages.manual.reportdetails.TypeOfReportPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
@@ -42,7 +42,7 @@ object TypeOfReportSummary {
           key = "typeOfReport.checkYourAnswersLabel",
           value = value,
           actions = Seq(
-            ActionItemViewModel("site.change", routes.TypeOfReportController.onPageLoad(CheckMode).url)
+            ActionItemViewModel("site.change", reportdetails.routes.TypeOfReportController.onPageLoad(CheckMode).url)
               .withVisuallyHiddenText(messages("typeOfReport.change.hidden"))
           )
         )

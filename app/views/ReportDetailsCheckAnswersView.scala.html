@@ -26,7 +26,7 @@
 
 @layout(pageTitle = titleNoForm(messages("reportDetailsCheckAnswers.title", fiName))) {
 
-    @formHelper(action = controllers.routes.ReportDetailsCheckAnswersController.onSaveAndContinue()){
+    @formHelper(action = controllers.manual.reportdetails.routes.ReportDetailsCheckAnswersController.onSaveAndContinue()){
 
     @heading(headingContent = messages("reportDetailsCheckAnswers.heading", fiName), size = "l")
 

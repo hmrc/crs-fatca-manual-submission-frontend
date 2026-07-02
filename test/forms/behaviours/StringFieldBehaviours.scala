@@ -29,4 +29,14 @@ trait StringFieldBehaviours extends FieldBehaviours {
           result.errors must contain only lengthError
       }
     }
+
+  def fieldWithIncludedChars(form: Form[_], fieldName: String, allowedChars: Seq[String], invalidErr: FormError): Unit =
+    s"not bind strings other than allowed characters" in {
+
+      forAll(stringsExceptSpecificValues(allowedChars) -> "invalidString") {
+        (string: String) =>
+          val result = form.bind(Map(fieldName -> string)).apply(fieldName)
+          result.errors must contain only invalidErr
+      }
+    }
 }

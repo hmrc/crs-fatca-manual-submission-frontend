@@ -17,39 +17,74 @@
 package navigation
 
 import base.SpecBase
+import controllers.manual.reportdetails.routes.{ReportDetailsCheckAnswersController, ReportingYearController, TypeOfReportController}
 import models.*
+import models.SubmissionsConstants.FATCA
 import pages.*
+import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
+import pages.manual.sponser.{HaveSponserPage, SponserNamePage}
 
 class ManualSubmissionNavigatorSpec extends SpecBase {
 
   val navigator = new ManualSubmissionNavigator
 
   "ManualSubmissionNavigator in NormalMode" - {
-    "CrsOrFatcaPage" - {
-      "must go to Reporting Year Page when Normal Mode" in {
-        val userData = UserAnswers("id")
-        navigator.nextPage(CrsOrFatcaPage, NormalMode, userData) mustBe
-          controllers.routes.ReportingYearController.onPageLoad(NormalMode)
-      }
+    "nextPageWithoutReportId" - {
+      "CrsOrFatcaPage" - {
+        "must go to Reporting Year Page when Normal Mode" in {
+          val userData = UserAnswers("id")
+          navigator.nextPageWithoutReportId(CrsOrFatcaPage, NormalMode, userData) mustBe
+            ReportingYearController.onPageLoad(NormalMode)
+        }
 
+      }
+      "ReportingYearPage" - {
+        "must go to TypeOfReport Page when Normal Mode" in {
+          val userData = UserAnswers("id")
+          navigator.nextPageWithoutReportId(ReportingYearPage, NormalMode, userData) mustBe
+            TypeOfReportController.onPageLoad(NormalMode)
+        }
+
+      }
+      "TypeOfReportPage" - {
+        "must go to ReportDetailsCheckAnswers" in {
+          val ua = UserAnswers("id")
+          navigator.nextPageWithoutReportId(TypeOfReportPage, NormalMode, ua) mustBe
+            ReportDetailsCheckAnswersController.onPageLoad()
+        }
+
+      }
     }
+    "nextPage" - {
+      implicit val reportId = ReportId(FATCA, 2024, None, "TestFIID")
 
-    "ReportingYearPage" - {
-      "must go to TypeOfReport Page when Normal Mode" in {
-        val userData = UserAnswers("id")
-        navigator.nextPage(ReportingYearPage, NormalMode, userData) mustBe
-          controllers.routes.TypeOfReportController.onPageLoad(NormalMode)
+      "HaveSponserPage" - {
+        "must go to SponserName Page when Normal Mode" in {
+          val userData = UserAnswers("id").withPage(HaveSponserPage(), true)
+          navigator.nextPage(HaveSponserPage(), NormalMode, userData) mustBe
+            controllers.manual.sponser.routes.SponserNameController.onPageLoad(NormalMode)
+        }
+
+        "must go to UnderConstruction Page when Normal Mode" in {
+          val userData = UserAnswers("id").withPage(HaveSponserPage(), false)
+          navigator.nextPage(HaveSponserPage(), NormalMode, userData) mustBe
+            controllers.routes.UnderConstructionController.onPageLoad()
+        }
+
+        "must go to JourneyRecovery Page when Normal Mode" in {
+          val userData = UserAnswers("id")
+          navigator.nextPage(HaveSponserPage(), NormalMode, userData) mustBe
+            controllers.routes.JourneyRecoveryController.onPageLoad()
+        }
       }
 
-    }
-
-    "TypeOfReportPage" - {
-      "must go to ReportDetailsCheckAnswers" in {
-        val ua = UserAnswers("id")
-        navigator.nextPage(TypeOfReportPage, NormalMode, ua) mustBe
-          controllers.routes.ReportDetailsCheckAnswersController.onPageLoad()
+      "SponserNamePage" - {
+        "must go to UnderConstruction Page when Normal Mode" in {
+          val userData = UserAnswers("id")
+          navigator.nextPage(SponserNamePage(), NormalMode, userData) mustBe
+            controllers.routes.UnderConstructionController.onPageLoad()
+        }
       }
-
     }
   }
 }
