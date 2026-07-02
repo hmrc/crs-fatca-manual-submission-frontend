@@ -14,24 +14,23 @@
  * limitations under the License.
  */
 
-package controllers.manual.sponser
+package controllers.manual.sponsor
 
 import connectors.DatabaseConnector
 import controllers.actions.*
-import forms.manual.sponser.HaveSponserFormProvider
+import forms.manual.sponsor.SponsorNameFormProvider
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.FINamePage
-import pages.manual.sponser.HaveSponserPage
+import pages.manual.sponsor.SponsorNamePage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.manual.sponser.HaveSponserView
+import views.html.manual.sponsor.SponsorNameView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class HaveSponserController @Inject() (
+class SponsorNameController @Inject() (
   override val messagesApi: MessagesApi,
   repository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
@@ -39,9 +38,9 @@ class HaveSponserController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   reportIdAction: ReportIdRequiredAction,
-  formProvider: HaveSponserFormProvider,
+  formProvider: SponsorNameFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: HaveSponserView
+  view: SponsorNameView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -53,16 +52,12 @@ class HaveSponserController @Inject() (
 
       implicit val reportId: ReportId = request.reportId
 
-      request.userAnswers
-        .get(FINamePage())
-        .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)) {
-          fiName =>
-            val preparedForm = request.userAnswers.get(HaveSponserPage()) match {
-              case None        => form
-              case Some(value) => form.fill(value)
-            }
-            Ok(view(preparedForm, mode, fiName))
-        }
+      val preparedForm = request.userAnswers.get(SponsorNamePage()) match {
+        case None        => form
+        case Some(value) => form.fill(value)
+      }
+
+      Ok(view(preparedForm, mode))
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
@@ -70,20 +65,15 @@ class HaveSponserController @Inject() (
 
       implicit val reportId: ReportId = request.reportId
 
-      request.userAnswers
-        .get(FINamePage())
-        .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))) {
-          fiName =>
-            form
-              .bindFromRequest()
-              .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiName))),
-                value =>
-                  for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.set(HaveSponserPage(), value))
-                    _              <- repository.set(updatedAnswers)
-                  } yield Redirect(navigator.nextPage(HaveSponserPage(), mode, updatedAnswers)(reportId))
-              )
-        }
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(SponsorNamePage(), value))
+              _              <- repository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(SponsorNamePage(), mode, updatedAnswers))
+        )
   }
 }

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package controllers.manual.sponser
+package controllers.manual.sponsor
 
 import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
-import forms.manual.sponser.HaveSponserFormProvider
+import forms.manual.sponsor.HaveSponsorFormProvider
 import models.SubmissionsConstants.CRS
 import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
@@ -27,26 +27,26 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.manual.FINamePage
-import pages.manual.sponser.HaveSponserPage
+import pages.manual.sponsor.HaveSponsorPage
 import pages.ReportIdPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import views.html.manual.sponser.HaveSponserView
+import views.html.manual.sponsor.HaveSponsorView
 
 import scala.concurrent.Future
 
-class HaveSponserControllerSpec extends SpecBase with MockitoSugar {
+class HaveSponsorControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new HaveSponserFormProvider()
+  val formProvider = new HaveSponsorFormProvider()
   val form         = formProvider()
 
-  lazy val haveSponserRoute = controllers.manual.sponser.routes.HaveSponserController.onPageLoad(NormalMode).url
+  lazy val haveSponsorRoute = controllers.manual.sponsor.routes.HaveSponsorController.onPageLoad(NormalMode).url
 
-  "HaveSponser Controller" - {
+  "HaveSponsor Controller" - {
 
     val testFiName        = "TestFI"
     implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
@@ -57,11 +57,11 @@ class HaveSponserControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
 
       running(application) {
-        val request = FakeRequest(GET, haveSponserRoute)
+        val request = FakeRequest(GET, haveSponsorRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[HaveSponserView]
+        val view = application.injector.instanceOf[HaveSponsorView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form, NormalMode, testFiName)(request, messages(application)).toString
@@ -70,14 +70,14 @@ class HaveSponserControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = ua.set(HaveSponserPage(), true).success.value
+      val userAnswers = ua.set(HaveSponsorPage(), true).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, haveSponserRoute)
+        val request = FakeRequest(GET, haveSponsorRoute)
 
-        val view = application.injector.instanceOf[HaveSponserView]
+        val view = application.injector.instanceOf[HaveSponsorView]
 
         val result = route(application, request).value
 
@@ -102,7 +102,7 @@ class HaveSponserControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, haveSponserRoute)
+          FakeRequest(POST, haveSponsorRoute)
             .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
@@ -118,12 +118,12 @@ class HaveSponserControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, haveSponserRoute)
+          FakeRequest(POST, haveSponsorRoute)
             .withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
 
-        val view = application.injector.instanceOf[HaveSponserView]
+        val view = application.injector.instanceOf[HaveSponsorView]
 
         val result = route(application, request).value
 
@@ -137,7 +137,7 @@ class HaveSponserControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(maybeUserAnswers = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, haveSponserRoute)
+        val request = FakeRequest(GET, haveSponsorRoute)
 
         val result = route(application, request).value
 
@@ -152,7 +152,7 @@ class HaveSponserControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, haveSponserRoute)
+          FakeRequest(POST, haveSponsorRoute)
             .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value

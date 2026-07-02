@@ -14,47 +14,48 @@
  * limitations under the License.
  */
 
-package views.manual.sponser
+package views.manual.reportdetails
 
 import base.SpecBase
-import forms.manual.sponser.HaveSponserFormProvider
+import forms.manual.reportdetails.ReportingYearFormProvider
 import models.NormalMode
 import org.jsoup.Jsoup
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
-import views.html.manual.sponser.HaveSponserView
+import views.html.manual.reportdetails.ReportingYearView
 
-class HaveSponserViewSpec extends SpecBase {
+class ReportingYearViewSpec extends SpecBase {
 
   private val application = applicationBuilder().build()
 
-  private val view: HaveSponserView                                      = application.injector.instanceOf[HaveSponserView]
+  private val view: ReportingYearView                                    = application.injector.instanceOf[ReportingYearView]
   private val messagesControllerComponents: MessagesControllerComponents = application.injector.instanceOf[MessagesControllerComponents]
-  val formProvider                                                       = new HaveSponserFormProvider()
+  val formProvider                                                       = new ReportingYearFormProvider()
   val form                                                               = formProvider()
 
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
   implicit private val messages: Messages               = messagesControllerComponents.messagesApi.preferred(Seq(Lang("en")))
 
-  "HaveSponserView" - {
+  "ReportingYearView" - {
 
     "should render page components" - {
 
-      val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, "TestFIName")
+      val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode)
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
       "must display title" in {
-        doc.title() must include("Does the financial institution have a sponsor?")
+        doc.title() must include("Which year are you reporting for?")
       }
 
       "must display heading" in {
-        doc.select("h1").text() must include("Does TestFIName have a sponsor?")
+        doc.select("h1").text() must include("Which year are you reporting for?")
+        doc.getElementById("value-hint").text() must include("For example, 2025.")
       }
 
       "must display button" in {
-        doc.select("#submit").text() mustBe "Save and continue"
+        doc.select("#submit").text() mustBe "Continue"
       }
 
     }

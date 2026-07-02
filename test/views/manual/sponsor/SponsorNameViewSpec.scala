@@ -14,31 +14,31 @@
  * limitations under the License.
  */
 
-package views
+package views.manual.sponsor
 
 import base.SpecBase
-import forms.manual.reportdetails.ReportingYearFormProvider
+import forms.manual.sponsor.SponsorNameFormProvider
 import models.NormalMode
 import org.jsoup.Jsoup
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
-import views.html.manual.reportdetails.ReportingYearView
+import views.html.manual.sponsor.SponsorNameView
 
-class ReportingYearViewSpec extends SpecBase {
+class SponsorNameViewSpec extends SpecBase {
 
   private val application = applicationBuilder().build()
 
-  private val view: ReportingYearView                                    = application.injector.instanceOf[ReportingYearView]
+  private val view: SponsorNameView                                      = application.injector.instanceOf[SponsorNameView]
   private val messagesControllerComponents: MessagesControllerComponents = application.injector.instanceOf[MessagesControllerComponents]
-  val formProvider                                                       = new ReportingYearFormProvider()
+  val formProvider                                                       = new SponsorNameFormProvider()
   val form                                                               = formProvider()
 
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
   implicit private val messages: Messages               = messagesControllerComponents.messagesApi.preferred(Seq(Lang("en")))
 
-  "ReportingYearView" - {
+  "SponsorNameView" - {
 
     "should render page components" - {
 
@@ -46,16 +46,19 @@ class ReportingYearViewSpec extends SpecBase {
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
       "must display title" in {
-        doc.title() must include("Which year are you reporting for?")
+        doc.title() must include("What is the name of the sponsor?")
       }
 
       "must display heading" in {
-        doc.select("h1").text() must include("Which year are you reporting for?")
-        doc.getElementById("value-hint").text() must include("For example, 2025.")
+        doc.select("h1").text() must include("What is the name of the sponsor?")
+      }
+
+      "must set css" in {
+        doc.select("#value").hasClass("govuk-!-width-three-quarters") mustBe true
       }
 
       "must display button" in {
-        doc.select("#submit").text() mustBe "Continue"
+        doc.select("#submit").text() mustBe "Save and continue"
       }
 
     }

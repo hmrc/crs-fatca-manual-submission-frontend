@@ -27,9 +27,9 @@
 
 @(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("sponserName.title"))) {
+@layout(pageTitle = title(form, messages("sponsorName.title"))) {
 
-    @formHelper(action = controllers.manual.sponser.routes.SponserNameController.onSubmit(mode)) {
+    @formHelper(action = controllers.manual.sponsor.routes.SponsorNameController.onSubmit(mode)) {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
@@ -38,7 +38,7 @@
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(messages("sponserName.heading")).asPageHeading()
+                label = LabelViewModel(messages("sponsorName.heading")).asPageHeading()
             )
             .withWidth(Full)
             .withCssClass("govuk-input govuk-!-width-three-quarters")

@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-package pages.manual.sponser
+package forms.manual.sponsor
 
-import models.ReportId
-import pages.ReportPage
+import forms.mappings.Mappings
+import play.api.data.Form
 
-object SponserNamePage {
+import javax.inject.Inject
 
-  def apply()(implicit reportId: ReportId): ReportPage[String] =
-    ReportPage("sponserName")
+class HaveSponsorFormProvider @Inject() extends Mappings {
+
+  def apply(): Form[Boolean] =
+    Form(
+      "value" -> boolean("haveSponsor.error.required")
+    )
 }

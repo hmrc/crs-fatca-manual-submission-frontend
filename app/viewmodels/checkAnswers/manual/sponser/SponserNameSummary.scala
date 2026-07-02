@@ -17,7 +17,7 @@
 package viewmodels.checkAnswers.manual.sponser
 
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.sponser.SponserNamePage
+import pages.manual.sponsor.SponsorNamePage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
@@ -27,14 +27,14 @@ import viewmodels.implicits.*
 object SponserNameSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
-    answers.get(SponserNamePage()).map {
+    answers.get(SponsorNamePage()).map {
       answer =>
         SummaryListRowViewModel(
-          key = "sponserName.checkYourAnswersLabel",
+          key = "sponsorName.checkYourAnswersLabel",
           value = ValueViewModel(HtmlFormat.escape(answer).toString),
           actions = Seq(
-            ActionItemViewModel("site.change", controllers.manual.sponser.routes.SponserNameController.onPageLoad(CheckMode).url)
-              .withVisuallyHiddenText(messages("sponserName.change.hidden"))
+            ActionItemViewModel("site.change", controllers.manual.sponsor.routes.SponsorNameController.onPageLoad(CheckMode).url)
+              .withVisuallyHiddenText(messages("sponsorName.change.hidden"))
           )
         )
     }

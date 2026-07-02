@@ -24,9 +24,9 @@
 
 @(form: Form[_], mode: Mode, fiName: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("haveSponser.title"))) {
+@layout(pageTitle = title(form, messages("haveSponsor.title"))) {
 
-    @formHelper(action = controllers.manual.sponser.routes.HaveSponserController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+    @formHelper(action = controllers.manual.sponsor.routes.HaveSponsorController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
@@ -35,7 +35,7 @@
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = LegendViewModel(messages("haveSponser.heading",fiName)).asPageHeading()
+                legend = LegendViewModel(messages("haveSponsor.heading",fiName)).asPageHeading()
             )
         )
 

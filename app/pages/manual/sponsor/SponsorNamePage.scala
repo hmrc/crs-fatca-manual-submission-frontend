@@ -14,23 +14,13 @@
  * limitations under the License.
  */
 
-package forms.manual.sponser
+package pages.manual.sponsor
 
-import forms.mappings.Mappings
-import play.api.data.Form
-import utils.RegexConstants
+import models.ReportId
+import pages.ReportPage
 
-import javax.inject.Inject
+object SponsorNamePage {
 
-class SponserNameFormProvider @Inject() extends Mappings {
-
-  def apply(): Form[String] =
-    Form(
-      "value" -> text("sponserName.error.required")
-        .verifying(
-          maxLength(200, "sponserName.error.length"),
-          regexp(RegexConstants.SPONSER_NAME_VALID, "sponserName.error.invalid"),
-          regexShouldNotContain(RegexConstants.SPONSER_NAME_DOUBLE_DASH, "sponserName.error.doubedash")
-        )
-    )
+  def apply()(implicit reportId: ReportId): ReportPage[String] =
+    ReportPage("sponsorName")
 }

@@ -22,7 +22,7 @@ import models.*
 import models.SubmissionsConstants.FATCA
 import pages.*
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
-import pages.manual.sponser.{HaveSponserPage, SponserNamePage}
+import pages.manual.sponsor.{HaveSponsorPage, SponsorNamePage}
 
 class ManualSubmissionNavigatorSpec extends SpecBase {
 
@@ -58,30 +58,30 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
     "nextPage" - {
       implicit val reportId = ReportId(FATCA, 2024, None, "TestFIID")
 
-      "HaveSponserPage" - {
-        "must go to SponserName Page when Normal Mode" in {
-          val userData = UserAnswers("id").withPage(HaveSponserPage(), true)
-          navigator.nextPage(HaveSponserPage(), NormalMode, userData) mustBe
-            controllers.manual.sponser.routes.SponserNameController.onPageLoad(NormalMode)
+      "HaveSponsorPage" - {
+        "must go to SponsorName Page when Normal Mode" in {
+          val userData = UserAnswers("id").withPage(HaveSponsorPage(), true)
+          navigator.nextPage(HaveSponsorPage(), NormalMode, userData) mustBe
+            controllers.manual.sponsor.routes.SponsorNameController.onPageLoad(NormalMode)
         }
 
         "must go to UnderConstruction Page when Normal Mode" in {
-          val userData = UserAnswers("id").withPage(HaveSponserPage(), false)
-          navigator.nextPage(HaveSponserPage(), NormalMode, userData) mustBe
+          val userData = UserAnswers("id").withPage(HaveSponsorPage(), false)
+          navigator.nextPage(HaveSponsorPage(), NormalMode, userData) mustBe
             controllers.routes.UnderConstructionController.onPageLoad()
         }
 
         "must go to JourneyRecovery Page when Normal Mode" in {
           val userData = UserAnswers("id")
-          navigator.nextPage(HaveSponserPage(), NormalMode, userData) mustBe
+          navigator.nextPage(HaveSponsorPage(), NormalMode, userData) mustBe
             controllers.routes.JourneyRecoveryController.onPageLoad()
         }
       }
 
-      "SponserNamePage" - {
+      "SponsorNamePage" - {
         "must go to UnderConstruction Page when Normal Mode" in {
           val userData = UserAnswers("id")
-          navigator.nextPage(SponserNamePage(), NormalMode, userData) mustBe
+          navigator.nextPage(SponsorNamePage(), NormalMode, userData) mustBe
             controllers.routes.UnderConstructionController.onPageLoad()
         }
       }

@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package forms.manual.sponser
+package forms.manual.sponsor
 
 import forms.behaviours.BooleanFieldBehaviours
-import forms.manual.sponser
+import forms.manual.sponsor
 import play.api.data.FormError
 
-class HaveSponserFormProviderSpec extends BooleanFieldBehaviours {
+class HaveSponsorFormProviderSpec extends BooleanFieldBehaviours {
 
-  val requiredKey = "haveSponser.error.required"
+  val requiredKey = "haveSponsor.error.required"
   val invalidKey  = "error.boolean"
 
-  val form = new HaveSponserFormProvider()()
+  val form = new HaveSponsorFormProvider()()
 
   ".value" - {
 

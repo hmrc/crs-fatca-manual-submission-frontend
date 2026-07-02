@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package views
+package views.manual
 
 import base.SpecBase
 import models.viewModels.SendAReportSections
-import models.viewModels.TaskStatus._
+import models.viewModels.TaskStatus.*
 import org.jsoup.Jsoup
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}

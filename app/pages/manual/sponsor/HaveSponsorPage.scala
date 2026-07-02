@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package pages.manual.sponser
+package pages.manual.sponsor
 
-import models.{ReportId, UserAnswers}
+import models.ReportId
 import pages.ReportPage
 
-import scala.util.Try
-
-object HaveSponserPage {
+object HaveSponsorPage {
 
   def apply()(implicit reportId: ReportId): ReportPage[Boolean] =
-    ReportPage("haveSponser")
+    ReportPage("haveSponsor")
 }

@@ -14,53 +14,47 @@
  * limitations under the License.
  */
 
-package views
+package views.manual.sponsor
 
 import base.SpecBase
-import forms.manual.reportdetails.CrsOrFatcaFormProvider
+import forms.manual.sponsor.HaveSponsorFormProvider
 import models.NormalMode
 import org.jsoup.Jsoup
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
-import views.html.manual.reportdetails.CrsOrFatcaView
+import views.html.manual.sponsor.HaveSponsorView
 
-class CrsOrFatcaViewSpec extends SpecBase {
+class HaveSponsorViewSpec extends SpecBase {
 
   private val application = applicationBuilder().build()
 
-  private val view: CrsOrFatcaView                                       = application.injector.instanceOf[CrsOrFatcaView]
+  private val view: HaveSponsorView                                      = application.injector.instanceOf[HaveSponsorView]
   private val messagesControllerComponents: MessagesControllerComponents = application.injector.instanceOf[MessagesControllerComponents]
-  val formProvider                                                       = new CrsOrFatcaFormProvider()
+  val formProvider                                                       = new HaveSponsorFormProvider()
   val form                                                               = formProvider()
 
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
   implicit private val messages: Messages               = messagesControllerComponents.messagesApi.preferred(Seq(Lang("en")))
 
-  "CrsOrFatcaView" - {
+  "HaveSponsorView" - {
 
     "should render page components" - {
 
-      val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode)
+      val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, "TestFIName")
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
       "must display title" in {
-        doc.title() must include("Is this a CRS or FATCA report?")
+        doc.title() must include("Does the financial institution have a sponsor?")
       }
 
       "must display heading" in {
-        doc.select("h1").text() must include("Is this a CRS or FATCA report?")
-      }
-
-      "must display radio buttons" in {
-        val elem = doc.getElementsByClass("govuk-radios__label")
-        elem.get(0).text() mustBe "CRS"
-        elem.get(1).text() mustBe "FATCA"
+        doc.select("h1").text() must include("Does TestFIName have a sponsor?")
       }
 
       "must display button" in {
-        doc.select("#submit").text() mustBe "Continue"
+        doc.select("#submit").text() mustBe "Save and continue"
       }
 
     }
