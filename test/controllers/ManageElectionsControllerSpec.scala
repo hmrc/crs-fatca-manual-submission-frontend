@@ -17,7 +17,6 @@
 package controllers
 
 import base.SpecBase
-import models.FiIdentifiers
 import org.mockito.ArgumentMatchersSugar.*
 import org.mockito.MockitoSugar.when
 import play.api.inject.bind

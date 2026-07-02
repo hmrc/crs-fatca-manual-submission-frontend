@@ -16,16 +16,25 @@
 
 package forms
 
-import javax.inject.Inject
-
 import forms.mappings.Mappings
-import play.api.data.Form
+import play.api.data.Forms.{of, single}
+import play.api.data.{FieldMapping, Form}
+
+import javax.inject.Inject
 
 class WhatIsGIINForSponsorFormProvider @Inject() extends Mappings {
 
   def apply(): Form[String] =
     Form(
-      "value" -> text("whatIsGIINForSponsor.error.required")
-        .verifying(maxLength(100, "whatIsGIINForSponsor.error.length"))
+      single(
+        "value" -> mandatoryGIIN(
+          "whatIsGIINForSponsor.error.required",
+          "whatIsGIINForSponsor.error.length",
+          "whatIsGIINForSponsor.error.notReal",
+          "whatIsGIINForSponsor.error.invalidFormat",
+          "whatIsGIINForSponsor.error.invalidChar"
+        )
+      )
     )
+
 }

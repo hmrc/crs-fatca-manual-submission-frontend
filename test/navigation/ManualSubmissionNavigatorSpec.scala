@@ -17,43 +17,74 @@
 package navigation
 
 import base.SpecBase
+import controllers.manual.reportdetails.routes.{ReportDetailsCheckAnswersController, ReportingYearController, TypeOfReportController}
 import models.*
+import models.SubmissionsConstants.FATCA
 import pages.*
+import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
+import pages.manual.sponser.{HaveSponserPage, SponserNamePage}
 
 class ManualSubmissionNavigatorSpec extends SpecBase {
 
   val navigator = new ManualSubmissionNavigator
 
-  "ManualSubmissionNavigator in NormalMode " - {
+  "ManualSubmissionNavigator in NormalMode" - {
     "without reportId" - {
       "CrsOrFatcaPage" - {
         "must go to Reporting Year Page when Normal Mode" in {
           val userData = UserAnswers("id")
           navigator.nextPageWithoutReportId(CrsOrFatcaPage, NormalMode, userData) mustBe
-            controllers.routes.ReportingYearController.onPageLoad(NormalMode)
+            ReportingYearController.onPageLoad(NormalMode)
         }
-      }
 
+      }
       "ReportingYearPage" - {
         "must go to TypeOfReport Page when Normal Mode" in {
           val userData = UserAnswers("id")
           navigator.nextPageWithoutReportId(ReportingYearPage, NormalMode, userData) mustBe
-            controllers.routes.TypeOfReportController.onPageLoad(NormalMode)
+            TypeOfReportController.onPageLoad(NormalMode)
         }
-      }
 
+      }
       "TypeOfReportPage" - {
         "must go to ReportDetailsCheckAnswers" in {
           val ua = UserAnswers("id")
           navigator.nextPageWithoutReportId(TypeOfReportPage, NormalMode, ua) mustBe
-            controllers.routes.ReportDetailsCheckAnswersController.onPageLoad()
+            ReportDetailsCheckAnswersController.onPageLoad()
         }
+
       }
     }
-
     "with reportId" - {
-      val year                        = 2025
-      implicit val reportId: ReportId = ReportId(SubmissionsConstants.CRS, year, None, "test123456789")
+      implicit val reportId = ReportId(FATCA, 2024, None, "TestFIID")
+
+      "HaveSponserPage" - {
+        "must go to SponserName Page when Normal Mode" in {
+          val userData = UserAnswers("id").withPage(HaveSponserPage(), true)
+          navigator.nextPage(HaveSponserPage(), NormalMode, userData) mustBe
+            controllers.manual.sponser.routes.SponserNameController.onPageLoad(NormalMode)
+        }
+
+        "must go to UnderConstruction Page when Normal Mode" in {
+          val userData = UserAnswers("id").withPage(HaveSponserPage(), false)
+          navigator.nextPage(HaveSponserPage(), NormalMode, userData) mustBe
+            controllers.routes.UnderConstructionController.onPageLoad()
+        }
+
+        "must go to JourneyRecovery Page when Normal Mode" in {
+          val userData = UserAnswers("id")
+          navigator.nextPage(HaveSponserPage(), NormalMode, userData) mustBe
+            controllers.routes.JourneyRecoveryController.onPageLoad()
+        }
+      }
+
+      "SponserNamePage" - {
+        "must go to UnderConstruction Page when Normal Mode" in {
+          val userData = UserAnswers("id")
+          navigator.nextPage(SponserNamePage(), NormalMode, userData) mustBe
+            controllers.routes.UnderConstructionController.onPageLoad()
+        }
+      }
 
       "WhatIsGIINForSponsorPage" - {
         "must go to IsSponsorBasedInUK" in {
@@ -70,6 +101,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             controllers.routes.UnderConstructionController.onPageLoad()
         }
       }
+
     }
   }
 }

@@ -1,0 +1,83 @@
+/*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package controllers.manual.reportdetails
+
+import connectors.DatabaseConnector
+import controllers.actions.*
+import models.{ReportId, UserAnswers}
+import pages.{FiDetailsPage, ReportIdPage}
+import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage}
+import play.api.Logging
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.ReportDetailsCheckAnswersUtil
+import views.html.ReportDetailsCheckAnswersView
+
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
+
+class ReportDetailsCheckAnswersController @Inject() (
+  override val messagesApi: MessagesApi,
+  identify: IdentifierAction,
+  getData: FrontendDataRetrievalAction,
+  requireData: DataRequiredAction,
+  val controllerComponents: MessagesControllerComponents,
+  view: ReportDetailsCheckAnswersView,
+  dbConnector: DatabaseConnector,
+  util: ReportDetailsCheckAnswersUtil
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
+    with I18nSupport
+    with Logging {
+
+  def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) {
+    implicit request =>
+      (for {
+        fiDetail <- request.userAnswers.get(FiDetailsPage)
+        year     <- request.userAnswers.get(ReportingYearPage)
+        list = util.getReportDetailsRows(request.userAnswers)
+      } yield Ok(view(list, fiDetail.fiName)))
+        .getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))
+
+  }
+
+  def onSaveAndContinue: Action[AnyContent] = (identify andThen getData andThen requireData).async {
+    implicit request =>
+
+      val reportId: Option[ReportId] = for {
+        crsOrFatca <- request.userAnswers.get(CrsOrFatcaPage)
+        year       <- request.userAnswers.get(ReportingYearPage)
+        fiDetails  <- request.userAnswers.get(FiDetailsPage)
+      } yield ReportId(crsOrFatca.toRegime, year, None, fiDetails.fiId)
+
+      reportId.fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))) {
+        reportId =>
+          (for {
+            dbAnswers        <- dbConnector.get().map(_.getOrElse(UserAnswers(request.fatcaId)))
+            updatedDbAnswers <- Future.fromTry(dbAnswers.set(ReportIdPage, reportId))
+            _                <- dbConnector.set(updatedDbAnswers)
+          } yield Redirect(controllers.manual.routes.SendAReportController.onPageLoad().url))
+            .recover {
+              case err =>
+                logger.error("Failed to process onSaveAndContinue request", err)
+                Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+            }
+      }
+  }
+
+}

@@ -16,38 +16,77 @@
 
 package forms
 
-import forms.behaviours.StringFieldBehaviours
+import forms.behaviours.FieldBehaviours
 import play.api.data.FormError
 
-class WhatIsGIINForSponsorFormProviderSpec extends StringFieldBehaviours {
-
-  val requiredKey = "whatIsGIINForSponsor.error.required"
-  val lengthKey   = "whatIsGIINForSponsor.error.length"
-  val maxLength   = 100
+class WhatIsGIINForSponsorFormProviderSpec extends FieldBehaviours {
 
   val form = new WhatIsGIINForSponsorFormProvider()()
 
   ".value" - {
 
-    val fieldName = "value"
+    val fieldName      = "value"
+    val requiredKey    = "whatIsGIINForSponsor.error.required"
+    val lengthKey      = "whatIsGIINForSponsor.error.length"
+    val invalidKey     = "whatIsGIINForSponsor.error.notReal"
+    val formatKey      = "whatIsGIINForSponsor.error.invalidFormat"
+    val invalidCharKey = "whatIsGIINForSponsor.error.invalidChar"
+
+    val giinSetLength = 19
 
     behave like fieldThatBindsValidData(
       form,
       fieldName,
-      stringsWithMaxLength(maxLength)
+      validGIIN
     )
 
-    behave like fieldWithMaxLength(
+    behave like fieldThatBindsValidDataWithASpace(
       form,
       fieldName,
-      maxLength = maxLength,
-      lengthError = FormError(fieldName, lengthKey, Seq(maxLength))
+      validGIIN
+    )
+
+    behave like fieldWithMaxLengthAlpha(
+      form,
+      fieldName,
+      maxLength = giinSetLength,
+      lengthError = FormError(fieldName, lengthKey)
+    )
+
+    behave like fieldWithMinLengthAlpha(
+      form,
+      fieldName,
+      minLength = giinSetLength,
+      lengthError = FormError(fieldName, lengthKey)
     )
 
     behave like mandatoryField(
       form,
       fieldName,
       requiredError = FormError(fieldName, requiredKey)
+    )
+
+    behave like fieldWithInvalidData(
+      form,
+      fieldName,
+      "98O96B.00000.LE.350",
+      FormError(fieldName, invalidKey)
+    )
+
+    behave like fieldWithInvalidData(
+      form,
+      fieldName,
+      "98O96B9.0000.LE.350",
+      FormError(fieldName, formatKey),
+      Some("format")
+    )
+
+    behave like fieldWithInvalidData(
+      form,
+      fieldName,
+      "######.#####.##.###",
+      FormError(fieldName, invalidCharKey),
+      Some("chars")
     )
   }
 }

@@ -29,7 +29,7 @@ import pages.{ReportIdPage, WhatIsGIINForSponsorPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import views.html.WhatIsGIINForSponsorView
 
 import scala.concurrent.Future
@@ -84,7 +84,7 @@ class WhatIsGIINForSponsorControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to the next page when valid data is submitted" in {
-
+      val testGIIN              = "98296B.00000.LE.350"
       val mockSessionRepository = mock[DatabaseConnector]
 
       when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
@@ -100,7 +100,7 @@ class WhatIsGIINForSponsorControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, whatIsGIINForSponsorRoute)
-            .withFormUrlEncodedBody(("value", "answer"))
+            .withFormUrlEncodedBody(("value", testGIIN))
 
         val result = route(application, request).value
 

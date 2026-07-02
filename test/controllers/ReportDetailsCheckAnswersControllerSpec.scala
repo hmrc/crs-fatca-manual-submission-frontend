@@ -23,7 +23,8 @@ import models.FiIdentifiers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
 import org.mockito.Mockito.{verify, when}
-import pages.{CrsOrFatcaPage, FiDetailsPage, ReportingYearPage}
+import pages.FiDetailsPage
+import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage}
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
@@ -55,7 +56,7 @@ class ReportDetailsCheckAnswersControllerSpec extends SpecBase {
         .build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.ReportDetailsCheckAnswersController.onPageLoad().url)
+        val request = FakeRequest(GET, controllers.manual.reportdetails.routes.ReportDetailsCheckAnswersController.onPageLoad().url)
         val result  = route(application, request).value
         val view    = application.injector.instanceOf[ReportDetailsCheckAnswersView]
 
@@ -77,11 +78,11 @@ class ReportDetailsCheckAnswersControllerSpec extends SpecBase {
           .build()
 
         running(application) {
-          val request = FakeRequest(POST, routes.ReportDetailsCheckAnswersController.onSaveAndContinue().url)
+          val request = FakeRequest(POST, controllers.manual.reportdetails.routes.ReportDetailsCheckAnswersController.onSaveAndContinue().url)
           val result  = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual controllers.routes.SendAReportController.onPageLoad().url
+          redirectLocation(result).value mustEqual controllers.manual.routes.SendAReportController.onPageLoad().url
 
           verify(mockDatabaseConnector).set(any())(any())
         }
@@ -99,7 +100,7 @@ class ReportDetailsCheckAnswersControllerSpec extends SpecBase {
           .build()
 
         running(application) {
-          val request = FakeRequest(POST, routes.ReportDetailsCheckAnswersController.onSaveAndContinue().url)
+          val request = FakeRequest(POST, controllers.manual.reportdetails.routes.ReportDetailsCheckAnswersController.onSaveAndContinue().url)
           val result  = route(application, request).value
 
           status(result) mustEqual SEE_OTHER

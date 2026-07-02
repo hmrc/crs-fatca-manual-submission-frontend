@@ -16,9 +16,12 @@
 
 package navigation
 
+import controllers.manual.reportdetails.routes.*
 import controllers.routes
 import models.*
 import pages.*
+import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
+import pages.manual.sponser.{HaveSponserPage, SponserNamePage}
 import play.api.mvc.Call
 
 import javax.inject.{Inject, Singleton}
@@ -33,29 +36,27 @@ class ManualSubmissionNavigator @Inject() () {
       routes.UnderConstructionController.onPageLoad()
   }
 
-  def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId): Call = mode match {
-    case NormalMode =>
-      normalRoutesWithReportId(page, userAnswers)
-    case CheckMode =>
-      routes.UnderConstructionController.onPageLoad()
-  }
-
   private def normalRoutes(page: Page, userAnswers: UserAnswers): Call =
     page match {
-      case CrsOrFatcaPage    => routes.ReportingYearController.onPageLoad(NormalMode)
-      case ReportingYearPage => routes.TypeOfReportController.onPageLoad(NormalMode)
-      case TypeOfReportPage  => routes.ReportDetailsCheckAnswersController.onPageLoad()
-      case _ =>
-        routes.IndexController.onPageLoad()
+      case CrsOrFatcaPage    => ReportingYearController.onPageLoad(NormalMode)
+      case ReportingYearPage => TypeOfReportController.onPageLoad(NormalMode)
+      case TypeOfReportPage  => ReportDetailsCheckAnswersController.onPageLoad()
+      case _                 => routes.IndexController.onPageLoad()
     }
 
-  private def normalRoutesWithReportId(page: Page, userAnswers: UserAnswers)(implicit reportId: ReportId): Call =
+  def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId): Call =
     page match {
+      case p if p == HaveSponserPage() =>
+        userAnswers.get(HaveSponserPage()) match {
+          case Some(true)  => controllers.manual.sponser.routes.SponserNameController.onPageLoad(mode)
+          case Some(false) => routes.UnderConstructionController.onPageLoad()
+          case None        => routes.JourneyRecoveryController.onPageLoad()
+        }
+      case p if p == SponserNamePage() => routes.UnderConstructionController.onPageLoad() // do this
       case p if p == WhatIsGIINForSponsorPage() =>
         routes.IsSponsorBasedInUKController.onPageLoad(NormalMode)
       case p if p == IsSponsorBasedInUKPage() =>
         routes.UnderConstructionController.onPageLoad()
-      case _ =>
-        routes.IndexController.onPageLoad()
+      case _ => routes.IndexController.onPageLoad()
     }
 }
