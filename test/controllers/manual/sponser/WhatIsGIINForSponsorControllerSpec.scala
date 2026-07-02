@@ -14,36 +14,37 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.manual.sponser
 
 import base.SpecBase
 import connectors.DatabaseConnector
-import forms.IsSponsorBasedInUKFormProvider
+import forms.WhatIsGIINForSponsorFormProvider
 import models.SubmissionsConstants.CRS
 import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{IsSponsorBasedInUKPage, ReportIdPage}
+import pages.ReportIdPage
+import pages.manual.sponser.WhatIsGIINForSponsorPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import views.html.IsSponsorBasedInUKView
+import play.api.test.Helpers.*
+import views.html.manual.sponser.WhatIsGIINForSponsorView
 
 import scala.concurrent.Future
 
-class IsSponsorBasedInUKControllerSpec extends SpecBase with MockitoSugar {
+class WhatIsGIINForSponsorControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new IsSponsorBasedInUKFormProvider()
-  val form         = formProvider()
+  private val formProvider = new WhatIsGIINForSponsorFormProvider()
+  private val form         = formProvider()
 
-  lazy val isSponsorBasedInUKRoute = routes.IsSponsorBasedInUKController.onPageLoad(NormalMode).url
+  private lazy val whatIsGIINForSponsorRoute = controllers.manual.sponser.routes.WhatIsGIINForSponsorController.onPageLoad(NormalMode).url
 
-  "IsSponsorBasedInUK Controller" - {
+  "WhatIsGIINForSponsor Controller" - {
 
     val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
 
@@ -52,11 +53,11 @@ class IsSponsorBasedInUKControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
 
       running(application) {
-        val request = FakeRequest(GET, isSponsorBasedInUKRoute)
+        val request = FakeRequest(GET, whatIsGIINForSponsorRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[IsSponsorBasedInUKView]
+        val view = application.injector.instanceOf[WhatIsGIINForSponsorView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
@@ -65,26 +66,26 @@ class IsSponsorBasedInUKControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
+      implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
 
-      val userAnswers = ua.set(IsSponsorBasedInUKPage(), true).success.value
+      val userAnswers = ua.set(WhatIsGIINForSponsorPage(), "answer").success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, isSponsorBasedInUKRoute)
+        val request = FakeRequest(GET, whatIsGIINForSponsorRoute)
 
-        val view = application.injector.instanceOf[IsSponsorBasedInUKView]
+        val view = application.injector.instanceOf[WhatIsGIINForSponsorView]
 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill("answer"), NormalMode)(request, messages(application)).toString
       }
     }
 
     "must redirect to the next page when valid data is submitted" in {
-
+      val testGIIN              = "98296B.00000.LE.350"
       val mockSessionRepository = mock[DatabaseConnector]
 
       when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
@@ -99,8 +100,8 @@ class IsSponsorBasedInUKControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, isSponsorBasedInUKRoute)
-            .withFormUrlEncodedBody(("value", "true"))
+          FakeRequest(POST, whatIsGIINForSponsorRoute)
+            .withFormUrlEncodedBody(("value", testGIIN))
 
         val result = route(application, request).value
 
@@ -115,12 +116,12 @@ class IsSponsorBasedInUKControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, isSponsorBasedInUKRoute)
+          FakeRequest(POST, whatIsGIINForSponsorRoute)
             .withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
 
-        val view = application.injector.instanceOf[IsSponsorBasedInUKView]
+        val view = application.injector.instanceOf[WhatIsGIINForSponsorView]
 
         val result = route(application, request).value
 
@@ -134,12 +135,12 @@ class IsSponsorBasedInUKControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(maybeUserAnswers = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, isSponsorBasedInUKRoute)
+        val request = FakeRequest(GET, whatIsGIINForSponsorRoute)
 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 
@@ -149,13 +150,13 @@ class IsSponsorBasedInUKControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, isSponsorBasedInUKRoute)
-            .withFormUrlEncodedBody(("value", "true"))
+          FakeRequest(POST, whatIsGIINForSponsorRoute)
+            .withFormUrlEncodedBody(("value", "answer"))
 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
       }
     }
   }

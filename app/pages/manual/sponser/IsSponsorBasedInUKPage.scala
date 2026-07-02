@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package pages
+package pages.manual.sponser
 
 import models.ReportId
+import pages.ReportPage
 
-object WhatIsGIINForSponsorPage {
+object IsSponsorBasedInUKPage {
 
-  def apply()(implicit reportId: ReportId): ReportPage[String] =
-    ReportPage("whatIsGIINForSponsor")
+  def apply()(implicit reportId: ReportId): ReportPage[Boolean] =
+    ReportPage("isSponsorBasedInUK")
 }

@@ -14,36 +14,38 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.manual.sponser
 
 import base.SpecBase
 import connectors.DatabaseConnector
-import forms.WhatIsGIINForSponsorFormProvider
+import controllers.routes
+import forms.IsSponsorBasedInUKFormProvider
 import models.SubmissionsConstants.CRS
 import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{ReportIdPage, WhatIsGIINForSponsorPage}
+import pages.ReportIdPage
+import pages.manual.sponser.IsSponsorBasedInUKPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import views.html.WhatIsGIINForSponsorView
+import views.html.manual.sponser.IsSponsorBasedInUKView
 
 import scala.concurrent.Future
 
-class WhatIsGIINForSponsorControllerSpec extends SpecBase with MockitoSugar {
+class IsSponsorBasedInUKControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new WhatIsGIINForSponsorFormProvider()
-  val form         = formProvider()
+  private val formProvider = new IsSponsorBasedInUKFormProvider()
+  private val form         = formProvider()
 
-  lazy val whatIsGIINForSponsorRoute = routes.WhatIsGIINForSponsorController.onPageLoad(NormalMode).url
+  private lazy val isSponsorBasedInUKRoute = controllers.manual.sponser.routes.IsSponsorBasedInUKController.onPageLoad(NormalMode).url
 
-  "WhatIsGIINForSponsor Controller" - {
+  "IsSponsorBasedInUK Controller" - {
 
     val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
 
@@ -52,11 +54,11 @@ class WhatIsGIINForSponsorControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
 
       running(application) {
-        val request = FakeRequest(GET, whatIsGIINForSponsorRoute)
+        val request = FakeRequest(GET, isSponsorBasedInUKRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[WhatIsGIINForSponsorView]
+        val view = application.injector.instanceOf[IsSponsorBasedInUKView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
@@ -67,24 +69,24 @@ class WhatIsGIINForSponsorControllerSpec extends SpecBase with MockitoSugar {
 
       implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
 
-      val userAnswers = ua.set(WhatIsGIINForSponsorPage(), "answer").success.value
+      val userAnswers = ua.set(IsSponsorBasedInUKPage(), true).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, whatIsGIINForSponsorRoute)
+        val request = FakeRequest(GET, isSponsorBasedInUKRoute)
 
-        val view = application.injector.instanceOf[WhatIsGIINForSponsorView]
+        val view = application.injector.instanceOf[IsSponsorBasedInUKView]
 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill("answer"), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
       }
     }
 
     "must redirect to the next page when valid data is submitted" in {
-      val testGIIN              = "98296B.00000.LE.350"
+
       val mockSessionRepository = mock[DatabaseConnector]
 
       when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
@@ -99,8 +101,8 @@ class WhatIsGIINForSponsorControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, whatIsGIINForSponsorRoute)
-            .withFormUrlEncodedBody(("value", testGIIN))
+          FakeRequest(POST, isSponsorBasedInUKRoute)
+            .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
@@ -115,12 +117,12 @@ class WhatIsGIINForSponsorControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, whatIsGIINForSponsorRoute)
+          FakeRequest(POST, isSponsorBasedInUKRoute)
             .withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
 
-        val view = application.injector.instanceOf[WhatIsGIINForSponsorView]
+        val view = application.injector.instanceOf[IsSponsorBasedInUKView]
 
         val result = route(application, request).value
 
@@ -134,7 +136,7 @@ class WhatIsGIINForSponsorControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(maybeUserAnswers = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, whatIsGIINForSponsorRoute)
+        val request = FakeRequest(GET, isSponsorBasedInUKRoute)
 
         val result = route(application, request).value
 
@@ -149,8 +151,8 @@ class WhatIsGIINForSponsorControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, whatIsGIINForSponsorRoute)
-            .withFormUrlEncodedBody(("value", "answer"))
+          FakeRequest(POST, isSponsorBasedInUKRoute)
+            .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 

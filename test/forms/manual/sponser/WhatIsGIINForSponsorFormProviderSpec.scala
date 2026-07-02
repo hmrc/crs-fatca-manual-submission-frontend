@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package forms
+package forms.manual.sponser
 
+import forms.WhatIsGIINForSponsorFormProvider
 import forms.behaviours.FieldBehaviours
 import play.api.data.FormError
 

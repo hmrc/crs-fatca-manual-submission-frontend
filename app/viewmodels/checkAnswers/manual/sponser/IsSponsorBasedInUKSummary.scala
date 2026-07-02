@@ -14,28 +14,30 @@
  * limitations under the License.
  */
 
-package viewmodels.checkAnswers
+package viewmodels.checkAnswers.manual.sponser
 
-import controllers.routes
+import controllers.manual.sponser.routes
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.WhatIsGIINForSponsorPage
+import pages.manual.sponser.IsSponsorBasedInUKPage
 import play.api.i18n.Messages
-import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
-import viewmodels.govuk.summarylist._
-import viewmodels.implicits._
+import viewmodels.govuk.summarylist.*
+import viewmodels.implicits.*
 
-object WhatIsGIINForSponsorSummary {
+object IsSponsorBasedInUKSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
-    answers.get(WhatIsGIINForSponsorPage()).map {
+    answers.get(IsSponsorBasedInUKPage()).map {
       answer =>
+
+        val value = if (answer) "site.yes" else "site.no"
+
         SummaryListRowViewModel(
-          key = "whatIsGIINForSponsor.checkYourAnswersLabel",
-          value = ValueViewModel(HtmlFormat.escape(answer).toString),
+          key = "isSponsorBasedInUK.checkYourAnswersLabel",
+          value = ValueViewModel(value),
           actions = Seq(
-            ActionItemViewModel("site.change", routes.WhatIsGIINForSponsorController.onPageLoad(CheckMode).url)
-              .withVisuallyHiddenText(messages("whatIsGIINForSponsor.change.hidden"))
+            ActionItemViewModel("site.change", routes.IsSponsorBasedInUKController.onPageLoad(CheckMode).url)
+              .withVisuallyHiddenText(messages("isSponsorBasedInUK.change.hidden"))
           )
         )
     }

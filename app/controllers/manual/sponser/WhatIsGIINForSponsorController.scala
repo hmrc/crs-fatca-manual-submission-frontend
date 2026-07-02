@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.manual.sponser
 
-import controllers.actions._
-import forms.IsSponsorBasedInUKFormProvider
-import javax.inject.Inject
+import connectors.DatabaseConnector
+import controllers.actions.*
+import forms.WhatIsGIINForSponsorFormProvider
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.IsSponsorBasedInUKPage
+import pages.manual.sponser.WhatIsGIINForSponsorPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import connectors.DatabaseConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.IsSponsorBasedInUKView
+import views.html.manual.sponser.WhatIsGIINForSponsorView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class IsSponsorBasedInUKController @Inject() (
+class WhatIsGIINForSponsorController @Inject() (
   override val messagesApi: MessagesApi,
   repository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
@@ -38,9 +38,9 @@ class IsSponsorBasedInUKController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   reportIdAction: ReportIdRequiredAction,
-  formProvider: IsSponsorBasedInUKFormProvider,
+  formProvider: WhatIsGIINForSponsorFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: IsSponsorBasedInUKView
+  view: WhatIsGIINForSponsorView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -52,7 +52,7 @@ class IsSponsorBasedInUKController @Inject() (
 
       implicit val reportId: ReportId = request.reportId
 
-      val preparedForm = request.userAnswers.get(IsSponsorBasedInUKPage()) match {
+      val preparedForm = request.userAnswers.get(WhatIsGIINForSponsorPage()) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
@@ -71,9 +71,9 @@ class IsSponsorBasedInUKController @Inject() (
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(IsSponsorBasedInUKPage(), value))
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(WhatIsGIINForSponsorPage(), value))
               _              <- repository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(IsSponsorBasedInUKPage(), mode, updatedAnswers))
+            } yield Redirect(navigator.nextPage(WhatIsGIINForSponsorPage(), mode, updatedAnswers))
         )
   }
 }

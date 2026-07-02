@@ -21,7 +21,7 @@ import controllers.routes
 import models.*
 import pages.*
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
-import pages.manual.sponser.{HaveSponserPage, SponserNamePage}
+import pages.manual.sponser.{HaveSponserPage, IsSponsorBasedInUKPage, SponserNamePage, WhatIsGIINForSponsorPage}
 import play.api.mvc.Call
 
 import javax.inject.{Inject, Singleton}
@@ -52,9 +52,9 @@ class ManualSubmissionNavigator @Inject() () {
           case Some(false) => routes.UnderConstructionController.onPageLoad()
           case None        => routes.JourneyRecoveryController.onPageLoad()
         }
-      case p if p == SponserNamePage() => routes.UnderConstructionController.onPageLoad() // do this
+      case p if p == SponserNamePage() => controllers.manual.sponser.routes.WhatIsGIINForSponsorController.onPageLoad(NormalMode)
       case p if p == WhatIsGIINForSponsorPage() =>
-        routes.IsSponsorBasedInUKController.onPageLoad(NormalMode)
+        controllers.manual.sponser.routes.IsSponsorBasedInUKController.onPageLoad(NormalMode)
       case p if p == IsSponsorBasedInUKPage() =>
         routes.UnderConstructionController.onPageLoad()
       case _ => routes.IndexController.onPageLoad()

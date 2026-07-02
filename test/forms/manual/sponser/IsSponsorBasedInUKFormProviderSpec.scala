@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package forms
+package forms.manual.sponser
 
+import forms.IsSponsorBasedInUKFormProvider
 import forms.behaviours.BooleanFieldBehaviours
 import play.api.data.FormError
 

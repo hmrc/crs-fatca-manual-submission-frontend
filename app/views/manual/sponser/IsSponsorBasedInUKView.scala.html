@@ -14,41 +14,29 @@
  * limitations under the License.
  *@
 
-@import viewmodels.InputWidth._
-
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
-    govukInput: GovukInput,
-    govukButton: GovukButton,
-    heading: components.Heading,
-    para: components.Paragraph
+    govukRadios: GovukRadios,
+    govukButton: GovukButton
 )
 
 @(form: Form[_], mode: Mode, sponsorName: String = "SPONSOR")(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("whatIsGIINForSponsor.title"))) {
+@layout(pageTitle = title(form, messages("isSponsorBasedInUK.title"))) {
 
-    @formHelper(action = routes.WhatIsGIINForSponsorController.onSubmit(mode)) {
+    @formHelper(action = controllers.manual.sponser.routes.IsSponsorBasedInUKController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
-        @heading(messages("whatIsGIINForSponsor.heading"))
-
-        @para(messages("whatIsGIINForSponsor.para.1", sponsorName))
-
-        @para(messages("whatIsGIINForSponsor.para.2", sponsorName))
-
-        @govukInput(
-            InputViewModel(
+        @govukRadios(
+            RadiosViewModel.yesNo(
                 field = form("value"),
-                label = LabelViewModel(messages("whatIsGIINForSponsor.subheading", sponsorName)).withCssClass("govuk-label  govuk-label--m")
+                legend = LegendViewModel(messages("isSponsorBasedInUK.heading", sponsorName)).asPageHeading()
             )
-            .withWidth(Fixed20)
-            .withHint(HintViewModel(HtmlContent(messages("whatIsGIINForSponsor.hint"))))
         )
 
         @govukButton(

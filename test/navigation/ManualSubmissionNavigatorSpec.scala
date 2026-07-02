@@ -22,7 +22,7 @@ import models.*
 import models.SubmissionsConstants.FATCA
 import pages.*
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
-import pages.manual.sponser.{HaveSponserPage, SponserNamePage}
+import pages.manual.sponser.{HaveSponserPage, IsSponsorBasedInUKPage, SponserNamePage, WhatIsGIINForSponsorPage}
 
 class ManualSubmissionNavigatorSpec extends SpecBase {
 
@@ -59,13 +59,13 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
       implicit val reportId = ReportId(FATCA, 2024, None, "TestFIID")
 
       "HaveSponserPage" - {
-        "must go to SponserName Page when Normal Mode" in {
+        "must go to SponserName Page when answer is Yes" in {
           val userData = UserAnswers("id").withPage(HaveSponserPage(), true)
           navigator.nextPage(HaveSponserPage(), NormalMode, userData) mustBe
             controllers.manual.sponser.routes.SponserNameController.onPageLoad(NormalMode)
         }
 
-        "must go to UnderConstruction Page when Normal Mode" in {
+        "must go to UnderConstruction Page when when answer is No" in {
           val userData = UserAnswers("id").withPage(HaveSponserPage(), false)
           navigator.nextPage(HaveSponserPage(), NormalMode, userData) mustBe
             controllers.routes.UnderConstructionController.onPageLoad()
@@ -79,10 +79,10 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
       }
 
       "SponserNamePage" - {
-        "must go to UnderConstruction Page when Normal Mode" in {
+        "must go to WhatIsGIINForSponsor Page" in {
           val userData = UserAnswers("id")
           navigator.nextPage(SponserNamePage(), NormalMode, userData) mustBe
-            controllers.routes.UnderConstructionController.onPageLoad()
+            controllers.manual.sponser.routes.WhatIsGIINForSponsorController.onPageLoad(NormalMode)
         }
       }
 
@@ -90,7 +90,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         "must go to IsSponsorBasedInUK" in {
           val ua = UserAnswers("id")
           navigator.nextPage(WhatIsGIINForSponsorPage(), NormalMode, ua) mustBe
-            controllers.routes.IsSponsorBasedInUKController.onPageLoad(NormalMode)
+            controllers.manual.sponser.routes.IsSponsorBasedInUKController.onPageLoad(NormalMode)
         }
       }
 
