@@ -28,9 +28,6 @@ import models.viewModels.TaskStatus._
 class SendAReportController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  reportIdAction: ReportIdRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: SendAReportView
 ) extends FrontendBaseController
