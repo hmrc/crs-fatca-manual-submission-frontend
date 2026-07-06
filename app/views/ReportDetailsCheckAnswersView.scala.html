@@ -24,7 +24,7 @@
 
 @(list: SummaryList, fiName: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("reportDetailsCheckAnswers.title", fiName))) {
+@layout(pageTitle = titleNoForm(messages("reportDetailsCheckAnswers.title"))) {
 
     @formHelper(action = controllers.routes.ReportDetailsCheckAnswersController.onSaveAndContinue()){
 

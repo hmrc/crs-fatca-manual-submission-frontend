@@ -233,5 +233,5 @@ typeOfReport.checkYourAnswersLabel = What type of report would you like to send?
 typeOfReport.error.required = Select what type of report you would like to send for the financial institution for {0}
 typeOfReport.change.hidden =  Change what type of report you would like to send
 
-reportDetailsCheckAnswers.title = Check your report details for {0}
+reportDetailsCheckAnswers.title = Check your report details for the financial institution
 reportDetailsCheckAnswers.heading = Check your report details for {0}
