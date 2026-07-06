@@ -17,13 +17,14 @@
 package controllers
 
 import base.SpecBase
+import controllers.manual.routes.SendAReportController
 import models.ReportId
 import models.SubmissionsConstants.CRS
 import models.viewModels.SendAReportSections
-import models.viewModels.TaskStatus._
+import models.viewModels.TaskStatus.*
 import pages.ReportIdPage
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import views.html.SendAReportView
 
 class SendAReportControllerSpec extends SpecBase {
@@ -43,7 +44,7 @@ class SendAReportControllerSpec extends SpecBase {
     "must return OK and the correct view for a GET" in {
       val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
       running(application) {
-        val request = FakeRequest(GET, routes.SendAReportController.onPageLoad().url)
+        val request = FakeRequest(GET, SendAReportController.onPageLoad().url)
         val result  = route(application, request).value
         val view    = application.injector.instanceOf[SendAReportView]
         status(result) mustEqual OK

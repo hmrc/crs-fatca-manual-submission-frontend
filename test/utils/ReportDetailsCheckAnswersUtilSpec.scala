@@ -20,7 +20,7 @@ import base.SpecBase
 import models.CrsOrFatca
 import models.TypeOfReport.Information
 import org.scalatest.freespec.AnyFreeSpec
-import pages.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
+import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import play.api.i18n.Messages
 import play.api.test.Helpers.stubMessages
 

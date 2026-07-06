@@ -64,7 +64,7 @@
    title = TaskListItemTitle(
     content = Text(messages(task.titleKey))
    ),
-   href = Some(underConstructionUrl),
+   href = task.href,
    status = taskStatus(task.status)
   )
  }

@@ -235,3 +235,18 @@ typeOfReport.change.hidden =  Change what type of report you would like to send
 
 reportDetailsCheckAnswers.title = Check your report details for the financial institution
 reportDetailsCheckAnswers.heading = Check your report details for {0}
+
+haveSponsor.title = Does the financial institution have a sponsor?
+haveSponsor.heading = Does {0} have a sponsor?
+haveSponsor.checkYourAnswersLabel = Does {0} have a sponsor?
+haveSponsor.error.required = Select yes if the financial institution has a sponsor
+haveSponsor.change.hidden = HaveSponsor
+
+sponsorName.title = What is the name of the sponsor?
+sponsorName.heading = What is the name of the sponsor?
+sponsorName.checkYourAnswersLabel = What is the name of the sponsor?
+sponsorName.error.required = Enter the name of the sponsor
+sponsorName.error.length = Sponsor name must be 200 characters or less
+sponsorName.error.invalid = Sponsor name must only include letters a to z, numbers 0 to 9, ampersands (&), apostrophes, backslashes, carets (^), grave accents (`), hyphens and spaces
+sponsorName.error.doubedash = Sponsor name must not include a double dash (--)
+sponsorName.change.hidden = SponsorName
