@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package viewmodels.checkAnswers.manual.sponser
+package viewmodels.checkAnswers.manual.sponsor
 
-import controllers.manual.sponser.routes
+import controllers.manual.sponsor.routes
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.sponser.WhatIsGIINForSponsorPage
+import pages.manual.sponsor.WhatIsGIINForSponsorPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow

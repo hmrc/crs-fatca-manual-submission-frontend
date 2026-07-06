@@ -17,11 +17,11 @@
 package controllers.manual.reportdetails
 
 import controllers.actions.*
-import forms.TypeOfReportFormProvider
+import forms.manual.reportdetails.TypeOfReportFormProvider
 import models.Mode
 import navigation.ManualSubmissionNavigator
-import pages.FiDetailsPage
 import pages.manual.reportdetails.{ReportingYearPage, TypeOfReportPage}
+import pages.FiDetailsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository

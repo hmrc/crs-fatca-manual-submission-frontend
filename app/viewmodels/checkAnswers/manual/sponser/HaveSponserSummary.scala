@@ -14,29 +14,29 @@
  * limitations under the License.
  */
 
-package viewmodels.checkAnswers.manual.sponser
+package viewmodels.checkAnswers.manual.sponsor
 
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.sponser.HaveSponserPage
+import pages.manual.sponsor.HaveSponsorPage
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist.*
 import viewmodels.implicits.*
 
-object HaveSponserSummary {
+object HaveSponsorSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
-    answers.get(HaveSponserPage()).map {
+    answers.get(HaveSponsorPage()).map {
       answer =>
 
         val value = if (answer) "site.yes" else "site.no"
 
         SummaryListRowViewModel(
-          key = "haveSponser.checkYourAnswersLabel",
+          key = "haveSponsor.checkYourAnswersLabel",
           value = ValueViewModel(value),
           actions = Seq(
-            ActionItemViewModel("site.change", controllers.manual.sponser.routes.HaveSponserController.onPageLoad(CheckMode).url)
-              .withVisuallyHiddenText(messages("haveSponser.change.hidden"))
+            ActionItemViewModel("site.change", controllers.manual.sponsor.routes.HaveSponsorController.onPageLoad(CheckMode).url)
+              .withVisuallyHiddenText(messages("haveSponsor.change.hidden"))
           )
         )
     }

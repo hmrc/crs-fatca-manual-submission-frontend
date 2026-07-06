@@ -27,5 +27,4 @@ class FakeManualSubmissionNavigator(desiredRoute: Call) extends ManualSubmission
 
   override def nextPageWithoutReportId(page: Page, mode: Mode, userAnswers: UserAnswers): Call =
     desiredRoute
-
 }

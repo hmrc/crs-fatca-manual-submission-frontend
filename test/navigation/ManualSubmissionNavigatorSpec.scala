@@ -22,7 +22,7 @@ import models.*
 import models.SubmissionsConstants.FATCA
 import pages.*
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
-import pages.manual.sponser.{HaveSponserPage, IsSponsorBasedInUKPage, SponserNamePage, WhatIsGIINForSponsorPage}
+import pages.manual.sponsor.{HaveSponsorPage, IsSponsorBasedInUKPage, SponsorNamePage, WhatIsGIINForSponsorPage}
 
 class ManualSubmissionNavigatorSpec extends SpecBase {
 
@@ -58,31 +58,31 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
     "with reportId" - {
       implicit val reportId = ReportId(FATCA, 2024, None, "TestFIID")
 
-      "HaveSponserPage" - {
-        "must go to SponserName Page when answer is Yes" in {
-          val userData = UserAnswers("id").withPage(HaveSponserPage(), true)
-          navigator.nextPage(HaveSponserPage(), NormalMode, userData) mustBe
-            controllers.manual.sponser.routes.SponserNameController.onPageLoad(NormalMode)
+      "HaveSponsorPage" - {
+        "must go to SponsorName Page when answer is Yes" in {
+          val userData = UserAnswers("id").withPage(HaveSponsorPage(), true)
+          navigator.nextPage(HaveSponsorPage(), NormalMode, userData) mustBe
+            controllers.manual.sponsor.routes.SponsorNameController.onPageLoad(NormalMode)
         }
 
         "must go to UnderConstruction Page when when answer is No" in {
-          val userData = UserAnswers("id").withPage(HaveSponserPage(), false)
-          navigator.nextPage(HaveSponserPage(), NormalMode, userData) mustBe
+          val userData = UserAnswers("id").withPage(HaveSponsorPage(), false)
+          navigator.nextPage(HaveSponsorPage(), NormalMode, userData) mustBe
             controllers.routes.UnderConstructionController.onPageLoad()
         }
 
         "must go to JourneyRecovery Page when Normal Mode" in {
           val userData = UserAnswers("id")
-          navigator.nextPage(HaveSponserPage(), NormalMode, userData) mustBe
+          navigator.nextPage(HaveSponsorPage(), NormalMode, userData) mustBe
             controllers.routes.JourneyRecoveryController.onPageLoad()
         }
       }
 
-      "SponserNamePage" - {
+      "SponsorNamePage" - {
         "must go to WhatIsGIINForSponsor Page" in {
           val userData = UserAnswers("id")
-          navigator.nextPage(SponserNamePage(), NormalMode, userData) mustBe
-            controllers.manual.sponser.routes.WhatIsGIINForSponsorController.onPageLoad(NormalMode)
+          navigator.nextPage(SponsorNamePage(), NormalMode, userData) mustBe
+            controllers.manual.sponsor.routes.WhatIsGIINForSponsorController.onPageLoad(NormalMode)
         }
       }
 
@@ -90,7 +90,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         "must go to IsSponsorBasedInUK" in {
           val ua = UserAnswers("id")
           navigator.nextPage(WhatIsGIINForSponsorPage(), NormalMode, ua) mustBe
-            controllers.manual.sponser.routes.IsSponsorBasedInUKController.onPageLoad(NormalMode)
+            controllers.manual.sponsor.routes.IsSponsorBasedInUKController.onPageLoad(NormalMode)
         }
       }
 

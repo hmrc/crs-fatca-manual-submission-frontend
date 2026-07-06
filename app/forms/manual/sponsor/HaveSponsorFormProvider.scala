@@ -14,27 +14,17 @@
  * limitations under the License.
  */
 
-package forms
+package forms.manual.sponsor
 
 import forms.mappings.Mappings
 import play.api.data.Form
-import play.api.data.Forms.single
 
 import javax.inject.Inject
 
-class WhatIsGIINForSponsorFormProvider @Inject() extends Mappings {
+class HaveSponsorFormProvider @Inject() extends Mappings {
 
-  def apply(): Form[String] =
+  def apply(): Form[Boolean] =
     Form(
-      single(
-        "value" -> mandatoryGIIN(
-          "whatIsGIINForSponsor.error.required",
-          "whatIsGIINForSponsor.error.length",
-          "whatIsGIINForSponsor.error.notReal",
-          "whatIsGIINForSponsor.error.invalidFormat",
-          "whatIsGIINForSponsor.error.invalidChar"
-        )
-      )
+      "value" -> boolean("haveSponsor.error.required")
     )
-
 }

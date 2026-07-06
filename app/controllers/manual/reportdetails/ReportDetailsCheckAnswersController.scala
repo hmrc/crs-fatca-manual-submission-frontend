@@ -19,6 +19,8 @@ package controllers.manual.reportdetails
 import connectors.DatabaseConnector
 import controllers.actions.*
 import models.{ReportId, UserAnswers}
+import pages.*
+import pages.manual.FINamePage
 import pages.{FiDetailsPage, ReportIdPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage}
 import play.api.Logging
@@ -59,18 +61,19 @@ class ReportDetailsCheckAnswersController @Inject() (
   def onSaveAndContinue: Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
 
-      val reportId: Option[ReportId] = for {
+      val reportData = for {
+        fiDetail   <- request.userAnswers.get(FiDetailsPage)
         crsOrFatca <- request.userAnswers.get(CrsOrFatcaPage)
         year       <- request.userAnswers.get(ReportingYearPage)
-        fiDetails  <- request.userAnswers.get(FiDetailsPage)
-      } yield ReportId(crsOrFatca.toRegime, year, None, fiDetails.fiId)
+      } yield (ReportId(crsOrFatca.toRegime, year, None, fiDetail.fiId), fiDetail.fiName)
 
-      reportId.fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))) {
-        reportId =>
+      reportData.fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))) {
+        (reportId, fiName) =>
           (for {
-            dbAnswers        <- dbConnector.get().map(_.getOrElse(UserAnswers(request.fatcaId)))
-            updatedDbAnswers <- Future.fromTry(dbAnswers.set(ReportIdPage, reportId))
-            _                <- dbConnector.set(updatedDbAnswers)
+            dbAnswers      <- dbConnector.get().map(_.getOrElse(UserAnswers(request.fatcaId)))
+            uaWithReportId <- Future.fromTry(dbAnswers.set(ReportIdPage, reportId))
+            uaWithDraftId  <- Future.fromTry(uaWithReportId.set(FINamePage()(reportId), fiName))
+            _              <- dbConnector.set(uaWithDraftId)
           } yield Redirect(controllers.manual.routes.SendAReportController.onPageLoad().url))
             .recover {
               case err =>

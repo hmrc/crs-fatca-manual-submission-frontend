@@ -14,27 +14,23 @@
  * limitations under the License.
  */
 
-package forms
+package forms.manual.sponsor
 
 import forms.mappings.Mappings
 import play.api.data.Form
-import play.api.data.Forms.single
+import utils.RegexConstants
 
 import javax.inject.Inject
 
-class WhatIsGIINForSponsorFormProvider @Inject() extends Mappings {
+class SponsorNameFormProvider @Inject() extends Mappings {
 
   def apply(): Form[String] =
     Form(
-      single(
-        "value" -> mandatoryGIIN(
-          "whatIsGIINForSponsor.error.required",
-          "whatIsGIINForSponsor.error.length",
-          "whatIsGIINForSponsor.error.notReal",
-          "whatIsGIINForSponsor.error.invalidFormat",
-          "whatIsGIINForSponsor.error.invalidChar"
+      "value" -> text("sponsorName.error.required")
+        .verifying(
+          maxLength(200, "sponsorName.error.length"),
+          regexp(RegexConstants.SPONSER_NAME_VALID, "sponsorName.error.invalid"),
+          regexShouldNotContain(RegexConstants.SPONSER_NAME_DOUBLE_DASH, "sponsorName.error.doubedash")
         )
-      )
     )
-
 }

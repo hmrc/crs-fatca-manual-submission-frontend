@@ -14,27 +14,13 @@
  * limitations under the License.
  */
 
-package forms
+package pages.manual.sponsor
 
-import forms.mappings.Mappings
-import play.api.data.Form
-import play.api.data.Forms.single
+import models.ReportId
+import pages.ReportPage
 
-import javax.inject.Inject
+object SponsorNamePage {
 
-class WhatIsGIINForSponsorFormProvider @Inject() extends Mappings {
-
-  def apply(): Form[String] =
-    Form(
-      single(
-        "value" -> mandatoryGIIN(
-          "whatIsGIINForSponsor.error.required",
-          "whatIsGIINForSponsor.error.length",
-          "whatIsGIINForSponsor.error.notReal",
-          "whatIsGIINForSponsor.error.invalidFormat",
-          "whatIsGIINForSponsor.error.invalidChar"
-        )
-      )
-    )
-
+  def apply()(implicit reportId: ReportId): ReportPage[String] =
+    ReportPage("sponsorName")
 }
