@@ -16,14 +16,28 @@
 
 package pages
 
-import models.ReportId
+import models.{ReportId, UserAnswers}
 import play.api.libs.json.JsPath
 
-final case class ReportPage[A](fieldName: String)(implicit reportId: ReportId) extends QuestionPage[A] {
+import scala.util.Try
+
+final case class ReportPage[A](fieldName: String,
+                               cleanupFn: Option[(Option[A], UserAnswers, ReportId) => Try[UserAnswers]] = None
+                              )(implicit reportId: ReportId) extends QuestionPage[A] {
 
   override def path: JsPath =
     JsPath \ reportId.mongoKey \ fieldName
 
   override def toString: String =
     s"${reportId.mongoKey}.$fieldName"
+  
+  override def cleanupWithReportId(
+                                    value: Option[A],
+                                    userData: UserAnswers
+                                  )(implicit reportId: ReportId): Try[UserAnswers] =
+    cleanupFn match {
+      case Some(fn) => fn(value, userData, reportId)
+      case None => super.cleanupWithReportId(value, userData)
+    }
+
 }

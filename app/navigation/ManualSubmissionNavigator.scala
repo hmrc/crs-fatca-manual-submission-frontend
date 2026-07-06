@@ -20,6 +20,7 @@ import controllers.manual.reportdetails.routes.*
 import controllers.routes
 import models.*
 import pages.*
+import pages.Page.toString
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.{HaveSponsorPage, SponsorNamePage}
 import play.api.mvc.Call
@@ -46,13 +47,13 @@ class ManualSubmissionNavigator @Inject() () {
 
   def nextPage(page: Page, mode: Mode, userData: UserAnswers)(implicit reportId: ReportId): Call =
     page match {
-      case p if p == HaveSponsorPage() =>
+      case p if p.toString.contains(HaveSponsorPage().fieldName) =>
         userData.get(HaveSponsorPage()) match {
           case Some(true)  => controllers.manual.sponsor.routes.SponsorNameController.onPageLoad(mode)
           case Some(false) => routes.UnderConstructionController.onPageLoad()
           case None        => routes.JourneyRecoveryController.onPageLoad()
         }
-      case p if p == SponsorNamePage() => routes.UnderConstructionController.onPageLoad()
+      case p if p.toString.contains(SponsorNamePage().fieldName) => routes.UnderConstructionController.onPageLoad()
       case _                           => routes.IndexController.onPageLoad()
     }
 }

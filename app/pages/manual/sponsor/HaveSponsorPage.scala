@@ -16,11 +16,18 @@
 
 package pages.manual.sponsor
 
-import models.ReportId
+import models.{ReportId, UserAnswers}
 import pages.ReportPage
+
+import scala.util.{Success, Try}
 
 object HaveSponsorPage {
 
   def apply()(implicit reportId: ReportId): ReportPage[Boolean] =
-    ReportPage("haveSponsor")
+    ReportPage("haveSponsor", cleanupFn = Some(
+      (value, userData, _) => value match {
+      case Some(false) => userData.remove(SponsorNamePage())
+      case _           => Success(userData)
+    }
+  ))
 }

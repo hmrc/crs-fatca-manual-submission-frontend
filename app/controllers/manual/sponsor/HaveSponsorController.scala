@@ -80,7 +80,7 @@ class HaveSponsorController @Inject() (
                 formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiName))),
                 value =>
                   for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.set(HaveSponsorPage(), value))
+                    updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(HaveSponsorPage(), value))
                     _              <- repository.set(updatedAnswers)
                   } yield Redirect(navigator.nextPage(HaveSponsorPage(), mode, updatedAnswers)(reportId))
               )
