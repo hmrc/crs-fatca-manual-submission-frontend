@@ -53,6 +53,10 @@ class SponsorNameViewSpec extends SpecBase {
         doc.select("h1").text() must include("What is the name of the sponsor?")
       }
 
+      "must have autocomplete" in {
+        doc.select("input").attr("autocomplete") must include("organization")
+      }
+
       "must set css" in {
         doc.select("#value").hasClass("govuk-!-width-three-quarters") mustBe true
       }
