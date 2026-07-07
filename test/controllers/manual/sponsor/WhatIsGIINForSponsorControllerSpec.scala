@@ -18,7 +18,7 @@ package controllers.manual.sponsor
 
 import base.SpecBase
 import connectors.DatabaseConnector
-import forms.WhatIsGIINForSponsorFormProvider
+import forms.manual.sponsor.WhatIsGIINForSponsorFormProvider
 import models.SubmissionsConstants.CRS
 import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}

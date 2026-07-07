@@ -18,7 +18,7 @@ package controllers.manual.sponsor
 
 import connectors.DatabaseConnector
 import controllers.actions.*
-import forms.WhatIsGIINForSponsorFormProvider
+import forms.manual.sponsor.WhatIsGIINForSponsorFormProvider
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
 import pages.manual.sponsor.WhatIsGIINForSponsorPage

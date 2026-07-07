@@ -16,7 +16,6 @@
 
 package forms.manual.sponsor
 
-import forms.WhatIsGIINForSponsorFormProvider
 import forms.behaviours.FieldBehaviours
 import play.api.data.FormError
 
