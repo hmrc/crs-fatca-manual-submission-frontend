@@ -19,7 +19,7 @@ package controllers.manual.sponsor
 import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
-import forms.IsSponsorBasedInUKFormProvider
+import forms.manual.sponsor.IsSponsorBasedInUKFormProvider
 import models.SubmissionsConstants.CRS
 import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}

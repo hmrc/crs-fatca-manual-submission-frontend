@@ -18,7 +18,7 @@ package controllers.manual.sponsor
 
 import connectors.DatabaseConnector
 import controllers.actions.*
-import forms.IsSponsorBasedInUKFormProvider
+import forms.manual.sponsor.IsSponsorBasedInUKFormProvider
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
 import pages.manual.sponsor.IsSponsorBasedInUKPage

@@ -29,7 +29,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
   val navigator = new ManualSubmissionNavigator
 
   "ManualSubmissionNavigator in NormalMode" - {
-    "without reportId" - {
+    "nextPageWithoutReportId" - {
       "CrsOrFatcaPage" - {
         "must go to Reporting Year Page when Normal Mode" in {
           val userData = UserAnswers("id")

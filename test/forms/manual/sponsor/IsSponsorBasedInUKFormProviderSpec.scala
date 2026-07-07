@@ -16,7 +16,6 @@
 
 package forms.manual.sponsor
 
-import forms.IsSponsorBasedInUKFormProvider
 import forms.behaviours.BooleanFieldBehaviours
 import play.api.data.FormError
 

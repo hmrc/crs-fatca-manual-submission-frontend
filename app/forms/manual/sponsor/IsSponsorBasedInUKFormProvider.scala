@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package forms
+package forms.manual.sponsor
 
 import forms.mappings.Mappings
-import models.TypeOfReport
 import play.api.data.Form
 
 import javax.inject.Inject
 
-class TypeOfReportFormProvider @Inject() extends Mappings {
+class IsSponsorBasedInUKFormProvider @Inject() extends Mappings {
 
-  def apply(year: Int): Form[TypeOfReport] =
+  def apply(): Form[Boolean] =
     Form(
-      "value" -> enumerable[TypeOfReport]("typeOfReport.error.required", args = Seq(year.toString))
+      "value" -> boolean("isSponsorBasedInUK.error.required")
     )
 }
