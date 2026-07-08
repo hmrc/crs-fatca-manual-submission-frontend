@@ -14,40 +14,33 @@
  * limitations under the License.
  *@
 
-@import viewmodels.InputWidth._
-@import utils.RegexConstants._
-
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
-    govukInput: GovukInput,
+    govukRadios: GovukRadios,
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, sponsorName: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("sponsorName.title"))) {
+@layout(pageTitle = title(form, messages("isSponsorBasedInUK.title"))) {
 
-    @formHelper(action = controllers.manual.sponsor.routes.SponsorNameController.onSubmit(mode)) {
+    @formHelper(action = controllers.manual.sponsor.routes.IsSponsorBasedInUKController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
-        @govukInput(
-            InputViewModel(
+        @govukRadios(
+            RadiosViewModel.yesNo(
                 field = form("value"),
-                label = LabelViewModel(messages("sponsorName.heading")).asPageHeading()
+                legend = LegendViewModel(messages("isSponsorBasedInUK.heading", sponsorName)).asPageHeading()
             )
-            .withWidth(Full)
-            .withCssClass("govuk-input govuk-!-width-three-quarters")
-            .withAutocomplete("organization")
         )
 
         @govukButton(
-            ButtonViewModel(messages("site.saveContinue"))
-            .withAttribute("id" -> "submit")
+            ButtonViewModel(messages("site.continue"))
         )
     }
 }

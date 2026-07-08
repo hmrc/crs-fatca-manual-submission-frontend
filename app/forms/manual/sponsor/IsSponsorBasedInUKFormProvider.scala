@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package navigation
+package forms.manual.sponsor
 
-import models.{Mode, ReportId, UserAnswers}
-import pages.*
-import play.api.mvc.Call
+import forms.mappings.Mappings
+import play.api.data.Form
 
-class FakeManualSubmissionNavigator(desiredRoute: Call) extends ManualSubmissionNavigator {
+import javax.inject.Inject
 
-  override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId): Call =
-    desiredRoute
+class IsSponsorBasedInUKFormProvider @Inject() extends Mappings {
 
-  override def nextPageWithoutReportId(page: Page, mode: Mode, userAnswers: UserAnswers): Call =
-    desiredRoute
+  def apply(): Form[Boolean] =
+    Form(
+      "value" -> boolean("isSponsorBasedInUK.error.required")
+    )
 }

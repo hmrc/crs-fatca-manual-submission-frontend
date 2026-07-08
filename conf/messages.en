@@ -250,3 +250,24 @@ sponsorName.error.length = Sponsor name must be 200 characters or less
 sponsorName.error.invalid = Sponsor name must only include letters a to z, numbers 0 to 9, ampersands (&), apostrophes, backslashes, carets (^), grave accents (`), hyphens and spaces
 sponsorName.error.doubedash = Sponsor name must not include a double dash (--)
 sponsorName.change.hidden = SponsorName
+
+isSponsorBasedInUK.title = Is the sponsor based in the UK, Jersey, Guernsey or the Isle of Man?
+isSponsorBasedInUK.heading = Is {0} based in the UK, Jersey, Guernsey or the Isle of Man?
+isSponsorBasedInUK.checkYourAnswersLabel = isSponsorBasedInUK
+isSponsorBasedInUK.error.required = Select yes if the sponsor is based in the UK, Jersey, Guernsey or the Isle of Man
+isSponsorBasedInUK.change.hidden = IsSponsorBasedInUK
+
+whatIsGIINForSponsor.title = Global Intermediary Identification Number (GIIN)
+whatIsGIINForSponsor.heading = Global Intermediary Identification Number (GIIN)
+whatIsGIINForSponsor.subheading = What is the GIIN for {0}?
+whatIsGIINForSponsor.para.1 = You must provide a GIIN for {0} for FATCA reporting.
+whatIsGIINForSponsor.para.2 = To receive a GIIN for FATCA, {0} must have registered with the United States of America’s Internal Revenue Service.
+whatIsGIINForSponsor.hint = For example, ‘98O96B.00000.LE.350’.
+whatIsGIINForSponsor.checkYourAnswersLabel = whatIsGIINForSponsor
+whatIsGIINForSponsor.change.hidden = WhatIsGIINForSponsor
+
+whatIsGIINForSponsor.error.required = Enter the sponsor’s GIIN
+whatIsGIINForSponsor.error.length = GIIN must include 19 characters
+whatIsGIINForSponsor.error.invalidChar = GIIN must only include letters a to z, numbers 0 to 9 and full stops
+whatIsGIINForSponsor.error.invalidFormat = GIIN must be in the right format
+whatIsGIINForSponsor.error.notReal = Enter a real GIIN
