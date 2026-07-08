@@ -17,7 +17,7 @@
 package pages.manual.sponsor
 
 import models.ReportId
-import pages.{QuestionPage, ReportPage}
+import pages.QuestionPage
 import play.api.libs.json.JsPath
 
 final case class WhatIsGIINForSponsorPage()(implicit reportId: ReportId) extends QuestionPage[String]:

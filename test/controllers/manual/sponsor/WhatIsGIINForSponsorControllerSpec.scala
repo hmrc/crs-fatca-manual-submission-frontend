@@ -26,11 +26,13 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
+import pages.manual.FINamePage
 import pages.manual.sponsor.{SponsorNamePage, WhatIsGIINForSponsorPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
+import repositories.SessionRepository
 import views.html.manual.sponsor.WhatIsGIINForSponsorView
 
 import scala.concurrent.Future
@@ -45,15 +47,23 @@ class WhatIsGIINForSponsorControllerSpec extends SpecBase with MockitoSugar {
   private lazy val whatIsGIINForSponsorRoute = controllers.manual.sponsor.routes.WhatIsGIINForSponsorController.onPageLoad(NormalMode).url
 
   "WhatIsGIINForSponsor Controller" - {
-    implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
-    val sponsorName                 = "sponsorName"
-    val ua                          = emptyUserAnswers.withPage(ReportIdPage, reportId).withPage(SponsorNamePage(), sponsorName)
+    val testFiName        = "TestFI"
+    val sponsorName       = "sponsorName"
+    implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
+    val frontEndUA        = emptyUserAnswers.withPage(ReportIdPage, reportId)
+    val backEndUA         = emptyUserAnswers.withPage(FINamePage(), testFiName).withPage(SponsorNamePage(), sponsorName)
+    val mockRepository    = mock[SessionRepository]
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(backEndUA))
+        .overrides(
+          bind[SessionRepository].toInstance(mockRepository)
+        )
+        .build()
 
       running(application) {
+        when(mockRepository.get(any())).thenReturn(Future.successful(Some(frontEndUA)))
         val request = FakeRequest(GET, whatIsGIINForSponsorRoute)
 
         val result = route(application, request).value
@@ -67,13 +77,16 @@ class WhatIsGIINForSponsorControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
+      val userAnswers = backEndUA.set(WhatIsGIINForSponsorPage(), "answer").success.value
 
-      val userAnswers = ua.set(WhatIsGIINForSponsorPage(), "answer").success.value
-
-      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
+        .overrides(
+          bind[SessionRepository].toInstance(mockRepository)
+        )
+        .build()
 
       running(application) {
+        when(mockRepository.get(any())).thenReturn(Future.successful(Some(frontEndUA)))
         val request = FakeRequest(GET, whatIsGIINForSponsorRoute)
 
         val view = application.injector.instanceOf[WhatIsGIINForSponsorView]
@@ -92,14 +105,16 @@ class WhatIsGIINForSponsorControllerSpec extends SpecBase with MockitoSugar {
       when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
 
       val application =
-        applicationBuilder(maybeUserAnswers = Some(ua))
+        applicationBuilder(maybeUserAnswers = Some(backEndUA))
           .overrides(
+            bind[SessionRepository].toInstance(mockRepository),
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
             bind[DatabaseConnector].toInstance(mockSessionRepository)
           )
           .build()
 
       running(application) {
+        when(mockRepository.get(any())).thenReturn(Future.successful(Some(frontEndUA)))
         val request =
           FakeRequest(POST, whatIsGIINForSponsorRoute)
             .withFormUrlEncodedBody(("value", testGIIN))
@@ -113,9 +128,14 @@ class WhatIsGIINForSponsorControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(backEndUA))
+        .overrides(
+          bind[SessionRepository].toInstance(mockRepository)
+        )
+        .build()
 
       running(application) {
+        when(mockRepository.get(any())).thenReturn(Future.successful(Some(frontEndUA)))
         val request =
           FakeRequest(POST, whatIsGIINForSponsorRoute)
             .withFormUrlEncodedBody(("value", ""))
@@ -133,9 +153,14 @@ class WhatIsGIINForSponsorControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
-      val application = applicationBuilder(maybeUserAnswers = None).build()
+      val application = applicationBuilder(maybeUserAnswers = None)
+        .overrides(
+          bind[SessionRepository].toInstance(mockRepository)
+        )
+        .build()
 
       running(application) {
+        when(mockRepository.get(any())).thenReturn(Future.successful(None))
         val request = FakeRequest(GET, whatIsGIINForSponsorRoute)
 
         val result = route(application, request).value
@@ -147,9 +172,14 @@ class WhatIsGIINForSponsorControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
-      val application = applicationBuilder(maybeUserAnswers = None).build()
+      val application = applicationBuilder(maybeUserAnswers = None)
+        .overrides(
+          bind[SessionRepository].toInstance(mockRepository)
+        )
+        .build()
 
       running(application) {
+        when(mockRepository.get(any())).thenReturn(Future.successful(None))
         val request =
           FakeRequest(POST, whatIsGIINForSponsorRoute)
             .withFormUrlEncodedBody(("value", "answer"))

@@ -52,9 +52,9 @@ class ManualSubmissionNavigator @Inject() () {
           case Some(false) => routes.UnderConstructionController.onPageLoad()
           case None        => routes.JourneyRecoveryController.onPageLoad()
         }
-      case SponsorNamePage() => controllers.manual.sponsor.routes.WhatIsGIINForSponsorController.onPageLoad(NormalMode)
+      case SponsorNamePage()          => controllers.manual.sponsor.routes.WhatIsGIINForSponsorController.onPageLoad(NormalMode)
       case WhatIsGIINForSponsorPage() => controllers.manual.sponsor.routes.IsSponsorBasedInUKController.onPageLoad(NormalMode)
-      case IsSponsorBasedInUKPage() => routes.UnderConstructionController.onPageLoad()
-      case _                 => routes.IndexController.onPageLoad()
+      case IsSponsorBasedInUKPage()   => routes.UnderConstructionController.onPageLoad()
+      case _                          => routes.IndexController.onPageLoad()
     }
 }
