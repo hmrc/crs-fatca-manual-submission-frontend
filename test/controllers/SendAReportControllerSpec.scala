@@ -22,14 +22,26 @@ import models.ReportId
 import models.SubmissionsConstants.CRS
 import models.viewModels.SendAReportSections
 import models.viewModels.TaskStatus.*
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import pages.ReportIdPage
+import pages.manual.FINamePage
+import play.api.inject
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
+import repositories.SessionRepository
 import views.html.SendAReportView
+
+import scala.concurrent.Future
 
 class SendAReportControllerSpec extends SpecBase {
   "SendAReport Controller" - {
-    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "testFiID"))
+    val testFiName        = "TestFI"
+    implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
+    val frontEndUA        = emptyUserAnswers.withPage(ReportIdPage, reportId)
+    val backEndUA         = emptyUserAnswers.withPage(FINamePage(), testFiName)
+    val mockRepository    = mock[SessionRepository]
+
     val sections = SendAReportSections(
       reportDetails = Some(NotStarted),
       financialInstitutionDetails = Some(NotStarted),
@@ -42,8 +54,14 @@ class SendAReportControllerSpec extends SpecBase {
       tbc2 = Some(Incomplete)
     )
     "must return OK and the correct view for a GET" in {
-      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(backEndUA))
+        .overrides(
+          inject.bind[SessionRepository].toInstance(mockRepository)
+        )
+        .build()
+
       running(application) {
+        when(mockRepository.get(any())).thenReturn(Future.successful(Some(frontEndUA)))
         val request = FakeRequest(GET, SendAReportController.onPageLoad().url)
         val result  = route(application, request).value
         val view    = application.injector.instanceOf[SendAReportView]

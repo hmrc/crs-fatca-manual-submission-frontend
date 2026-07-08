@@ -16,30 +16,30 @@
 
 package controllers.actions
 
+import cats.data.OptionT
 import controllers.routes
 import models.ReportId
 import models.requests.{DataRequest, ReportIdRequest}
 import pages.ReportIdPage
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{ActionRefiner, Result}
+import repositories.SessionRepository
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ReportIdRequiredActionImpl @Inject() (implicit
+class ReportIdRequiredActionImpl @Inject() (val repository: SessionRepository)(implicit
   val executionContext: ExecutionContext
 ) extends ReportIdRequiredAction {
 
   override protected def refine[A](request: DataRequest[A]): Future[Either[Result, ReportIdRequest[A]]] =
-    Future.successful {
-      request.userAnswers.get(ReportIdPage) match {
-        case Some(reportId) =>
-          Right(toReportIdRequest(request, reportId))
-
-        case None =>
-          Left(Redirect(routes.JourneyRecoveryController.onPageLoad()))
+    OptionT(repository.get(request.fatcaId))
+      .subflatMap(_.get(ReportIdPage))
+      .value
+      .map {
+        case Some(reportId) => Right(toReportIdRequest(request, reportId))
+        case None           => Left(Redirect(routes.JourneyRecoveryController.onPageLoad()))
       }
-    }
 
   private def toReportIdRequest[A](
     request: DataRequest[A],

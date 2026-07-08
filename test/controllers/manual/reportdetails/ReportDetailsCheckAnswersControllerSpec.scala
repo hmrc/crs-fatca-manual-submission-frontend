@@ -32,6 +32,7 @@ import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage}
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
+import repositories.SessionRepository
 import uk.gov.hmrc.http.InternalServerException
 import utils.ReportDetailsCheckAnswersUtil
 import viewmodels.govuk.all.SummaryListViewModel
@@ -92,7 +93,7 @@ class ReportDetailsCheckAnswersControllerSpec extends SpecBase {
         }
       }
 
-      "must redirect to JourneyRecoveryController when saving data fails" in {
+      "must redirect to JourneyRecoveryController when backend saving data fails" in {
 
         val mockDatabaseConnector = mock[DatabaseConnector]
         when(mockDatabaseConnector.get()(any())).thenReturn(Future(None))
@@ -109,6 +110,34 @@ class ReportDetailsCheckAnswersControllerSpec extends SpecBase {
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual JourneyRecoveryController.onPageLoad().url
+        }
+      }
+
+      "must redirect to JourneyRecoveryController when frontend saving data fails" in {
+
+        val mockDatabaseConnector = mock[DatabaseConnector]
+        val mockRepository        = mock[SessionRepository]
+        when(mockDatabaseConnector.get()(any())).thenReturn(Future(None))
+        when(mockDatabaseConnector.set(any())(any())).thenReturn(Future.successful(()))
+        when(mockRepository.set(any()))
+          .thenReturn(Future.failed(new InternalServerException("Unable to save UserAnswer")))
+
+        val application = applicationBuilder(maybeUserAnswers = Some(ua))
+          .overrides(
+            bind[DatabaseConnector].toInstance(mockDatabaseConnector),
+            bind[SessionRepository].toInstance(mockRepository)
+          )
+          .build()
+
+        running(application) {
+          val request = FakeRequest(POST, ReportDetailsCheckAnswersController.onSaveAndContinue().url)
+          val result  = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual JourneyRecoveryController.onPageLoad().url
+
+          verify(mockDatabaseConnector).set(any())(any())
+          verify(mockRepository).set(any())
         }
       }
     }

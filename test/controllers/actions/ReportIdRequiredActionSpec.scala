@@ -19,18 +19,22 @@ package controllers.actions
 import base.SpecBase
 import controllers.routes
 import models.SubmissionsConstants.FATCA
-import models.{ReportId, UserAnswers}
 import models.requests.{DataRequest, ReportIdRequest}
+import models.{ReportId, UserAnswers}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
+import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
 import play.api.mvc.Result
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
+import repositories.SessionRepository
 
 import scala.concurrent.Future
 
-class ReportIdRequiredActionSpec extends SpecBase {
+class ReportIdRequiredActionSpec extends SpecBase with MockitoSugar {
 
-  class Harness extends ReportIdRequiredActionImpl {
+  class Harness(sessionRepository: SessionRepository) extends ReportIdRequiredActionImpl(sessionRepository) {
 
     def callRefine[A](request: DataRequest[A]): Future[Either[Result, ReportIdRequest[A]]] =
       refine(request)
@@ -57,13 +61,13 @@ class ReportIdRequiredActionSpec extends SpecBase {
   "ReportIdRequiredAction" - {
 
     "must return a ReportIdRequest when ReportIdPage exists in user answers" in {
-      val userAnswers =
-        emptyUserAnswers.set(ReportIdPage, reportId).success.value
+      val userAnswers    = emptyUserAnswers.set(ReportIdPage, reportId).success.value
+      val mockRepository = mock[SessionRepository]
 
-      val action = new Harness
+      val action = new Harness(mockRepository)
+      when(mockRepository.get(any())).thenReturn(Future.successful(Some(userAnswers)))
 
-      val result =
-        action.callRefine(dataRequest(userAnswers)).futureValue
+      val result = action.callRefine(dataRequest(userAnswers)).futureValue
 
       result match {
         case Right(request) =>
@@ -78,10 +82,28 @@ class ReportIdRequiredActionSpec extends SpecBase {
     }
 
     "must redirect to Journey Recovery when ReportIdPage does not exist in user answers" in {
-      val action = new Harness
+      val mockRepository = mock[SessionRepository]
+      val action         = new Harness(mockRepository)
+      when(mockRepository.get(any())).thenReturn(Future.successful(Some(emptyUserAnswers)))
 
-      val result =
-        action.callRefine(dataRequest(emptyUserAnswers)).futureValue
+      val result = action.callRefine(dataRequest(emptyUserAnswers)).futureValue
+
+      result match {
+        case Left(redirectResult) =>
+          redirectResult.header.status mustBe SEE_OTHER
+          redirectResult.header.headers(LOCATION) mustBe
+            routes.JourneyRecoveryController.onPageLoad().url
+
+        case Right(_) =>
+          fail("Expected ReportIdRequiredAction to return Left, but got Right")
+      }
+    }
+    "must redirect to Journey Recovery when FE Repository returns Future[None]" in {
+      val mockRepository = mock[SessionRepository]
+      val action         = new Harness(mockRepository)
+      when(mockRepository.get(any())).thenReturn(Future.successful(None))
+
+      val result = action.callRefine(dataRequest(emptyUserAnswers)).futureValue
 
       result match {
         case Left(redirectResult) =>

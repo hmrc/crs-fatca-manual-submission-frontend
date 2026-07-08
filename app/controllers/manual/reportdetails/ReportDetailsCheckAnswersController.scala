@@ -25,6 +25,7 @@ import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.ReportDetailsCheckAnswersUtil
 import views.html.ReportDetailsCheckAnswersView
@@ -40,6 +41,7 @@ class ReportDetailsCheckAnswersController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: ReportDetailsCheckAnswersView,
   dbConnector: DatabaseConnector,
+  sessionRepository: SessionRepository,
   util: ReportDetailsCheckAnswersUtil
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -69,10 +71,11 @@ class ReportDetailsCheckAnswersController @Inject() (
       reportData.fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))) {
         (reportId, fiName) =>
           (for {
-            dbAnswers      <- dbConnector.get().map(_.getOrElse(UserAnswers(request.fatcaId)))
-            uaWithReportId <- Future.fromTry(dbAnswers.set(ReportIdPage, reportId))
-            uaWithDraftId  <- Future.fromTry(uaWithReportId.set(FINamePage()(reportId), fiName))
-            _              <- dbConnector.set(uaWithDraftId)
+            dbAnswers         <- dbConnector.get().map(_.getOrElse(UserAnswers(request.fatcaId)))
+            uaWithDraftId     <- Future.fromTry(dbAnswers.set(FINamePage()(reportId), fiName))
+            updatedFrontEndUA <- Future.fromTry(request.userAnswers.set(ReportIdPage, reportId))
+            _                 <- dbConnector.set(uaWithDraftId)
+            _                 <- sessionRepository.set(updatedFrontEndUA)
           } yield Redirect(controllers.manual.routes.SendAReportController.onPageLoad().url))
             .recover {
               case err =>
