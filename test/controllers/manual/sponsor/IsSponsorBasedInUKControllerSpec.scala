@@ -27,7 +27,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.sponsor.IsSponsorBasedInUKPage
+import pages.manual.sponsor.{IsSponsorBasedInUKPage, SponsorNamePage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -46,8 +46,9 @@ class IsSponsorBasedInUKControllerSpec extends SpecBase with MockitoSugar {
   private lazy val isSponsorBasedInUKRoute = controllers.manual.sponsor.routes.IsSponsorBasedInUKController.onPageLoad(NormalMode).url
 
   "IsSponsorBasedInUK Controller" - {
-
-    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
+    implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
+    val sponsorName                 = "sponsorName"
+    val ua                          = emptyUserAnswers.withPage(ReportIdPage, reportId).withPage(SponsorNamePage(), sponsorName)
 
     "must return OK and the correct view for a GET" in {
 
@@ -61,7 +62,7 @@ class IsSponsorBasedInUKControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[IsSponsorBasedInUKView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, sponsorName)(request, messages(application)).toString
       }
     }
 
@@ -81,7 +82,7 @@ class IsSponsorBasedInUKControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode, sponsorName)(request, messages(application)).toString
       }
     }
 
@@ -127,7 +128,7 @@ class IsSponsorBasedInUKControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, sponsorName)(request, messages(application)).toString
       }
     }
 

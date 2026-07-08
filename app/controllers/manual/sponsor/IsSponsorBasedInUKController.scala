@@ -21,7 +21,8 @@ import controllers.actions.*
 import forms.manual.sponsor.IsSponsorBasedInUKFormProvider
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.sponsor.IsSponsorBasedInUKPage
+import pages.manual.sponsor.{IsSponsorBasedInUKPage, SponsorNamePage}
+import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -45,19 +46,23 @@ class IsSponsorBasedInUKController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  val form = formProvider()
+  val form: Form[Boolean] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
     implicit request =>
-
       implicit val reportId: ReportId = request.reportId
 
-      val preparedForm = request.userAnswers.get(IsSponsorBasedInUKPage()) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
+      request.userAnswers
+        .get(SponsorNamePage())
+        .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)) {
+          sponsorName =>
+            val preparedForm = request.userAnswers.get(IsSponsorBasedInUKPage()) match {
+              case None        => form
+              case Some(value) => form.fill(value)
+            }
 
-      Ok(view(preparedForm, mode))
+            Ok(view(preparedForm, mode, sponsorName))
+        }
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
@@ -65,15 +70,20 @@ class IsSponsorBasedInUKController @Inject() (
 
       implicit val reportId: ReportId = request.reportId
 
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(IsSponsorBasedInUKPage(), value))
-              _              <- repository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(IsSponsorBasedInUKPage(), mode, updatedAnswers))
-        )
+      request.userAnswers
+        .get(SponsorNamePage())
+        .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))) {
+          sponsorName =>
+            form
+              .bindFromRequest()
+              .fold(
+                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, sponsorName))),
+                value =>
+                  for {
+                    updatedAnswers <- Future.fromTry(request.userAnswers.set(IsSponsorBasedInUKPage(), value))
+                    _              <- repository.set(updatedAnswers)
+                  } yield Redirect(navigator.nextPage(IsSponsorBasedInUKPage(), mode, updatedAnswers))
+              )
+        }
   }
 }
