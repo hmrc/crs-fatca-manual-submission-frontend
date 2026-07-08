@@ -22,7 +22,7 @@ import models.*
 import models.SubmissionsConstants.FATCA
 import pages.*
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
-import pages.manual.sponsor.{HaveSponsorPage, SponsorNamePage}
+import pages.manual.sponsor.{HaveSponsorPage, IsSponsorBasedInUKPage, SponsorNamePage, WhatIsGIINForSponsorPage}
 
 class ManualSubmissionNavigatorSpec extends SpecBase {
 
@@ -55,17 +55,17 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
 
       }
     }
-    "nextPage" - {
+    "with reportId" - {
       implicit val reportId = ReportId(FATCA, 2024, None, "TestFIID")
 
       "HaveSponsorPage" - {
-        "must go to SponsorName Page when Normal Mode" in {
+        "must go to SponsorName Page when answer is Yes" in {
           val userData = UserAnswers("id").withPage(HaveSponsorPage(), true)
           navigator.nextPage(HaveSponsorPage(), NormalMode, userData) mustBe
             controllers.manual.sponsor.routes.SponsorNameController.onPageLoad(NormalMode)
         }
 
-        "must go to UnderConstruction Page when Normal Mode" in {
+        "must go to UnderConstruction Page when when answer is No" in {
           val userData = UserAnswers("id").withPage(HaveSponsorPage(), false)
           navigator.nextPage(HaveSponsorPage(), NormalMode, userData) mustBe
             controllers.routes.UnderConstructionController.onPageLoad()
@@ -79,12 +79,29 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
       }
 
       "SponsorNamePage" - {
-        "must go to UnderConstruction Page when Normal Mode" in {
+        "must go to WhatIsGIINForSponsor Page" in {
           val userData = UserAnswers("id")
           navigator.nextPage(SponsorNamePage(), NormalMode, userData) mustBe
+            controllers.manual.sponsor.routes.WhatIsGIINForSponsorController.onPageLoad(NormalMode)
+        }
+      }
+
+      "WhatIsGIINForSponsorPage" - {
+        "must go to IsSponsorBasedInUK" in {
+          val ua = UserAnswers("id")
+          navigator.nextPage(WhatIsGIINForSponsorPage(), NormalMode, ua) mustBe
+            controllers.manual.sponsor.routes.IsSponsorBasedInUKController.onPageLoad(NormalMode)
+        }
+      }
+
+      "IsSponsorBasedInUKPage" - {
+        "must go to UNDERCONSTRUCTION" in {
+          val ua = UserAnswers("id")
+          navigator.nextPage(IsSponsorBasedInUKPage(), NormalMode, ua) mustBe
             controllers.routes.UnderConstructionController.onPageLoad()
         }
       }
+
     }
   }
 }

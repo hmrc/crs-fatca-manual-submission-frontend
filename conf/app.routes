@@ -98,3 +98,13 @@ GET        /manual/sponsor/name                        controllers.manual.sponso
 POST       /manual/sponsor/name                        controllers.manual.sponsor.SponsorNameController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/sponsor/change-name                  controllers.manual.sponsor.SponsorNameController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/sponsor/change-name                  controllers.manual.sponsor.SponsorNameController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/sponsor/where-are-they-based                         controllers.manual.sponsor.IsSponsorBasedInUKController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/sponsor/where-are-they-based                         controllers.manual.sponsor.IsSponsorBasedInUKController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/sponsor/change-where-are-they-based                  controllers.manual.sponsor.IsSponsorBasedInUKController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/sponsor/change-where-are-they-based                  controllers.manual.sponsor.IsSponsorBasedInUKController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/sponsor/giin                                         controllers.manual.sponsor.WhatIsGIINForSponsorController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/sponsor/giin                                         controllers.manual.sponsor.WhatIsGIINForSponsorController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/sponsor/change-giin                                  controllers.manual.sponsor.WhatIsGIINForSponsorController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/sponsor/change-giin                                  controllers.manual.sponsor.WhatIsGIINForSponsorController.onSubmit(mode: Mode = CheckMode)

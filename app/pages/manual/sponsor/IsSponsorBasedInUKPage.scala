@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package navigation
+package pages.manual.sponsor
 
-import models.{Mode, ReportId, UserAnswers}
-import pages.*
-import play.api.mvc.Call
+import models.ReportId
+import pages.ReportPage
 
-class FakeManualSubmissionNavigator(desiredRoute: Call) extends ManualSubmissionNavigator {
+object IsSponsorBasedInUKPage {
 
-  override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId): Call =
-    desiredRoute
-
-  override def nextPageWithoutReportId(page: Page, mode: Mode, userAnswers: UserAnswers): Call =
-    desiredRoute
+  def apply()(implicit reportId: ReportId): ReportPage[Boolean] =
+    ReportPage("isSponsorBasedInUK")
 }
