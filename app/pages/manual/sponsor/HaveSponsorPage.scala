@@ -22,20 +22,16 @@ import play.api.libs.json.JsPath
 
 import scala.util.{Success, Try}
 
-
-case class HaveSponsorPage()(implicit reportId: ReportId)
-  extends QuestionPage[Boolean] {
+final case class HaveSponsorPage()(implicit reportId: ReportId) extends QuestionPage[Boolean] {
 
   override def path: JsPath = JsPath \ reportId.mongoKey \ "haveSponsor"
 
   override def cleanupWithReportId(
-                                    value: Option[Boolean],
-                                    userData: UserAnswers
-                                  )(implicit reportId: ReportId): Try[UserAnswers] =
+    value: Option[Boolean],
+    userData: UserAnswers
+  )(implicit reportId: ReportId): Try[UserAnswers] =
     value match {
       case Some(false) => userData.remove(SponsorNamePage())
-
-      case _ => Success(userData)
+      case _           => Success(userData)
     }
 }
-

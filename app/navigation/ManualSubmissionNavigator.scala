@@ -53,6 +53,6 @@ class ManualSubmissionNavigator @Inject() () {
           case None        => routes.JourneyRecoveryController.onPageLoad()
         }
       case SponsorNamePage() => routes.UnderConstructionController.onPageLoad()
-      case _                           => routes.IndexController.onPageLoad()
+      case _                 => routes.IndexController.onPageLoad()
     }
 }
