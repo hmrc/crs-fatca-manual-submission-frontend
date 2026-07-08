@@ -1,4 +1,5 @@
-package models
+package models.$package$
+
 
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen
