@@ -271,3 +271,12 @@ whatIsGIINForSponsor.error.length = GIIN must include 19 characters
 whatIsGIINForSponsor.error.invalidChar = GIIN must only include letters a to z, numbers 0 to 9 and full stops
 whatIsGIINForSponsor.error.invalidFormat = GIIN must be in the right format
 whatIsGIINForSponsor.error.notReal = Enter a real GIIN
+
+whatTypeOfFiler.title = What type of filer is the financial institution?
+whatTypeOfFiler.heading = What type of filer is the {0}?
+whatTypeOfFiler.foreign = Participating foreign financial institution
+whatTypeOfFiler.registered = Registered deemed-compliant foreign financial institution
+whatTypeOfFiler.withholding = Withholding agent
+whatTypeOfFiler.checkYourAnswersLabel = What type of filer is the financial institution?
+whatTypeOfFiler.error.required = Select what type of filer the financial institution is
+whatTypeOfFiler.change.hidden = WhatTypeOfFiler

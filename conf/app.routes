@@ -108,3 +108,8 @@ GET        /manual/sponsor/giin                                         controll
 POST       /manual/sponsor/giin                                         controllers.manual.sponsor.WhatIsGIINForSponsorController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/sponsor/change-giin                                  controllers.manual.sponsor.WhatIsGIINForSponsorController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/sponsor/change-giin                                  controllers.manual.sponsor.WhatIsGIINForSponsorController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/filer-category/reporting-fi                        controllers.manual.WhatTypeOfFilerController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/filer-category/reporting-fi                        controllers.manual.WhatTypeOfFilerController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/filer-category/reporting-fi                  controllers.manual.WhatTypeOfFilerController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/filer-category/reporting-fi                  controllers.manual.WhatTypeOfFilerController.onSubmit(mode: Mode = CheckMode)

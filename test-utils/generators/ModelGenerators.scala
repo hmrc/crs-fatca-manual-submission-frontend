@@ -21,6 +21,11 @@ import org.scalacheck.{Arbitrary, Gen}
 
 trait ModelGenerators {
 
+  implicit lazy val arbitraryWhatTypeOfFiler: Arbitrary[WhatTypeOfFiler] =
+    Arbitrary {
+      Gen.oneOf(WhatTypeOfFiler.values.toSeq)
+    }
+
   implicit lazy val arbitraryTypeOfReport: Arbitrary[TypeOfReport] =
     Arbitrary {
       Gen.oneOf(TypeOfReport.values)
