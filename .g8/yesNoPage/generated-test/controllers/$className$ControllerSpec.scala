@@ -15,6 +15,8 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.$className$View
+import pages.manual.FINamePage
+import repositories.SessionRepository
 
 import scala.concurrent.Future
 
@@ -29,13 +31,22 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar {
 
   "$className$ Controller" - {
 
-    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS,2025,None,"TestfiID"))
+    val testFiName        = "TestFI"
+    implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
+    val frontEndUA        = emptyUserAnswers.withPage(ReportIdPage, reportId)
+    val backEndUA         = emptyUserAnswers.withPage(FINamePage(), testFiName)
+    val mockRepository    = mock[SessionRepository]
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(backEndUA))
+        .overrides(
+          bind[SessionRepository].toInstance(mockRepository)
+        )
+        .build()
 
       running(application) {
+        when(mockRepository.get(any())).thenReturn(Future.successful(Some(frontEndUA)))
         val request = FakeRequest(GET, $className;format="decap"$Route)
 
         val result = route(application, request).value
@@ -49,13 +60,16 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      implicit val reportId = ReportId(CRS,2025,None,"TestfiID")
+      val userAnswers = backEndUA.set($className$Page(), true).success.value
 
-      val userAnswers = ua.set($className$Page(), true).success.value
-
-      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
+        .overrides(
+          bind[SessionRepository].toInstance(mockRepository)
+        )
+        .build()
 
       running(application) {
+        when(mockRepository.get(any())).thenReturn(Future.successful(Some(frontEndUA)))
         val request = FakeRequest(GET, $className;format="decap"$Route)
 
         val view = application.injector.instanceOf[$className$View]
@@ -74,14 +88,16 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar {
       when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
 
       val application =
-        applicationBuilder(maybeUserAnswers = Some(ua))
+        applicationBuilder(maybeUserAnswers = Some(backEndUA))
           .overrides(
+            bind[SessionRepository].toInstance(mockRepository),
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
             bind[DatabaseConnector].toInstance(mockSessionRepository)
           )
           .build()
 
       running(application) {
+        when(mockRepository.get(any())).thenReturn(Future.successful(Some(frontEndUA)))
         val request =
           FakeRequest(POST, $className;format="decap"$Route)
             .withFormUrlEncodedBody(("value", "true"))
@@ -95,9 +111,14 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(backEndUA))
+        .overrides(
+          bind[SessionRepository].toInstance(mockRepository)
+        )
+        .build()
 
       running(application) {
+        when(mockRepository.get(any())).thenReturn(Future.successful(Some(frontEndUA)))
         val request =
           FakeRequest(POST, $className;format="decap"$Route)
             .withFormUrlEncodedBody(("value", ""))

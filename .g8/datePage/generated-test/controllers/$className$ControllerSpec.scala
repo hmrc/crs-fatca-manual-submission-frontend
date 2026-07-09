@@ -18,6 +18,8 @@ import connectors.DatabaseConnector
 import views.html.$className$View
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import pages.{ReportIdPage, $className$Page}
+import pages.manual.FINamePage
+import repositories.SessionRepository
 
 import scala.concurrent.Future
 
@@ -48,13 +50,22 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar {
       )
 
   "$className$ Controller" - {
-    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS,2025,None,"TestfiID"))
+    val testFiName        = "TestFI"
+    implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
+    val frontEndUA        = emptyUserAnswers.withPage(ReportIdPage, reportId)
+    val backEndUA         = emptyUserAnswers.withPage(FINamePage(), testFiName)
+    val mockRepository    = mock[SessionRepository]
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(backEndUA))
+        .overrides(
+          bind[SessionRepository].toInstance(mockRepository)
+        )
+        .build()
 
       running(application) {
+        when(mockRepository.get(any())).thenReturn(Future.successful(Some(frontEndUA)))
         val result = route(application, getRequest()).value
 
         val view = application.injector.instanceOf[$className$View]
@@ -67,11 +78,16 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar {
     "must populate the view correctly on a GET when the question has previously been answered" in {
       implicit val reportId = ReportId(CRS,2025,None,"TestfiID")
 
-      val userAnswers = ua.set($className$Page(), validAnswer).success.value
+      val userAnswers = backEndUA.set($className$Page(), validAnswer).success.value
 
-      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
+        .overrides(
+          bind[SessionRepository].toInstance(mockRepository)
+        )
+        .build()
 
       running(application) {
+        when(mockRepository.get(any())).thenReturn(Future.successful(Some(frontEndUA)))
         val view = application.injector.instanceOf[$className$View]
 
         val result = route(application, getRequest()).value
@@ -88,14 +104,16 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar {
       when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
 
       val application =
-        applicationBuilder(maybeUserAnswers = Some(ua))
+        applicationBuilder(maybeUserAnswers = Some(backEndUA))
           .overrides(
+            bind[SessionRepository].toInstance(mockRepository),
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
             bind[DatabaseConnector].toInstance(mockSessionRepository)
           )
           .build()
 
       running(application) {
+        when(mockRepository.get(any())).thenReturn(Future.successful(Some(frontEndUA)))
         val result = route(application, postRequest()).value
 
         status(result) mustEqual SEE_OTHER
@@ -105,13 +123,18 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(backEndUA))
+        .overrides(
+          bind[SessionRepository].toInstance(mockRepository)
+        )
+        .build()
 
       val request =
         FakeRequest(POST, $className;format="decap"$Route)
           .withFormUrlEncodedBody(("value", "invalid value"))
 
       running(application) {
+        when(mockRepository.get(any())).thenReturn(Future.successful(Some(frontEndUA)))
         val boundForm = form.bind(Map("value" -> "invalid value"))
 
         val view = application.injector.instanceOf[$className$View]
