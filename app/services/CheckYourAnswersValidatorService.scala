@@ -16,20 +16,21 @@
 
 package services
 
-import models.{FiIdentifiers, NormalMode, UserAnswers}
+import models.{ElectionsId, FiIdentifiers, NormalMode, UserAnswers}
 import pages.*
 import pages.elections.{CRSContractsPage, CRSDormantAccountsPage, CRSThresholdsPage}
-import utils.ReportingConstants.REPORTING_THRESHOLD_YEAR
+import utils.ReportingConstants.{REPORTING_START_YEAR, REPORTING_THRESHOLD_YEAR}
 
 import java.time.Year
 import javax.inject.Inject
 
 class CheckYourAnswersValidatorService @Inject() {
 
-  private val crsBasePages: Set[QuestionPage[Boolean]]     = Set(CRSContractsPage, CRSDormantAccountsPage, CRSThresholdsPage)
-  private val crsOptionalPages: Set[QuestionPage[Boolean]] = Set(CarfGrossProceedsPage, CrsGrossProceedsPage)
-  private val crsAllPages: Set[QuestionPage[Boolean]]      = crsBasePages ++ crsOptionalPages
-  private val fatcaPages: Set[QuestionPage[Boolean]]       = Set(IsUsTreasuryRegulatedPage, IsApplyingThresholdsPage)
+  private def crsBasePages(implicit electionsId: ElectionsId): Set[QuestionPage[Boolean]] =
+    Set(CRSContractsPage(), CRSDormantAccountsPage(), CRSThresholdsPage())
+  private def crsOptionalPages(implicit electionsId: ElectionsId): Set[QuestionPage[Boolean]] = Set(CarfGrossProceedsPage(), CrsGrossProceedsPage())
+  private def crsAllPages(implicit electionsId: ElectionsId): Set[QuestionPage[Boolean]]      = crsBasePages ++ crsOptionalPages
+  private def fatcaPages(implicit electionsId: ElectionsId): Set[QuestionPage[Boolean]]       = Set(IsUsTreasuryRegulatedPage(), IsApplyingThresholdsPage())
 
   private def crsRedirect(reportingYear: Int)   = controllers.elections.routes.CRSContractsController.onPageLoad(NormalMode, reportingYear).url
   private def fatcaRedirect(reportingYear: Int) = controllers.elections.routes.IsUsTreasuryRegulatedController.onPageLoad(NormalMode, reportingYear).url
@@ -47,41 +48,42 @@ class CheckYourAnswersValidatorService @Inject() {
   private enum ElectionGroup:
     case CRS, FATCA, NONE
 
-  private def hasAny(pages: Set[QuestionPage[Boolean]], userAnswers: UserAnswers): Boolean = pages.exists(userAnswers.get(_).isDefined)
+  private def hasAny(pages: Set[QuestionPage[Boolean]], userAnswers: UserAnswers)(implicit electionsId: ElectionsId): Boolean =
+    pages.exists(userAnswers.get(_).isDefined)
 
-  private def hasNone(pages: Set[QuestionPage[Boolean]], userAnswers: UserAnswers): Boolean = pages.forall(userAnswers.get(_).isEmpty)
+  private def hasNone(pages: Set[QuestionPage[Boolean]], userAnswers: UserAnswers)(implicit electionsId: ElectionsId): Boolean = pages.forall(userAnswers.get(_).isEmpty)
 
-  private def allPresent(pages: Set[QuestionPage[Boolean]], userAnswers: UserAnswers): Boolean = pages.forall(userAnswers.get(_).isDefined)
+  private def allPresent(pages: Set[QuestionPage[Boolean]], userAnswers: UserAnswers)(implicit electionsId: ElectionsId): Boolean =
+    pages.forall(userAnswers.get(_).isDefined)
 
-  private def electionGroup(userAnswers: UserAnswers): ElectionGroup =
+  private def electionGroup(userAnswers: UserAnswers)(implicit electionsId: ElectionsId): ElectionGroup =
     if hasAny(crsAllPages, userAnswers) then ElectionGroup.CRS
     else if hasAny(fatcaPages, userAnswers) then ElectionGroup.FATCA
     else ElectionGroup.NONE
 
-  def validate(userAnswers: UserAnswers, reportingYear: Int): Either[String, Unit] =
+  def validate(userAnswers: UserAnswers, reportingYear: Int)(implicit electionsId: ElectionsId): Either[String, Unit] =
     if !isReportingYearValid(reportingYear) then Left(controllers.routes.JourneyRecoveryController.onPageLoad().url)
     else validateElections(userAnswers, reportingYear)
 
   private def isReportingYearValid(reportingYear: Int) = {
     val maxYear        = Year.now().getValue
-    val minAllowedYear = maxYear - 12
+    val minAllowedYear = REPORTING_START_YEAR
     reportingYear >= minAllowedYear && reportingYear <= maxYear
   }
 
-  private def isCrsPagesComplete(userAnswers: UserAnswers, reportingYear: Int): Boolean = {
+  private def isCrsPagesComplete(userAnswers: UserAnswers, reportingYear: Int)(implicit electionsId: ElectionsId): Boolean = {
     val baseComplete = allPresent(crsBasePages, userAnswers)
-
     if reportingYear < REPORTING_THRESHOLD_YEAR then baseComplete && hasNone(crsOptionalPages, userAnswers)
     else {
-      userAnswers.get(CarfGrossProceedsPage) match {
+      userAnswers.get(CarfGrossProceedsPage()) match {
         case None        => false
         case Some(false) => baseComplete
-        case Some(true)  => baseComplete && userAnswers.get(CrsGrossProceedsPage).isDefined
+        case Some(true)  => baseComplete && userAnswers.get(CrsGrossProceedsPage()).isDefined
       }
     }
   }
 
-  private def validateElections(userAnswers: UserAnswers, reportingYear: Int): Either[String, Unit] =
+  private def validateElections(userAnswers: UserAnswers, reportingYear: Int)(implicit electionsId: ElectionsId): Either[String, Unit] =
     electionGroup(userAnswers) match
       case ElectionGroup.CRS   => Either.cond(isCrsPagesComplete(userAnswers, reportingYear), (), crsRedirect(reportingYear))
       case ElectionGroup.FATCA => Either.cond(allPresent(fatcaPages, userAnswers), (), fatcaRedirect(reportingYear))

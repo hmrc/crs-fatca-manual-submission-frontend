@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 
-package pages
+package models
 
-import models.ElectionsId
-import pages.elections.{CRSContractsPage, CRSDormantAccountsPage, CRSThresholdsPage}
+import play.api.libs.json.{Json, OFormat}
 
-import scala.language.implicitConversions
+case class ElectionsId(reportingYear: Int, fiId: String) {
 
-trait Page
+  val mongoKey: String = s"$reportingYear-$fiId"
+}
 
-object Page {
-
-  implicit def toString(page: Page): String = page.toString
-
-  def electionCRSPages(implicit electionsId: ElectionsId) =
-    Seq(CRSContractsPage(), CRSDormantAccountsPage(), CRSThresholdsPage(), CarfGrossProceedsPage(), CrsGrossProceedsPage())
-  def electionFATCAPages(implicit electionsId: ElectionsId) = Seq(IsApplyingThresholdsPage(), IsUsTreasuryRegulatedPage())
+object ElectionsId {
+  implicit val format: OFormat[ElectionsId] = Json.format[ElectionsId]
 }

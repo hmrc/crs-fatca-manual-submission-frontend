@@ -19,12 +19,12 @@ package controllers.elections
 import base.SpecBase
 import controllers.routes
 import forms.CarfGrossProceedsFormProvider
-import models.{FiIdentifiers, NormalMode}
+import models.{ElectionsId, FiIdentifiers, NormalMode}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{CarfGrossProceedsPage, FiDetailsPage}
+import pages.{CarfGrossProceedsPage, ElectionsIdPage, FiDetailsPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -38,12 +38,13 @@ class CarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  val reportingYear         = 2027
-  val fiName                = "Test FI"
-  val formProvider          = new CarfGrossProceedsFormProvider()
-  val form                  = formProvider(reportingYear.toString)
-  val mockSessionRepository = mock[SessionRepository]
-  private val fiDetails     = FiIdentifiers("fiId", fiName)
+  val reportingYear                     = 2027
+  val fiName                            = "Test FI"
+  val formProvider                      = new CarfGrossProceedsFormProvider()
+  val form                              = formProvider(reportingYear.toString)
+  val mockSessionRepository             = mock[SessionRepository]
+  private val fiDetails                 = FiIdentifiers("fiId", fiName)
+  implicit val electionsId: ElectionsId = ElectionsId(reportingYear, fiDetails.fiId)
 
   override def beforeEach(): Unit =
     reset(mockSessionRepository)
@@ -54,7 +55,9 @@ class CarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
   "CarfGrossProceeds Controller" - {
 
     "must return OK and the correct view for a GET" in {
-      val useranswers = emptyUserAnswers.withPage(FiDetailsPage, fiDetails)
+      val useranswers = emptyUserAnswers
+        .withPage(FiDetailsPage, fiDetails)
+        .withPage(ElectionsIdPage, electionsId)
       val application = applicationBuilder(maybeUserAnswers = Some(useranswers)).build()
 
       running(application) {
@@ -87,7 +90,8 @@ class CarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
 
       val userData = emptyUserAnswers
         .withPage(FiDetailsPage, fiDetails)
-        .withPage(CarfGrossProceedsPage, true)
+        .withPage(CarfGrossProceedsPage(), true)
+        .withPage(ElectionsIdPage, electionsId)
 
       val application = applicationBuilder(maybeUserAnswers = Some(userData))
         .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
@@ -108,7 +112,9 @@ class CarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to the next page when valid data is submitted" in {
 
-      val userData = emptyUserAnswers.withPage(FiDetailsPage, fiDetails)
+      val userData = emptyUserAnswers
+        .withPage(FiDetailsPage, fiDetails)
+        .withPage(ElectionsIdPage, electionsId)
 
       val mockSessionRepository = mock[SessionRepository]
 
@@ -135,7 +141,9 @@ class CarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
-      val userData = emptyUserAnswers.withPage(FiDetailsPage, fiDetails)
+      val userData = emptyUserAnswers
+        .withPage(FiDetailsPage, fiDetails)
+        .withPage(ElectionsIdPage, electionsId)
 
       val application = applicationBuilder(maybeUserAnswers = Some(userData)).build()
 

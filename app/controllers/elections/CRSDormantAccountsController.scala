@@ -38,6 +38,7 @@ class CRSDormantAccountsController @Inject() (
   identify: IdentifierAction,
   getData: FrontendDataRetrievalAction,
   requireData: DataRequiredAction,
+  electionIdRequiredAction: ElectionIdRequiredAction,
   formProvider: CRSDormantAccountsFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: CRSDormantAccountsView
@@ -47,15 +48,15 @@ class CRSDormantAccountsController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData andThen electionIdRequiredAction) {
     implicit request =>
-
-      val userData = request.userAnswers
+      implicit val electionsId = request.electionsId
+      val userData             = request.userAnswers
       userData
         .get(FiDetailsPage)
         .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)) {
           fiDetail =>
-            val preparedForm = userData.get(CRSDormantAccountsPage) match {
+            val preparedForm = userData.get(CRSDormantAccountsPage()) match {
               case None        => form
               case Some(value) => form.fill(value)
             }
@@ -63,10 +64,10 @@ class CRSDormantAccountsController @Inject() (
         }
   }
 
-  def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData andThen electionIdRequiredAction).async {
     implicit request =>
-
-      val userData = request.userAnswers
+      implicit val electionsId = request.electionsId
+      val userData             = request.userAnswers
 
       userData
         .get(FiDetailsPage)
@@ -78,9 +79,9 @@ class CRSDormantAccountsController @Inject() (
                 formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiDetail.fiName, year))),
                 value =>
                   for {
-                    updatedAnswers <- Future.fromTry(userData.set(CRSDormantAccountsPage, value))
+                    updatedAnswers <- Future.fromTry(userData.set(CRSDormantAccountsPage(), value))
                     _              <- sessionRepository.set(updatedAnswers)
-                  } yield Redirect(navigator.nextPage(CRSDormantAccountsPage, mode, updatedAnswers, Some(year)))
+                  } yield Redirect(navigator.nextPage(CRSDormantAccountsPage(), mode, updatedAnswers, Some(year)))
               )
 
         }

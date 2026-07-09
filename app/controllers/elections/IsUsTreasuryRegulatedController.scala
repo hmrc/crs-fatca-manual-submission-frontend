@@ -18,9 +18,9 @@ package controllers.elections
 
 import controllers.actions.*
 import forms.elections.IsUsTreasuryRegulatedFormProvider
-import models.Mode
+import models.{ElectionsId, Mode}
 import navigation.Navigator
-import pages.{FiDetailsPage, IsUsTreasuryRegulatedPage}
+import pages.{ElectionsIdPage, FiDetailsPage, IsUsTreasuryRegulatedPage}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -47,13 +47,15 @@ class IsUsTreasuryRegulatedController @Inject() (
 
   val form: Form[Boolean] = formProvider()
 
+  // check year Page present
   def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       request.userAnswers
         .get(FiDetailsPage)
         .map {
           fiDetail =>
-            val preparedForm = request.userAnswers.get(IsUsTreasuryRegulatedPage) match {
+            implicit val electionsId = ElectionsId(year, fiDetail.fiId) // todo
+            val preparedForm = request.userAnswers.get(IsUsTreasuryRegulatedPage()) match {
               case None        => form
               case Some(value) => form.fill(value)
             }
@@ -68,15 +70,17 @@ class IsUsTreasuryRegulatedController @Inject() (
         .get(FiDetailsPage)
         .map {
           fiDetail =>
+            implicit val electionsId = ElectionsId(year, fiDetail.fiId)
             form
               .bindFromRequest()
               .fold(
                 formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiDetail.fiName, year))),
                 value =>
                   for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.set(IsUsTreasuryRegulatedPage, value))
-                    _              <- sessionRepository.set(updatedAnswers)
-                  } yield Redirect(navigator.nextPage(IsUsTreasuryRegulatedPage, mode, updatedAnswers, Some(year)))
+                    updateElectionsId <- Future.fromTry(request.userAnswers.set(ElectionsIdPage, electionsId))
+                    updatedAnswers    <- Future.fromTry(updateElectionsId.set(IsUsTreasuryRegulatedPage(), value))
+                    _                 <- sessionRepository.set(updatedAnswers)
+                  } yield Redirect(navigator.nextPage(IsUsTreasuryRegulatedPage(), mode, updatedAnswers, Some(year)))
               )
         }
         .getOrElse(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())))

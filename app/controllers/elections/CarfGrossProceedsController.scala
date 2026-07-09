@@ -37,20 +37,22 @@ class CarfGrossProceedsController @Inject() (
   getData: FrontendDataRetrievalAction,
   requireData: DataRequiredAction,
   formProvider: CarfGrossProceedsFormProvider,
+  electionIdRequiredAction: ElectionIdRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: CarfGrossProceedsView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData andThen electionIdRequiredAction) {
     implicit request =>
+      implicit val electionsId = request.electionsId
       request.userAnswers
         .get(FiDetailsPage)
         .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)) {
           fiDetail =>
             val form = formProvider(year.toString)
-            val preparedForm = request.userAnswers.get(CarfGrossProceedsPage) match {
+            val preparedForm = request.userAnswers.get(CarfGrossProceedsPage()) match {
               case None        => form
               case Some(value) => form.fill(value)
             }
@@ -59,9 +61,10 @@ class CarfGrossProceedsController @Inject() (
         }
   }
 
-  def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData andThen electionIdRequiredAction).async {
     implicit request =>
-      val form = formProvider(year.toString)
+      implicit val electionsId = request.electionsId
+      val form                 = formProvider(year.toString)
       request.userAnswers
         .get(FiDetailsPage)
         .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))) {
@@ -72,9 +75,9 @@ class CarfGrossProceedsController @Inject() (
                 formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiDetail.fiName, year))),
                 value =>
                   for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.set(CarfGrossProceedsPage, value))
+                    updatedAnswers <- Future.fromTry(request.userAnswers.set(CarfGrossProceedsPage(), value))
                     _              <- sessionRepository.set(updatedAnswers)
-                  } yield Redirect(navigator.nextPage(CarfGrossProceedsPage, mode, updatedAnswers, Some(year)))
+                  } yield Redirect(navigator.nextPage(CarfGrossProceedsPage(), mode, updatedAnswers, Some(year)))
               )
         }
 

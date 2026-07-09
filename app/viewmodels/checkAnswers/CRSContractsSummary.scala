@@ -16,7 +16,7 @@
 
 package viewmodels.checkAnswers
 
-import models.{CheckMode, UserAnswers}
+import models.{CheckMode, ElectionsId, UserAnswers}
 import pages.elections.CRSContractsPage
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
@@ -27,8 +27,8 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 
 object CRSContractsSummary {
 
-  def row(answers: UserAnswers, reportingYear: Int)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(CRSContractsPage).map {
+  def row(answers: UserAnswers, reportingYear: Int)(implicit messages: Messages, electionsId: ElectionsId): Option[SummaryListRow] =
+    answers.get(CRSContractsPage()).map {
       answer =>
 
         val value = if (answer) "site.yes" else "site.no"

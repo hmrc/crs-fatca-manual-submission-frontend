@@ -18,10 +18,10 @@ package controllers.elections
 
 import controllers.actions.*
 import forms.elections.CRSContractsFormProvider
-import models.Mode
+import models.{ElectionsId, Mode}
 import navigation.Navigator
 import pages.elections.CRSContractsPage
-import pages.FiDetailsPage
+import pages.{ElectionsIdPage, FiDetailsPage}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -54,7 +54,8 @@ class CRSContractsController @Inject() (
         .get(FiDetailsPage)
         .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)) {
           fiDetail =>
-            val preparedForm = request.userAnswers.get(CRSContractsPage) match {
+            implicit val electionsId = ElectionsId(year, fiDetail.fiId)
+            val preparedForm = request.userAnswers.get(CRSContractsPage()) match {
               case None        => form
               case Some(value) => form.fill(value)
             }
@@ -69,15 +70,17 @@ class CRSContractsController @Inject() (
         .get(FiDetailsPage)
         .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))) {
           fiDetail =>
+            implicit val electionsId = ElectionsId(year, fiDetail.fiId) // todo save
             form
               .bindFromRequest()
               .fold(
                 formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiDetail.fiName, year))),
                 value =>
                   for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.set(CRSContractsPage, value))
-                    _              <- sessionRepository.set(updatedAnswers)
-                  } yield Redirect(navigator.nextPage(CRSContractsPage, mode, updatedAnswers, Some(year)))
+                    updateElectionsId <- Future.fromTry(request.userAnswers.set(ElectionsIdPage, electionsId))
+                    updatedAnswers    <- Future.fromTry(updateElectionsId.set(CRSContractsPage(), value))
+                    _                 <- sessionRepository.set(updatedAnswers)
+                  } yield Redirect(navigator.nextPage(CRSContractsPage(), mode, updatedAnswers, Some(year)))
               )
         }
   }

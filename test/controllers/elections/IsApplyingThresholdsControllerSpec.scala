@@ -18,12 +18,12 @@ package controllers.elections
 
 import base.SpecBase
 import forms.elections.IsApplyingThresholdsFormProvider
-import models.{FiIdentifiers, NormalMode}
+import models.{ElectionsId, FiIdentifiers, NormalMode}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{FiDetailsPage, IsApplyingThresholdsPage}
+import pages.{ElectionsIdPage, FiDetailsPage, IsApplyingThresholdsPage}
 import play.api.data.Form
 import play.api.inject.bind
 import play.api.mvc.Call
@@ -42,12 +42,14 @@ class IsApplyingThresholdsControllerSpec extends SpecBase with MockitoSugar {
   val form: Form[Boolean]                    = formProvider()
   private val fiName                         = "fiName"
   lazy val isApplyingThresholdsRoute: String = controllers.elections.routes.IsApplyingThresholdsController.onPageLoad(NormalMode, year).url
-
+  implicit val electionsId: ElectionsId      = ElectionsId(year, "fiid")
   "IsApplyingThresholds Controller" - {
 
     "must return OK and the correct view for a GET" in {
-
-      val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers("fiID", fiName)))).build()
+      val useranswers = emptyUserAnswers
+        .withPage(FiDetailsPage, FiIdentifiers("fiID", fiName))
+        .withPage(ElectionsIdPage, electionsId)
+      val application = applicationBuilder(maybeUserAnswers = Some(useranswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, isApplyingThresholdsRoute)
@@ -64,10 +66,11 @@ class IsApplyingThresholdsControllerSpec extends SpecBase with MockitoSugar {
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
       val userData = emptyUserAnswers
-        .set(IsApplyingThresholdsPage, true)
+        .set(IsApplyingThresholdsPage(), true)
         .success
         .value
         .withPage(FiDetailsPage, FiIdentifiers("fiID", fiName))
+        .withPage(ElectionsIdPage, electionsId)
 
       val application = applicationBuilder(maybeUserAnswers = Some(userData)).build()
 
@@ -84,7 +87,9 @@ class IsApplyingThresholdsControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to the next page when valid data is submitted" in {
-      val userData              = emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers("fiID", fiName))
+      val userData = emptyUserAnswers
+        .withPage(FiDetailsPage, FiIdentifiers("fiID", fiName))
+        .withPage(ElectionsIdPage, electionsId)
       val mockSessionRepository = mock[SessionRepository]
 
       val application =
@@ -109,7 +114,9 @@ class IsApplyingThresholdsControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers("fiID", fiName)))).build()
+      val application = applicationBuilder(maybeUserAnswers =
+        Some(emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers("fiID", fiName)).withPage(ElectionsIdPage, electionsId))
+      ).build()
 
       running(application) {
         val request =

@@ -17,16 +17,15 @@
 package controllers.elections
 
 import com.google.inject.Inject
+import controllers.actions.{DataRequiredAction, ElectionIdRequiredAction, FrontendDataRetrievalAction, IdentifierAction}
 import controllers.routes
 import pages.FiDetailsPage
 import pages.elections.CRSContractsPage
-import controllers.actions.{DataRequiredAction, FrontendDataRetrievalAction, IdentifierAction}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.CheckYourAnswersValidatorService
+import services.{CheckYourAnswersValidatorService, ElectionsService}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import services.ElectionsService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers.CheckYourAnswersElections
 import views.html.CheckYourAnswersView
@@ -40,6 +39,7 @@ class CheckYourAnswersController @Inject() (
   requireData: DataRequiredAction,
   validator: CheckYourAnswersValidatorService,
   val controllerComponents: MessagesControllerComponents,
+  electionIdRequiredAction: ElectionIdRequiredAction,
   electionsService: ElectionsService,
   view: CheckYourAnswersView
 )(implicit ec: ExecutionContext)
@@ -47,8 +47,9 @@ class CheckYourAnswersController @Inject() (
     with I18nSupport
     with Logging {
 
-  def onPageLoad(year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(year: Int): Action[AnyContent] = (identify andThen getData andThen requireData andThen electionIdRequiredAction) {
     implicit request =>
+      implicit val electionsId = request.electionsId
       validator.validate(request.userAnswers, year) match {
         case Left(redirectUrl) =>
           logger.error("Mandatory values are missing in UA")
@@ -61,7 +62,7 @@ class CheckYourAnswersController @Inject() (
           request.userAnswers.get(FiDetailsPage) match {
             case Some(fiDetails) =>
               val list   = CheckYourAnswersElections(request.userAnswers, year)
-              val regime = if (request.userAnswers.get(CRSContractsPage).isEmpty) "fatca" else "crs"
+              val regime = if (request.userAnswers.get(CRSContractsPage()).isEmpty) "fatca" else "crs"
 
               Ok(view(list, year, fiDetails, regime))
 
@@ -72,8 +73,9 @@ class CheckYourAnswersController @Inject() (
       }
   }
 
-  def onSubmit(year: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit(year: Int): Action[AnyContent] = (identify andThen getData andThen requireData andThen electionIdRequiredAction).async {
     implicit request =>
+      implicit val electionsId = request.electionsId
       (for {
         _ <- electionsService.submitAndDeleteElectionData(request.userAnswers, year)
       } yield Redirect(controllers.elections.routes.ElectionsSentController.onPageLoad().url))
