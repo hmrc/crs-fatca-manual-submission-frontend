@@ -49,4 +49,45 @@ trait FieldBehaviours extends FormSpec with ScalaCheckPropertyChecks with Genera
       result.errors mustEqual Seq(requiredError)
     }
   }
+
+  // GIIN
+  def fieldThatBindsValidDataWithASpace(form: Form[_], fieldName: String, validDataGenerator: Gen[String]): Unit =
+    "bind valid data that has spaces" in {
+
+      forAll(validDataGenerator -> "validDataItem") {
+        (dataItem: String) =>
+          val input  = s" $dataItem "
+          val result = form.bindFromRequest(Map(fieldName -> Seq(input)))
+          result.errors mustBe empty
+          result.value.value mustBe (dataItem.toUpperCase)
+      }
+    }
+
+  def fieldWithMaxLengthAlpha(form: Form[_], fieldName: String, maxLength: Int, lengthError: FormError): Unit =
+    s"must not bind strings longer than $maxLength characters" in {
+
+      forAll(stringsLongerThanAlpha(maxLength) -> "longString") {
+        string =>
+          val result = form.bind(Map(fieldName -> string)).apply(fieldName)
+          result.errors mustEqual Seq(lengthError)
+      }
+    }
+
+  def fieldWithMinLengthAlpha(form: Form[_], fieldName: String, minLength: Int, lengthError: FormError): Unit =
+    s"must not bind strings shorter than $minLength characters" in {
+
+      forAll(stringsShorterThanAlpha(minLength) -> "shortString") {
+        string =>
+          val result = form.bind(Map(fieldName -> string)).apply(fieldName)
+          result.errors mustEqual Seq(lengthError)
+      }
+    }
+
+  def fieldWithInvalidData(form: Form[_], fieldName: String, invalidString: String, error: FormError, suffix: Option[String] = None): Unit = {
+    val testName = if (suffix.isEmpty) "not bind invalid data" else s"not bind invalid data ${suffix.get}"
+    testName in {
+      val result = form.bind(Map(fieldName -> invalidString)).apply(fieldName)
+      result.errors mustEqual Seq(error)
+    }
+  }
 }

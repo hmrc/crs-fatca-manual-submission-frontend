@@ -15,39 +15,44 @@
  *@
 
 @import viewmodels.InputWidth._
-@import utils.RegexConstants._
 
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
     govukInput: GovukInput,
-    govukButton: GovukButton
+    govukButton: GovukButton,
+    heading: components.Heading,
+    para: components.Paragraph
 )
 
-@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, sponsorName: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("sponsorName.title"))) {
+@layout(pageTitle = title(form, messages("whatIsGIINForSponsor.title"))) {
 
-    @formHelper(action = controllers.manual.sponsor.routes.SponsorNameController.onSubmit(mode)) {
+    @formHelper(action = controllers.manual.sponsor.routes.WhatIsGIINForSponsorController.onSubmit(mode)) {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
+        @heading(messages("whatIsGIINForSponsor.heading"))
+
+        @para(messages("whatIsGIINForSponsor.para.1", sponsorName))
+
+        @para(messages("whatIsGIINForSponsor.para.2", sponsorName))
+
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(messages("sponsorName.heading")).asPageHeading()
+                label = LabelViewModel(messages("whatIsGIINForSponsor.subheading", sponsorName)).withCssClass("govuk-label  govuk-label--m")
             )
-            .withWidth(Full)
-            .withCssClass("govuk-input govuk-!-width-three-quarters")
-            .withAutocomplete("organization")
+            .withWidth(Fixed20)
+            .withHint(HintViewModel(HtmlContent(messages("whatIsGIINForSponsor.hint"))))
         )
 
         @govukButton(
-            ButtonViewModel(messages("site.saveContinue"))
-            .withAttribute("id" -> "submit")
+            ButtonViewModel(messages("site.continue")).withAttribute("id" -> "submit")
         )
     }
 }
