@@ -30,9 +30,9 @@ class IsSponsorBasedInUKViewSpec extends SpecBase {
 
   private val application = applicationBuilder().build()
 
-  private val view: IsSponsorBasedInUKView                                     = application.injector.instanceOf[IsSponsorBasedInUKView]
+  private val view: IsSponsorBasedInUKView                               = application.injector.instanceOf[IsSponsorBasedInUKView]
   private val messagesControllerComponents: MessagesControllerComponents = application.injector.instanceOf[MessagesControllerComponents]
-  private val form                                          = new IsSponsorBasedInUKFormProvider()()
+  private val form                                                       = new IsSponsorBasedInUKFormProvider()()
 
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
   implicit private val messages: Messages               = messagesControllerComponents.messagesApi.preferred(Seq(Lang("en")))

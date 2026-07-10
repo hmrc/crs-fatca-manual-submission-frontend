@@ -32,7 +32,7 @@ class WhatIsGIINForSponsorViewSpec extends SpecBase {
 
   private val view: WhatIsGIINForSponsorView                             = application.injector.instanceOf[WhatIsGIINForSponsorView]
   private val messagesControllerComponents: MessagesControllerComponents = application.injector.instanceOf[MessagesControllerComponents]
-  val form                                                       = new HaveSponsorFormProvider()()
+  val form                                                               = new HaveSponsorFormProvider()()
 
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
   implicit private val messages: Messages               = messagesControllerComponents.messagesApi.preferred(Seq(Lang("en")))
