@@ -19,15 +19,14 @@ package controllers.elections
 import base.SpecBase
 import controllers.routes
 import models.{ElectionsId, FiIdentifiers, UserAnswers}
-import pages.{ElectionsIdPage, FiDetailsPage}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
+import pages.{ElectionsIdPage, FiDetailsPage}
 import play.api.inject
 import play.api.inject.bind
 import play.api.test.FakeRequest
-import services.CheckYourAnswersValidatorService
 import play.api.test.Helpers.*
-import services.ElectionsService
+import services.{CheckYourAnswersValidatorService, ElectionsService}
 import uk.gov.hmrc.http.InternalServerException
 import viewmodels.govuk.SummaryListFluency
 import views.html.CheckYourAnswersView
@@ -40,6 +39,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
     val year                              = 2026
     implicit val electionsId: ElectionsId = ElectionsId(year, "some-fiid")
+
     "must return OK and the correct view for a GET" in {
 
       val mockService = mock[CheckYourAnswersValidatorService]
@@ -72,6 +72,28 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
           identifiers,
           "fatca"
         )(request, messages(application)).toString
+      }
+    }
+
+    "must redirect to journey recovery when FiDetails is missing for a GET" in {
+
+      val mockService = mock[CheckYourAnswersValidatorService]
+      val userAnswers = UserAnswers(userAnswersId)
+        .set(ElectionsIdPage, electionsId)
+        .success
+        .value
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
+        .overrides(bind[CheckYourAnswersValidatorService].toInstance(mockService))
+        .build()
+
+      running(application) {
+        val request = FakeRequest(GET, controllers.elections.routes.CheckYourAnswersController.onPageLoad(year).url)
+        when(mockService.validate(any(), any())(any[ElectionsId]())).thenReturn(Right(()))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 

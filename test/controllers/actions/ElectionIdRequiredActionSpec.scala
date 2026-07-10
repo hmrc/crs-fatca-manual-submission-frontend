@@ -84,6 +84,8 @@ class ElectionIdRequiredActionSpec extends SpecBase {
         case Left(redirectResult) =>
           redirectResult.header.status mustBe SEE_OTHER
           redirectResult.header.headers("Location") mustBe controllers.routes.JourneyRecoveryController.onPageLoad().url
+        case _ =>
+          fail("Expected a Left(Result) but got a Right(ElectionIdRequest)")
       }
     }
   }

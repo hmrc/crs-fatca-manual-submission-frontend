@@ -75,6 +75,23 @@ class CRSDormantAccountsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
+    "must redirect to journey recovery when FiDetailsPage is not present for  a GET" in {
+      val userAnswers = UserAnswers(userAnswersId)
+        .withPage(ElectionsIdPage, electionsId)
+
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
+        .build()
+
+      running(application) {
+        val request = FakeRequest(GET, cRSDormantAccountsRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
       val userAnswers = UserAnswers(userAnswersId)
@@ -168,6 +185,23 @@ class CRSDormantAccountsControllerSpec extends SpecBase with MockitoSugar {
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
       val application = applicationBuilder(maybeUserAnswers = None).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, cRSDormantAccountsRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Journey Recovery for a POST if no FiDetails data is found" in {
+      val userAnswers = UserAnswers(userAnswersId)
+        .withPage(ElectionsIdPage, electionsId)
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
         val request =

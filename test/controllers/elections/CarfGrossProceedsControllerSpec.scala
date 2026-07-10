@@ -86,6 +86,21 @@ class CarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
+    "must redirect to journey recovery if FiDetails is not in user answers" in {
+      val useranswers = emptyUserAnswers
+        .withPage(ElectionsIdPage, electionsId)
+      val application = applicationBuilder(maybeUserAnswers = Some(useranswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, carfGrossProceedsRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustBe controllers.routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
       val userData = emptyUserAnswers
@@ -166,6 +181,23 @@ class CarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
       val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, carfGrossProceedsRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Journey Recovery for a POST if no Fidetails data is found" in {
+      val userData = emptyUserAnswers
+        .withPage(ElectionsIdPage, electionsId)
+      val application = applicationBuilder(maybeUserAnswers = Some(userData)).build()
 
       running(application) {
         val request =

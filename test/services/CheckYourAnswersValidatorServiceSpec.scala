@@ -205,6 +205,11 @@ class CheckYourAnswersValidatorServiceSpec extends SpecBase {
         service.validate(answers, year2025) mustBe Left(manageElectionUrl(year2025, fiDeets.fiId))
       }
 
+      "should return journey recovery when fidetails is missing" in {
+        val answers = emptyUserAnswers
+        service.validate(answers, year2025) mustBe Left(controllers.routes.JourneyRecoveryController.onPageLoad().url)
+      }
+
     }
   }
 }

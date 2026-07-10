@@ -29,6 +29,7 @@ class NavigatorSpec extends SpecBase {
   "Navigator" - {
     implicit val electionsId: ElectionsId = ElectionsId(year, "fiID")
     "in Normal mode" - {
+
       "from IsUsTreasuryRegulatedPage" - {
 
         "must go to IsApplyingThresholds with year when year is provided" in {
@@ -86,6 +87,12 @@ class NavigatorSpec extends SpecBase {
                              emptyUserAnswers,
                              Some(reportingYear)
           ) mustBe controllers.elections.routes.CheckYourAnswersController.onPageLoad(reportingYear)
+        }
+
+        "to journey recovery when the reporting period is not specified" in {
+          val reportingYear                     = 2025
+          implicit val electionsId: ElectionsId = ElectionsId(reportingYear, "fiID")
+          navigator.nextPage(CRSThresholdsPage(), NormalMode, emptyUserAnswers, None) mustBe routes.JourneyRecoveryController.onPageLoad()
         }
       }
 
@@ -185,6 +192,12 @@ class NavigatorSpec extends SpecBase {
                              userAnswers,
                              Some(reportingPeriod)
           ) mustBe controllers.elections.routes.CheckYourAnswersController.onPageLoad(reportingPeriod)
+        }
+
+        "must go to recovery page when year is not provided" in {
+          val userData = UserAnswers("id")
+          navigator.nextPage(CarfGrossProceedsPage(), CheckMode, userData, None) mustBe
+            routes.JourneyRecoveryController.onPageLoad()
         }
       }
     }
