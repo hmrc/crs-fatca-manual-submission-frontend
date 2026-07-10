@@ -51,7 +51,8 @@ class CheckYourAnswersValidatorService @Inject() {
   private def hasAny(pages: Set[QuestionPage[Boolean]], userAnswers: UserAnswers)(implicit electionsId: ElectionsId): Boolean =
     pages.exists(userAnswers.get(_).isDefined)
 
-  private def hasNone(pages: Set[QuestionPage[Boolean]], userAnswers: UserAnswers)(implicit electionsId: ElectionsId): Boolean = pages.forall(userAnswers.get(_).isEmpty)
+  private def hasNone(pages: Set[QuestionPage[Boolean]], userAnswers: UserAnswers)(implicit electionsId: ElectionsId): Boolean =
+    pages.forall(userAnswers.get(_).isEmpty)
 
   private def allPresent(pages: Set[QuestionPage[Boolean]], userAnswers: UserAnswers)(implicit electionsId: ElectionsId): Boolean =
     pages.forall(userAnswers.get(_).isDefined)

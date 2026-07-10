@@ -46,12 +46,11 @@ class ElectionsService @Inject() (connector: ElectionsConnector, sessionReposito
     _                     <- sessionRepository.set(updatedUA)
   } yield ()
 
-  private def updateUA(userAnswers: UserAnswers, reportingYear: Int, fiName: String, fiId: String)(implicit electionsId: ElectionsId): Future[UserAnswers] = {
+  private def updateUA(userAnswers: UserAnswers, reportingYear: Int, fiName: String, fiId: String)(implicit electionsId: ElectionsId): Future[UserAnswers] =
     Future.fromTry(userAnswers.get(CRSContractsPage()) match {
       case Some(_) => userAnswers.removeAll(electionCRSPages).flatMap(_.set(ElectionsSentPage, ElectionsSent(CRS, reportingYear, fiName, fiId)))
       case None    => userAnswers.removeAll(electionFATCAPages).flatMap(_.set(ElectionsSentPage, ElectionsSent(FATCA, reportingYear, fiName, fiId)))
     })
-  }
 
   private def toRequest(userAnswers: UserAnswers, reportingYear: Int)(implicit electionsId: ElectionsId): Future[RequestWithFiName] =
     userAnswers.get(FiDetailsPage) match {
