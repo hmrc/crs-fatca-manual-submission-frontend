@@ -1,7 +1,7 @@
 package controllers.$package$
 
 import controllers.actions._
-import forms..$package$.$className$FormProvider
+import forms.$package$.$className$FormProvider
 import javax.inject.Inject
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator

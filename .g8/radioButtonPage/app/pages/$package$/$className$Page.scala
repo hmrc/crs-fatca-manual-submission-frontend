@@ -1,6 +1,8 @@
 package pages.$package$
 
-import models.{ReportId, $className$}
+import models.ReportId
+import models.$package$.$className$
+import pages.ReportPage
 
 object $className$Page {
 

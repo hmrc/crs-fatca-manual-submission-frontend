@@ -1,6 +1,5 @@
-package viewmodels.checkAnswers
+package viewmodels.checkAnswers.$package$
 
-import controllers.routes
 import models.{CheckMode, ReportId, UserAnswers}
 import pages.$package$.$className$Page
 import play.api.i18n.Messages
@@ -26,7 +25,7 @@ object $className$Summary  {
           key     = "$className;format="decap"$.checkYourAnswersLabel",
           value   = value,
           actions = Seq(
-            ActionItemViewModel("site.change", routes.$className$Controller.onPageLoad(CheckMode).url)
+            ActionItemViewModel("site.change", controllers.$package$.routes.$className$Controller.onPageLoad(CheckMode).url)
               .withVisuallyHiddenText(messages("$className;format="decap"$.change.hidden"))
           )
         )
