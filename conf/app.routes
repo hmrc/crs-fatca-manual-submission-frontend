@@ -113,3 +113,8 @@ GET        /manual/filer-category/reporting-fi                        controller
 POST       /manual/filer-category/reporting-fi                        controllers.manual.WhatTypeOfFilerController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/filer-category/reporting-fi                  controllers.manual.WhatTypeOfFilerController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/filer-category/reporting-fi                  controllers.manual.WhatTypeOfFilerController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/filer-category/sponsor                        controllers.manual.filercatagory.WhatTypeOfFilerIsSponsorController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/filer-category/sponsor                            controllers.manual.filercatagory.WhatTypeOfFilerIsSponsorController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/filer-category/change-sponsor                      controllers.manual.filercatagory.WhatTypeOfFilerIsSponsorController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/filer-category/change-sponsor                      controllers.manual.filercatagory.WhatTypeOfFilerIsSponsorController.onSubmit(mode: Mode = CheckMode)

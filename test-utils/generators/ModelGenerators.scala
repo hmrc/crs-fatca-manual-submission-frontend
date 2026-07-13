@@ -17,10 +17,16 @@
 package generators
 
 import models.manual.WhatTypeOfFiler
+import models.manual.filercatagory._
 import models.{CrsOrFatca, TypeOfReport}
 import org.scalacheck.{Arbitrary, Gen}
 
 trait ModelGenerators {
+
+  implicit lazy val arbitraryWhatTypeOfFilerIsSponsor: Arbitrary[WhatTypeOfFilerIsSponsor] =
+    Arbitrary {
+      Gen.oneOf(WhatTypeOfFilerIsSponsor.values)
+    }
 
   implicit lazy val arbitraryWhatTypeOfFiler: Arbitrary[WhatTypeOfFiler] =
     Arbitrary {

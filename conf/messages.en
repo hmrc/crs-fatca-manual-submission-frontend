@@ -280,3 +280,12 @@ whatTypeOfFiler.withholding = Withholding agent
 whatTypeOfFiler.checkYourAnswersLabel = What type of filer is the financial institution?
 whatTypeOfFiler.error.required = Select what type of filer the financial institution is
 whatTypeOfFiler.change.hidden = WhatTypeOfFiler
+
+whatTypeOfFilerIsSponsor.title = What type of filer is the sponsor?
+whatTypeOfFilerIsSponsor.heading = What type of filer is {0}?
+whatTypeOfFilerIsSponsor.foreignFI = Sponsor of a sponsored foreign financial institution
+whatTypeOfFilerIsSponsor.directNonFinancial = Sponsor of a sponsored direct reporting non-financial foreign entity
+whatTypeOfFilerIsSponsor.trustee = Trustee of a trustee-documented trust
+whatTypeOfFilerIsSponsor.checkYourAnswersLabel = What type of filer is {0}?
+whatTypeOfFilerIsSponsor.error.required = Select whatTypeOfFilerIsSponsor
+whatTypeOfFilerIsSponsor.change.hidden = WhatTypeOfFilerIsSponsor
