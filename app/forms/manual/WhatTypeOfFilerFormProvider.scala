@@ -14,26 +14,18 @@
  * limitations under the License.
  */
 
-package generators
+package forms.manual
 
+import javax.inject.Inject
+
+import forms.mappings.Mappings
+import play.api.data.Form
 import models.manual.WhatTypeOfFiler
-import models.{CrsOrFatca, TypeOfReport}
-import org.scalacheck.{Arbitrary, Gen}
 
-trait ModelGenerators {
+class WhatTypeOfFilerFormProvider @Inject() extends Mappings {
 
-  implicit lazy val arbitraryWhatTypeOfFiler: Arbitrary[WhatTypeOfFiler] =
-    Arbitrary {
-      Gen.oneOf(WhatTypeOfFiler.values.toSeq)
-    }
-
-  implicit lazy val arbitraryTypeOfReport: Arbitrary[TypeOfReport] =
-    Arbitrary {
-      Gen.oneOf(TypeOfReport.values)
-    }
-
-  implicit lazy val arbitraryCrsOrFatca: Arbitrary[CrsOrFatca] =
-    Arbitrary {
-      Gen.oneOf(CrsOrFatca.values)
-    }
+  def apply(): Form[WhatTypeOfFiler] =
+    Form(
+      "value" -> enumerable[WhatTypeOfFiler]("whatTypeOfFiler.error.required")
+    )
 }

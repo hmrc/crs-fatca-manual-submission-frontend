@@ -14,26 +14,14 @@
  * limitations under the License.
  */
 
-package generators
+package pages.manual
 
+import models.ReportId
 import models.manual.WhatTypeOfFiler
-import models.{CrsOrFatca, TypeOfReport}
-import org.scalacheck.{Arbitrary, Gen}
+import pages.ReportPage
 
-trait ModelGenerators {
+object WhatTypeOfFilerPage {
 
-  implicit lazy val arbitraryWhatTypeOfFiler: Arbitrary[WhatTypeOfFiler] =
-    Arbitrary {
-      Gen.oneOf(WhatTypeOfFiler.values.toSeq)
-    }
-
-  implicit lazy val arbitraryTypeOfReport: Arbitrary[TypeOfReport] =
-    Arbitrary {
-      Gen.oneOf(TypeOfReport.values)
-    }
-
-  implicit lazy val arbitraryCrsOrFatca: Arbitrary[CrsOrFatca] =
-    Arbitrary {
-      Gen.oneOf(CrsOrFatca.values)
-    }
+  def apply()(implicit reportId: ReportId): ReportPage[WhatTypeOfFiler] =
+    ReportPage("whatTypeOfFiler")
 }

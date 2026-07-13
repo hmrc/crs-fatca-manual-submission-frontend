@@ -14,26 +14,32 @@
  * limitations under the License.
  */
 
-package generators
+package forms.manual
 
+import forms.behaviours.OptionFieldBehaviours
 import models.manual.WhatTypeOfFiler
-import models.{CrsOrFatca, TypeOfReport}
-import org.scalacheck.{Arbitrary, Gen}
+import play.api.data.FormError
 
-trait ModelGenerators {
+class WhatTypeOfFilerFormProviderSpec extends OptionFieldBehaviours {
 
-  implicit lazy val arbitraryWhatTypeOfFiler: Arbitrary[WhatTypeOfFiler] =
-    Arbitrary {
-      Gen.oneOf(WhatTypeOfFiler.values.toSeq)
-    }
+  val form = new WhatTypeOfFilerFormProvider()()
 
-  implicit lazy val arbitraryTypeOfReport: Arbitrary[TypeOfReport] =
-    Arbitrary {
-      Gen.oneOf(TypeOfReport.values)
-    }
+  ".value" - {
 
-  implicit lazy val arbitraryCrsOrFatca: Arbitrary[CrsOrFatca] =
-    Arbitrary {
-      Gen.oneOf(CrsOrFatca.values)
-    }
+    val fieldName   = "value"
+    val requiredKey = "whatTypeOfFiler.error.required"
+
+    behave like optionsField[WhatTypeOfFiler](
+      form,
+      fieldName,
+      validValues = WhatTypeOfFiler.values,
+      invalidError = FormError(fieldName, "error.invalid")
+    )
+
+    behave like mandatoryField(
+      form,
+      fieldName,
+      requiredError = FormError(fieldName, requiredKey)
+    )
+  }
 }
