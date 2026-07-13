@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package viewmodels.checkAnswers.manual
+package viewmodels.checkAnswers.manual.filercatagory
 
-import controllers.manual.routes
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.WhatTypeOfFilerPage
+import pages.manual.filercatagory.WhatTypeOfFilerPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
-import viewmodels.govuk.summarylist._
-import viewmodels.implicits._
+import viewmodels.govuk.summarylist.*
+import viewmodels.implicits.*
 
 object WhatTypeOfFilerSummary {
 
@@ -42,7 +41,7 @@ object WhatTypeOfFilerSummary {
           key = "whatTypeOfFiler.checkYourAnswersLabel",
           value = value,
           actions = Seq(
-            ActionItemViewModel("site.change", routes.WhatTypeOfFilerController.onPageLoad(CheckMode).url)
+            ActionItemViewModel("site.change", controllers.manual.filercatagory.routes.WhatTypeOfFilerController.onPageLoad(CheckMode).url)
               .withVisuallyHiddenText(messages("whatTypeOfFiler.change.hidden"))
           )
         )

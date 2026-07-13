@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package models.manual
+package models.manual.filercatagory
 
 import models.{Enumerable, WithName}
 import play.api.i18n.Messages

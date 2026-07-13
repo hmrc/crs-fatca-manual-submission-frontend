@@ -34,7 +34,6 @@ class WhatTypeOfFilerIsSponsorSpec extends AnyFreeSpec with Matchers with ScalaC
 
       forAll(gen) {
         whatTypeOfFilerIsSponsor =>
-
           JsString(whatTypeOfFilerIsSponsor.toString).validate[WhatTypeOfFilerIsSponsor].asOpt.value mustEqual whatTypeOfFilerIsSponsor
       }
     }
@@ -45,7 +44,6 @@ class WhatTypeOfFilerIsSponsorSpec extends AnyFreeSpec with Matchers with ScalaC
 
       forAll(gen) {
         invalidValue =>
-
           JsString(invalidValue).validate[WhatTypeOfFilerIsSponsor] mustEqual JsError("error.invalid")
       }
     }
@@ -56,7 +54,6 @@ class WhatTypeOfFilerIsSponsorSpec extends AnyFreeSpec with Matchers with ScalaC
 
       forAll(gen) {
         whatTypeOfFilerIsSponsor =>
-
           Json.toJson(whatTypeOfFilerIsSponsor) mustEqual JsString(whatTypeOfFilerIsSponsor.toString)
       }
     }

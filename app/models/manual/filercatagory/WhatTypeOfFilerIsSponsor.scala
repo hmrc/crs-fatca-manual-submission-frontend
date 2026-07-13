@@ -30,18 +30,24 @@ object WhatTypeOfFilerIsSponsor extends Enumerable.Implicits {
   case object Trustee extends WithName("trustee") with WhatTypeOfFilerIsSponsor
 
   val values: Seq[WhatTypeOfFilerIsSponsor] = Seq(
-    ForeignFI, DirectNonFinancial, Trustee
+    ForeignFI,
+    DirectNonFinancial,
+    Trustee
   )
 
   def options(implicit messages: Messages): Seq[RadioItem] = values.zipWithIndex.map {
     case (value, index) =>
       RadioItem(
         content = Text(messages(s"whatTypeOfFilerIsSponsor.${value.toString}")),
-        value   = Some(value.toString),
-        id      = Some(s"value_$index")
+        value = Some(value.toString),
+        id = Some(s"value_$index")
       )
   }
 
   implicit val enumerable: Enumerable[WhatTypeOfFilerIsSponsor] =
-    Enumerable(values.map(v => v.toString -> v): _*)
+    Enumerable(
+      values.map(
+        v => v.toString -> v
+      ): _*
+    )
 }

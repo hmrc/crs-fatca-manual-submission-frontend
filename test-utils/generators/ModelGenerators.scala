@@ -16,8 +16,7 @@
 
 package generators
 
-import models.manual.WhatTypeOfFiler
-import models.manual.filercatagory._
+import models.manual.filercatagory.*
 import models.{CrsOrFatca, TypeOfReport}
 import org.scalacheck.{Arbitrary, Gen}
 

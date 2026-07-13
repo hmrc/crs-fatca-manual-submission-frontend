@@ -14,25 +14,26 @@
  * limitations under the License.
  */
 
-package controllers.manual
+package controllers.manual.filercatagory
 
 import base.SpecBase
 import connectors.DatabaseConnector
-import forms.manual.WhatTypeOfFilerFormProvider
+import forms.manual.filercatagory.WhatTypeOfFilerFormProvider
 import models.SubmissionsConstants.CRS
-import models.manual.WhatTypeOfFiler
+import models.manual.filercatagory.WhatTypeOfFiler
 import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.{FINamePage, WhatTypeOfFilerPage}
+import pages.manual.FINamePage
+import pages.manual.filercatagory.WhatTypeOfFilerPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import views.html.manual.WhatTypeOfFilerView
+import views.html.manual.filercatagory.WhatTypeOfFilerView
 
 import scala.concurrent.Future
 
@@ -40,14 +41,14 @@ class WhatTypeOfFilerControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  private lazy val whatTypeOfFilerRoute = routes.WhatTypeOfFilerController.onPageLoad(NormalMode).url
+  private lazy val whatTypeOfFilerRoute = controllers.manual.filercatagory.routes.WhatTypeOfFilerController.onPageLoad(NormalMode).url
 
   private val formProvider = new WhatTypeOfFilerFormProvider()
   private val form         = formProvider()
 
   "WhatTypeOfFiler Controller" - {
-    val testFiName        = "TestFI"
-    implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
+    val testFiName                  = "TestFI"
+    implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
     val ua = emptyUserAnswers
       .withPage(ReportIdPage, reportId)
       .withPage(FINamePage(), testFiName)

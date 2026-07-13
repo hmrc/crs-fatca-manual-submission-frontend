@@ -25,7 +25,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
-object WhatTypeOfFilerIsSponsorSummary  {
+object WhatTypeOfFilerIsSponsorSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
     answers.get(WhatTypeOfFilerIsSponsorPage()).map {
@@ -38,8 +38,8 @@ object WhatTypeOfFilerIsSponsorSummary  {
         )
 
         SummaryListRowViewModel(
-          key     = "whatTypeOfFilerIsSponsor.checkYourAnswersLabel",
-          value   = value,
+          key = "whatTypeOfFilerIsSponsor.checkYourAnswersLabel",
+          value = value,
           actions = Seq(
             ActionItemViewModel("site.change", controllers.manual.filercatagory.routes.WhatTypeOfFilerIsSponsorController.onPageLoad(CheckMode).url)
               .withVisuallyHiddenText(messages("whatTypeOfFilerIsSponsor.change.hidden"))

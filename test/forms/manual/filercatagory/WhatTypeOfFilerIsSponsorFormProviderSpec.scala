@@ -26,13 +26,13 @@ class WhatTypeOfFilerIsSponsorFormProviderSpec extends OptionFieldBehaviours {
 
   ".value" - {
 
-    val fieldName = "value"
+    val fieldName   = "value"
     val requiredKey = "whatTypeOfFilerIsSponsor.error.required"
 
     behave like optionsField[WhatTypeOfFilerIsSponsor](
       form,
       fieldName,
-      validValues  = WhatTypeOfFilerIsSponsor.values,
+      validValues = WhatTypeOfFilerIsSponsor.values,
       invalidError = FormError(fieldName, "error.invalid")
     )
 
