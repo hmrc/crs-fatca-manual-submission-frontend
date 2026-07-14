@@ -71,7 +71,7 @@ class SponsorNameController @Inject() (
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(SponsorNamePage(), value))
+              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(SponsorNamePage(), value))
               _              <- repository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(SponsorNamePage(), mode, updatedAnswers))
         )

@@ -46,17 +46,15 @@ class ManualSubmissionNavigator @Inject() () {
 
   def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId): Call =
     page match {
-      case p if p == HaveSponsorPage() =>
+      case HaveSponsorPage() =>
         userAnswers.get(HaveSponsorPage()) match {
           case Some(true)  => controllers.manual.sponsor.routes.SponsorNameController.onPageLoad(mode)
           case Some(false) => routes.UnderConstructionController.onPageLoad()
           case None        => routes.JourneyRecoveryController.onPageLoad()
         }
-      case p if p == SponsorNamePage() => controllers.manual.sponsor.routes.WhatIsGIINForSponsorController.onPageLoad(NormalMode)
-      case p if p == WhatIsGIINForSponsorPage() =>
-        controllers.manual.sponsor.routes.IsSponsorBasedInUKController.onPageLoad(NormalMode)
-      case p if p == IsSponsorBasedInUKPage() =>
-        routes.UnderConstructionController.onPageLoad()
-      case _ => routes.IndexController.onPageLoad()
+      case SponsorNamePage()          => controllers.manual.sponsor.routes.WhatIsGIINForSponsorController.onPageLoad(NormalMode)
+      case WhatIsGIINForSponsorPage() => controllers.manual.sponsor.routes.IsSponsorBasedInUKController.onPageLoad(NormalMode)
+      case IsSponsorBasedInUKPage()   => routes.UnderConstructionController.onPageLoad()
+      case _                          => routes.IndexController.onPageLoad()
     }
 }

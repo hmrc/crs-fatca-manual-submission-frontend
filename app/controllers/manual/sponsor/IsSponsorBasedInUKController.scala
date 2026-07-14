@@ -80,7 +80,7 @@ class IsSponsorBasedInUKController @Inject() (
                 formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, sponsorName))),
                 value =>
                   for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.set(IsSponsorBasedInUKPage(), value))
+                    updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(IsSponsorBasedInUKPage(), value))
                     _              <- repository.set(updatedAnswers)
                   } yield Redirect(navigator.nextPage(IsSponsorBasedInUKPage(), mode, updatedAnswers))
               )
