@@ -54,7 +54,7 @@ class CRSContractsController @Inject() (
         .get(FiDetailsPage)
         .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)) {
           fiDetail =>
-            implicit val electionsId = ElectionsId(year, fiDetail.fiId)
+            implicit val electionsId: ElectionsId = ElectionsId(year, fiDetail.fiId)
             val preparedForm = request.userAnswers.get(CRSContractsPage()) match {
               case None        => form
               case Some(value) => form.fill(value)
@@ -70,7 +70,7 @@ class CRSContractsController @Inject() (
         .get(FiDetailsPage)
         .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))) {
           fiDetail =>
-            implicit val electionsId = ElectionsId(year, fiDetail.fiId) // todo save
+            implicit val electionsId: ElectionsId = ElectionsId(year, fiDetail.fiId)
             form
               .bindFromRequest()
               .fold(

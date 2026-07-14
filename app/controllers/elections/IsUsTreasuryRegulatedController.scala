@@ -47,14 +47,13 @@ class IsUsTreasuryRegulatedController @Inject() (
 
   val form: Form[Boolean] = formProvider()
 
-  // check year Page present
   def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       request.userAnswers
         .get(FiDetailsPage)
         .map {
           fiDetail =>
-            implicit val electionsId = ElectionsId(year, fiDetail.fiId) // todo
+            implicit val electionsId: ElectionsId = ElectionsId(year, fiDetail.fiId)
             val preparedForm = request.userAnswers.get(IsUsTreasuryRegulatedPage()) match {
               case None        => form
               case Some(value) => form.fill(value)
@@ -70,7 +69,7 @@ class IsUsTreasuryRegulatedController @Inject() (
         .get(FiDetailsPage)
         .map {
           fiDetail =>
-            implicit val electionsId = ElectionsId(year, fiDetail.fiId)
+            implicit val electionsId: ElectionsId = ElectionsId(year, fiDetail.fiId)
             form
               .bindFromRequest()
               .fold(
