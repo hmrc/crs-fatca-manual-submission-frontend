@@ -84,12 +84,10 @@ class CheckYourAnswersValidatorService @Inject() {
     }
   }
 
-  private def validateElections(userAnswers: UserAnswers, reportingYear: Int)(implicit electionsId: ElectionsId): Either[String, Unit] = {
-    val isCorrectReportingYear = reportingYear == electionsId.reportingYear
+  private def validateElections(userAnswers: UserAnswers, reportingYear: Int)(implicit electionsId: ElectionsId): Either[String, Unit] =
     electionGroup(userAnswers) match
-      case ElectionGroup.CRS   => Either.cond(isCrsPagesComplete(userAnswers, reportingYear) && isCorrectReportingYear, (), crsRedirect(reportingYear))
-      case ElectionGroup.FATCA => Either.cond(allPresent(fatcaPages, userAnswers) && isCorrectReportingYear, (), fatcaRedirect(reportingYear))
+      case ElectionGroup.CRS   => Either.cond(isCrsPagesComplete(userAnswers, reportingYear), (), crsRedirect(reportingYear))
+      case ElectionGroup.FATCA => Either.cond(allPresent(fatcaPages, userAnswers), (), fatcaRedirect(reportingYear))
       case ElectionGroup.NONE  => Left(manageElectionRedirect(reportingYear, userAnswers))
-  }
 
 }

@@ -138,17 +138,6 @@ class CheckYourAnswersValidatorServiceSpec extends SpecBase {
         service.validate(crsData, currentYear) mustBe Left(crsRedirectUrl(currentYear))
       }
 
-      "should return CRS Contracts page url when reporting year is different to electionsId" in {
-        implicit val electionsId = ElectionsId(currentYear, "someFiId")
-        val crsData = emptyUserAnswers
-          .withPage(CRSContractsPage(), true)
-          .withPage(CRSDormantAccountsPage(), true)
-          .withPage(CRSThresholdsPage(), true)
-          .withPage(CarfGrossProceedsPage(), false)
-
-        service.validate(crsData, 2015) mustBe Left(crsRedirectUrl(2015))
-      }
-
       "should return CRS Contracts page url when reporting year is 2026 & carfGross is None" in {
         implicit val electionsId = ElectionsId(currentYear, "someFiId")
         val crsData = emptyUserAnswers
@@ -196,13 +185,6 @@ class CheckYourAnswersValidatorServiceSpec extends SpecBase {
         service.validate(fatcaData, year2025) mustBe Right(())
       }
 
-      "should return FATCA US Treasury Url when reporting year is different to one that is in electionId" in {
-        val fatcaData = emptyUserAnswers
-          .withPage(IsUsTreasuryRegulatedPage(), true)
-          .withPage(IsApplyingThresholdsPage(), true)
-
-        service.validate(fatcaData, 2023) mustBe Left(fatcaRedirectUrl(2023))
-      }
       "should return FATCA US Treasury Url when IsApplyingThreshold Page is None" in {
         val fatcaData = emptyUserAnswers
           .withPage(IsUsTreasuryRegulatedPage(), true)

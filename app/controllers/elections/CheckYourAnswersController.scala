@@ -19,6 +19,7 @@ package controllers.elections
 import com.google.inject.Inject
 import controllers.actions.{DataRequiredAction, ElectionIdRequiredAction, FrontendDataRetrievalAction, IdentifierAction}
 import controllers.routes
+import models.ElectionsId
 import pages.FiDetailsPage
 import pages.elections.CRSContractsPage
 import play.api.Logging
@@ -49,7 +50,8 @@ class CheckYourAnswersController @Inject() (
 
   def onPageLoad(year: Int): Action[AnyContent] = (identify andThen getData andThen requireData andThen electionIdRequiredAction) {
     implicit request =>
-      implicit val electionsId = request.electionsId
+      val isExpectedYear       = request.electionsId.reportingYear == year
+      implicit val electionsId = if isExpectedYear then request.electionsId else ElectionsId(year, request.electionsId.fiId)
       validator.validate(request.userAnswers, year) match {
         case Left(redirectUrl) =>
           logger.error("Mandatory values are missing in UA")
@@ -75,7 +77,8 @@ class CheckYourAnswersController @Inject() (
 
   def onSubmit(year: Int): Action[AnyContent] = (identify andThen getData andThen requireData andThen electionIdRequiredAction).async {
     implicit request =>
-      implicit val electionsId = request.electionsId
+      val isExpectedYear       = request.electionsId.reportingYear == year
+      implicit val electionsId = if isExpectedYear then request.electionsId else ElectionsId(year, request.electionsId.fiId)
       (for {
         _ <- electionsService.submitAndDeleteElectionData(request.userAnswers, year)
       } yield Redirect(controllers.elections.routes.ElectionsSentController.onPageLoad().url))
