@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@import models.manual.filercatagory.WhatTypeOfFilerIsSponsor
+@import models.manual.filercategory.WhatTypeOfFilerIsSponsor
 
 @this(
     layout: templates.Layout,
@@ -28,7 +28,7 @@
 
 @layout(pageTitle = title(form, messages("whatTypeOfFilerIsSponsor.title"))) {
 
-    @formHelper(action = controllers.manual.filercatagory.routes.WhatTypeOfFilerIsSponsorController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+    @formHelper(action = controllers.manual.filercategory.routes.WhatTypeOfFilerIsSponsorController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form,  errorLinkOverrides = Map("value" -> "value_0")))

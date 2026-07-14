@@ -14,47 +14,47 @@
  * limitations under the License.
  */
 
-package models.manual.filercatagory
+package models.manual.filercategory
 
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen
-import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
+import org.scalatest.OptionValues
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
-import org.scalatest.OptionValues
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import play.api.libs.json.{JsError, JsString, Json}
 
-class WhatTypeOfFilerIsSponsorSpec extends AnyFreeSpec with Matchers with ScalaCheckPropertyChecks with OptionValues {
+class WhatTypeOfFilerSpec extends AnyFreeSpec with Matchers with ScalaCheckPropertyChecks with OptionValues {
 
-  "WhatTypeOfFilerIsSponsor" - {
+  "WhatTypeOfFiler" - {
 
     "must deserialise valid values" in {
 
-      val gen = Gen.oneOf(WhatTypeOfFilerIsSponsor.values.toSeq)
+      val gen = Gen.oneOf(WhatTypeOfFiler.values.toSeq)
 
       forAll(gen) {
-        whatTypeOfFilerIsSponsor =>
-          JsString(whatTypeOfFilerIsSponsor.toString).validate[WhatTypeOfFilerIsSponsor].asOpt.value mustEqual whatTypeOfFilerIsSponsor
+        whatTypeOfFiler =>
+          JsString(whatTypeOfFiler.toString).validate[WhatTypeOfFiler].asOpt.value mustEqual whatTypeOfFiler
       }
     }
 
     "must fail to deserialise invalid values" in {
 
-      val gen = arbitrary[String] suchThat (!WhatTypeOfFilerIsSponsor.values.map(_.toString).contains(_))
+      val gen = arbitrary[String] suchThat (!WhatTypeOfFiler.values.map(_.toString).contains(_))
 
       forAll(gen) {
         invalidValue =>
-          JsString(invalidValue).validate[WhatTypeOfFilerIsSponsor] mustEqual JsError("error.invalid")
+          JsString(invalidValue).validate[WhatTypeOfFiler] mustEqual JsError("error.invalid")
       }
     }
 
     "must serialise" in {
 
-      val gen = Gen.oneOf(WhatTypeOfFilerIsSponsor.values.toSeq)
+      val gen = Gen.oneOf(WhatTypeOfFiler.values.toSeq)
 
       forAll(gen) {
-        whatTypeOfFilerIsSponsor =>
-          Json.toJson(whatTypeOfFilerIsSponsor) mustEqual JsString(whatTypeOfFilerIsSponsor.toString)
+        whatTypeOfFiler =>
+          Json.toJson(whatTypeOfFiler) mustEqual JsString(whatTypeOfFiler.toString)
       }
     }
   }

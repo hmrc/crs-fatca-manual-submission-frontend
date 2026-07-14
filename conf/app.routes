@@ -109,12 +109,16 @@ POST       /manual/sponsor/giin                                         controll
 GET        /manual/sponsor/change-giin                                  controllers.manual.sponsor.WhatIsGIINForSponsorController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/sponsor/change-giin                                  controllers.manual.sponsor.WhatIsGIINForSponsorController.onSubmit(mode: Mode = CheckMode)
 
-GET        /manual/filer-category/reporting-fi                        controllers.manual.filercatagory.WhatTypeOfFilerController.onPageLoad(mode: Mode = NormalMode)
-POST       /manual/filer-category/reporting-fi                        controllers.manual.filercatagory.WhatTypeOfFilerController.onSubmit(mode: Mode = NormalMode)
-GET        /manual/filer-category/change-reporting-fi                  controllers.manual.filercatagory.WhatTypeOfFilerController.onPageLoad(mode: Mode = CheckMode)
-POST       /manual/filer-category/change-reporting-fi                  controllers.manual.filercatagory.WhatTypeOfFilerController.onSubmit(mode: Mode = CheckMode)
+GET        /manual/filer-category/reporting-fi                        controllers.manual.filercategory.WhatTypeOfFilerController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/filer-category/reporting-fi                        controllers.manual.filercategory.WhatTypeOfFilerController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/filer-category/change-reporting-fi                  controllers.manual.filercategory.WhatTypeOfFilerController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/filer-category/change-reporting-fi                  controllers.manual.filercategory.WhatTypeOfFilerController.onSubmit(mode: Mode = CheckMode)
 
-GET        /manual/filer-category/sponsor                        controllers.manual.filercatagory.WhatTypeOfFilerIsSponsorController.onPageLoad(mode: Mode = NormalMode)
-POST       /manual/filer-category/sponsor                            controllers.manual.filercatagory.WhatTypeOfFilerIsSponsorController.onSubmit(mode: Mode = NormalMode)
-GET        /manual/filer-category/change-sponsor                      controllers.manual.filercatagory.WhatTypeOfFilerIsSponsorController.onPageLoad(mode: Mode = CheckMode)
-POST       /manual/filer-category/change-sponsor                      controllers.manual.filercatagory.WhatTypeOfFilerIsSponsorController.onSubmit(mode: Mode = CheckMode)
+GET        /manual/filer-category/sponsor                        controllers.manual.filercategory.WhatTypeOfFilerIsSponsorController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/filer-category/sponsor                            controllers.manual.filercategory.WhatTypeOfFilerIsSponsorController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/filer-category/change-sponsor                      controllers.manual.filercategory.WhatTypeOfFilerIsSponsorController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/filer-category/change-sponsor                      controllers.manual.filercategory.WhatTypeOfFilerIsSponsorController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/filer-category/check-answers                       controllers.manual.filercategory.FilerCategoryCheckAnswersController.onPageLoad()
+POST       /manual/filer-category/check-answers                       controllers.manual.filercategory.FilerCategoryCheckAnswersController.onSaveAndContinue()
+

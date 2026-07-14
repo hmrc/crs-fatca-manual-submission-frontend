@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@import models.manual.filercatagory.WhatTypeOfFiler
+@import models.manual.filercategory.WhatTypeOfFiler
 
 @this(
     layout: templates.Layout,
@@ -28,7 +28,7 @@
 
 @layout(pageTitle = title(form, messages("whatTypeOfFiler.title"))) {
 
-    @formHelper(action = controllers.manual.filercatagory.routes.WhatTypeOfFilerController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+    @formHelper(action = controllers.manual.filercategory.routes.WhatTypeOfFilerController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form,  errorLinkOverrides = Map("value" -> "value_0")))

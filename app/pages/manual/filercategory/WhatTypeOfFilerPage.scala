@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-package forms.manual.filercatagory
+package pages.manual.filercategory
 
-import forms.mappings.Mappings
-import models.manual.filercatagory.WhatTypeOfFiler
-import play.api.data.Form
+import models.ReportId
+import models.manual.filercategory.WhatTypeOfFiler
+import pages.ReportPage
 
-import javax.inject.Inject
+object WhatTypeOfFilerPage {
 
-class WhatTypeOfFilerFormProvider @Inject() extends Mappings {
-
-  def apply(): Form[WhatTypeOfFiler] =
-    Form(
-      "value" -> enumerable[WhatTypeOfFiler]("whatTypeOfFiler.error.required")
-    )
+  def apply()(implicit reportId: ReportId): ReportPage[WhatTypeOfFiler] =
+    ReportPage("whatTypeOfFiler")
 }

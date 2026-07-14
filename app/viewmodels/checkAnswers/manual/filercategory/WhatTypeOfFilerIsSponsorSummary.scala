@@ -14,35 +14,35 @@
  * limitations under the License.
  */
 
-package viewmodels.checkAnswers.manual.filercatagory
+package viewmodels.checkAnswers.manual.filercategory
 
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.filercatagory.WhatTypeOfFilerPage
+import pages.manual.filercategory.WhatTypeOfFilerIsSponsorPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
-import viewmodels.govuk.summarylist.*
-import viewmodels.implicits.*
+import viewmodels.govuk.summarylist._
+import viewmodels.implicits._
 
-object WhatTypeOfFilerSummary {
+object WhatTypeOfFilerIsSponsorSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
-    answers.get(WhatTypeOfFilerPage()).map {
+    answers.get(WhatTypeOfFilerIsSponsorPage()).map {
       answer =>
 
         val value = ValueViewModel(
           HtmlContent(
-            HtmlFormat.escape(messages(s"whatTypeOfFiler.$answer"))
+            HtmlFormat.escape(messages(s"whatTypeOfFilerIsSponsor.$answer"))
           )
         )
 
         SummaryListRowViewModel(
-          key = "whatTypeOfFiler.checkYourAnswersLabel",
+          key = "whatTypeOfFilerIsSponsor.checkYourAnswersLabel",
           value = value,
           actions = Seq(
-            ActionItemViewModel("site.change", controllers.manual.filercatagory.routes.WhatTypeOfFilerController.onPageLoad(CheckMode).url)
-              .withVisuallyHiddenText(messages("whatTypeOfFiler.change.hidden"))
+            ActionItemViewModel("site.change", controllers.manual.filercategory.routes.WhatTypeOfFilerIsSponsorController.onPageLoad(CheckMode).url)
+              .withVisuallyHiddenText(messages("whatTypeOfFilerIsSponsor.change.hidden"))
           )
         )
     }

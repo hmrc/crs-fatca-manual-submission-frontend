@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package pages.manual.filercatagory
+package pages.manual.filercategory
 
 import models.ReportId
-import models.manual.filercatagory.WhatTypeOfFilerIsSponsor
+import models.manual.filercategory.WhatTypeOfFilerIsSponsor
 import pages.ReportPage
 
 object WhatTypeOfFilerIsSponsorPage {

@@ -289,3 +289,6 @@ whatTypeOfFilerIsSponsor.trustee = Trustee of a trustee-documented trust
 whatTypeOfFilerIsSponsor.checkYourAnswersLabel = What type of filer is {0}?
 whatTypeOfFilerIsSponsor.error.required = Select whatTypeOfFilerIsSponsor
 whatTypeOfFilerIsSponsor.change.hidden = WhatTypeOfFilerIsSponsor
+
+filerCategoryCheckAnswers.title = Check your answers for the filer category
+filerCategoryCheckAnswers.heading = Check your answers for the filer category

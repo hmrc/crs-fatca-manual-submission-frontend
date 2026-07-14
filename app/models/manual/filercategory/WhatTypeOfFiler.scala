@@ -14,37 +14,37 @@
  * limitations under the License.
  */
 
-package models.manual.filercatagory
+package models.manual.filercategory
 
 import models.{Enumerable, WithName}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 
-sealed trait WhatTypeOfFilerIsSponsor
+sealed trait WhatTypeOfFiler
 
-object WhatTypeOfFilerIsSponsor extends Enumerable.Implicits {
+object WhatTypeOfFiler extends Enumerable.Implicits {
 
-  case object ForeignFI extends WithName("foreignFI") with WhatTypeOfFilerIsSponsor
-  case object DirectNonFinancial extends WithName("directNonFinancial") with WhatTypeOfFilerIsSponsor
-  case object Trustee extends WithName("trustee") with WhatTypeOfFilerIsSponsor
+  case object Foreign extends WithName("foreign") with WhatTypeOfFiler
+  case object Registered extends WithName("registered") with WhatTypeOfFiler
+  case object Withholding extends WithName("withholding") with WhatTypeOfFiler
 
-  val values: Seq[WhatTypeOfFilerIsSponsor] = Seq(
-    ForeignFI,
-    DirectNonFinancial,
-    Trustee
+  val values: Seq[WhatTypeOfFiler] = Seq(
+    Foreign,
+    Registered,
+    Withholding
   )
 
   def options(implicit messages: Messages): Seq[RadioItem] = values.zipWithIndex.map {
     case (value, index) =>
       RadioItem(
-        content = Text(messages(s"whatTypeOfFilerIsSponsor.${value.toString}")),
+        content = Text(messages(s"whatTypeOfFiler.${value.toString}")),
         value = Some(value.toString),
         id = Some(s"value_$index")
       )
   }
 
-  implicit val enumerable: Enumerable[WhatTypeOfFilerIsSponsor] =
+  implicit val enumerable: Enumerable[WhatTypeOfFiler] =
     Enumerable(
       values.map(
         v => v.toString -> v

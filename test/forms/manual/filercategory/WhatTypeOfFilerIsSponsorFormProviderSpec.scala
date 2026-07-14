@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package forms.manual.filercatagory
+package forms.manual.filercategory
 
 import forms.behaviours.OptionFieldBehaviours
-import models.manual.filercatagory.WhatTypeOfFilerIsSponsor
+import models.manual.filercategory.WhatTypeOfFilerIsSponsor
 import play.api.data.FormError
 
 class WhatTypeOfFilerIsSponsorFormProviderSpec extends OptionFieldBehaviours {

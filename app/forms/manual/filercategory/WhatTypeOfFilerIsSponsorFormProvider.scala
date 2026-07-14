@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package forms.manual.filercatagory
+package forms.manual.filercategory
 
 import javax.inject.Inject
 
 import forms.mappings.Mappings
 import play.api.data.Form
-import models.manual.filercatagory.WhatTypeOfFilerIsSponsor
+import models.manual.filercategory.WhatTypeOfFilerIsSponsor
 
 class WhatTypeOfFilerIsSponsorFormProvider @Inject() extends Mappings {
 

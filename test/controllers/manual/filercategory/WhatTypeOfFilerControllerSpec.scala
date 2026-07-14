@@ -14,79 +14,76 @@
  * limitations under the License.
  */
 
-package controllers.manual.filercatagory
+package controllers.manual.filercategory
 
 import base.SpecBase
 import connectors.DatabaseConnector
-import controllers.routes
-import forms.manual.filercatagory.WhatTypeOfFilerIsSponsorFormProvider
+import forms.manual.filercategory.WhatTypeOfFilerFormProvider
 import models.SubmissionsConstants.CRS
-import models.manual.filercatagory.WhatTypeOfFilerIsSponsor
+import models.manual.filercategory.WhatTypeOfFiler
 import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.filercatagory.WhatTypeOfFilerIsSponsorPage
-import pages.manual.sponsor.SponsorNamePage
+import pages.manual.FINamePage
+import pages.manual.filercategory.WhatTypeOfFilerPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import views.html.manual.filercatagory.WhatTypeOfFilerIsSponsorView
+import views.html.manual.filercategory.WhatTypeOfFilerView
 
 import scala.concurrent.Future
 
-class WhatTypeOfFilerIsSponsorControllerSpec extends SpecBase with MockitoSugar {
+class WhatTypeOfFilerControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  private lazy val whatTypeOfFilerIsSponsorRoute = controllers.manual.filercatagory.routes.WhatTypeOfFilerIsSponsorController.onPageLoad(NormalMode).url
+  private lazy val whatTypeOfFilerRoute = controllers.manual.filercategory.routes.WhatTypeOfFilerController.onPageLoad(NormalMode).url
 
-  private val formProvider = new WhatTypeOfFilerIsSponsorFormProvider()
+  private val formProvider = new WhatTypeOfFilerFormProvider()
   private val form         = formProvider()
 
-  "WhatTypeOfFilerIsSponsor Controller" - {
-    val testSponsorName             = "testSponsorName"
+  "WhatTypeOfFiler Controller" - {
+    val testFiName                  = "TestFI"
     implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
     val ua = emptyUserAnswers
       .withPage(ReportIdPage, reportId)
-      .withPage(SponsorNamePage(), testSponsorName)
+      .withPage(FINamePage(), testFiName)
 
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
 
       running(application) {
-        val request = FakeRequest(GET, whatTypeOfFilerIsSponsorRoute)
+        val request = FakeRequest(GET, whatTypeOfFilerRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[WhatTypeOfFilerIsSponsorView]
+        val view = application.injector.instanceOf[WhatTypeOfFilerView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, testSponsorName)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, testFiName)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
       implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
-      val userAnswers       = ua.set(WhatTypeOfFilerIsSponsorPage(), WhatTypeOfFilerIsSponsor.values.head).success.value
+      val userAnswers       = ua.set(WhatTypeOfFilerPage(), WhatTypeOfFiler.values.head).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, whatTypeOfFilerIsSponsorRoute)
+        val request = FakeRequest(GET, whatTypeOfFilerRoute)
 
-        val view = application.injector.instanceOf[WhatTypeOfFilerIsSponsorView]
+        val view = application.injector.instanceOf[WhatTypeOfFilerView]
 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(WhatTypeOfFilerIsSponsor.values.head), NormalMode, testSponsorName)(request,
-                                                                                                                             messages(application)
-        ).toString
+        contentAsString(result) mustEqual view(form.fill(WhatTypeOfFiler.values.head), NormalMode, testFiName)(request, messages(application)).toString
       }
     }
 
@@ -106,8 +103,8 @@ class WhatTypeOfFilerIsSponsorControllerSpec extends SpecBase with MockitoSugar 
 
       running(application) {
         val request =
-          FakeRequest(POST, whatTypeOfFilerIsSponsorRoute)
-            .withFormUrlEncodedBody(("value", WhatTypeOfFilerIsSponsor.values.head.toString))
+          FakeRequest(POST, whatTypeOfFilerRoute)
+            .withFormUrlEncodedBody(("value", WhatTypeOfFiler.values.head.toString))
 
         val result = route(application, request).value
 
@@ -122,17 +119,17 @@ class WhatTypeOfFilerIsSponsorControllerSpec extends SpecBase with MockitoSugar 
 
       running(application) {
         val request =
-          FakeRequest(POST, whatTypeOfFilerIsSponsorRoute)
+          FakeRequest(POST, whatTypeOfFilerRoute)
             .withFormUrlEncodedBody(("value", "invalid value"))
 
         val boundForm = form.bind(Map("value" -> "invalid value"))
 
-        val view = application.injector.instanceOf[WhatTypeOfFilerIsSponsorView]
+        val view = application.injector.instanceOf[WhatTypeOfFilerView]
 
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, testSponsorName)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, testFiName)(request, messages(application)).toString
       }
     }
 
@@ -141,12 +138,12 @@ class WhatTypeOfFilerIsSponsorControllerSpec extends SpecBase with MockitoSugar 
       val application = applicationBuilder(maybeUserAnswers = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, whatTypeOfFilerIsSponsorRoute)
+        val request = FakeRequest(GET, whatTypeOfFilerRoute)
 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 
@@ -156,14 +153,14 @@ class WhatTypeOfFilerIsSponsorControllerSpec extends SpecBase with MockitoSugar 
 
       running(application) {
         val request =
-          FakeRequest(POST, whatTypeOfFilerIsSponsorRoute)
-            .withFormUrlEncodedBody(("value", WhatTypeOfFilerIsSponsor.values.head.toString))
+          FakeRequest(POST, whatTypeOfFilerRoute)
+            .withFormUrlEncodedBody(("value", WhatTypeOfFiler.values.head.toString))
 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
 
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
       }
     }
   }

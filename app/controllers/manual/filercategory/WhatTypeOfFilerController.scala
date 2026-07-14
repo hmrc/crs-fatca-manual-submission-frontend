@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-package controllers.manual.filercatagory
+package controllers.manual.filercategory
 
 import connectors.DatabaseConnector
 import controllers.actions.*
-import forms.manual.filercatagory.WhatTypeOfFilerFormProvider
-import models.manual.filercatagory.WhatTypeOfFiler
+import forms.manual.filercategory.WhatTypeOfFilerFormProvider
+import models.manual.filercategory.WhatTypeOfFiler
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
 import pages.manual.FINamePage
-import pages.manual.filercatagory.WhatTypeOfFilerPage
+import pages.manual.filercategory.WhatTypeOfFilerPage
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.manual.filercatagory.WhatTypeOfFilerView
+import views.html.manual.filercategory.WhatTypeOfFilerView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
