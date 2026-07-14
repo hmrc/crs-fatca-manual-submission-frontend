@@ -1,5 +1,5 @@
 /*
- * Copyright 2026 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package models
+package models.response
 
-sealed abstract class ServiceErrors extends Throwable {
-  override def toString: String = getClass.getSimpleName.replace("$", "")
-}
+import play.api.libs.json.{Json, OFormat}
 
-object ServiceErrors {
-  case object Downstream_Error extends ServiceErrors
-  case object NoFiDetailFound extends ServiceErrors
-  case object Elections_Error extends ServiceErrors
-  case object AddressLookup_Error extends ServiceErrors
+case class Country(code: String, description: String, alternativeName: Option[String] = None)
+
+object Country {
+
+  val GB = Country("GB", "United Kingdom")
+
+  implicit val format: OFormat[Country] = Json.format[Country]
 }

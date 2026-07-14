@@ -271,3 +271,16 @@ whatIsGIINForSponsor.error.length = GIIN must include 19 characters
 whatIsGIINForSponsor.error.invalidChar = GIIN must only include letters a to z, numbers 0 to 9 and full stops
 whatIsGIINForSponsor.error.invalidFormat = GIIN must be in the right format
 whatIsGIINForSponsor.error.notReal = Enter a real GIIN
+
+uKPostcode.title = What is the postcode for {0}?
+uKPostcode.heading = What is the postcode for {0}?
+uKPostcode.p1 = Enter the postcode to find the address automatically.
+uKPostcode.p2 = Or enter the address manually
+uKPostcode.checkYourAnswersLabel = What is the postcode for {0}?
+uKPostcode.error.required = Enter a postcode, like AA1 1AA
+uKPostcode.error.length = Postcode must be 10 characters or less
+uKPostcode.error.invalid = Postcode must only include letters a to z and numbers 0 to 9
+uKPostcode.error.format = Enter a real postcode or enter the address manually
+uKPostcode.error.notfound = No addresses found — enter a different postcode or enter the address manually
+uKPostcode.change.hidden = UKPostcode
+ukPostcode.btn = Find address

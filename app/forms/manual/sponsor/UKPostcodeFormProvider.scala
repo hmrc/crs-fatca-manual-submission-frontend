@@ -14,15 +14,26 @@
  * limitations under the License.
  */
 
-package models
+package forms.manual.sponsor
 
-sealed abstract class ServiceErrors extends Throwable {
-  override def toString: String = getClass.getSimpleName.replace("$", "")
-}
+import forms.mappings.Mappings
+import play.api.data.Form
+import utils.RegexConstants.{POSTCODE_FORMAT, POSTCODE_VALID}
 
-object ServiceErrors {
-  case object Downstream_Error extends ServiceErrors
-  case object NoFiDetailFound extends ServiceErrors
-  case object Elections_Error extends ServiceErrors
-  case object AddressLookup_Error extends ServiceErrors
+import javax.inject.Inject
+
+class UKPostcodeFormProvider @Inject() extends Mappings {
+
+  def apply(): Form[String] =
+    Form(
+      "postCode" ->
+        mandatoryPostcode(
+          "uKPostcode.error.required",
+          "uKPostcode.error.length",
+          POSTCODE_VALID,
+          "uKPostcode.error.invalid",
+          POSTCODE_FORMAT,
+          "uKPostcode.error.format"
+        )
+    )
 }

@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package models
+package pages.manual.sponsor
 
-sealed abstract class ServiceErrors extends Throwable {
-  override def toString: String = getClass.getSimpleName.replace("$", "")
-}
+import models.ReportId
+import pages.QuestionPage
+import play.api.libs.json.JsPath
 
-object ServiceErrors {
-  case object Downstream_Error extends ServiceErrors
-  case object NoFiDetailFound extends ServiceErrors
-  case object Elections_Error extends ServiceErrors
-  case object AddressLookup_Error extends ServiceErrors
-}
+final case class UKPostcodePage()(implicit reportId: ReportId) extends QuestionPage[String]:
+
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "uKPostcode"
