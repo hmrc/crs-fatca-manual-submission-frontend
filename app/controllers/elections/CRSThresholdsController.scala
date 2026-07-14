@@ -20,7 +20,7 @@ import controllers.actions.*
 import forms.elections.CRSThresholdsFormProvider
 import models.{ElectionsId, Mode, UserAnswers}
 import navigation.Navigator
-import pages.{CarfGrossProceedsPage, CrsGrossProceedsPage, FiDetailsPage}
+import pages.{CarfGrossProceedsPage, CrsGrossProceedsPage, ElectionsIdPage, FiDetailsPage}
 import pages.elections.CRSThresholdsPage
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -71,13 +71,14 @@ class CRSThresholdsController @Inject() (
 
   def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData andThen electionIdRequiredAction).async {
     implicit request =>
-      implicit val electionsId = request.electionsId
-      val userData             = request.userAnswers
+      val userData = request.userAnswers
 
       userData
         .get(FiDetailsPage)
         .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))) {
           fiDetail =>
+            val isExpectedYear       = request.electionsId.reportingYear == year
+            implicit val electionsId = if isExpectedYear then request.electionsId else ElectionsId(year, fiDetail.fiId)
             form
               .bindFromRequest()
               .fold(
@@ -85,8 +86,10 @@ class CRSThresholdsController @Inject() (
                 value =>
                   for {
                     updatedAnswers <- Future.fromTry(request.userAnswers.set(CRSThresholdsPage(), value))
-                    cleanedUA      <- Future.fromTry(checkAndCleanUpCarfPages(updatedAnswers, year))
-                    _              <- sessionRepository.set(cleanedUA)
+                    updatedAnswersWithElectionId <-
+                      if isExpectedYear then Future.successful(updatedAnswers) else Future.fromTry(updatedAnswers.set(ElectionsIdPage, electionsId))
+                    cleanedUA <- Future.fromTry(checkAndCleanUpCarfPages(updatedAnswersWithElectionId, year))
+                    _         <- sessionRepository.set(cleanedUA)
                   } yield Redirect(navigator.nextPage(CRSThresholdsPage(), mode, updatedAnswers, Some(year)))
               )
         }

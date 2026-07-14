@@ -18,14 +18,15 @@ package controllers.elections
 
 import controllers.actions.*
 import forms.CarfGrossProceedsFormProvider
-import models.Mode
+import models.{ElectionsId, Mode}
 import navigation.Navigator
-import pages.{CarfGrossProceedsPage, FiDetailsPage}
+import pages.{CarfGrossProceedsPage, ElectionsIdPage, FiDetailsPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CarfGrossProceedsView
+
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -63,12 +64,13 @@ class CarfGrossProceedsController @Inject() (
 
   def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData andThen electionIdRequiredAction).async {
     implicit request =>
-      implicit val electionsId = request.electionsId
-      val form                 = formProvider(year.toString)
+      val form = formProvider(year.toString)
       request.userAnswers
         .get(FiDetailsPage)
         .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))) {
           fiDetail =>
+            val isExpectedYear       = request.electionsId.reportingYear == year
+            implicit val electionsId = if isExpectedYear then request.electionsId else ElectionsId(year, fiDetail.fiId)
             form
               .bindFromRequest()
               .fold(
@@ -76,8 +78,10 @@ class CarfGrossProceedsController @Inject() (
                 value =>
                   for {
                     updatedAnswers <- Future.fromTry(request.userAnswers.set(CarfGrossProceedsPage(), value))
-                    _              <- sessionRepository.set(updatedAnswers)
-                  } yield Redirect(navigator.nextPage(CarfGrossProceedsPage(), mode, updatedAnswers, Some(year)))
+                    updatedAnswersWithElectionId <-
+                      if isExpectedYear then Future.successful(updatedAnswers) else Future.fromTry(updatedAnswers.set(ElectionsIdPage, electionsId))
+                    _ <- sessionRepository.set(updatedAnswersWithElectionId)
+                  } yield Redirect(navigator.nextPage(CarfGrossProceedsPage(), mode, updatedAnswersWithElectionId, Some(year)))
               )
         }
 

@@ -43,7 +43,8 @@ class ElectionsService @Inject() (connector: ElectionsConnector, sessionReposito
     requestBodyWithFIName <- toRequest(userAnswers, reportingYear)
     _                     <- connector.submit(requestBodyWithFIName.electionsSubmissionDetails)
     updatedUA             <- updateUA(userAnswers, reportingYear, requestBodyWithFIName.fiName, requestBodyWithFIName.electionsSubmissionDetails.fiId)
-    _                     <- sessionRepository.set(updatedUA)
+    UAWithoutElectionId   <- Future.fromTry(updatedUA.remove(ElectionsIdPage))
+    _                     <- sessionRepository.set(UAWithoutElectionId)
   } yield ()
 
   private def updateUA(userAnswers: UserAnswers, reportingYear: Int, fiName: String, fiId: String)(implicit electionsId: ElectionsId): Future[UserAnswers] =

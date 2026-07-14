@@ -18,9 +18,9 @@ package controllers.elections
 
 import controllers.actions.*
 import forms.CrsGrossProceedsFormProvider
-import models.Mode
+import models.{ElectionsId, Mode}
 import navigation.Navigator
-import pages.{CrsGrossProceedsPage, FiDetailsPage}
+import pages.{CrsGrossProceedsPage, ElectionsIdPage, FiDetailsPage}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -66,11 +66,12 @@ class CrsGrossProceedsController @Inject() (
 
   def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData andThen electionIdRequiredAction).async {
     implicit request =>
-      implicit val electionsId = request.electionsId
       request.userAnswers
         .get(FiDetailsPage)
         .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))) {
           fiDetail =>
+            val isExpectedYear       = request.electionsId.reportingYear == year
+            implicit val electionsId = if isExpectedYear then request.electionsId else ElectionsId(year, fiDetail.fiId)
             form
               .bindFromRequest()
               .fold(
@@ -78,8 +79,10 @@ class CrsGrossProceedsController @Inject() (
                 value =>
                   for {
                     updatedAnswers <- Future.fromTry(request.userAnswers.set(CrsGrossProceedsPage(), value))
-                    _              <- sessionRepository.set(updatedAnswers)
-                  } yield Redirect(navigator.nextPage(CrsGrossProceedsPage(), mode, updatedAnswers, Some(year)))
+                    updatedAnswersWithElectionId <-
+                      if isExpectedYear then Future.successful(updatedAnswers) else Future.fromTry(updatedAnswers.set(ElectionsIdPage, electionsId))
+                    _ <- sessionRepository.set(updatedAnswersWithElectionId)
+                  } yield Redirect(navigator.nextPage(CrsGrossProceedsPage(), mode, updatedAnswersWithElectionId, Some(year)))
               )
         }
   }

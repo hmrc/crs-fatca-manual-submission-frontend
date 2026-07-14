@@ -18,9 +18,9 @@ package controllers.elections
 
 import controllers.actions.*
 import forms.elections.IsApplyingThresholdsFormProvider
-import models.Mode
+import models.{ElectionsId, Mode}
 import navigation.Navigator
-import pages.{FiDetailsPage, IsApplyingThresholdsPage}
+import pages.{ElectionsIdPage, FiDetailsPage, IsApplyingThresholdsPage}
 import play.api.Logging
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -73,7 +73,8 @@ class IsApplyingThresholdsController @Inject() (
         .get(FiDetailsPage)
         .map {
           fiDetail =>
-            implicit val electionsId = request.electionsId
+            val isExpectedYear       = request.electionsId.reportingYear == year
+            implicit val electionsId = if isExpectedYear then request.electionsId else ElectionsId(year, fiDetail.fiId)
             form
               .bindFromRequest()
               .fold(
@@ -81,8 +82,10 @@ class IsApplyingThresholdsController @Inject() (
                 value =>
                   for {
                     updatedAnswers <- Future.fromTry(request.userAnswers.set(IsApplyingThresholdsPage(), value))
-                    _              <- sessionRepository.set(updatedAnswers)
-                  } yield Redirect(navigator.nextPage(IsApplyingThresholdsPage(), mode, updatedAnswers, Some(year)))
+                    updatedAnswersWithElectionId <-
+                      if isExpectedYear then Future.successful(updatedAnswers) else Future.fromTry(updatedAnswers.set(ElectionsIdPage, electionsId))
+                    _ <- sessionRepository.set(updatedAnswersWithElectionId)
+                  } yield Redirect(navigator.nextPage(IsApplyingThresholdsPage(), mode, updatedAnswersWithElectionId, Some(year)))
               )
         }
         .getOrElse(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())))

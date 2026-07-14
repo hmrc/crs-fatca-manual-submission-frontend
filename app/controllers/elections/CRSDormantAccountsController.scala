@@ -18,9 +18,9 @@ package controllers.elections
 
 import controllers.actions.*
 import forms.elections.CRSDormantAccountsFormProvider
-import models.Mode
+import models.{ElectionsId, Mode}
 import navigation.Navigator
-import pages.FiDetailsPage
+import pages.{ElectionsIdPage, FiDetailsPage}
 import pages.elections.CRSDormantAccountsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -66,13 +66,14 @@ class CRSDormantAccountsController @Inject() (
 
   def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData andThen electionIdRequiredAction).async {
     implicit request =>
-      implicit val electionsId = request.electionsId
-      val userData             = request.userAnswers
+      val userData = request.userAnswers
 
       userData
         .get(FiDetailsPage)
         .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))) {
           fiDetail =>
+            val isExpectedYear       = request.electionsId.reportingYear == year
+            implicit val electionsId = if isExpectedYear then request.electionsId else ElectionsId(year, fiDetail.fiId)
             form
               .bindFromRequest()
               .fold(
@@ -80,7 +81,9 @@ class CRSDormantAccountsController @Inject() (
                 value =>
                   for {
                     updatedAnswers <- Future.fromTry(userData.set(CRSDormantAccountsPage(), value))
-                    _              <- sessionRepository.set(updatedAnswers)
+                    updatedAnswersWithElectionId <-
+                      if isExpectedYear then Future.successful(updatedAnswers) else Future.fromTry(updatedAnswers.set(ElectionsIdPage, electionsId))
+                    _ <- sessionRepository.set(updatedAnswersWithElectionId)
                   } yield Redirect(navigator.nextPage(CRSDormantAccountsPage(), mode, updatedAnswers, Some(year)))
               )
 
