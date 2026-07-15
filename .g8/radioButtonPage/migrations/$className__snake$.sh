@@ -24,6 +24,7 @@ echo "$className;format="decap"$.change.hidden = $className$" >> ../conf/message
 
 echo "Adding to ModelGenerators"
 awk '/trait ModelGenerators/ {\
+    print "import models.'$className$'"
     print;\
     print "";\
     print "  implicit lazy val arbitrary$className$: Arbitrary[$className$] =";\

@@ -37,6 +37,7 @@ class ReportIdRequiredActionImpl @Inject() (implicit
           Right(toReportIdRequest(request, reportId))
 
         case None =>
+          println(Console.MAGENTA + s"\n\nReportIdRequiredActionImpl\n\n" +Console.RESET)
           Left(Redirect(routes.JourneyRecoveryController.onPageLoad()))
       }
     }

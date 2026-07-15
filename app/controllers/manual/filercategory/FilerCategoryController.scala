@@ -45,7 +45,8 @@ class FilerCategoryController @Inject() (
     implicit request =>
       dbConnector.get().map {
         maybeUa =>
-          maybeUa.fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())) {
+          maybeUa.fold{
+            Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())} {
             ua =>
               ua.get(SponsorNamePage()(request.reportId)) match {
                 case Some(_) => Redirect(controllers.manual.filercategory.routes.WhatTypeOfFilerIsSponsorController.onPageLoad(mode))

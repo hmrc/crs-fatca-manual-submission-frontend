@@ -79,7 +79,7 @@ class WhatIsGIINForSponsorController @Inject() (
                 formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, sponsorName))),
                 value =>
                   for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.set(WhatIsGIINForSponsorPage(), value))
+                    updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(WhatIsGIINForSponsorPage(), value))
                     _              <- repository.set(updatedAnswers)
                   } yield Redirect(navigator.nextPage(WhatIsGIINForSponsorPage(), mode, updatedAnswers))
               )
