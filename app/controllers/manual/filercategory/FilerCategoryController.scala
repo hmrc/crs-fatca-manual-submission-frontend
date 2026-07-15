@@ -16,44 +16,43 @@
 
 package controllers.manual.filercategory
 
+import connectors.DatabaseConnector
 import controllers.actions.*
-import models.{Mode, ReportId}
+import models.Mode
+import pages.manual.sponsor.SponsorNamePage
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.ReportDetailsCheckAnswersUtil
-import views.html.manual.filercategory.FilerCategoryCheckAnswersView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
-class FilerCategoryCheckAnswersController @Inject() (
+class FilerCategoryController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
   getData: FrontendDataRetrievalAction,
   requireData: DataRequiredAction,
   reportIdAction: ReportIdRequiredAction,
   val controllerComponents: MessagesControllerComponents,
-  view: FilerCategoryCheckAnswersView,
-  util: ReportDetailsCheckAnswersUtil
+  dbConnector: DatabaseConnector
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
     with Logging {
 
-  def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
     implicit request =>
-      implicit val reportId: ReportId = request.reportId
-      val list                        = util.getFilerCategoryRows(request.userAnswers)
-      Ok(view(list))
-
-  }
-
-  def onSaveAndContinue: Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
-    implicit request =>
-      Future.successful(Redirect(controllers.manual.routes.SendAReportController.onPageLoad().url))
-
+      dbConnector.get().map {
+        maybeUa =>
+          maybeUa.fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())) {
+            ua =>
+              ua.get(SponsorNamePage()(request.reportId)) match {
+                case Some(_) => Redirect(controllers.manual.filercategory.routes.WhatTypeOfFilerIsSponsorController.onPageLoad(mode))
+                case None    => Redirect(controllers.manual.filercategory.routes.WhatTypeOfFilerController.onPageLoad(mode))
+              }
+          }
+      }
   }
 
 }

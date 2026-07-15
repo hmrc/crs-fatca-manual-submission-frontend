@@ -122,3 +122,5 @@ POST       /manual/filer-category/change-sponsor                      controller
 GET        /manual/filer-category/check-answers                       controllers.manual.filercategory.FilerCategoryCheckAnswersController.onPageLoad()
 POST       /manual/filer-category/check-answers                       controllers.manual.filercategory.FilerCategoryCheckAnswersController.onSaveAndContinue()
 
+GET        /manual/filer-category/filer-category                      controllers.manual.filercategory.FilerCategoryController.onPageLoad(mode: Mode = NormalMode)
+

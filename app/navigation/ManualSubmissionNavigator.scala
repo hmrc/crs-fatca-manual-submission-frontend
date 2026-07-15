@@ -20,6 +20,7 @@ import controllers.manual.reportdetails.routes.*
 import controllers.routes
 import models.*
 import pages.*
+import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.{HaveSponsorPage, IsSponsorBasedInUKPage, SponsorNamePage, WhatIsGIINForSponsorPage}
 import play.api.mvc.Call
@@ -56,7 +57,11 @@ class ManualSubmissionNavigator @Inject() () {
       case p if p == WhatIsGIINForSponsorPage() =>
         controllers.manual.sponsor.routes.IsSponsorBasedInUKController.onPageLoad(NormalMode)
       case p if p == IsSponsorBasedInUKPage() =>
-        routes.UnderConstructionController.onPageLoad()
+        routes.UnderConstructionController.onPageLoad() 
+      case p if p == WhatTypeOfFilerPage() =>
+        controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad()
+      case p if p == WhatTypeOfFilerIsSponsorPage() =>
+        controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad()
       case _ => routes.IndexController.onPageLoad()
     }
 }
