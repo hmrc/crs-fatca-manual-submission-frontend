@@ -76,8 +76,7 @@ class CheckYourAnswersController @Inject() (
 
   def onSubmit(year: Int): Action[AnyContent] = (identify andThen getData andThen requireData andThen electionIdRequiredAction).async {
     implicit request =>
-      val isExpectedYear       = request.electionsId.reportingYear == year
-      implicit val electionsId = if isExpectedYear then request.electionsId else ElectionsId(year, request.electionsId.fiId)
+      implicit val electionsId = request.electionsId
       (for {
         _ <- electionsService.submitAndDeleteElectionData(request.userAnswers, year)
       } yield Redirect(controllers.elections.routes.ElectionsSentController.onPageLoad().url))

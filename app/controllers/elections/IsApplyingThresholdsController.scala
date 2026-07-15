@@ -52,7 +52,6 @@ class IsApplyingThresholdsController @Inject() (
 
   def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData andThen electionIdRequiredAction) {
     implicit request =>
-      println(s"onPageLoad: userAnswers = ${request.userAnswers}")
       implicit val electionsId = request.electionsId
 
       val preparedForm = request.userAnswers.get(IsApplyingThresholdsPage()) match {
