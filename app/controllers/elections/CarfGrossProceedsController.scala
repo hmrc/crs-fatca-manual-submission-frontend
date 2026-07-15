@@ -20,7 +20,7 @@ import controllers.actions.*
 import forms.CarfGrossProceedsFormProvider
 import models.{ElectionsId, Mode}
 import navigation.Navigator
-import pages.{CarfGrossProceedsPage, ElectionsIdPage, FiDetailsPage}
+import pages.CarfGrossProceedsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -47,44 +47,28 @@ class CarfGrossProceedsController @Inject() (
 
   def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData andThen electionIdRequiredAction) {
     implicit request =>
-      request.userAnswers
-        .get(FiDetailsPage)
-        .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)) {
-          fiDetail =>
-            val isExpectedYear       = request.electionsId.reportingYear == year
-            implicit val electionsId = if isExpectedYear then request.electionsId else ElectionsId(year, fiDetail.fiId)
-            val form                 = formProvider(year.toString)
-            val preparedForm = request.userAnswers.get(CarfGrossProceedsPage()) match {
-              case None        => form
-              case Some(value) => form.fill(value)
-            }
-
-            Ok(view(preparedForm, mode, fiDetail.fiName, year))
-        }
+      implicit val electionsId: ElectionsId = request.electionsId
+      val form                              = formProvider(year.toString)
+      val preparedForm = request.userAnswers.get(CarfGrossProceedsPage()) match {
+        case None        => form
+        case Some(value) => form.fill(value)
+      }
+      Ok(view(preparedForm, mode, request.fiDetail.fiName, year))
   }
 
   def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData andThen electionIdRequiredAction).async {
     implicit request =>
-      val form = formProvider(year.toString)
-      request.userAnswers
-        .get(FiDetailsPage)
-        .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))) {
-          fiDetail =>
-            val isExpectedYear       = request.electionsId.reportingYear == year
-            implicit val electionsId = if isExpectedYear then request.electionsId else ElectionsId(year, fiDetail.fiId)
-            form
-              .bindFromRequest()
-              .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiDetail.fiName, year))),
-                value =>
-                  for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.set(CarfGrossProceedsPage(), value))
-                    updatedAnswersWithElectionId <-
-                      if isExpectedYear then Future.successful(updatedAnswers) else Future.fromTry(updatedAnswers.set(ElectionsIdPage, electionsId))
-                    _ <- sessionRepository.set(updatedAnswersWithElectionId)
-                  } yield Redirect(navigator.nextPage(CarfGrossProceedsPage(), mode, updatedAnswersWithElectionId, Some(year)))
-              )
-        }
-
+      implicit val electionsId: ElectionsId = request.electionsId
+      val form                              = formProvider(year.toString)
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, request.fiDetail.fiName, year))),
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(CarfGrossProceedsPage(), value))
+              _              <- sessionRepository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(CarfGrossProceedsPage(), mode, updatedAnswers, Some(year)))
+        )
   }
 }

@@ -16,8 +16,9 @@
 
 package controllers.actions
 
+import models.ElectionsId
 import models.requests.{DataRequest, ElectionIdRequest}
-import pages.ElectionsIdPage
+import pages.FiDetailsPage
 import play.api.mvc.{ActionRefiner, Results}
 
 import javax.inject.Inject
@@ -29,19 +30,19 @@ class ElectionIdRequiredActionImpl @Inject() (implicit
 
   override protected def refine[A](request: DataRequest[A]): scala.concurrent.Future[Either[play.api.mvc.Result, ElectionIdRequest[A]]] =
     Future.successful {
-      request.userAnswers.get(ElectionsIdPage) match {
-        case Some(electionId) =>
+      (request.userAnswers.get(FiDetailsPage), request.request.getQueryString("year")) match {
+        case (Some(fiDetail), Some(reportingYear)) =>
           Right(
             ElectionIdRequest(
               request = request.request,
               userId = request.userId,
               userAnswers = request.userAnswers,
               fatcaId = request.fatcaId,
-              electionsId = electionId
+              electionsId = ElectionsId(fiId = fiDetail.fiId, reportingYear = reportingYear.toInt),
+              fiDetail = fiDetail
             )
           )
-        case None =>
-          Left(Results.Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+        case _ => Left(Results.Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
       }
     }
 }

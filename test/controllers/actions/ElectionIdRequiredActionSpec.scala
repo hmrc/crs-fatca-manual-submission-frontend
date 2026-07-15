@@ -18,11 +18,11 @@ package controllers.actions
 
 import base.SpecBase
 import models.requests.{DataRequest, ElectionIdRequest}
-import models.{ElectionsId, UserAnswers}
+import models.{FiIdentifiers, *}
 import pages.*
 import play.api.http.Status.SEE_OTHER
 import play.api.mvc.Result
-import play.api.test.FakeRequest
+import play.api.test.{FakeRequest, Helpers}
 
 import scala.concurrent.Future
 
@@ -33,9 +33,9 @@ class ElectionIdRequiredActionSpec extends SpecBase {
     def callRefine[A](request: DataRequest[A]): Future[Either[Result, ElectionIdRequest[A]]] =
       refine(request)
   }
-
-  private val userId  = "user-id"
-  private val fatcaId = "FATCAID"
+  private val fiIdentifiers = FiIdentifiers(fiId = "FIID", fiName = "FI Name")
+  private val userId        = "user-id"
+  private val fatcaId       = "FATCAID"
 
   private val electionId = ElectionsId(
     reportingYear = 2025,
@@ -43,6 +43,14 @@ class ElectionIdRequiredActionSpec extends SpecBase {
   )
 
   private def dataRequest(userAnswers: UserAnswers): DataRequest[_] =
+    DataRequest(
+      request = FakeRequest(Helpers.GET, s"/?year=${electionId.reportingYear}"),
+      userId = userId,
+      userAnswers = userAnswers,
+      fatcaId = fatcaId
+    )
+
+  private def dataRequestWithoutYear(userAnswers: UserAnswers): DataRequest[_] =
     DataRequest(
       request = FakeRequest(),
       userId = userId,
@@ -54,7 +62,8 @@ class ElectionIdRequiredActionSpec extends SpecBase {
 
     "must return a ElectionIdRequest when ElectionsIdPage exists in user answers" in {
       val userAnswers =
-        emptyUserAnswers.set(ElectionsIdPage, electionId).success.value
+        emptyUserAnswers
+          .withPage(FiDetailsPage, fiIdentifiers)
 
       val action = new Harness
 
@@ -67,18 +76,36 @@ class ElectionIdRequiredActionSpec extends SpecBase {
           request.userAnswers mustBe userAnswers
           request.fatcaId mustBe fatcaId
           request.electionsId mustBe electionId
+          request.fiDetail mustBe fiIdentifiers
         case _ =>
           fail("Expected a Right(ElectionIdRequest) but got a Left(Result)")
       }
     }
 
-    "must redirect to Journey Recovery when ElectionsIdPage does not exist in user answers" in {
+    "must redirect to Journey Recovery when FiDetailsPage does not exist in user answers" in {
       val userAnswers = emptyUserAnswers
 
       val action = new Harness
 
       val result =
         action.callRefine(dataRequest(userAnswers)).futureValue
+
+      result match {
+        case Left(redirectResult) =>
+          redirectResult.header.status mustBe SEE_OTHER
+          redirectResult.header.headers("Location") mustBe controllers.routes.JourneyRecoveryController.onPageLoad().url
+        case _ =>
+          fail("Expected a Left(Result) but got a Right(ElectionIdRequest)")
+      }
+    }
+
+    "must redirect to Journey Recovery when year does not exist in user answers" in {
+      val userAnswers = emptyUserAnswers.withPage(FiDetailsPage, fiIdentifiers)
+
+      val action = new Harness
+
+      val result =
+        action.callRefine(dataRequestWithoutYear(userAnswers)).futureValue
 
       result match {
         case Left(redirectResult) =>

@@ -42,7 +42,7 @@ class IsApplyingThresholdsControllerSpec extends SpecBase with MockitoSugar {
   val form: Form[Boolean]                    = formProvider()
   private val fiName                         = "fiName"
   lazy val isApplyingThresholdsRoute: String = controllers.elections.routes.IsApplyingThresholdsController.onPageLoad(NormalMode, year).url
-  implicit val electionsId: ElectionsId      = ElectionsId(year, "fiid")
+  implicit val electionsId: ElectionsId      = ElectionsId(year, "fiID")
   "IsApplyingThresholds Controller" - {
 
     "must return OK and the correct view for a GET" in {
@@ -66,11 +66,8 @@ class IsApplyingThresholdsControllerSpec extends SpecBase with MockitoSugar {
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
       val userData = emptyUserAnswers
-        .set(IsApplyingThresholdsPage(), true)
-        .success
-        .value
+        .withPage(IsApplyingThresholdsPage(), true)
         .withPage(FiDetailsPage, FiIdentifiers("fiID", fiName))
-        .withPage(ElectionsIdPage, electionsId)
 
       val application = applicationBuilder(maybeUserAnswers = Some(userData)).build()
 

@@ -16,7 +16,7 @@
 
 package models.requests
 
-import models.{ElectionsId, ReportId, UserAnswers}
+import models.{ElectionsId, FiIdentifiers, ReportId, UserAnswers}
 import play.api.mvc.{Request, WrappedRequest}
 
 case class OptionalDataRequest[A](request: Request[A], userId: String, maybeAnswers: Option[UserAnswers], fatcaId: String) extends WrappedRequest[A](request)
@@ -36,5 +36,6 @@ case class ElectionIdRequest[A](
   userId: String,
   userAnswers: UserAnswers,
   fatcaId: String,
-  electionsId: ElectionsId
+  electionsId: ElectionsId,
+  fiDetail: FiIdentifiers
 ) extends WrappedRequest[A](request)

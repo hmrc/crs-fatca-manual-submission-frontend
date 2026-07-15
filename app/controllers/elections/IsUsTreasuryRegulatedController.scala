@@ -20,7 +20,7 @@ import controllers.actions.*
 import forms.elections.IsUsTreasuryRegulatedFormProvider
 import models.{ElectionsId, Mode}
 import navigation.Navigator
-import pages.{ElectionsIdPage, FiDetailsPage, IsUsTreasuryRegulatedPage}
+import pages.IsUsTreasuryRegulatedPage
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -39,6 +39,7 @@ class IsUsTreasuryRegulatedController @Inject() (
   getData: FrontendDataRetrievalAction,
   requireData: DataCreationAction,
   formProvider: IsUsTreasuryRegulatedFormProvider,
+  electionIdRequiredAction: ElectionIdRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: IsUsTreasuryRegulatedView
 )(implicit ec: ExecutionContext)
@@ -47,41 +48,32 @@ class IsUsTreasuryRegulatedController @Inject() (
 
   val form: Form[Boolean] = formProvider()
 
-  def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData andThen electionIdRequiredAction) {
     implicit request =>
-      request.userAnswers
-        .get(FiDetailsPage)
-        .map {
-          fiDetail =>
-            implicit val electionsId: ElectionsId = ElectionsId(year, fiDetail.fiId)
-            val preparedForm = request.userAnswers.get(IsUsTreasuryRegulatedPage()) match {
-              case None        => form
-              case Some(value) => form.fill(value)
-            }
-            Ok(view(preparedForm, mode, fiDetail.fiName, year))
-        }
-        .getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+
+      implicit val electionsId: ElectionsId = request.electionsId
+      val preparedForm = request.userAnswers.get(IsUsTreasuryRegulatedPage()) match {
+        case None        => form
+        case Some(value) => form.fill(value)
+      }
+      Ok(view(preparedForm, mode, request.fiDetail.fiName, year))
+
   }
 
-  def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData andThen electionIdRequiredAction).async {
     implicit request =>
-      request.userAnswers
-        .get(FiDetailsPage)
-        .map {
-          fiDetail =>
-            implicit val electionsId: ElectionsId = ElectionsId(year, fiDetail.fiId)
-            form
-              .bindFromRequest()
-              .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiDetail.fiName, year))),
-                value =>
-                  for {
-                    updateElectionsId <- Future.fromTry(request.userAnswers.set(ElectionsIdPage, electionsId))
-                    updatedAnswers    <- Future.fromTry(updateElectionsId.set(IsUsTreasuryRegulatedPage(), value))
-                    _                 <- sessionRepository.set(updatedAnswers)
-                  } yield Redirect(navigator.nextPage(IsUsTreasuryRegulatedPage(), mode, updatedAnswers, Some(year)))
-              )
-        }
-        .getOrElse(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())))
+
+      implicit val electionsId: ElectionsId = request.electionsId
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, request.fiDetail.fiName, year))),
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(IsUsTreasuryRegulatedPage(), value))
+              _              <- sessionRepository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(IsUsTreasuryRegulatedPage(), mode, updatedAnswers, Some(year)))
+        )
+
   }
 }

@@ -45,7 +45,7 @@ class CRSThresholdsControllerSpec extends SpecBase with MockitoSugar {
   val formProvider                             = new CRSThresholdsFormProvider()
   val form: Form[Boolean]                      = formProvider()
   val mockSessionRepository: SessionRepository = mock[SessionRepository]
-  implicit val electionsId: ElectionsId        = ElectionsId(reportingYear, "test-fi-id")
+  implicit val electionsId: ElectionsId        = ElectionsId(reportingYear, "fiID")
 
   lazy val cRSThresholdsRoute: String = controllers.elections.routes.CRSThresholdsController.onPageLoad(NormalMode, reportingYear).url
 
