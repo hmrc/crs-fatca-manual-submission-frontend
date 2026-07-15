@@ -50,11 +50,12 @@ class CrsGrossProceedsController @Inject() (
 
   def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData andThen electionIdRequiredAction) {
     implicit request =>
-      implicit val electionsId = request.electionsId
       request.userAnswers
         .get(FiDetailsPage)
         .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)) {
           fiDetail =>
+            val isExpectedYear       = request.electionsId.reportingYear == year
+            implicit val electionsId = if isExpectedYear then request.electionsId else ElectionsId(year, fiDetail.fiId)
             val preparedForm = request.userAnswers.get(CrsGrossProceedsPage()) match {
               case None        => form
               case Some(value) => form.fill(value)

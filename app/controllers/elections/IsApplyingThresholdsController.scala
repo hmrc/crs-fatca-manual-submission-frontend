@@ -56,7 +56,8 @@ class IsApplyingThresholdsController @Inject() (
         .get(FiDetailsPage)
         .map {
           fiDetail =>
-            implicit val electionsId = request.electionsId
+            val isExpectedYear       = request.electionsId.reportingYear == year
+            implicit val electionsId = if isExpectedYear then request.electionsId else ElectionsId(year, fiDetail.fiId)
             val preparedForm = request.userAnswers.get(IsApplyingThresholdsPage()) match {
               case None        => form
               case Some(value) => form.fill(value)

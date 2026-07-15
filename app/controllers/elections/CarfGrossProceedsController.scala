@@ -47,12 +47,13 @@ class CarfGrossProceedsController @Inject() (
 
   def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData andThen electionIdRequiredAction) {
     implicit request =>
-      implicit val electionsId = request.electionsId
       request.userAnswers
         .get(FiDetailsPage)
         .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)) {
           fiDetail =>
-            val form = formProvider(year.toString)
+            val isExpectedYear       = request.electionsId.reportingYear == year
+            implicit val electionsId = if isExpectedYear then request.electionsId else ElectionsId(year, fiDetail.fiId)
+            val form                 = formProvider(year.toString)
             val preparedForm = request.userAnswers.get(CarfGrossProceedsPage()) match {
               case None        => form
               case Some(value) => form.fill(value)

@@ -50,12 +50,13 @@ class CRSDormantAccountsController @Inject() (
 
   def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData andThen electionIdRequiredAction) {
     implicit request =>
-      implicit val electionsId = request.electionsId
-      val userData             = request.userAnswers
+      val userData = request.userAnswers
       userData
         .get(FiDetailsPage)
         .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)) {
           fiDetail =>
+            val isExpectedYear       = request.electionsId.reportingYear == year
+            implicit val electionsId = if isExpectedYear then request.electionsId else ElectionsId(year, fiDetail.fiId)
             val preparedForm = userData.get(CRSDormantAccountsPage()) match {
               case None        => form
               case Some(value) => form.fill(value)
