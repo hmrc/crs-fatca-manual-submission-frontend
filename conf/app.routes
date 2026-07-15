@@ -120,7 +120,7 @@ GET        /manual/filer-category/change-sponsor                      controller
 POST       /manual/filer-category/change-sponsor                      controllers.manual.filercategory.WhatTypeOfFilerIsSponsorController.onSubmit(mode: Mode = CheckMode)
 
 GET        /manual/filer-category/check-answers                       controllers.manual.filercategory.FilerCategoryCheckAnswersController.onPageLoad()
-POST       /manual/filer-category/check-answers                       controllers.manual.filercategory.FilerCategoryCheckAnswersController.onSaveAndContinue()
+POST       /manual/filer-category/check-answers                       controllers.manual.filercategory.FilerCategoryCheckAnswersController.onSubmit()
 
 GET        /manual/filer-category/filer-category                      controllers.manual.filercategory.FilerCategoryController.onPageLoad(mode: Mode = NormalMode)
 

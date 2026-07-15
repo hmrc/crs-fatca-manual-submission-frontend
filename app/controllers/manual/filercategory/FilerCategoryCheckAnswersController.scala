@@ -17,7 +17,7 @@
 package controllers.manual.filercategory
 
 import controllers.actions.*
-import models.{Mode, ReportId}
+import models.ReportId
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -26,7 +26,7 @@ import utils.ReportDetailsCheckAnswersUtil
 import views.html.manual.filercategory.FilerCategoryCheckAnswersView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class FilerCategoryCheckAnswersController @Inject() (
   override val messagesApi: MessagesApi,
@@ -37,8 +37,7 @@ class FilerCategoryCheckAnswersController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: FilerCategoryCheckAnswersView,
   util: ReportDetailsCheckAnswersUtil
-)(implicit ec: ExecutionContext)
-    extends FrontendBaseController
+) extends FrontendBaseController
     with I18nSupport
     with Logging {
 
@@ -50,7 +49,7 @@ class FilerCategoryCheckAnswersController @Inject() (
 
   }
 
-  def onSaveAndContinue: Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
+  def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
     implicit request =>
       Future.successful(Redirect(controllers.manual.routes.SendAReportController.onPageLoad().url))
 
