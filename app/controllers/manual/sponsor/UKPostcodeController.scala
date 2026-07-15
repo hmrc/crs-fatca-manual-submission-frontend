@@ -82,7 +82,7 @@ class UKPostcodeController @Inject() (
                 postcode =>
                   addressLookupConnector.findByPostCode(postcode.toUpperCase).flatMap {
                     case Nil =>
-                      val formError = formReturned.withError(FormError("postCode", List("uKPostcode.error.notfound")))
+                      val formError = formReturned.withError(FormError("value", List("uKPostcode.error.notfound")))
                       Future.successful(BadRequest(view(formError, mode, sponsorName)))
                     case address =>
                       for {

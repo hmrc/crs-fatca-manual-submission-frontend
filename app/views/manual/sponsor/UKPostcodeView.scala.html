@@ -29,7 +29,7 @@
 
 @(form: Form[_], mode: Mode, sponsorName: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("uKPostcode.title"))) {
+@layout(pageTitle = title(form, messages("uKPostcode.title",sponsorName))) {
 
     @formHelper(action = controllers.manual.sponsor.routes.UKPostcodeController.onSubmit(mode)) {
 
@@ -46,8 +46,8 @@
                 field = form("value"),
                 label = LabelViewModel(messages("uKPostcode.heading",sponsorName)).withCssClass("govuk-visually-hidden")
             )
-            .withId("manual-sponsor-address-postcode")
             .withWidth(Fixed10)
+            .withAutocomplete("postal-code")
         )
 
         @link(controllers.routes.UnderConstructionController.onPageLoad().url, messages("uKPostcode.p2"), id = Some("enter-manually-id"))

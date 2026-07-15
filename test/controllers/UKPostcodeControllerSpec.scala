@@ -43,6 +43,8 @@ class UKPostcodeControllerSpec extends SpecBase with MockitoSugar {
 
   val formProvider = new UKPostcodeFormProvider()
   val form         = formProvider()
+  val testPostcode = "ZZ1 1ZZ"
+  val fieldName    = "value"
 
   lazy val uKPostcodeRoute = controllers.manual.sponsor.routes.UKPostcodeController.onPageLoad(NormalMode).url
 
@@ -72,7 +74,7 @@ class UKPostcodeControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = ua.set(UKPostcodePage(), "ZZ1 1ZZ").success.value
+      val userAnswers = ua.set(UKPostcodePage(), testPostcode).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
@@ -84,7 +86,7 @@ class UKPostcodeControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill("ZZ1 1ZZ"), NormalMode, sponsorName)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(testPostcode), NormalMode, sponsorName)(request, messages(application)).toString
       }
     }
 
@@ -108,11 +110,11 @@ class UKPostcodeControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, uKPostcodeRoute)
-            .withFormUrlEncodedBody(("postCode", "ZZ1 1ZZ"))
+            .withFormUrlEncodedBody((fieldName, testPostcode))
 
         val boundForm = form
-          .bind(Map("postCode" -> "ZZ1 1ZZ"))
-          .withError(FormError("postCode", "No addresses found — enter a different postcode or enter the address manually"))
+          .bind(Map(fieldName -> testPostcode))
+          .withError(FormError(fieldName, "No addresses found — enter a different postcode or enter the address manually"))
 
         val view = application.injector.instanceOf[UKPostcodeView]
 
@@ -144,7 +146,7 @@ class UKPostcodeControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, uKPostcodeRoute)
-            .withFormUrlEncodedBody(("postCode", "ZZ1 1ZZ"))
+            .withFormUrlEncodedBody((fieldName, testPostcode))
 
         val result = route(application, request).value
 

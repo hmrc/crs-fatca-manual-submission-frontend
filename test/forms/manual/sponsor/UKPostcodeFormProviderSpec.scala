@@ -17,7 +17,6 @@
 package forms.manual.sponsor
 
 import forms.behaviours.StringFieldBehaviours
-import forms.manual.sponsor.UKPostcodeFormProvider
 import play.api.data.FormError
 
 class UKPostcodeFormProviderSpec extends StringFieldBehaviours {
@@ -30,7 +29,7 @@ class UKPostcodeFormProviderSpec extends StringFieldBehaviours {
 
   ".postCode" - {
 
-    val fieldName = "postCode"
+    val fieldName = "value"
 
     "bind valid data" in {
       val testPostCode = "ZZ1 1ZZ"

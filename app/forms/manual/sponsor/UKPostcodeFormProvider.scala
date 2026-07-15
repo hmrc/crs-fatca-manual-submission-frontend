@@ -26,14 +26,13 @@ class UKPostcodeFormProvider @Inject() extends Mappings {
 
   def apply(): Form[String] =
     Form(
-      "postCode" ->
-        mandatoryPostcode(
-          "uKPostcode.error.required",
-          "uKPostcode.error.length",
-          POSTCODE_VALID,
-          "uKPostcode.error.invalid",
-          POSTCODE_FORMAT,
-          "uKPostcode.error.format"
-        )
+      "value" -> mandatoryPostcode(
+        "uKPostcode.error.required",
+        "uKPostcode.error.length",
+        POSTCODE_VALID,
+        "uKPostcode.error.invalid",
+        POSTCODE_FORMAT,
+        "uKPostcode.error.format"
+      )
     )
 }
