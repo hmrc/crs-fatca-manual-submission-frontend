@@ -17,17 +17,11 @@
 package pages
 
 import models.ElectionsId
-import pages.elections.{CRSContractsPage, CRSDormantAccountsPage, CRSThresholdsPage}
+import play.api.libs.json.JsPath
 
-import scala.language.implicitConversions
+case object ElectionsIdPage extends QuestionPage[ElectionsId] {
 
-trait Page
+  override def path: JsPath = JsPath \ toString
 
-object Page {
-
-  implicit def toString(page: Page): String = page.toString
-
-  def electionCRSPages(implicit electionsId: ElectionsId) =
-    Seq(CRSContractsPage(), CRSDormantAccountsPage(), CRSThresholdsPage(), CarfGrossProceedsPage(), CrsGrossProceedsPage())
-  def electionFATCAPages(implicit electionsId: ElectionsId) = Seq(IsApplyingThresholdsPage(), IsUsTreasuryRegulatedPage())
+  override def toString: String = "electionId"
 }

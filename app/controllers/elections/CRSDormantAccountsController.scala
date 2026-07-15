@@ -20,7 +20,6 @@ import controllers.actions.*
 import forms.elections.CRSDormantAccountsFormProvider
 import models.Mode
 import navigation.Navigator
-import pages.FiDetailsPage
 import pages.elections.CRSDormantAccountsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -38,6 +37,7 @@ class CRSDormantAccountsController @Inject() (
   identify: IdentifierAction,
   getData: FrontendDataRetrievalAction,
   requireData: DataRequiredAction,
+  electionIdRequiredAction: ElectionIdRequiredAction,
   formProvider: CRSDormantAccountsFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: CRSDormantAccountsView
@@ -47,42 +47,31 @@ class CRSDormantAccountsController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData andThen electionIdRequiredAction) {
     implicit request =>
-
-      val userData = request.userAnswers
-      userData
-        .get(FiDetailsPage)
-        .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)) {
-          fiDetail =>
-            val preparedForm = userData.get(CRSDormantAccountsPage) match {
-              case None        => form
-              case Some(value) => form.fill(value)
-            }
-            Ok(view(preparedForm, mode, fiDetail.fiName, year))
-        }
+      implicit val electionsId = request.electionsId
+      val preparedForm = request.userAnswers.get(CRSDormantAccountsPage()) match {
+        case None        => form
+        case Some(value) => form.fill(value)
+      }
+      Ok(view(preparedForm, mode, request.fiDetail.fiName, year))
   }
 
-  def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData andThen electionIdRequiredAction).async {
     implicit request =>
-
       val userData = request.userAnswers
 
-      userData
-        .get(FiDetailsPage)
-        .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))) {
-          fiDetail =>
-            form
-              .bindFromRequest()
-              .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiDetail.fiName, year))),
-                value =>
-                  for {
-                    updatedAnswers <- Future.fromTry(userData.set(CRSDormantAccountsPage, value))
-                    _              <- sessionRepository.set(updatedAnswers)
-                  } yield Redirect(navigator.nextPage(CRSDormantAccountsPage, mode, updatedAnswers, Some(year)))
-              )
+      implicit val electionsId = request.electionsId
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, request.fiDetail.fiName, year))),
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(userData.set(CRSDormantAccountsPage(), value))
+              _              <- sessionRepository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(CRSDormantAccountsPage(), mode, updatedAnswers, Some(year)))
+        )
 
-        }
   }
 }

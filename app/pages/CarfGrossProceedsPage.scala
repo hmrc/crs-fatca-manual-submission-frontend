@@ -16,15 +16,15 @@
 
 package pages
 
-import models.UserAnswers
+import models.{ElectionsId, UserAnswers}
 import pages.Page.electionFATCAPages
 import play.api.libs.json.JsPath
 
 import scala.util.Try
 
-case object CarfGrossProceedsPage extends QuestionPage[Boolean] {
+case class CarfGrossProceedsPage()(implicit electionsId: ElectionsId) extends QuestionPage[Boolean] {
 
-  override def path: JsPath = JsPath \ toString
+  override def path: JsPath = JsPath \ electionsId.mongoKey \ toString
 
   override def toString: String = "carfGrossProceeds"
 
@@ -34,7 +34,7 @@ case object CarfGrossProceedsPage extends QuestionPage[Boolean] {
     clearedFatca.flatMap {
       updatedAnswers =>
         value match {
-          case Some(false) => updatedAnswers.remove(CrsGrossProceedsPage)
+          case Some(false) => updatedAnswers.remove(CrsGrossProceedsPage())
           case _           => super.cleanup(value, updatedAnswers)
         }
     }

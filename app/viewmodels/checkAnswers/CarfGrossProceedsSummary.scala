@@ -16,7 +16,7 @@
 
 package viewmodels.checkAnswers
 
-import models.{CheckMode, UserAnswers}
+import models.{CheckMode, ElectionsId, UserAnswers}
 import pages.CarfGrossProceedsPage
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
@@ -28,8 +28,8 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 
 object CarfGrossProceedsSummary {
 
-  def row(answers: UserAnswers, year: Int)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(CarfGrossProceedsPage).map {
+  def row(answers: UserAnswers, year: Int)(implicit messages: Messages, electionsId: ElectionsId): Option[SummaryListRow] =
+    answers.get(CarfGrossProceedsPage()).map {
       answer =>
 
         val value = if (answer) "site.yes" else "site.no"

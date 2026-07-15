@@ -18,7 +18,7 @@ package controllers.elections
 
 import base.SpecBase
 import forms.elections.IsUsTreasuryRegulatedFormProvider
-import models.{FiIdentifiers, NormalMode, UserAnswers}
+import models.{ElectionsId, FiIdentifiers, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -36,12 +36,12 @@ import scala.concurrent.Future
 
 class IsUsTreasuryRegulatedControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute         = Call("GET", "/foo")
-  private val fiName      = "fiName"
-  private val year        = 2020
-  val formProvider        = new IsUsTreasuryRegulatedFormProvider()
-  val form: Form[Boolean] = formProvider()
-
+  def onwardRoute                             = Call("GET", "/foo")
+  private val fiName                          = "fiName"
+  private val year                            = 2020
+  val formProvider                            = new IsUsTreasuryRegulatedFormProvider()
+  val form: Form[Boolean]                     = formProvider()
+  implicit val electionsId: ElectionsId       = ElectionsId(year, "fiID")
   lazy val isUsTreasuryRegulatedRoute: String = controllers.elections.routes.IsUsTreasuryRegulatedController.onPageLoad(NormalMode, year).url
 
   "IsUsTreasuryRegulated Controller" - {
@@ -65,7 +65,7 @@ class IsUsTreasuryRegulatedControllerSpec extends SpecBase with MockitoSugar {
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
       val userAnswers = UserAnswers(userAnswersId)
-        .set(IsUsTreasuryRegulatedPage, true)
+        .set(IsUsTreasuryRegulatedPage(), true)
         .success
         .value
         .withPage(FiDetailsPage, FiIdentifiers("fiID", fiName))

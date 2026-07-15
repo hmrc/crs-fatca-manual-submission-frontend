@@ -18,7 +18,7 @@ package controllers.elections
 
 import base.SpecBase
 import forms.elections.CRSContractsFormProvider
-import models.{FiIdentifiers, NormalMode, UserAnswers}
+import models.{ElectionsId, FiIdentifiers, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
@@ -44,6 +44,7 @@ class CRSContractsControllerSpec extends SpecBase with MockitoSugar {
   val testFIName                               = "Test FI" // TODO : Require update after integration
   val reportingYear                            = 2027
   val mockSessionRepository: SessionRepository = mock[SessionRepository]
+  implicit val electionsId: ElectionsId        = ElectionsId(reportingYear, "fiID")
 
   lazy val cRSContractsRoute: String = controllers.elections.routes.CRSContractsController.onPageLoad(NormalMode, reportingYear).url
 
@@ -85,9 +86,8 @@ class CRSContractsControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-
       val userAnswers = UserAnswers(userAnswersId)
-        .set(CRSContractsPage, true)
+        .set(CRSContractsPage(), true)
         .success
         .value
         .set(FiDetailsPage, FiIdentifiers("fiID", testFIName))

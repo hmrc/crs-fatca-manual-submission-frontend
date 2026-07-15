@@ -18,10 +18,10 @@ package services
 
 import com.google.inject.Inject
 import connectors.ElectionsConnector
-import models.UserAnswers
 import models.elections.RegimeType.{CRS, FATCA}
 import models.elections.{CrsElectionsDetails, ElectionDetails, ElectionsSent, FatcaElectionsDetails}
 import models.requests.{CrsElectionsRequest, ElectionsSubmissionRequest, FatcaElectionsRequest}
+import models.{ElectionsId, UserAnswers}
 import pages.*
 import pages.Page.{electionCRSPages, electionFATCAPages}
 import pages.elections.*
@@ -37,21 +37,23 @@ class ElectionsService @Inject() (connector: ElectionsConnector, sessionReposito
   private case class RequestWithFiName(electionsSubmissionDetails: ElectionsSubmissionRequest, fiName: String)
 
   def submitAndDeleteElectionData(userAnswers: UserAnswers, reportingYear: Int)(implicit
-    hc: HeaderCarrier
+    hc: HeaderCarrier,
+    electionsId: ElectionsId
   ): Future[Unit] = for {
     requestBodyWithFIName <- toRequest(userAnswers, reportingYear)
     _                     <- connector.submit(requestBodyWithFIName.electionsSubmissionDetails)
     updatedUA             <- updateUA(userAnswers, reportingYear, requestBodyWithFIName.fiName, requestBodyWithFIName.electionsSubmissionDetails.fiId)
-    _                     <- sessionRepository.set(updatedUA)
+    UAWithoutElectionId   <- Future.fromTry(updatedUA.remove(ElectionsIdPage))
+    _                     <- sessionRepository.set(UAWithoutElectionId)
   } yield ()
 
-  private def updateUA(userAnswers: UserAnswers, reportingYear: Int, fiName: String, fiId: String): Future[UserAnswers] =
-    Future.fromTry(userAnswers.get(CRSContractsPage) match {
+  private def updateUA(userAnswers: UserAnswers, reportingYear: Int, fiName: String, fiId: String)(implicit electionsId: ElectionsId): Future[UserAnswers] =
+    Future.fromTry(userAnswers.get(CRSContractsPage()) match {
       case Some(_) => userAnswers.removeAll(electionCRSPages).flatMap(_.set(ElectionsSentPage, ElectionsSent(CRS, reportingYear, fiName, fiId)))
       case None    => userAnswers.removeAll(electionFATCAPages).flatMap(_.set(ElectionsSentPage, ElectionsSent(FATCA, reportingYear, fiName, fiId)))
     })
 
-  private def toRequest(userAnswers: UserAnswers, reportingYear: Int): Future[RequestWithFiName] =
+  private def toRequest(userAnswers: UserAnswers, reportingYear: Int)(implicit electionsId: ElectionsId): Future[RequestWithFiName] =
     userAnswers.get(FiDetailsPage) match {
       case Some(fiDetail) =>
         Future.successful(
@@ -68,20 +70,20 @@ class ElectionsService @Inject() (connector: ElectionsConnector, sessionReposito
       case None => Future.failed(InternalServerException("Unable to find FI Details"))
     }
 
-  private def buildCRSDetails(userAnswers: UserAnswers): Option[CrsElectionsRequest] =
+  private def buildCRSDetails(userAnswers: UserAnswers)(implicit electionsId: ElectionsId): Option[CrsElectionsRequest] =
     for {
-      hasContracts       <- userAnswers.get(CRSContractsPage)
-      hasDormantAccounts <- userAnswers.get(CRSDormantAccountsPage)
-      hasThresholds      <- userAnswers.get(CRSThresholdsPage)
+      hasContracts       <- userAnswers.get(CRSContractsPage())
+      hasDormantAccounts <- userAnswers.get(CRSDormantAccountsPage())
+      hasThresholds      <- userAnswers.get(CRSThresholdsPage())
     } yield {
-      val hasCARF = userAnswers.get(CrsGrossProceedsPage)
+      val hasCARF = userAnswers.get(CrsGrossProceedsPage())
       CrsElectionsRequest(hasCARF = hasCARF, hasContracts = hasContracts, hasDormantAccounts = hasDormantAccounts, hasThresholds = hasThresholds)
     }
 
-  private def buildFATCADetails(userAnswers: UserAnswers): Option[FatcaElectionsRequest] =
+  private def buildFATCADetails(userAnswers: UserAnswers)(implicit electionsId: ElectionsId): Option[FatcaElectionsRequest] =
     for {
-      hasTreasuryRegulations <- userAnswers.get(IsUsTreasuryRegulatedPage)
-      hasThresholds          <- userAnswers.get(IsApplyingThresholdsPage)
+      hasTreasuryRegulations <- userAnswers.get(IsUsTreasuryRegulatedPage())
+      hasThresholds          <- userAnswers.get(IsApplyingThresholdsPage())
     } yield FatcaElectionsRequest(hasThresholds = hasThresholds, hasTreasuryRegulations = hasTreasuryRegulations)
 
   def getElectionsRows(fiId: String, year: Int)(implicit hc: HeaderCarrier, messages: Messages): Future[ElectionsRows] =
