@@ -277,3 +277,15 @@ haveNumber.heading = Does the account have an official account number or identif
 haveNumber.checkYourAnswersLabel = haveNumber
 haveNumber.error.required = Select yes if the account has an official account number or identification number
 haveNumber.change.hidden = HaveNumber
+
+numberType.title = What type of account number or identification number is this?
+numberType.heading = What type of account number or identification number is this?
+numberType.iBAN = International Bank Account Number (IBAN)
+numberType.oBAN = Other Bank Account Number (OBAN)
+numberType.iSIN = International Securities Identification Number (ISIN)
+numberType.oSIN = Other Securities Identification Number (OSIN)
+numberType.sEMP = Specified Electronic Money Product (SEMP)
+numberType.oTHER = Any other type of account number or identification number
+numberType.checkYourAnswersLabel = What type of account number or identification number is this?
+numberType.error.required = Select what type of account number or identification number this is
+numberType.change.hidden = NumberType

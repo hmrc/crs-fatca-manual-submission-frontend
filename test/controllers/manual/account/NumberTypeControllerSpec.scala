@@ -14,73 +14,73 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.manual.account
 
 import base.SpecBase
 import connectors.DatabaseConnector
-import forms.manual.account.HaveNumberFormProvider
+import controllers.routes
+import forms.manual.account.NumberTypeFormProvider
 import models.SubmissionsConstants.CRS
-import models.{NormalMode, ReportId}
+import models.{NormalMode, NumberType, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.ReportIdPage
-import pages.manual.account.HaveNumberPage
+import pages.{NumberTypePage, ReportIdPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import views.html.manual.account.HaveNumberView
+import play.api.test.Helpers.*
+import views.html.manual.account.NumberTypeView
 
 import scala.concurrent.Future
 
-class HaveNumberControllerSpec extends SpecBase with MockitoSugar {
+class NumberTypeControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new HaveNumberFormProvider()
+  lazy val numberTypeRoute: String = controllers.manual.account.routes.NumberTypeController.onPageLoad(NormalMode).url
+
+  val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
+
+  val formProvider = new NumberTypeFormProvider()
   val form         = formProvider()
+  val ua           = emptyUserAnswers.withPage(ReportIdPage, reportId)
 
-  lazy val haveNumberRoute = controllers.manual.account.routes.HaveNumberController.onPageLoad(NormalMode).url
-
-  "HaveNumber Controller" - {
-
-    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
+  "NumberType Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
 
       running(application) {
-        val request = FakeRequest(GET, haveNumberRoute)
+        val request = FakeRequest(GET, numberTypeRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[HaveNumberView]
+        val view = application.injector.instanceOf[NumberTypeView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, reportId.regime)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
+      implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
 
-      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
-
-      val userAnswers = ua.set(HaveNumberPage(), true).success.value
+      val userAnswers = ua.set(NumberTypePage(), NumberType.values.head).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, haveNumberRoute)
+        val request = FakeRequest(GET, numberTypeRoute)
 
-        val view = application.injector.instanceOf[HaveNumberView]
+        val view = application.injector.instanceOf[NumberTypeView]
 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(NumberType.values.head), NormalMode, reportId.regime)(request, messages(application)).toString
       }
     }
 
@@ -100,8 +100,8 @@ class HaveNumberControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, haveNumberRoute)
-            .withFormUrlEncodedBody(("value", "true"))
+          FakeRequest(POST, numberTypeRoute)
+            .withFormUrlEncodedBody(("value", NumberType.values.head.toString))
 
         val result = route(application, request).value
 
@@ -116,17 +116,17 @@ class HaveNumberControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, haveNumberRoute)
-            .withFormUrlEncodedBody(("value", ""))
+          FakeRequest(POST, numberTypeRoute)
+            .withFormUrlEncodedBody(("value", "invalid value"))
 
-        val boundForm = form.bind(Map("value" -> ""))
+        val boundForm = form.bind(Map("value" -> "invalid value"))
 
-        val view = application.injector.instanceOf[HaveNumberView]
+        val view = application.injector.instanceOf[NumberTypeView]
 
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, reportId.regime)(request, messages(application)).toString
       }
     }
 
@@ -135,7 +135,7 @@ class HaveNumberControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(maybeUserAnswers = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, haveNumberRoute)
+        val request = FakeRequest(GET, numberTypeRoute)
 
         val result = route(application, request).value
 
@@ -144,18 +144,19 @@ class HaveNumberControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must redirect to Journey Recovery for a POST if no existing data is found" in {
+    "redirect to Journey Recovery for a POST if no existing data is found" in {
 
       val application = applicationBuilder(maybeUserAnswers = None).build()
 
       running(application) {
         val request =
-          FakeRequest(POST, haveNumberRoute)
-            .withFormUrlEncodedBody(("value", "true"))
+          FakeRequest(POST, numberTypeRoute)
+            .withFormUrlEncodedBody(("value", NumberType.values.head.toString))
 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
+
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }

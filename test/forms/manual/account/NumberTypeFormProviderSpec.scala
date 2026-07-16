@@ -14,27 +14,26 @@
  * limitations under the License.
  */
 
-package forms
+package forms.manual.account
 
-import forms.behaviours.BooleanFieldBehaviours
-import forms.manual.account.HaveNumberFormProvider
+import forms.behaviours.OptionFieldBehaviours
+import models.NumberType
 import play.api.data.FormError
 
-class HaveNumberFormProviderSpec extends BooleanFieldBehaviours {
+class NumberTypeFormProviderSpec extends OptionFieldBehaviours {
 
-  val requiredKey = "haveNumber.error.required"
-  val invalidKey  = "error.boolean"
-
-  val form = new HaveNumberFormProvider()()
+  val form = new NumberTypeFormProvider()()
 
   ".value" - {
 
-    val fieldName = "value"
+    val fieldName   = "value"
+    val requiredKey = "numberType.error.required"
 
-    behave like booleanField(
+    behave like optionsField[NumberType](
       form,
       fieldName,
-      invalidError = FormError(fieldName, invalidKey)
+      validValues = NumberType.values,
+      invalidError = FormError(fieldName, "error.invalid")
     )
 
     behave like mandatoryField(
