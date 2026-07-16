@@ -33,7 +33,7 @@ import scala.concurrent.Future
 class FilerCategoryControllerSpec extends SpecBase {
 
   val mockDbConnector: DatabaseConnector = mock[DatabaseConnector]
-  val mode: Mode = NormalMode
+  val mode: Mode                         = NormalMode
 
   "FilerCategoryController onPageLoad" - {
     implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
