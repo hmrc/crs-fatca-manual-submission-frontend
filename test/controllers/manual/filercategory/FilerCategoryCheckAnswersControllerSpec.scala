@@ -28,15 +28,15 @@ import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
-import utils.ReportDetailsCheckAnswersUtil
+import utils.CheckAnswersUtil
 import views.html.manual.filercategory.FilerCategoryCheckAnswersView
 
 import scala.concurrent.Future
 
 class FilerCategoryCheckAnswersControllerSpec extends SpecBase {
 
-  private val mockUtil: ReportDetailsCheckAnswersUtil = mock[ReportDetailsCheckAnswersUtil]
-  private val mockSessionRepository                   = mock[DatabaseConnector]
+  private val mockUtil: CheckAnswersUtil = mock[CheckAnswersUtil]
+  private val mockSessionRepository      = mock[DatabaseConnector]
 
   def onPageLoadRoute: String =
     controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad().url
@@ -68,7 +68,7 @@ class FilerCategoryCheckAnswersControllerSpec extends SpecBase {
           applicationBuilder(maybeUserAnswers = Some(ua))
             .overrides(
               bind[DatabaseConnector].toInstance(mockSessionRepository),
-              bind[ReportDetailsCheckAnswersUtil].toInstance(mockUtil)
+              bind[CheckAnswersUtil].toInstance(mockUtil)
             )
             .build()
 

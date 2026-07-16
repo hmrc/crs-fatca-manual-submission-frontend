@@ -16,7 +16,6 @@
 
 package controllers.manual.filercategory
 
-import connectors.DatabaseConnector
 import controllers.actions.*
 import models.Mode
 import pages.manual.sponsor.SponsorNamePage
@@ -26,34 +25,23 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
-class FilerCategoryController @Inject() (
-  override val messagesApi: MessagesApi,
-  identify: IdentifierAction,
-  getData: FrontendDataRetrievalAction,
-  requireData: DataRequiredAction,
-  reportIdAction: ReportIdRequiredAction,
-  val controllerComponents: MessagesControllerComponents,
-  sessionRepository: DatabaseConnector
-)(implicit ec: ExecutionContext)
-    extends FrontendBaseController
+class FilerCategoryController @Inject() (override val messagesApi: MessagesApi,
+                                         identify: IdentifierAction,
+                                         getData: FrontendDataRetrievalAction,
+                                         requireData: DataRequiredAction,
+                                         reportIdAction: ReportIdRequiredAction,
+                                         val controllerComponents: MessagesControllerComponents
+) extends FrontendBaseController
     with I18nSupport
     with Logging {
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
     implicit request =>
-      sessionRepository.get().map {
-        maybeUa =>
-          maybeUa.fold {
-            Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
-          } {
-            ua =>
-              ua.get(SponsorNamePage()(request.reportId)) match {
-                case Some(_) => Redirect(controllers.manual.filercategory.routes.WhatTypeOfFilerIsSponsorController.onPageLoad(mode))
-                case None    => Redirect(controllers.manual.filercategory.routes.WhatTypeOfFilerController.onPageLoad(mode))
-              }
-          }
+      request.userAnswers.get(SponsorNamePage()(request.reportId)) match {
+        case Some(_) => Future.successful(Redirect(controllers.manual.filercategory.routes.WhatTypeOfFilerIsSponsorController.onPageLoad(mode)))
+        case None    => Future.successful(Redirect(controllers.manual.filercategory.routes.WhatTypeOfFilerController.onPageLoad(mode)))
       }
   }
 

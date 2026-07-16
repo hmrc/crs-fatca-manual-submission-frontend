@@ -49,9 +49,13 @@ class WhatTypeOfFilerControllerSpec extends SpecBase with MockitoSugar {
   "WhatTypeOfFiler Controller" - {
     val testFiName                  = "TestFI"
     implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
+
     val ua = emptyUserAnswers
       .withPage(ReportIdPage, reportId)
       .withPage(FINamePage(), testFiName)
+
+    val uaWithoutFiName = emptyUserAnswers
+      .withPage(ReportIdPage, reportId)
 
     "must return OK and the correct view for a GET" in {
 
@@ -70,8 +74,7 @@ class WhatTypeOfFilerControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
-      val userAnswers       = ua.set(WhatTypeOfFilerPage(), WhatTypeOfFiler.values.head).success.value
+      val userAnswers = ua.set(WhatTypeOfFilerPage(), WhatTypeOfFiler.values.head).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
@@ -133,35 +136,70 @@ class WhatTypeOfFilerControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must redirect to Journey Recovery for a GET if no existing data is found" in {
+    "must redirect to Journey Recovery for a GET" - {
+      "if no existing data is found" in {
 
-      val application = applicationBuilder(maybeUserAnswers = None).build()
+        val application = applicationBuilder(maybeUserAnswers = None).build()
 
-      running(application) {
-        val request = FakeRequest(GET, whatTypeOfFilerRoute)
+        running(application) {
+          val request = FakeRequest(GET, whatTypeOfFilerRoute)
 
-        val result = route(application, request).value
+          val result = route(application, request).value
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
+        }
       }
+      "if FIName is missing" in {
+
+        val application = applicationBuilder(maybeUserAnswers = Some(uaWithoutFiName)).build()
+
+        running(application) {
+          val request = FakeRequest(GET, whatTypeOfFilerRoute)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
+        }
+      }
+
     }
 
-    "redirect to Journey Recovery for a POST if no existing data is found" in {
+    "must redirect to Journey Recovery for a POST" - {
+      "if no existing data is found" in {
 
-      val application = applicationBuilder(maybeUserAnswers = None).build()
+        val application = applicationBuilder(maybeUserAnswers = None).build()
 
-      running(application) {
-        val request =
-          FakeRequest(POST, whatTypeOfFilerRoute)
-            .withFormUrlEncodedBody(("value", WhatTypeOfFiler.values.head.toString))
+        running(application) {
+          val request =
+            FakeRequest(POST, whatTypeOfFilerRoute)
+              .withFormUrlEncodedBody(("value", WhatTypeOfFiler.values.head.toString))
 
-        val result = route(application, request).value
+          val result = route(application, request).value
 
-        status(result) mustEqual SEE_OTHER
+          status(result) mustEqual SEE_OTHER
 
-        redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
+          redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
+        }
       }
+      "if FIName is missing" in {
+
+        val application = applicationBuilder(maybeUserAnswers = Some(uaWithoutFiName)).build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, whatTypeOfFilerRoute)
+              .withFormUrlEncodedBody(("value", WhatTypeOfFiler.values.head.toString))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+
+          redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
+        }
+      }
+
     }
   }
 }

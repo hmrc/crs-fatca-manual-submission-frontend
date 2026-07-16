@@ -53,7 +53,8 @@ class WhatTypeOfFilerIsSponsorControllerSpec extends SpecBase with MockitoSugar 
     val ua = emptyUserAnswers
       .withPage(ReportIdPage, reportId)
       .withPage(SponsorNamePage(), testSponsorName)
-
+    val uaWithoutSponsor = emptyUserAnswers
+      .withPage(ReportIdPage, reportId)
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
@@ -71,8 +72,7 @@ class WhatTypeOfFilerIsSponsorControllerSpec extends SpecBase with MockitoSugar 
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
-      val userAnswers       = ua.set(WhatTypeOfFilerIsSponsorPage(), WhatTypeOfFilerIsSponsor.values.head).success.value
+      val userAnswers = ua.set(WhatTypeOfFilerIsSponsorPage(), WhatTypeOfFilerIsSponsor.values.head).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
@@ -136,34 +136,65 @@ class WhatTypeOfFilerIsSponsorControllerSpec extends SpecBase with MockitoSugar 
       }
     }
 
-    "must redirect to Journey Recovery for a GET if no existing data is found" in {
+    "must redirect to Journey Recovery for a GET" - {
+      "if no existing data is found" in {
 
-      val application = applicationBuilder(maybeUserAnswers = None).build()
+        val application = applicationBuilder(maybeUserAnswers = None).build()
 
-      running(application) {
-        val request = FakeRequest(GET, whatTypeOfFilerIsSponsorRoute)
+        running(application) {
+          val request = FakeRequest(GET, whatTypeOfFilerIsSponsorRoute)
 
-        val result = route(application, request).value
+          val result = route(application, request).value
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+      }
+      "if SponsorName is missing" in {
+        val application = applicationBuilder(maybeUserAnswers = Some(uaWithoutSponsor)).build()
+
+        running(application) {
+          val request = FakeRequest(GET, whatTypeOfFilerIsSponsorRoute)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
       }
     }
+    "must redirect to Journey Recovery for a POST" - {
+      "if no existing data is found" in {
 
-    "redirect to Journey Recovery for a POST if no existing data is found" in {
+        val application = applicationBuilder(maybeUserAnswers = None).build()
 
-      val application = applicationBuilder(maybeUserAnswers = None).build()
+        running(application) {
+          val request =
+            FakeRequest(POST, whatTypeOfFilerIsSponsorRoute)
+              .withFormUrlEncodedBody(("value", WhatTypeOfFilerIsSponsor.values.head.toString))
 
-      running(application) {
-        val request =
-          FakeRequest(POST, whatTypeOfFilerIsSponsorRoute)
-            .withFormUrlEncodedBody(("value", WhatTypeOfFilerIsSponsor.values.head.toString))
+          val result = route(application, request).value
 
-        val result = route(application, request).value
+          status(result) mustEqual SEE_OTHER
 
-        status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
+      }
+      "if SponsorName is missing" in {
 
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        val application = applicationBuilder(maybeUserAnswers = Some(uaWithoutSponsor)).build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, whatTypeOfFilerIsSponsorRoute)
+              .withFormUrlEncodedBody(("value", WhatTypeOfFilerIsSponsor.values.head.toString))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
       }
     }
   }

@@ -27,7 +27,7 @@ import viewmodels.govuk.summarylist.FluentSummaryList
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class ReportDetailsCheckAnswersUtil @Inject() {
+class CheckAnswersUtil @Inject() {
 
   def getReportDetailsRows(ua: UserAnswers)(implicit messages: Messages): SummaryList =
     SummaryListViewModel(

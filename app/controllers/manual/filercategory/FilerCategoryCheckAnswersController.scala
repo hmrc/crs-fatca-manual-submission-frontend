@@ -16,46 +16,34 @@
 
 package controllers.manual.filercategory
 
-import connectors.DatabaseConnector
 import controllers.actions.*
 import models.ReportId
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.ReportDetailsCheckAnswersUtil
+import utils.CheckAnswersUtil
 import views.html.manual.filercategory.FilerCategoryCheckAnswersView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-class FilerCategoryCheckAnswersController @Inject() (
-  override val messagesApi: MessagesApi,
-  identify: IdentifierAction,
-  getData: FrontendDataRetrievalAction,
-  requireData: DataRequiredAction,
-  reportIdAction: ReportIdRequiredAction,
-  val controllerComponents: MessagesControllerComponents,
-  view: FilerCategoryCheckAnswersView,
-  util: ReportDetailsCheckAnswersUtil,
-  sessionRepository: DatabaseConnector
-)(implicit ec: ExecutionContext)
-    extends FrontendBaseController
+class FilerCategoryCheckAnswersController @Inject() (override val messagesApi: MessagesApi,
+                                                     identify: IdentifierAction,
+                                                     getData: FrontendDataRetrievalAction,
+                                                     requireData: DataRequiredAction,
+                                                     reportIdAction: ReportIdRequiredAction,
+                                                     val controllerComponents: MessagesControllerComponents,
+                                                     view: FilerCategoryCheckAnswersView,
+                                                     util: CheckAnswersUtil
+) extends FrontendBaseController
     with I18nSupport
     with Logging {
 
-  def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
+  def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
-      sessionRepository.get().map {
-        maybeUa =>
-          maybeUa.fold {
-            Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
-          } {
-            ua =>
-              Ok(view(util.getFilerCategoryRows(ua)))
-          }
-      }
+      Ok(view(util.getFilerCategoryRows(request.userAnswers)))
 
   }
 
