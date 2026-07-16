@@ -16,7 +16,10 @@
 
 package connectors
 
+import com.github.tomakehurst.wiremock.http.Fault
+import models.ServiceErrors.{AddressLookup_Error, Other_Error}
 import models.response.{AddressLookup, Country}
+import org.scalatest.RecoverMethods.recoverToExceptionIf
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers.{a, include, must, mustBe, mustEqual}
 import play.api.http.Status.*
@@ -89,41 +92,54 @@ class AddressLookupConnectorISpec extends ISpecBase {
       "must throw an exception when address lookup returns a 400 (BAD_REQUEST) status" in {
         stubPostResponse(findByPostCode, BAD_REQUEST, "Some error")
 
-        val result = connector.findByPostCode(postcode)
+        val ex = recoverToExceptionIf[AddressLookup_Error.type] {
+            connector.findByPostCode(postcode)
+          }.futureValue
 
-        assertThrows[Exception] {
-          result.futureValue
-        }
+        ex mustBe AddressLookup_Error
       }
 
       "must throw an exception when address lookup returns a 404 (NOT_FOUND) status" in {
         stubPostResponse(findByPostCode, NOT_FOUND, "Some error")
 
-        val result = connector.findByPostCode(postcode)
+        val ex = recoverToExceptionIf[AddressLookup_Error.type] {
+            connector.findByPostCode(postcode)
+          }.futureValue
 
-        assertThrows[Exception] {
-          result.futureValue
-        }
+        ex mustBe AddressLookup_Error
       }
 
       "must throw an exception when address lookup returns a 405 (METHOD_NOT_ALLOWED) status" in {
         stubPostResponse(findByPostCode, METHOD_NOT_ALLOWED, "Some error")
 
-        val result = connector.findByPostCode(postcode)
+        val ex = recoverToExceptionIf[AddressLookup_Error.type] {
+            connector.findByPostCode(postcode)
+          }.futureValue
 
-        assertThrows[Exception] {
-          result.futureValue
-        }
+        ex mustBe AddressLookup_Error
       }
 
       "must throw an exception when address lookup returns a 500 (INTERNAL_SERVER_ERROR) status" in {
         stubPostResponse(findByPostCode, INTERNAL_SERVER_ERROR, "Some error")
 
-        val result = connector.findByPostCode(postcode)
+        val ex =
+          recoverToExceptionIf[AddressLookup_Error.type] {
+            connector.findByPostCode(postcode)
+          }.futureValue
 
-        assertThrows[Exception] {
-          result.futureValue
-        }
+        ex mustBe AddressLookup_Error
+
+      }
+
+      "must throw an exception when connector has exception" in {
+        stubPostFault(findByPostCode, Fault.EMPTY_RESPONSE)
+
+        val ex = recoverToExceptionIf[Other_Error.type] {
+            connector.findByPostCode(postcode)
+          }.futureValue
+
+        ex mustBe Other_Error
+
       }
 
       def addressesJson: String =

@@ -17,7 +17,7 @@
 package connectors
 
 import config.FrontendAppConfig
-import models.ServiceErrors.AddressLookup_Error
+import models.ServiceErrors.{AddressLookup_Error, Other_Error}
 import models.SubmissionsConstants.CRFA
 import models.requests.LookupAddressByPostcode
 import models.response.AddressLookup
@@ -60,10 +60,10 @@ class AddressLookupConnector @Inject() (http: HttpClientV2, config: FrontendAppC
         case response =>
           logger.error(s"Address Lookup failed with status ${response.status} Response body: ${response.body}")
           Future.failed(AddressLookup_Error)
-      } recover {
+      } recoverWith {
       case e: Exception =>
         logger.error("Exception in Address Lookup", e)
-        throw e
+        Future.failed(Other_Error)
     }
   }
 
