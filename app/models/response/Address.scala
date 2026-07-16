@@ -18,13 +18,13 @@ package models.response
 
 import play.api.libs.json.*
 
-case class Address(
-  addressLine1: String,
-  addressLine2: Option[String],
-  addressLine3: String,
-  addressLine4: Option[String],
-  postCode: Option[String],
-  country: Country
+case class Address(uprn: Option[Long],
+                   addressLine1: String,
+                   addressLine2: Option[String],
+                   addressLine3: String,
+                   addressLine4: Option[String],
+                   postCode: Option[String],
+                   country: Country
 ) {
 
   lazy val format: String = Seq(

@@ -79,7 +79,7 @@ class AddressLookupConnectorISpec extends ISpecBase {
         stubPostResponse(findByPostCode, OK, addressJson)
 
         val addressLookupResult = Seq(
-          AddressLookup(Some("1 Address line 1 Road"), None, Some("Address line 2 Road"), None, "Town", Some("County"), postcode, Some(Country.GB))
+          AddressLookup(200000706253L,Some("1 Address line 1 Road"), None, Some("Address line 2 Road"), None, "Town", Some("County"), postcode, Some(Country.GB))
         )
 
         val result = connector.findByPostCode(postcode)
@@ -130,7 +130,7 @@ class AddressLookupConnectorISpec extends ISpecBase {
         s"""[
            |{
            |  "id": "GB200000698110",
-           |  "uprn": 200000706253,
+           |  "uprn": 200000706260,
            |  "address": {
            |     "lines": [
            |         "Flat 3",
@@ -161,7 +161,7 @@ class AddressLookupConnectorISpec extends ISpecBase {
            |},
            |{
            |  "id": "GB200000698110",
-           |  "uprn": 200000706253,
+           |  "uprn": 200000706259,
            |  "address": {
            |     "lines": [
            |         "Flat 2",
@@ -192,7 +192,7 @@ class AddressLookupConnectorISpec extends ISpecBase {
            |},
            |{
            |  "id": "GB200000698110",
-           |  "uprn": 200000706253,
+           |  "uprn": 200000706256,
            |  "address": {
            |     "lines": [
            |         "5 Other place",
@@ -222,7 +222,7 @@ class AddressLookupConnectorISpec extends ISpecBase {
            |},
            |{
            |  "id": "GB200000698110",
-           |  "uprn": 200000706253,
+           |  "uprn": 200000706255,
            |  "address": {
            |     "lines": [
            |         "4 Other place",
@@ -252,7 +252,7 @@ class AddressLookupConnectorISpec extends ISpecBase {
            |},
            |{
            |  "id": "GB200000698110",
-           |  "uprn": 200000706253,
+           |  "uprn": 200000706254,
            |  "address": {
            |     "lines": [
            |         "3 Other place",
@@ -282,7 +282,7 @@ class AddressLookupConnectorISpec extends ISpecBase {
            |},
            |{
            |  "id": "GB200000698110",
-           |  "uprn": 200000706253,
+           |  "uprn": 200000706258,
            |  "address": {
            |     "lines": [
            |         "Flat 1",
@@ -343,7 +343,7 @@ class AddressLookupConnectorISpec extends ISpecBase {
            |},
            |{
            |  "id": "GB200000698110",
-           |  "uprn": 200000706253,
+           |  "uprn": 200000706261,
            |  "address": {
            |     "lines": [
            |         "8 Other place",
@@ -373,7 +373,7 @@ class AddressLookupConnectorISpec extends ISpecBase {
            |},
            |{
            |  "id": "GB200000698110",
-           |  "uprn": 200000706253,
+           |  "uprn": 200000706262,
            |  "address": {
            |     "lines": [
            |         "9 Other place",
@@ -403,7 +403,7 @@ class AddressLookupConnectorISpec extends ISpecBase {
            |},
            |{
            |  "id": "GB200000698110",
-           |  "uprn": 200000706253,
+           |  "uprn": 200000706263,
            |  "address": {
            |     "lines": [
            |         "10 Other place",
@@ -433,7 +433,7 @@ class AddressLookupConnectorISpec extends ISpecBase {
            |},
            |{
            |  "id": "GB200000698110",
-           |  "uprn": 200000706253,
+           |  "uprn": 200000706257,
            |  "address": {
            |     "lines": [
            |         "6 Other place",
@@ -466,7 +466,7 @@ class AddressLookupConnectorISpec extends ISpecBase {
            |
            |{
            |  "id": "GB200000698110",
-           |  "uprn": 200000706253,
+           |  "uprn": 200000706274,
            |  "address": {
            |     "lines": [
            |         "Efer House 137a",
@@ -497,7 +497,7 @@ class AddressLookupConnectorISpec extends ISpecBase {
            |},
            |{
            |  "id": "GB200000698110",
-           |  "uprn": 200000706253,
+           |  "uprn": 200000706272,
            |  "address": {
            |     "lines": [
            |         "99-99a",
@@ -528,7 +528,7 @@ class AddressLookupConnectorISpec extends ISpecBase {
            |},
            |{
            |  "id": "GB200000698110",
-           |  "uprn": 200000706253,
+           |  "uprn": 200000706273,
            |  "address": {
            |     "lines": [
            |         "135 Back High Street",
@@ -558,7 +558,7 @@ class AddressLookupConnectorISpec extends ISpecBase {
            |},
            |{
            |  "id": "GB200000698110",
-           |  "uprn": 200000706253,
+           |  "uprn": 200000706275,
            |  "address": {
            |     "lines": [
            |         "141 Back High Street",
@@ -588,7 +588,7 @@ class AddressLookupConnectorISpec extends ISpecBase {
            |},
            |{
            |  "id": "GB200000698110",
-           |  "uprn": 200000706253,
+           |  "uprn": 200000706276,
            |  "address": {
            |     "lines": [
            |         "143 Back High Street",
@@ -618,7 +618,7 @@ class AddressLookupConnectorISpec extends ISpecBase {
            |},
            |{
            |  "id": "GB200000698110",
-           |  "uprn": 200000706253,
+           |  "uprn": 200000706277,
            |  "address": {
            |     "lines": [
            |         "153 Back High Street",
@@ -658,7 +658,7 @@ class AddressLookupConnectorISpec extends ISpecBase {
            |
            |{
            |  "id": "GB200000698110",
-           |  "uprn": 200000706253,
+           |  "uprn": 200000706269,
            |  "address": {
            |     "lines": [
            |         "Apartment 301",
@@ -689,7 +689,7 @@ class AddressLookupConnectorISpec extends ISpecBase {
            |},
            |{
            |  "id": "GB200000698110",
-           |  "uprn": 200000706253,
+           |  "uprn": 200000706270,
            |  "address": {
            |     "lines": [
            |         "Apartment 302",
@@ -720,7 +720,7 @@ class AddressLookupConnectorISpec extends ISpecBase {
            |},
            |{
            |  "id": "GB200000698110",
-           |  "uprn": 200000706253,
+           |  "uprn": 200000706265,
            |  "address": {
            |     "lines": [
            |         "Unit 1",
@@ -751,7 +751,7 @@ class AddressLookupConnectorISpec extends ISpecBase {
            |},
            |{
            |  "id": "GB200000698110",
-           |  "uprn": 200000706253,
+           |  "uprn": 200000706264,
            |  "address": {
            |     "lines": [
            |         "Suite 1",
@@ -782,7 +782,7 @@ class AddressLookupConnectorISpec extends ISpecBase {
            |},
            |{
            |  "id": "GB200000698110",
-           |  "uprn": 200000706253,
+           |  "uprn": 200000706268,
            |  "address": {
            |     "lines": [
            |         "Suite 3",
@@ -813,7 +813,7 @@ class AddressLookupConnectorISpec extends ISpecBase {
            |},
            |{
            |  "id": "GB200000698110",
-           |  "uprn": 200000706253,
+           |  "uprn": 200000706266,
            |  "address": {
            |     "lines": [
            |         "Suite 2",
@@ -844,7 +844,7 @@ class AddressLookupConnectorISpec extends ISpecBase {
            |},
            |{
            |  "id": "GB200000698110",
-           |  "uprn": 200000706253,
+           |  "uprn": 200000706267,
            |  "address": {
            |     "lines": [
            |         "Unit 2",
@@ -875,7 +875,7 @@ class AddressLookupConnectorISpec extends ISpecBase {
            |},
            |{
            |  "id": "GB200000698110",
-           |  "uprn": 200000706253,
+           |  "uprn": 200000706271,
            |  "address": {
            |     "lines": [
            |         "Apartment 400",
@@ -909,28 +909,28 @@ class AddressLookupConnectorISpec extends ISpecBase {
         stubPostResponse(findByPostCode, OK, addressesJson)
 
         val addressLookupResult = Vector(
-          AddressLookup(Some("2 Other place"), None, Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
-          AddressLookup(Some("3 Other place"), None, Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
-          AddressLookup(Some("4 Other place"), None, Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
-          AddressLookup(Some("5 Other place"), None, Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
-          AddressLookup(Some("6 Other place"), None, Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
-          AddressLookup(Some("Flat 1"), Some("7 Other place"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
-          AddressLookup(Some("Flat 2"), Some("7 Other place"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
-          AddressLookup(Some("Flat 3"), Some("7 Other place"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
-          AddressLookup(Some("8 Other place"), None, Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
-          AddressLookup(Some("9 Other place"), None, Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
-          AddressLookup(Some("10 Other place"), None, Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
-          AddressLookup(Some("Suite 1"), Some("11 Waterloo Street"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
-          AddressLookup(Some("Unit 1"), Some("11 Waterloo Street"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
-          AddressLookup(Some("Suite 2"), Some("11 Waterloo Street"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
-          AddressLookup(Some("Unit 2"), Some("11 Waterloo Street"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
-          AddressLookup(Some("Suite 3"), Some("11 Waterloo Street"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
-          AddressLookup(Some("Apartment 301"), Some("11 Waterloo Street"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
-          AddressLookup(Some("Apartment 302"), Some("11 Waterloo Street"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
-          AddressLookup(Some("Apartment 400"), Some("11 Waterloo Street"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
-          AddressLookup(Some("99-99a"), Some("Back High Street"), Some("Gosforth"), None, "Newcastle upon Tyne", Some("County"), postcode, Some(Country.GB)),
-          AddressLookup(Some("135 Back High Street"), None, Some("Gosforth"), None, "Newcastle upon Tyne", Some("County"), postcode, Some(Country.GB)),
-          AddressLookup(Some("Efer House 137a"),
+          AddressLookup(200000706253L,Some("2 Other place"), None, Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
+          AddressLookup(200000706254L,Some("3 Other place"), None, Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
+          AddressLookup(200000706255L,Some("4 Other place"), None, Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
+          AddressLookup(200000706256L,Some("5 Other place"), None, Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
+          AddressLookup(200000706257L,Some("6 Other place"), None, Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
+          AddressLookup(200000706258L,Some("Flat 1"), Some("7 Other place"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
+          AddressLookup(200000706259L,Some("Flat 2"), Some("7 Other place"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
+          AddressLookup(200000706260L,Some("Flat 3"), Some("7 Other place"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
+          AddressLookup(200000706261L,Some("8 Other place"), None, Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
+          AddressLookup(200000706262L,Some("9 Other place"), None, Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
+          AddressLookup(200000706263L,Some("10 Other place"), None, Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
+          AddressLookup(200000706264L,Some("Suite 1"), Some("11 Waterloo Street"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
+          AddressLookup(200000706265L,Some("Unit 1"), Some("11 Waterloo Street"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
+          AddressLookup(200000706266L,Some("Suite 2"), Some("11 Waterloo Street"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
+          AddressLookup(200000706267L,Some("Unit 2"), Some("11 Waterloo Street"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
+          AddressLookup(200000706268L,Some("Suite 3"), Some("11 Waterloo Street"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
+          AddressLookup(200000706269L,Some("Apartment 301"), Some("11 Waterloo Street"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
+          AddressLookup(200000706270L,Some("Apartment 302"), Some("11 Waterloo Street"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
+          AddressLookup(200000706271L,Some("Apartment 400"), Some("11 Waterloo Street"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
+          AddressLookup(200000706272L,Some("99-99a"), Some("Back High Street"), Some("Gosforth"), None, "Newcastle upon Tyne", Some("County"), postcode, Some(Country.GB)),
+          AddressLookup(200000706273L,Some("135 Back High Street"), None, Some("Gosforth"), None, "Newcastle upon Tyne", Some("County"), postcode, Some(Country.GB)),
+          AddressLookup(200000706274L,Some("Efer House 137a"),
             Some("Back High Street"),
             Some("Gosforth"),
             None,
@@ -939,9 +939,9 @@ class AddressLookupConnectorISpec extends ISpecBase {
             postcode,
             Some(Country.GB)
           ),
-          AddressLookup(Some("141 Back High Street"), None, Some("Gosforth"), None, "Newcastle upon Tyne", Some("County"), postcode, Some(Country.GB)),
-          AddressLookup(Some("143 Back High Street"), None, Some("Gosforth"), None, "Newcastle upon Tyne", Some("County"), postcode, Some(Country.GB)),
-          AddressLookup(Some("153 Back High Street"), None, Some("Gosforth"), None, "Newcastle upon Tyne", Some("County"), postcode, Some(Country.GB))
+          AddressLookup(200000706275L,Some("141 Back High Street"), None, Some("Gosforth"), None, "Newcastle upon Tyne", Some("County"), postcode, Some(Country.GB)),
+          AddressLookup(200000706276L,Some("143 Back High Street"), None, Some("Gosforth"), None, "Newcastle upon Tyne", Some("County"), postcode, Some(Country.GB)),
+          AddressLookup(200000706277L,Some("153 Back High Street"), None, Some("Gosforth"), None, "Newcastle upon Tyne", Some("County"), postcode, Some(Country.GB))
         )
 
         val result = connector.findByPostCode(postcode)
@@ -1204,14 +1204,14 @@ class AddressLookupConnectorISpec extends ISpecBase {
         stubPostResponse(findByPostCode, OK, addressesJsonv2)
 
         val addressLookupResult = Vector(
-          AddressLookup(Some("Suite 1"), Some("11 Waterloo Street"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
-          AddressLookup(Some("Unit 1"), Some("11 Waterloo Street"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
-          AddressLookup(Some("Suite 2"), Some("11 Waterloo Street"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
-          AddressLookup(Some("Unit 2"), Some("11 Waterloo Street"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
-          AddressLookup(Some("Suite 3"), Some("11 Waterloo Street"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
-          AddressLookup(Some("Apartment 301"), Some("11 Waterloo Street"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
-          AddressLookup(Some("Apartment 302"), Some("11 Waterloo Street"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
-          AddressLookup(Some("Apartment 400"), Some("11 Waterloo Street"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB))
+          AddressLookup(200000706253L,Some("Suite 1"), Some("11 Waterloo Street"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
+          AddressLookup(200000706253L,Some("Unit 1"), Some("11 Waterloo Street"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
+          AddressLookup(200000706253L,Some("Suite 2"), Some("11 Waterloo Street"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
+          AddressLookup(200000706253L,Some("Unit 2"), Some("11 Waterloo Street"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
+          AddressLookup(200000706253L,Some("Suite 3"), Some("11 Waterloo Street"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
+          AddressLookup(200000706253L,Some("Apartment 301"), Some("11 Waterloo Street"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
+          AddressLookup(200000706253L,Some("Apartment 302"), Some("11 Waterloo Street"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB)),
+          AddressLookup(200000706253L,Some("Apartment 400"), Some("11 Waterloo Street"), Some("Some District"), None, "Town", Some("County"), postcode, Some(Country.GB))
         )
 
         val result = connector.findByPostCode(postcode)
