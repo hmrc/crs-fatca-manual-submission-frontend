@@ -16,6 +16,7 @@
 
 package controllers.manual.filercategory
 
+import connectors.DatabaseConnector
 import controllers.actions.*
 import models.ReportId
 import play.api.Logging
@@ -26,7 +27,7 @@ import utils.ReportDetailsCheckAnswersUtil
 import views.html.manual.filercategory.FilerCategoryCheckAnswersView
 
 import javax.inject.Inject
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class FilerCategoryCheckAnswersController @Inject() (
   override val messagesApi: MessagesApi,
@@ -36,16 +37,25 @@ class FilerCategoryCheckAnswersController @Inject() (
   reportIdAction: ReportIdRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: FilerCategoryCheckAnswersView,
-  util: ReportDetailsCheckAnswersUtil
-) extends FrontendBaseController
+  util: ReportDetailsCheckAnswersUtil,
+  sessionRepository: DatabaseConnector
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport
     with Logging {
 
-  def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
+  def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
-      val list                        = util.getFilerCategoryRows(request.userAnswers)
-      Ok(view(list))
+      sessionRepository.get().map {
+        maybeUa =>
+          maybeUa.fold {
+            Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+          } {
+            ua =>
+              Ok(view(util.getFilerCategoryRows(ua)))
+          }
+      }
 
   }
 

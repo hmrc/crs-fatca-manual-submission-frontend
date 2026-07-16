@@ -19,10 +19,12 @@ package controllers.manual.filercategory
 import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.manual.filercategory.WhatTypeOfFilerIsSponsorFormProvider
+import models.manual.filercategory.WhatTypeOfFilerIsSponsor
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
 import pages.manual.filercategory.WhatTypeOfFilerIsSponsorPage
 import pages.manual.sponsor.SponsorNamePage
+import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -46,7 +48,7 @@ class WhatTypeOfFilerIsSponsorController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  val form = formProvider()
+  val form: Form[WhatTypeOfFilerIsSponsor] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
     implicit request =>
@@ -77,7 +79,7 @@ class WhatTypeOfFilerIsSponsorController @Inject() (
                 formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, sponsorName))),
                 value =>
                   for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.set(WhatTypeOfFilerIsSponsorPage(), value))
+                    updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(WhatTypeOfFilerIsSponsorPage(), value))
                     _              <- sessionRepository.set(updatedAnswers)
                   } yield Redirect(navigator.nextPage(WhatTypeOfFilerIsSponsorPage(), mode, updatedAnswers))
               )

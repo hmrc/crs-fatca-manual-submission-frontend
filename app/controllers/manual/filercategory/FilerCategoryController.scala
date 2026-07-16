@@ -35,7 +35,7 @@ class FilerCategoryController @Inject() (
   requireData: DataRequiredAction,
   reportIdAction: ReportIdRequiredAction,
   val controllerComponents: MessagesControllerComponents,
-  dbConnector: DatabaseConnector
+  sessionRepository: DatabaseConnector
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -43,10 +43,11 @@ class FilerCategoryController @Inject() (
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
     implicit request =>
-      dbConnector.get().map {
+      sessionRepository.get().map {
         maybeUa =>
-          maybeUa.fold{
-            Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())} {
+          maybeUa.fold {
+            Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+          } {
             ua =>
               ua.get(SponsorNamePage()(request.reportId)) match {
                 case Some(_) => Redirect(controllers.manual.filercategory.routes.WhatTypeOfFilerIsSponsorController.onPageLoad(mode))

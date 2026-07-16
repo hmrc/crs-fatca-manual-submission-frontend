@@ -79,7 +79,7 @@ class WhatTypeOfFilerController @Inject() (
                 formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiName))),
                 value =>
                   for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.set(WhatTypeOfFilerPage(), value))
+                    updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(WhatTypeOfFilerPage(), value))
                     _              <- sessionRepository.set(updatedAnswers)
                   } yield Redirect(navigator.nextPage(WhatTypeOfFilerPage(), mode, updatedAnswers))
               )

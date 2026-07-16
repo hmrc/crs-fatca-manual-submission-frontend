@@ -19,12 +19,13 @@ package controllers.manual.reportdetails
 import connectors.DatabaseConnector
 import controllers.actions.*
 import models.{ReportId, UserAnswers}
+import pages.*
 import pages.manual.FINamePage
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage}
-import pages.*
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.ReportDetailsCheckAnswersUtil
 import views.html.ReportDetailsCheckAnswersView
@@ -40,6 +41,7 @@ class ReportDetailsCheckAnswersController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: ReportDetailsCheckAnswersView,
   dbConnector: DatabaseConnector,
+  sessionRepository: SessionRepository,
   util: ReportDetailsCheckAnswersUtil
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -71,6 +73,7 @@ class ReportDetailsCheckAnswersController @Inject() (
           (for {
             dbAnswers      <- dbConnector.get().map(_.getOrElse(UserAnswers(request.fatcaId)))
             uaWithReportId <- Future.fromTry(dbAnswers.set(ReportIdPage, reportId))
+            _              <- sessionRepository.set(dbAnswers)
             uaWithDraftId  <- Future.fromTry(uaWithReportId.set(FINamePage()(reportId), fiName))
             _              <- dbConnector.set(uaWithDraftId)
           } yield Redirect(controllers.manual.routes.SendAReportController.onPageLoad().url))

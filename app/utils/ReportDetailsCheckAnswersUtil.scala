@@ -34,7 +34,7 @@ class ReportDetailsCheckAnswersUtil @Inject() {
       rows = Seq(CrsOrFatcaSummary.row(ua), ReportingYearSummary.row(ua), TypeOfReportSummary.row(ua)).flatten
     ).withCssClass("govuk-!-margin-bottom-9")
 
-  def getFilerCategoryRows(ua: UserAnswers)(implicit messages: Messages, reportId:ReportId): SummaryList =
+  def getFilerCategoryRows(ua: UserAnswers)(implicit messages: Messages, reportId: ReportId): SummaryList =
     SummaryListViewModel(
       rows = Seq(WhatTypeOfFilerIsSponsorSummary.row(ua), WhatTypeOfFilerSummary.row(ua)).flatten
     ).withCssClass("govuk-!-margin-bottom-9")

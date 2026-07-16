@@ -18,10 +18,9 @@ package pages.manual.filercategory
 
 import models.ReportId
 import models.manual.filercategory.WhatTypeOfFilerIsSponsor
-import pages.ReportPage
+import pages.QuestionPage
+import play.api.libs.json.JsPath
 
-object WhatTypeOfFilerIsSponsorPage {
+final case class WhatTypeOfFilerIsSponsorPage()(implicit reportId: ReportId) extends QuestionPage[WhatTypeOfFilerIsSponsor]:
 
-  def apply()(implicit reportId: ReportId): ReportPage[WhatTypeOfFilerIsSponsor] =
-    ReportPage("whatTypeOfFilerIsSponsor")
-}
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "whatTypeOfFilerIsSponsor"
