@@ -292,6 +292,7 @@ whatTypeOfFilerIsSponsor.change.hidden = Change what type of filer the sponsor i
 
 filerCategoryCheckAnswers.title = Check your answers for the filer category
 filerCategoryCheckAnswers.heading = Check your answers for the filer category
+
 uKPostcode.title = What is the postcode for {0}?
 uKPostcode.heading = What is the postcode for {0}?
 uKPostcode.p1 = Enter the postcode to find the address automatically.
