@@ -27,33 +27,33 @@ import utils.ReportingConstants
 @Singleton
 class Navigator @Inject() () {
 
-  def nextPage(page: Page, mode: Mode, userData: UserAnswers, year: Option[Int]): Call =
+  def nextPage(page: Page, mode: Mode, userData: UserAnswers, year: Option[Int])(implicit electionsId: ElectionsId): Call =
     (page, mode) match {
-      case (IsUsTreasuryRegulatedPage, NormalMode) =>
+      case (IsUsTreasuryRegulatedPage(), NormalMode) =>
         year.fold(routes.JourneyRecoveryController.onPageLoad())(
           y => controllers.elections.routes.IsApplyingThresholdsController.onPageLoad(NormalMode, y)
         )
-      case (IsApplyingThresholdsPage, NormalMode) =>
+      case (IsApplyingThresholdsPage(), NormalMode) =>
         year.fold(routes.JourneyRecoveryController.onPageLoad()) {
           reportingYear => controllers.elections.routes.CheckYourAnswersController.onPageLoad(reportingYear)
         }
-      case (CRSContractsPage, NormalMode) =>
+      case (CRSContractsPage(), NormalMode) =>
         year.fold(routes.JourneyRecoveryController.onPageLoad()) {
           reportingYear => controllers.elections.routes.CRSDormantAccountsController.onPageLoad(mode, reportingYear)
         }
-      case (CRSDormantAccountsPage, NormalMode) =>
+      case (CRSDormantAccountsPage(), NormalMode) =>
         year.fold(routes.JourneyRecoveryController.onPageLoad()) {
           reportingYear => controllers.elections.routes.CRSThresholdsController.onPageLoad(mode, reportingYear)
         }
-      case (CRSThresholdsPage, NormalMode) =>
+      case (CRSThresholdsPage(), NormalMode) =>
         year.fold(routes.JourneyRecoveryController.onPageLoad()) {
           reportingYear => thresholdsNavigation(reportingYear)
         }
-      case (CarfGrossProceedsPage, _) =>
+      case (CarfGrossProceedsPage(), _) =>
         year.fold(routes.JourneyRecoveryController.onPageLoad()) {
           reportingYear => crsCarfGrossProceedsRedirect(userData, reportingYear, mode)
         }
-      case (CrsGrossProceedsPage, NormalMode) =>
+      case (CrsGrossProceedsPage(), NormalMode) =>
         year.fold(routes.JourneyRecoveryController.onPageLoad()) {
           reportingYear => controllers.elections.routes.CheckYourAnswersController.onPageLoad(reportingYear)
         }
@@ -72,8 +72,8 @@ class Navigator @Inject() () {
       controllers.elections.routes.CheckYourAnswersController.onPageLoad(year)
     }
 
-  private def crsCarfGrossProceedsRedirect(userAnswers: UserAnswers, reportingYear: Int, mode: Mode) =
-    userAnswers.get(CarfGrossProceedsPage) match {
+  private def crsCarfGrossProceedsRedirect(userAnswers: UserAnswers, reportingYear: Int, mode: Mode)(implicit electionsId: ElectionsId) =
+    userAnswers.get(CarfGrossProceedsPage()) match {
       case Some(true)  => controllers.elections.routes.CrsGrossProceedsController.onPageLoad(mode, reportingYear)
       case Some(false) => controllers.elections.routes.CheckYourAnswersController.onPageLoad(reportingYear)
       case None        => routes.JourneyRecoveryController.onPageLoad()

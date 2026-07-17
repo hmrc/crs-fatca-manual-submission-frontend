@@ -18,16 +18,15 @@ package controllers.elections
 
 import base.SpecBase
 import controllers.routes
-import models.{FiIdentifiers, UserAnswers}
-import pages.FiDetailsPage
+import models.{ElectionsId, FiIdentifiers, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
+import pages.{ElectionsIdPage, FiDetailsPage}
 import play.api.inject
 import play.api.inject.bind
 import play.api.test.FakeRequest
-import services.CheckYourAnswersValidatorService
 import play.api.test.Helpers.*
-import services.ElectionsService
+import services.{CheckYourAnswersValidatorService, ElectionsService}
 import uk.gov.hmrc.http.InternalServerException
 import viewmodels.govuk.SummaryListFluency
 import views.html.CheckYourAnswersView
@@ -38,15 +37,19 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
   "Check Your Answers Controller" - {
 
-    val year = 2026
+    val year                              = 2026
+    implicit val electionsId: ElectionsId = ElectionsId(year, "some-fiid")
 
     "must return OK and the correct view for a GET" in {
 
       val mockService = mock[CheckYourAnswersValidatorService]
       val testFIName  = "Test FI Name"
-      val identifiers = FiIdentifiers("fiID", testFIName)
+      val identifiers = FiIdentifiers("some-fiid", testFIName)
       val userAnswers = UserAnswers(userAnswersId)
         .set(FiDetailsPage, identifiers)
+        .success
+        .value
+        .set(ElectionsIdPage, electionsId)
         .success
         .value
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
@@ -55,7 +58,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
       running(application) {
         val request = FakeRequest(GET, controllers.elections.routes.CheckYourAnswersController.onPageLoad(year).url)
-        when(mockService.validate(any(), any())).thenReturn(Right(()))
+        when(mockService.validate(any(), any())(any[ElectionsId]())).thenReturn(Right(()))
 
         val result = route(application, request).value
 
@@ -72,16 +75,42 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
       }
     }
 
-    "must Redirect when validation fails" in {
+    "must redirect to journey recovery when FiDetails is missing for a GET" in {
 
       val mockService = mock[CheckYourAnswersValidatorService]
-
-      val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers))
+      val userAnswers = UserAnswers(userAnswersId)
+        .set(ElectionsIdPage, electionsId)
+        .success
+        .value
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
         .overrides(bind[CheckYourAnswersValidatorService].toInstance(mockService))
         .build()
 
       running(application) {
-        when(mockService.validate(any(), any())).thenReturn(Left("/error"))
+        val request = FakeRequest(GET, controllers.elections.routes.CheckYourAnswersController.onPageLoad(year).url)
+        when(mockService.validate(any(), any())(any[ElectionsId]())).thenReturn(Right(()))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must Redirect when validation fails" in {
+
+      val mockService = mock[CheckYourAnswersValidatorService]
+      val testFIName  = "Test FI Name"
+      val identifiers = FiIdentifiers("some-fiid", testFIName)
+      val userAnswers = emptyUserAnswers
+        .withPage(FiDetailsPage, identifiers)
+        .withPage(ElectionsIdPage, electionsId)
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
+        .overrides(bind[CheckYourAnswersValidatorService].toInstance(mockService))
+        .build()
+
+      running(application) {
+        when(mockService.validate(any(), any())(any[ElectionsId]())).thenReturn(Left("/error"))
         val request = FakeRequest(GET, controllers.elections.routes.CheckYourAnswersController.onPageLoad(year).url)
 
         val result = route(application, request).value
@@ -106,23 +135,25 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
     }
 
     "onSubmit" - {
-
-      val onSubmitUrl = controllers.elections.routes.CheckYourAnswersController.onSubmit(2026).url
       "must redirect To Election Sent Page when service return success" in {
 
         val mockService = mock[ElectionsService]
-
-        when(mockService.submitAndDeleteElectionData(any(), any())(any())) thenReturn Future.successful(())
+        val testFIName  = "Test FI Name"
+        val identifiers = FiIdentifiers("some-fiid", testFIName)
+        val userAnswers = emptyUserAnswers
+          .withPage(FiDetailsPage, identifiers)
+          .withPage(ElectionsIdPage, electionsId)
+        when(mockService.submitAndDeleteElectionData(any(), any())(any(), any[ElectionsId]())) thenReturn Future.successful(())
 
         val application =
-          applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers))
+          applicationBuilder(maybeUserAnswers = Some(userAnswers))
             .overrides(
               inject.bind[ElectionsService].toInstance(mockService)
             )
             .build()
 
         running(application) {
-          val request = FakeRequest(POST, onSubmitUrl)
+          val request = FakeRequest(POST, controllers.elections.routes.CheckYourAnswersController.onSubmit(2026).url)
 
           val result = route(application, request).value
 
@@ -134,18 +165,22 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
       "must redirect To Journey Recovery when service return failure" in {
 
         val mockService = mock[ElectionsService]
-
-        when(mockService.submitAndDeleteElectionData(any(), any())(any())) thenReturn Future.failed(InternalServerException("Failed"))
+        val testFIName  = "Test FI Name"
+        val identifiers = FiIdentifiers("some-fiid", testFIName)
+        val userAnswers = emptyUserAnswers
+          .withPage(FiDetailsPage, identifiers)
+          .withPage(ElectionsIdPage, electionsId)
+        when(mockService.submitAndDeleteElectionData(any(), any())(any(), any[ElectionsId]())) thenReturn Future.failed(InternalServerException("Failed"))
 
         val application =
-          applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers))
+          applicationBuilder(maybeUserAnswers = Some(userAnswers))
             .overrides(
               inject.bind[ElectionsService].toInstance(mockService)
             )
             .build()
 
         running(application) {
-          val request = FakeRequest(POST, onSubmitUrl)
+          val request = FakeRequest(POST, controllers.elections.routes.CheckYourAnswersController.onSubmit(2026).url)
 
           val result = route(application, request).value
 

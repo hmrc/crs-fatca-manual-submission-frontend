@@ -19,12 +19,12 @@ package controllers.elections
 import base.SpecBase
 import controllers.routes
 import forms.elections.CRSThresholdsFormProvider
-import models.{FiIdentifiers, NormalMode, UserAnswers}
+import models.{ElectionsId, FiIdentifiers, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.FiDetailsPage
+import pages.{ElectionsIdPage, FiDetailsPage}
 import pages.elections.CRSThresholdsPage
 import play.api.data.Form
 import play.api.inject.bind
@@ -45,6 +45,7 @@ class CRSThresholdsControllerSpec extends SpecBase with MockitoSugar {
   val formProvider                             = new CRSThresholdsFormProvider()
   val form: Form[Boolean]                      = formProvider()
   val mockSessionRepository: SessionRepository = mock[SessionRepository]
+  implicit val electionsId: ElectionsId        = ElectionsId(reportingYear, "fiID")
 
   lazy val cRSThresholdsRoute: String = controllers.elections.routes.CRSThresholdsController.onPageLoad(NormalMode, reportingYear).url
 
@@ -56,7 +57,12 @@ class CRSThresholdsControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))))
+      val application = applicationBuilder(maybeUserAnswers =
+        Some(
+          emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))
+            withPage (ElectionsIdPage, electionsId)
+        )
+      )
         .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
         .build()
 
@@ -77,7 +83,8 @@ class CRSThresholdsControllerSpec extends SpecBase with MockitoSugar {
 
       val userAnswers = UserAnswers(userAnswersId)
         .withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))
-        .withPage(CRSThresholdsPage, true)
+        .withPage(CRSThresholdsPage(), true)
+        .withPage(ElectionsIdPage, electionsId)
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
         .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
@@ -97,11 +104,16 @@ class CRSThresholdsControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to the next page when valid data is submitted" in {
-
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
-        applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))))
+        applicationBuilder(maybeUserAnswers =
+          Some(
+            emptyUserAnswers
+              .withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))
+              .withPage(ElectionsIdPage, electionsId)
+          )
+        )
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository)
@@ -120,9 +132,44 @@ class CRSThresholdsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
+    "must redirect to the next page when valid data is submitted for year less than 2026" in {
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+      val application =
+        applicationBuilder(maybeUserAnswers =
+          Some(
+            emptyUserAnswers
+              .withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))
+              .withPage(ElectionsIdPage, electionsId)
+          )
+        )
+          .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[SessionRepository].toInstance(mockSessionRepository)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, controllers.elections.routes.CRSThresholdsController.onPageLoad(NormalMode, 2025).url)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual onwardRoute.url
+      }
+    }
+
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))))
+      val application = applicationBuilder(maybeUserAnswers =
+        Some(
+          emptyUserAnswers
+            .withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))
+            .withPage(ElectionsIdPage, electionsId)
+        )
+      )
         .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
         .build()
       when(mockSessionRepository.get(any())) thenReturn Future.successful(Some(emptyUserAnswers))
@@ -157,9 +204,41 @@ class CRSThresholdsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
+    "must redirect to Journey Recovery for a GET if no Fidtails data is found" in {
+      val userAnswers = emptyUserAnswers
+        .withPage(ElectionsIdPage, electionsId)
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, cRSThresholdsRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
       val application = applicationBuilder(maybeUserAnswers = None).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, cRSThresholdsRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Journey Recovery for a POST if no Fidtails data is found" in {
+      val userAnswers = emptyUserAnswers
+        .withPage(ElectionsIdPage, electionsId)
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
         val request =

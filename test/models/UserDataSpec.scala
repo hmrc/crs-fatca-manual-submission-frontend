@@ -22,20 +22,21 @@ import pages.{CarfGrossProceedsPage, CrsGrossProceedsPage}
 class UserDataSpec extends SpecBase {
 
   "CarfGrossProceedsPage" - {
+    implicit val electionsId: ElectionsId = ElectionsId(2026, "some-fiid")
     "must remove CrsGrossProceedsPage when CarfGrossProceedsPage is set to false" in {
       val userData = emptyUserAnswers
-        .withPage(CrsGrossProceedsPage, true)
-        .withPage(CarfGrossProceedsPage, false)
+        .withPage(CrsGrossProceedsPage(), true)
+        .withPage(CarfGrossProceedsPage(), false)
 
-      userData.get(CrsGrossProceedsPage) mustBe None
+      userData.get(CrsGrossProceedsPage()) mustBe None
     }
 
     "must not remove CrsGrossProceedsPage when CarfGrossProceedsPage is set to true" in {
       val userData = emptyUserAnswers
-        .withPage(CrsGrossProceedsPage, true)
-        .withPage(CarfGrossProceedsPage, true)
+        .withPage(CrsGrossProceedsPage(), true)
+        .withPage(CarfGrossProceedsPage(), true)
 
-      userData.get(CrsGrossProceedsPage) mustBe Some(true)
+      userData.get(CrsGrossProceedsPage()) mustBe Some(true)
     }
   }
 }

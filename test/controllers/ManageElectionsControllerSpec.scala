@@ -81,6 +81,32 @@ class ManageElectionsControllerSpec extends SpecBase {
         )(request, messages(application)).toString
       }
     }
+
+    "must redirect to journey recovery when exception is thrown for a GET" in {
+
+      when(mockElectionsService.getElectionsRows(any(), any())(any(), any()))
+        .thenReturn(Future.successful(emptyElectionsRows))
+      when(mockFiService.getFIDetail(any(), eqTo(fiid))(using any())).thenReturn(Future.failed(new RuntimeException("Failed to get FI details")))
+
+      val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[ElectionsService].toInstance(mockElectionsService),
+          bind[ViewFIService].toInstance(mockFiService),
+          bind[SessionRepository].toInstance(mockSessionRepository)
+        )
+        .build()
+
+      running(application) {
+        val request = FakeRequest(GET, controllers.elections.routes.ManageElectionsController.onPageLoad(year, fiid).url)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[ManageElectionsView]
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
   }
 
 }

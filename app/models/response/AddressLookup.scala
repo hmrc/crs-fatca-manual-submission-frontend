@@ -1,0 +1,171 @@
+/*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package models.response
+
+import play.api.libs.functional.syntax.*
+import play.api.libs.json.*
+
+import scala.math.Ordering.Implicits.seqOrdering
+import scala.util.Try
+
+case class AddressLookup(uprn: Long,
+                         addressLine1: Option[String],
+                         addressLine2: Option[String],
+                         addressLine3: Option[String],
+                         addressLine4: Option[String],
+                         town: String,
+                         county: Option[String],
+                         postcode: String,
+                         country: Option[Country]
+) {
+
+  val toAddress: Option[Address] =
+    for {
+      line1 <- addressLine1
+      line2 = addressLine2
+      line3 = addressLine3
+        .map(
+          l => s"$l $town"
+        )
+        .getOrElse(town)
+      line4        = addressLine4
+      safePostcode = Option(postcode)
+    } yield Address(Some(uprn), line1, line2, line3, line4, safePostcode, country.getOrElse(Country.GB))
+
+  lazy val format: String =
+    Seq(
+      addressLine1,
+      addressLine2,
+      addressLine3,
+      addressLine4,
+      Option(town),
+      Option(postcode),
+      county,
+      country.map(_.description)
+    ).flatten.mkString(", ")
+
+  lazy val formatRadios: String =
+    Seq(
+      addressLine1,
+      addressLine2,
+      addressLine3,
+      addressLine4,
+      Option(town),
+      Option(postcode),
+      county,
+      country.filterNot(_.code == "GB").map(_.description)
+    ).flatten.mkString(", ")
+
+  lazy val fullAddress = List(
+    addressLine1,
+    addressLine2,
+    addressLine3,
+    addressLine4
+  ).flatten.mkString(" ")
+
+  lazy val extractNumberAndReverse: Seq[Option[Int]] =
+    raw"\d+".r
+      .findAllIn(fullAddress)
+      .map(
+        n => Try(n.toInt).toOption
+      )
+      .toSeq
+      .reverse :+ None
+
+}
+
+object AddressLookup {
+
+  implicit val addressLookupWrite: Writes[AddressLookup] = {
+    addressLookup =>
+      Json.obj(
+        "uprn" -> addressLookup.uprn,
+        "address" -> Json.obj(
+          "lines" -> List(
+            addressLookup.addressLine1,
+            addressLookup.addressLine2,
+            addressLookup.addressLine3,
+            addressLookup.addressLine4
+          ).flatten,
+          "town"     -> addressLookup.town,
+          "county"   -> addressLookup.county,
+          "postcode" -> addressLookup.postcode,
+          "country"  -> addressLookup.country
+        )
+      )
+  }
+
+  implicit val addressLookupReads: Reads[AddressLookup] =
+    ((JsPath \ "uprn").read[Long] and
+      (JsPath \ "address" \ "lines").read[List[String]] and
+      (JsPath \ "address" \ "town").read[String] and
+      (JsPath \ "address" \ "county").readNullable[String] and
+      (JsPath \ "address" \ "postcode").read[String] and
+      (JsPath \ "address" \ "country" \ "code").readNullable[String] and
+      (JsPath \ "address" \ "country" \ "description").readNullable[String] and
+      (JsPath \ "address" \ "country" \ "name").readNullable[String]) {
+      (uprn, lines, town, county, postcode, countryCode, countryDescription, countryName) =>
+        val addressLines: (Option[String], Option[String], Option[String], Option[String]) =
+          lines.size match {
+            case 0 =>
+              (None, None, None, None)
+            case 1 =>
+              (Some(lines.head), None, None, None)
+            case 2 =>
+              (Some(lines.head), None, Some(lines(1)), None)
+            case 3 =>
+              (Some(lines.head), Some(lines(1)), Some(lines(2)), None)
+            case numberOfLines if numberOfLines >= 4 => (Some(lines.head), Some(lines(1)), Some(lines(2)), Some(lines(3)))
+          }
+        AddressLookup(
+          uprn,
+          addressLines._1,
+          addressLines._2,
+          addressLines._3,
+          addressLines._4,
+          town,
+          county,
+          postcode,
+          countryCode.map(
+            code => Country(code, countryDescription.orElse(countryName).getOrElse(code))
+          )
+        )
+    }
+
+  implicit val addressesLookupReads: Reads[Seq[AddressLookup]] = Reads {
+    json =>
+      json.validate[Seq[JsValue]] flatMap {
+        _.foldLeft[JsResult[List[AddressLookup]]](JsSuccess(List.empty)) {
+          (addresses, currentAddress) =>
+            for {
+              sequenceOfAddresses <- addresses
+              address             <- currentAddress.validate[AddressLookup](addressLookupReads)
+            } yield sequenceOfAddresses :+ address
+        }
+      }
+  }
+
+  given Ordering[AddressLookup] =
+    Ordering.by(
+      address =>
+        (
+          address.extractNumberAndReverse,
+          address.fullAddress
+        )
+    )
+
+}

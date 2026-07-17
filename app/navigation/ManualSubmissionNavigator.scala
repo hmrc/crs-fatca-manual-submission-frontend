@@ -22,7 +22,7 @@ import models.*
 import pages.*
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
-import pages.manual.sponsor.{HaveSponsorPage, IsSponsorBasedInUKPage, SponsorNamePage, WhatIsGIINForSponsorPage}
+import pages.manual.sponsor.*
 import play.api.mvc.Call
 
 import javax.inject.{Inject, Singleton}
@@ -53,13 +53,19 @@ class ManualSubmissionNavigator @Inject() () {
           case Some(false) => routes.UnderConstructionController.onPageLoad()
           case None        => routes.JourneyRecoveryController.onPageLoad()
         }
-      case SponsorNamePage()          => controllers.manual.sponsor.routes.WhatIsGIINForSponsorController.onPageLoad(NormalMode)
-      case WhatIsGIINForSponsorPage() => controllers.manual.sponsor.routes.IsSponsorBasedInUKController.onPageLoad(NormalMode)
-      case IsSponsorBasedInUKPage()   => routes.UnderConstructionController.onPageLoad()
-      case WhatTypeOfFilerPage() =>
-        controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad()
-      case WhatTypeOfFilerIsSponsorPage() =>
-        controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad()
-      case _ => routes.IndexController.onPageLoad()
+      case SponsorNamePage()              => controllers.manual.sponsor.routes.WhatIsGIINForSponsorController.onPageLoad(NormalMode)
+      case WhatIsGIINForSponsorPage()     => controllers.manual.sponsor.routes.IsSponsorBasedInUKController.onPageLoad(NormalMode)
+      case IsSponsorBasedInUKPage()       => handleSponsorBasedUKNavigation(userAnswers, mode)
+      case UKPostcodePage()               => routes.UnderConstructionController.onPageLoad()
+      case WhatTypeOfFilerPage()          => controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad()
+      case WhatTypeOfFilerIsSponsorPage() => controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad()
+      case _                              => routes.IndexController.onPageLoad()
+    }
+
+  private def handleSponsorBasedUKNavigation(userAnswers: UserAnswers, mode: Mode)(implicit reportId: ReportId) =
+    userAnswers.get(IsSponsorBasedInUKPage()) match {
+      case Some(true)  => controllers.manual.sponsor.routes.UKPostcodeController.onPageLoad(mode)
+      case Some(false) => routes.UnderConstructionController.onPageLoad()
+      case None        => routes.JourneyRecoveryController.onPageLoad()
     }
 }

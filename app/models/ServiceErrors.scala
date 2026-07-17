@@ -24,4 +24,6 @@ object ServiceErrors {
   case object Downstream_Error extends ServiceErrors
   case object NoFiDetailFound extends ServiceErrors
   case object Elections_Error extends ServiceErrors
+  case object AddressLookup_Error extends ServiceErrors
+  case object Other_Error extends ServiceErrors
 }

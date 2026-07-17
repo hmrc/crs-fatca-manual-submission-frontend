@@ -16,14 +16,14 @@
 
 package viewmodels.checkAnswers
 
-import models.UserAnswers
+import models.{ElectionsId, UserAnswers}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import viewmodels.govuk.summarylist.*
 
 object CheckYourAnswersElections {
 
-  def apply(answers: UserAnswers, year: Int)(implicit messages: Messages): SummaryList =
+  def apply(answers: UserAnswers, year: Int)(implicit messages: Messages, electionsId: ElectionsId): SummaryList =
     SummaryListViewModel(
       rows = Seq(
         CRSContractsSummary.row(answers, year),
