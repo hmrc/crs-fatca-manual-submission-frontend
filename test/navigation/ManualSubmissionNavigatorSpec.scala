@@ -23,7 +23,7 @@ import models.SubmissionsConstants.FATCA
 import pages.*
 import pages.manual.account.HaveNumberPage
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
-import pages.manual.sponsor.{HaveSponsorPage, IsSponsorBasedInUKPage, SponsorNamePage, WhatIsGIINForSponsorPage}
+import pages.manual.sponsor.{HaveSponsorPage, IsSponsorBasedInUKPage, SponsorNamePage, UKPostcodePage, WhatIsGIINForSponsorPage}
 
 class ManualSubmissionNavigatorSpec extends SpecBase {
 
@@ -96,9 +96,29 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
       }
 
       "IsSponsorBasedInUKPage" - {
-        "must go to UNDERCONSTRUCTION" in {
+        "must go to UNDERCONSTRUCTION when user selects false" in {
+          val ua = UserAnswers("id").withPage(IsSponsorBasedInUKPage(), false)
+          navigator.nextPage(IsSponsorBasedInUKPage(), NormalMode, ua) mustBe
+            controllers.routes.UnderConstructionController.onPageLoad()
+        }
+
+        "must go to UK Postcode when user selects true" in {
+          val ua = UserAnswers("id").withPage(IsSponsorBasedInUKPage(), true)
+          navigator.nextPage(IsSponsorBasedInUKPage(), NormalMode, ua) mustBe
+            controllers.manual.sponsor.routes.UKPostcodeController.onPageLoad(NormalMode)
+        }
+
+        "must go to There is a problem page when no answer available" in {
           val ua = UserAnswers("id")
           navigator.nextPage(IsSponsorBasedInUKPage(), NormalMode, ua) mustBe
+            controllers.routes.JourneyRecoveryController.onPageLoad()
+        }
+      }
+
+      "UKPostcodePage" - {
+        "must go to UNDERCONSTRUCTION when user selects false" in {
+          val ua = UserAnswers("id").withPage(UKPostcodePage(), "ZZ1 1ZZ")
+          navigator.nextPage(UKPostcodePage(), NormalMode, ua) mustBe
             controllers.routes.UnderConstructionController.onPageLoad()
         }
       }

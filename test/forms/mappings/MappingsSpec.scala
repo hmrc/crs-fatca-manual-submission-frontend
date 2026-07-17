@@ -21,6 +21,7 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import play.api.data.{Form, FormError}
 import models.Enumerable
+import utils.RegexConstants.{POSTCODE_FORMAT, POSTCODE_VALID}
 
 object MappingsSpec {
 
@@ -232,6 +233,106 @@ class MappingsSpec extends AnyFreeSpec with Matchers with OptionValues with Mapp
     "must unbind a valid value" in {
       val result = testForm.fill(1)
       result.apply("value").value.value mustEqual "1"
+    }
+  }
+
+  "postcode" - {
+
+    val testForm: Form[String] =
+      Form(
+        "postCode" -> mandatoryPostcode(
+          "uKPostcode.error.required",
+          "uKPostcode.error.length",
+          POSTCODE_VALID,
+          "uKPostcode.error.invalid",
+          POSTCODE_FORMAT,
+          "uKPostcode.error.format"
+        )
+      )
+
+    "must return required error" in {
+      val expectedError = Seq(FormError("postCode", "uKPostcode.error.required"))
+      val result        = testForm.bind(Map("postCode" -> ""))
+      result.errors mustEqual expectedError
+    }
+
+    "must return length error" in {
+      val expectedError = Seq(FormError("postCode", "uKPostcode.error.length"))
+      val result        = testForm.bind(Map("postCode" -> "12345678901"))
+      result.errors mustEqual expectedError
+    }
+
+    "must return invalid error" - {
+
+      Seq(
+        "SW1A-1AA", // hyphen
+        "SW1A_1AA", // underscore
+        "SW1A@1AA", // @
+        "SW1A#1AA", // #
+        "SW1A£1AA", // pound sign
+        "SW1A%1AA", // %
+        "SW1A&1AA", // &
+        "SW1A(1AA", // (
+        "SW1A)1AA", // )
+        "SW1A/1AA", // /
+        "SW1A\\1AA", // backslash
+        "SW1A,1AA", // comma
+        "SW1A.1AA", // dot
+        "SW1A:1AA", // colon
+        "SW1A;1AA", // semicolon
+        "SW1A'1AA", // apostrophe
+        "SW1A\"1AA", // double quote
+        "SW1A?1AA", // question mark
+        "SW1A!1AA", // exclamation mark
+        "SW1A\t1AA", // tab
+        "SW1A\n1AA", // newline
+        "SW1A\r1AA" // carriage return
+      ).foreach {
+        postcode =>
+          s"for postcode [$postcode]" in {
+            val result = testForm.bind(Map("postCode" -> postcode))
+
+            result.errors mustEqual Seq(
+              FormError("postCode", "uKPostcode.error.invalid")
+            )
+          }
+      }
+
+    }
+
+    "must return format error" - {
+      Seq(
+        "12345", // starts with digits
+        "ABC 123", // wrong format
+        "A", // too short
+        "AA", // too short
+        "SW1", // missing inward code
+        "SW1A", // missing inward code
+        "SW1A 1", // missing letters
+        "SW1A 1A", // only one trailing letter
+        "SW1A 11A", // second character in inward code must be a letter
+        "SW1A 111", // ends with digits instead of letters
+        "SW1A AA1", // inward code starts with letters instead of digit
+        "SW1A 1AAA", // too many trailing letters
+        "SW1AA 1AA", // too many characters in outward code
+        "SWA1 1AA", // missing required digit in outward code
+        "ABCD 1AA", // too many leading letters
+        "1A 1AA", // starts with digit
+        "A123 1AA", // outward code structure invalid
+        "SW 1AA", // missing digit before space
+        "SW11A AA", // inward code missing digit
+        "SW1A A1A" // inward code format invalid
+      ).foreach {
+        postcode =>
+          s"for postcode [$postcode]" in {
+            val result = testForm.bind(Map("postCode" -> postcode))
+
+            result.errors mustEqual Seq(
+              FormError("postCode", "uKPostcode.error.format")
+            )
+          }
+      }
+
     }
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-package utils
+package models.response
 
-object RegexConstants:
-  val SPONSER_NAME_VALID: String       = """^[A-Za-z0-9&'\\^` -]+$"""
-  val SPONSER_NAME_DOUBLE_DASH: String = """.*--.*"""
-  val POSTCODE_VALID: String           = """^[A-Za-z0-9 ]*$"""
-  val POSTCODE_FORMAT: String          = """^[A-Za-z]{1,2}\d[A-Za-z0-9]?\s?\d[A-Za-z]{2}$"""
+import play.api.libs.json.{Json, OFormat}
+
+case class Country(code: String, description: String, alternativeName: Option[String] = None)
+
+object Country {
+
+  val GB = Country("GB", "United Kingdom")
+
+  implicit val format: OFormat[Country] = Json.format[Country]
+}

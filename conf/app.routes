@@ -109,6 +109,11 @@ POST       /manual/sponsor/giin                                         controll
 GET        /manual/sponsor/change-giin                                  controllers.manual.sponsor.WhatIsGIINForSponsorController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/sponsor/change-giin                                  controllers.manual.sponsor.WhatIsGIINForSponsorController.onSubmit(mode: Mode = CheckMode)
 
+GET        /manual/sponsor/uk-postcode                        controllers.manual.sponsor.UKPostcodeController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/sponsor/uk-postcode                        controllers.manual.sponsor.UKPostcodeController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/sponsor/change-uk-postcode                  controllers.manual.sponsor.UKPostcodeController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/sponsor/change-uk-postcode                  controllers.manual.sponsor.UKPostcodeController.onSubmit(mode: Mode = CheckMode)
+
 GET        /manual/account/have-number                         controllers.manual.account.HaveNumberController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/account/have-number                         controllers.manual.account.HaveNumberController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/account/change-have-number                  controllers.manual.account.HaveNumberController.onPageLoad(mode: Mode = CheckMode)
