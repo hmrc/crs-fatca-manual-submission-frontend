@@ -16,11 +16,22 @@
 
 package pages.manual.sponsor
 
-import models.ReportId
-import pages.ReportPage
+import models.{ReportId, UserAnswers}
+import pages.QuestionPage
+import play.api.libs.json.JsPath
 
-object HaveSponsorPage {
+import scala.util.{Success, Try}
 
-  def apply()(implicit reportId: ReportId): ReportPage[Boolean] =
-    ReportPage("haveSponsor")
+final case class HaveSponsorPage()(implicit reportId: ReportId) extends QuestionPage[Boolean] {
+
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "haveSponsor"
+
+  override def cleanupWithReportId(
+    value: Option[Boolean],
+    userData: UserAnswers
+  )(implicit reportId: ReportId): Try[UserAnswers] =
+    value match {
+      case Some(false) => userData.remove(SponsorNamePage())
+      case _           => Success(userData)
+    }
 }

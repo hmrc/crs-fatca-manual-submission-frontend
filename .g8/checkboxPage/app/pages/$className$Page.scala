@@ -1,10 +1,9 @@
 package pages
 
 import models.{ReportId, $className$}
+import play.api.libs.json.JsPath
 
-object $className$Page {
+final case class $className$Page()(implicit reportId: ReportId) extends QuestionPage[Set[$className$]]:
 
-  def apply()(implicit reportId: ReportId): ReportPage[Set[$className$]] =
-    ReportPage("$className;format="decap"$")
-}
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "$className;format="decap"$"
 

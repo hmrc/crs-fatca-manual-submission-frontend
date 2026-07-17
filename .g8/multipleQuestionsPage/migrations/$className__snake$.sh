@@ -28,6 +28,8 @@ echo "$className;format="decap"$.$field2Name$.change.hidden = $field2Name$" >> .
 
 echo "Adding to ModelGenerators"
 awk '/trait ModelGenerators/ {\
+    print "import models.'$className$'"
+    print "import org.scalacheck.Arbitrary.*"
     print;\
     print "";\
     print "  implicit lazy val arbitrary$className$: Arbitrary[$className$] =";\

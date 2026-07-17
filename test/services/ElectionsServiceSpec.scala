@@ -18,7 +18,7 @@ package services
 
 import base.SpecBase
 import connectors.ElectionsConnector
-import models.FiIdentifiers
+import models.{ElectionsId, FiIdentifiers}
 import models.ServiceErrors.Elections_Error
 import models.elections.{CrsElectionsDetails, ElectionDetails, FatcaElectionsDetails, YesNoNa}
 import models.requests.ElectionsSubmissionRequest
@@ -136,11 +136,12 @@ class ElectionsServiceSpec extends SpecBase {
     }
 
     "submitAndDeleteElectionData" - {
+      implicit val electionsId: ElectionsId = ElectionsId(2026, "testId")
       "should fail the future when fiId not present" in {
         val userAnswers = emptyUserAnswers
-          .withPage(CRSContractsPage, true)
-          .withPage(CRSDormantAccountsPage, true)
-          .withPage(CRSThresholdsPage, true)
+          .withPage(CRSContractsPage(), true)
+          .withPage(CRSDormantAccountsPage(), true)
+          .withPage(CRSThresholdsPage(), true)
 
         val exception = service.submitAndDeleteElectionData(userAnswers, 2026).failed.futureValue
 
@@ -151,9 +152,9 @@ class ElectionsServiceSpec extends SpecBase {
       "should return future failed when connector returns failure" in {
         val userAnswers = emptyUserAnswers
           .withPage(FiDetailsPage, FiIdentifiers("testId", "Test FI"))
-          .withPage(CRSContractsPage, true)
-          .withPage(CRSDormantAccountsPage, true)
-          .withPage(CRSThresholdsPage, true)
+          .withPage(CRSContractsPage(), true)
+          .withPage(CRSDormantAccountsPage(), true)
+          .withPage(CRSThresholdsPage(), true)
         when(mockConnector.submit(any())(using any[HeaderCarrier])).thenReturn(Future.failed(RuntimeException("Failed")))
 
         val exception = service.submitAndDeleteElectionData(userAnswers, 2026).failed.futureValue
@@ -165,9 +166,9 @@ class ElectionsServiceSpec extends SpecBase {
       "should return Future failed when repository set failed" in {
         val userAnswers = emptyUserAnswers
           .withPage(FiDetailsPage, FiIdentifiers("testId", "Test FI"))
-          .withPage(CRSContractsPage, true)
-          .withPage(CRSDormantAccountsPage, true)
-          .withPage(CRSThresholdsPage, true)
+          .withPage(CRSContractsPage(), true)
+          .withPage(CRSDormantAccountsPage(), true)
+          .withPage(CRSThresholdsPage(), true)
         when(mockConnector.submit(any())(using any[HeaderCarrier])).thenReturn(Future.successful(()))
         when(mockRepository.set(any())).thenReturn(Future.failed(RuntimeException("Failed")))
 
@@ -180,9 +181,9 @@ class ElectionsServiceSpec extends SpecBase {
       "should return Future success when Request went through successfully" in {
         val userAnswers = emptyUserAnswers
           .withPage(FiDetailsPage, FiIdentifiers("testId", "Test FI"))
-          .withPage(CRSContractsPage, true)
-          .withPage(CRSDormantAccountsPage, true)
-          .withPage(CRSThresholdsPage, true)
+          .withPage(CRSContractsPage(), true)
+          .withPage(CRSDormantAccountsPage(), true)
+          .withPage(CRSThresholdsPage(), true)
         when(mockConnector.submit(any())(using any[HeaderCarrier])).thenReturn(Future.successful(()))
         when(mockRepository.set(any())).thenReturn(Future.successful(true))
 

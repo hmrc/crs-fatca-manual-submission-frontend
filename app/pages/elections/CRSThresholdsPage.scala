@@ -16,16 +16,16 @@
 
 package pages.elections
 
-import models.UserAnswers
+import models.{ElectionsId, UserAnswers}
 import pages.Page.electionFATCAPages
 import pages.QuestionPage
 import play.api.libs.json.JsPath
 
 import scala.util.Try
 
-case object CRSThresholdsPage extends QuestionPage[Boolean] {
+case class CRSThresholdsPage()(implicit electionsId: ElectionsId) extends QuestionPage[Boolean] {
 
-  override def path: JsPath = JsPath \ toString
+  override def path: JsPath = JsPath \ electionsId.mongoKey \ toString
 
   override def toString: String = "crsThresholds"
 

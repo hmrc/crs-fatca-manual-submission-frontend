@@ -20,7 +20,7 @@ import controllers.actions.*
 import forms.elections.IsApplyingThresholdsFormProvider
 import models.Mode
 import navigation.Navigator
-import pages.{FiDetailsPage, IsApplyingThresholdsPage}
+import pages.IsApplyingThresholdsPage
 import play.api.Logging
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -39,6 +39,7 @@ class IsApplyingThresholdsController @Inject() (
   identify: IdentifierAction,
   getData: FrontendDataRetrievalAction,
   requireData: DataRequiredAction,
+  electionIdRequiredAction: ElectionIdRequiredAction,
   formProvider: IsApplyingThresholdsFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: IsApplyingThresholdsView
@@ -49,39 +50,29 @@ class IsApplyingThresholdsController @Inject() (
 
   val form: Form[Boolean] = formProvider()
 
-  def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData andThen electionIdRequiredAction) {
     implicit request =>
-      request.userAnswers
-        .get(FiDetailsPage)
-        .map {
-          fiDetail =>
-            val preparedForm = request.userAnswers.get(IsApplyingThresholdsPage) match {
-              case None        => form
-              case Some(value) => form.fill(value)
-            }
-            Ok(view(preparedForm, mode, fiDetail.fiName, year))
-        }
-        .getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+      implicit val electionsId = request.electionsId
 
+      val preparedForm = request.userAnswers.get(IsApplyingThresholdsPage()) match {
+        case None        => form
+        case Some(value) => form.fill(value)
+      }
+      Ok(view(preparedForm, mode, request.fiDetail.fiName, year))
   }
 
-  def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData andThen electionIdRequiredAction).async {
     implicit request =>
-      request.userAnswers
-        .get(FiDetailsPage)
-        .map {
-          fiDetail =>
-            form
-              .bindFromRequest()
-              .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiDetail.fiName, year))),
-                value =>
-                  for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.set(IsApplyingThresholdsPage, value))
-                    _              <- sessionRepository.set(updatedAnswers)
-                  } yield Redirect(navigator.nextPage(IsApplyingThresholdsPage, mode, updatedAnswers, Some(year)))
-              )
-        }
-        .getOrElse(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())))
+      implicit val electionsId = request.electionsId
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, request.fiDetail.fiName, year))),
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(IsApplyingThresholdsPage(), value))
+              _              <- sessionRepository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(IsApplyingThresholdsPage(), mode, updatedAnswers, Some(year)))
+        )
   }
 }

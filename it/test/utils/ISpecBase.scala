@@ -82,6 +82,7 @@ trait ISpecBase
     "play.filters.csrf.header.bypassHeaders.Csrf-Token"      -> "nocheck",
     "microservice.services.crs-fatca-registration.host" -> WireMockConstants.stubHost,
     "microservice.services.crs-fatca-registration.port" -> WireMockConstants.stubPort.toString,
+    "microservice.services.address-lookup.port" -> WireMockConstants.stubPort.toString,
     //    "logger.root"                                             -> "INFO",
     //    "logger.controllers"                                      -> "DEBUG"
   )

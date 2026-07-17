@@ -17,10 +17,8 @@
 package pages.manual
 
 import models.ReportId
-import pages.ReportPage
+import pages.QuestionPage
+import play.api.libs.json.JsPath
 
-object FINamePage {
-
-  def apply()(implicit reportId: ReportId): ReportPage[String] =
-    ReportPage("fiName")
-}
+final case class FINamePage()(implicit reportId: ReportId) extends QuestionPage[String]:
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "fiName"

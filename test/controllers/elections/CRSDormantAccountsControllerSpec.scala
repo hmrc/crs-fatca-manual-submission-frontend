@@ -19,12 +19,12 @@ package controllers.elections
 import base.SpecBase
 import controllers.routes
 import forms.elections.CRSDormantAccountsFormProvider
-import models.{FiIdentifiers, NormalMode, UserAnswers}
+import models.{ElectionsId, FiIdentifiers, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.FiDetailsPage
+import pages.{ElectionsIdPage, FiDetailsPage}
 import pages.elections.CRSDormantAccountsPage
 import play.api.data.Form
 import play.api.inject.bind
@@ -38,12 +38,13 @@ import scala.concurrent.Future
 
 class CRSDormantAccountsControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
+  def onwardRoute                       = Call("GET", "/foo")
+  val formProvider                      = new CRSDormantAccountsFormProvider()
+  val form: Form[Boolean]               = formProvider()
+  val fiName                            = "Test FI"
+  val reportingYear                     = 2027
+  implicit val electionsId: ElectionsId = models.ElectionsId(reportingYear, "fiID")
 
-  val formProvider                             = new CRSDormantAccountsFormProvider()
-  val form: Form[Boolean]                      = formProvider()
-  val fiName                                   = "Test FI"
-  val reportingYear                            = 2027
   val mockSessionRepository: SessionRepository = mock[SessionRepository]
 
   lazy val cRSDormantAccountsRoute: String = controllers.elections.routes.CRSDormantAccountsController.onPageLoad(NormalMode, reportingYear).url
@@ -55,8 +56,11 @@ class CRSDormantAccountsControllerSpec extends SpecBase with MockitoSugar {
   "CRSDormantAccounts Controller" - {
 
     "must return OK and the correct view for a GET" in {
+      val userAnswers = UserAnswers(userAnswersId)
+        .withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))
+        .withPage(ElectionsIdPage, electionsId)
 
-      val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))))
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
         .build()
 
       running(application) {
@@ -71,11 +75,29 @@ class CRSDormantAccountsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
+    "must redirect to journey recovery when FiDetailsPage is not present for  a GET" in {
+      val userAnswers = UserAnswers(userAnswersId)
+        .withPage(ElectionsIdPage, electionsId)
+
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
+        .build()
+
+      running(application) {
+        val request = FakeRequest(GET, cRSDormantAccountsRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
       val userAnswers = UserAnswers(userAnswersId)
         .withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))
-        .withPage(CRSDormantAccountsPage, true)
+        .withPage(ElectionsIdPage, electionsId)
+        .withPage(CRSDormantAccountsPage(), true)
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
         .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
@@ -95,11 +117,14 @@ class CRSDormantAccountsControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to the next page when valid data is submitted" in {
+      val userAnswers = UserAnswers(userAnswersId)
+        .withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))
+        .withPage(ElectionsIdPage, electionsId)
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
-        applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))))
+        applicationBuilder(maybeUserAnswers = Some(userAnswers))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository)
@@ -119,8 +144,10 @@ class CRSDormantAccountsControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
-
-      val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))))
+      val userAnswers = UserAnswers(userAnswersId)
+        .withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))
+        .withPage(ElectionsIdPage, electionsId)
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
         .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
         .build()
 
@@ -158,6 +185,23 @@ class CRSDormantAccountsControllerSpec extends SpecBase with MockitoSugar {
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
       val application = applicationBuilder(maybeUserAnswers = None).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, cRSDormantAccountsRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Journey Recovery for a POST if no FiDetails data is found" in {
+      val userAnswers = UserAnswers(userAnswersId)
+        .withPage(ElectionsIdPage, electionsId)
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
         val request =

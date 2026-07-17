@@ -17,10 +17,9 @@
 package pages.manual.sponsor
 
 import models.ReportId
-import pages.ReportPage
+import pages.QuestionPage
+import play.api.libs.json.JsPath
 
-object IsSponsorBasedInUKPage {
+final case class IsSponsorBasedInUKPage()(implicit reportId: ReportId) extends QuestionPage[Boolean]:
 
-  def apply()(implicit reportId: ReportId): ReportPage[Boolean] =
-    ReportPage("isSponsorBasedInUK")
-}
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "isSponsorBasedInUK"

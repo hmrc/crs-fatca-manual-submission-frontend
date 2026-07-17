@@ -16,15 +16,15 @@
 
 package pages
 
-import models.UserAnswers
+import models.{ElectionsId, UserAnswers}
 import pages.Page.electionCRSPages
 import play.api.libs.json.JsPath
 
 import scala.util.Try
 
-case object IsUsTreasuryRegulatedPage extends QuestionPage[Boolean] {
+case class IsUsTreasuryRegulatedPage()(implicit electionsId: ElectionsId) extends QuestionPage[Boolean] {
 
-  override def path: JsPath = JsPath \ toString
+  override def path: JsPath = JsPath \ electionsId.mongoKey \ toString
 
   override def toString: String = "isUsTreasuryRegulated"
 

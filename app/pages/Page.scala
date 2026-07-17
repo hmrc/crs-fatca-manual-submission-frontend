@@ -16,6 +16,7 @@
 
 package pages
 
+import models.ElectionsId
 import pages.elections.{CRSContractsPage, CRSDormantAccountsPage, CRSThresholdsPage}
 
 import scala.language.implicitConversions
@@ -26,6 +27,7 @@ object Page {
 
   implicit def toString(page: Page): String = page.toString
 
-  val electionCRSPages   = Seq(CRSContractsPage, CRSDormantAccountsPage, CRSThresholdsPage, CarfGrossProceedsPage, CrsGrossProceedsPage)
-  val electionFATCAPages = Seq(IsApplyingThresholdsPage, IsUsTreasuryRegulatedPage)
+  def electionCRSPages(implicit electionsId: ElectionsId) =
+    Seq(CRSContractsPage(), CRSDormantAccountsPage(), CRSThresholdsPage(), CarfGrossProceedsPage(), CrsGrossProceedsPage())
+  def electionFATCAPages(implicit electionsId: ElectionsId) = Seq(IsApplyingThresholdsPage(), IsUsTreasuryRegulatedPage())
 }

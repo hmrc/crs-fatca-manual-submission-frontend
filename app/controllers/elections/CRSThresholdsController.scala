@@ -18,10 +18,10 @@ package controllers.elections
 
 import controllers.actions.*
 import forms.elections.CRSThresholdsFormProvider
-import models.{Mode, UserAnswers}
+import models.{ElectionsId, Mode, UserAnswers}
 import navigation.Navigator
-import pages.{CarfGrossProceedsPage, CrsGrossProceedsPage, FiDetailsPage}
 import pages.elections.CRSThresholdsPage
+import pages.{CarfGrossProceedsPage, CrsGrossProceedsPage}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -42,6 +42,7 @@ class CRSThresholdsController @Inject() (
   identify: IdentifierAction,
   getData: FrontendDataRetrievalAction,
   requireData: DataRequiredAction,
+  electionIdRequiredAction: ElectionIdRequiredAction,
   formProvider: CRSThresholdsFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: CRSThresholdsView
@@ -51,48 +52,36 @@ class CRSThresholdsController @Inject() (
 
   val form: Form[Boolean] = formProvider()
 
-  def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData andThen electionIdRequiredAction) {
     implicit request =>
+      implicit val electionsId: ElectionsId = request.electionsId
+      val preparedForm = request.userAnswers.get(CRSThresholdsPage()) match {
+        case None        => form
+        case Some(value) => form.fill(value)
+      }
 
-      val userData = request.userAnswers
-      userData
-        .get(FiDetailsPage)
-        .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)) {
-          fiDetail =>
-            val preparedForm = request.userAnswers.get(CRSThresholdsPage) match {
-              case None        => form
-              case Some(value) => form.fill(value)
-            }
-
-            Ok(view(preparedForm, mode, fiDetail.fiName, year))
-        }
+      Ok(view(preparedForm, mode, request.fiDetail.fiName, year))
   }
 
-  def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit(mode: Mode, year: Int): Action[AnyContent] = (identify andThen getData andThen requireData andThen electionIdRequiredAction).async {
     implicit request =>
+      implicit val electionsId: ElectionsId = request.electionsId
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, request.fiDetail.fiName, year))),
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(CRSThresholdsPage(), value))
+              cleanedUA      <- Future.fromTry(checkAndCleanUpCarfPages(updatedAnswers, year))
+              _              <- sessionRepository.set(cleanedUA)
+            } yield Redirect(navigator.nextPage(CRSThresholdsPage(), mode, updatedAnswers, Some(year)))
+        )
 
-      val userData = request.userAnswers
-
-      userData
-        .get(FiDetailsPage)
-        .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))) {
-          fiDetail =>
-            form
-              .bindFromRequest()
-              .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiDetail.fiName, year))),
-                value =>
-                  for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.set(CRSThresholdsPage, value))
-                    cleanedUA      <- Future.fromTry(checkAndCleanUpCarfPages(updatedAnswers, year))
-                    _              <- sessionRepository.set(cleanedUA)
-                  } yield Redirect(navigator.nextPage(CRSThresholdsPage, mode, updatedAnswers, Some(year)))
-              )
-        }
   }
 
-  private def checkAndCleanUpCarfPages(answers: UserAnswers, year: Int): Try[UserAnswers] =
+  private def checkAndCleanUpCarfPages(answers: UserAnswers, year: Int)(implicit electionsId: ElectionsId): Try[UserAnswers] =
     if (year < REPORTING_THRESHOLD_YEAR) {
-      answers.removeAll(Seq(CarfGrossProceedsPage, CrsGrossProceedsPage))
+      answers.removeAll(Seq(CarfGrossProceedsPage(), CrsGrossProceedsPage()))
     } else Success(answers)
 }
