@@ -55,4 +55,5 @@ class FrontendAppConfig @Inject() (configuration: Configuration, servicesConfig:
   val enquiryEmail: String                     = configuration.get[String]("enquiry.email")
   private lazy val registrationBaseUrl: String = servicesConfig.baseUrl("crs-fatca-registration")
   lazy val registrationUrl: String             = registrationBaseUrl + configuration.get[String]("microservice.services.crs-fatca-registration.base-path")
+  lazy val addressLookUpUrl: String            = configuration.get[Service]("microservice.services.address-lookup").baseUrl
 }
