@@ -292,3 +292,9 @@ whatIsAddressForSponsor.aNOTHERADDRESS = ANOTHERADDRESS
 whatIsAddressForSponsor.checkYourAnswersLabel = What is the sponsor’s address?
 whatIsAddressForSponsor.error.required = Select whatIsAddressForSponsor
 whatIsAddressForSponsor.change.hidden = WhatIsAddressForSponsor
+
+isThisAddressForSponsor.title = isThisAddressForSponsor
+isThisAddressForSponsor.heading = isThisAddressForSponsor
+isThisAddressForSponsor.checkYourAnswersLabel = isThisAddressForSponsor
+isThisAddressForSponsor.error.required = Select yes if isThisAddressForSponsor
+isThisAddressForSponsor.change.hidden = IsThisAddressForSponsor
