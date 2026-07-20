@@ -48,7 +48,7 @@ class UKPostcodeViewSpec extends SpecBase {
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
       "must display title" in {
-        doc.title() must include(s"What is the postcode for $sponsorName?")
+        doc.title() must include(s"What is the postcode for the sponsor?")
       }
 
       "must display heading" in {
