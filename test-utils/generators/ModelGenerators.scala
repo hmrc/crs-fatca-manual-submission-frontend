@@ -20,6 +20,8 @@ import models.manual.filercategory.*
 import models.{CrsOrFatca, TypeOfReport}
 import org.scalacheck.{Arbitrary, Gen}
 
+import models.NumberType
+
 trait ModelGenerators {
 
   implicit lazy val arbitraryWhatTypeOfFilerIsSponsor: Arbitrary[WhatTypeOfFilerIsSponsor] =
@@ -30,6 +32,11 @@ trait ModelGenerators {
   implicit lazy val arbitraryWhatTypeOfFiler: Arbitrary[WhatTypeOfFiler] =
     Arbitrary {
       Gen.oneOf(WhatTypeOfFiler.values.toSeq)
+    }
+
+  implicit lazy val arbitraryNumberType: Arbitrary[NumberType] =
+    Arbitrary {
+      Gen.oneOf(NumberType.values.toSeq)
     }
 
   implicit lazy val arbitraryTypeOfReport: Arbitrary[TypeOfReport] =

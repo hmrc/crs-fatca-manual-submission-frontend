@@ -21,6 +21,7 @@ import controllers.manual.reportdetails.routes.{ReportDetailsCheckAnswersControl
 import models.*
 import models.SubmissionsConstants.FATCA
 import pages.*
+import pages.manual.account.HaveNumberPage
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.{HaveSponsorPage, IsSponsorBasedInUKPage, SponsorNamePage, UKPostcodePage, WhatIsGIINForSponsorPage}
@@ -56,7 +57,6 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
 
       }
     }
-
     "with reportId" - {
       implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
 
@@ -137,6 +137,36 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           navigator.nextPage(WhatTypeOfFilerIsSponsorPage(), NormalMode, ua) mustBe
             controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad()
         }
+      }
+
+      "HaveNumberPage" - {
+        "must go to NumberType Page when answer is Yes" in {
+          val userData = UserAnswers("id").withPage(HaveNumberPage(), true)
+          navigator.nextPage(HaveNumberPage(), NormalMode, userData) mustBe
+            controllers.manual.account.routes.NumberTypeController.onPageLoad(NormalMode)
+        }
+
+        "must go to UnderConstruction Page when when answer is No" in {
+          val userData = UserAnswers("id").withPage(HaveNumberPage(), false)
+          navigator.nextPage(HaveNumberPage(), NormalMode, userData) mustBe
+            controllers.routes.UnderConstructionController.onPageLoad()
+        }
+
+        "must go to JourneyRecovery Page when Normal Mode" in {
+          val userData = UserAnswers("id")
+          navigator.nextPage(HaveNumberPage(), NormalMode, userData) mustBe
+            controllers.routes.JourneyRecoveryController.onPageLoad()
+        }
+      }
+
+      "NumberTypePage" - {
+
+        "must go to UnderConstruction Page when when answer is No" in {
+          val userData = UserAnswers("id").withPage(NumberTypePage(), NumberType.Iban)
+          navigator.nextPage(NumberTypePage(), NormalMode, userData) mustBe
+            controllers.routes.UnderConstructionController.onPageLoad()
+        }
+
       }
 
     }

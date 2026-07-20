@@ -78,7 +78,10 @@ final case class SendAReportSections(
         headingKey = "sendAReport.accountsInformation.heading",
         idPrefix = "accounts-information",
         tasks = Seq(
-          task("sendAReport.accountsInformation.accounts", accounts, href = Some(controllers.routes.UnderConstructionController.onPageLoad().url)),
+          task("sendAReport.accountsInformation.accounts",
+               accounts,
+               href = Some(controllers.manual.account.routes.HaveNumberController.onPageLoad(NormalMode).url)
+          ),
           task("sendAReport.accountsInformation.accountHolders", accountHolders, href = Some(controllers.routes.UnderConstructionController.onPageLoad().url)),
           task("sendAReport.accountsInformation.controllingPersons",
                controllingPersons,
