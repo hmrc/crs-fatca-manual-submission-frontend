@@ -284,3 +284,11 @@ uKPostcode.error.format = Enter a real postcode or enter the address manually
 uKPostcode.error.notfound = No addresses found — enter a different postcode or enter the address manually
 uKPostcode.change.hidden = UKPostcode
 ukPostcode.btn = Find address
+
+whatIsAddressForSponsor.title = What is the sponsor’s address?
+whatIsAddressForSponsor.heading = What is the sponsor’s address?
+whatIsAddressForSponsor.sOMEADDRESS = SOMEADDRESS
+whatIsAddressForSponsor.aNOTHERADDRESS = ANOTHERADDRESS
+whatIsAddressForSponsor.checkYourAnswersLabel = What is the sponsor’s address?
+whatIsAddressForSponsor.error.required = Select whatIsAddressForSponsor
+whatIsAddressForSponsor.change.hidden = WhatIsAddressForSponsor

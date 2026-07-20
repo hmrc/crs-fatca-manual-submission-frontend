@@ -14,26 +14,18 @@
  * limitations under the License.
  */
 
-package generators
+package forms.manual.sponsor
 
-import models.{CrsOrFatca, TypeOfReport}
-import org.scalacheck.{Arbitrary, Gen}
+import javax.inject.Inject
+
+import forms.mappings.Mappings
 import models.manual.sponsor.WhatIsAddressForSponsor
+import play.api.data.Form
 
-trait ModelGenerators {
+class WhatIsAddressForSponsorFormProvider @Inject() extends Mappings {
 
-  implicit lazy val arbitraryWhatIsAddressForSponsor: Arbitrary[WhatIsAddressForSponsor] =
-    Arbitrary {
-      Gen.oneOf(WhatIsAddressForSponsor.values)
-    }
-
-  implicit lazy val arbitraryTypeOfReport: Arbitrary[TypeOfReport] =
-    Arbitrary {
-      Gen.oneOf(TypeOfReport.values)
-    }
-
-  implicit lazy val arbitraryCrsOrFatca: Arbitrary[CrsOrFatca] =
-    Arbitrary {
-      Gen.oneOf(CrsOrFatca.values)
-    }
+  def apply(): Form[WhatIsAddressForSponsor] =
+    Form(
+      "value" -> enumerable[WhatIsAddressForSponsor]("whatIsAddressForSponsor.error.required")
+    )
 }

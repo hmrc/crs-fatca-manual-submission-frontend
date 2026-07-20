@@ -14,26 +14,15 @@
  * limitations under the License.
  */
 
-package generators
+package pages.manual.sponsor
 
-import models.{CrsOrFatca, TypeOfReport}
-import org.scalacheck.{Arbitrary, Gen}
+import play.api.libs.json.JsPath
+import models.ReportId
 import models.manual.sponsor.WhatIsAddressForSponsor
+import pages.ReportPage
 
-trait ModelGenerators {
+object WhatIsAddressForSponsorPage {
 
-  implicit lazy val arbitraryWhatIsAddressForSponsor: Arbitrary[WhatIsAddressForSponsor] =
-    Arbitrary {
-      Gen.oneOf(WhatIsAddressForSponsor.values)
-    }
-
-  implicit lazy val arbitraryTypeOfReport: Arbitrary[TypeOfReport] =
-    Arbitrary {
-      Gen.oneOf(TypeOfReport.values)
-    }
-
-  implicit lazy val arbitraryCrsOrFatca: Arbitrary[CrsOrFatca] =
-    Arbitrary {
-      Gen.oneOf(CrsOrFatca.values)
-    }
+  def apply()(implicit reportId: ReportId): ReportPage[WhatIsAddressForSponsor] =
+    ReportPage("whatIsAddressForSponsor")
 }

@@ -113,3 +113,8 @@ GET        /manual/sponsor/uk-postcode                        controllers.manual
 POST       /manual/sponsor/uk-postcode                        controllers.manual.sponsor.UKPostcodeController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/sponsor/change-uk-postcode                  controllers.manual.sponsor.UKPostcodeController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/sponsor/change-uk-postcode                  controllers.manual.sponsor.UKPostcodeController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/sponsor/select-address                        controllers.manual.sponsor.WhatIsAddressForSponsorController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/sponsor/select-address                        controllers.manual.sponsor.WhatIsAddressForSponsorController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/sponsor/change-select-address                  controllers.manual.sponsor.WhatIsAddressForSponsorController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/sponsor/change-select-address                  controllers.manual.sponsor.WhatIsAddressForSponsorController.onSubmit(mode: Mode = CheckMode)
