@@ -19,7 +19,18 @@ package generators
 import models.{CrsOrFatca, TypeOfReport}
 import org.scalacheck.{Arbitrary, Gen}
 
+import models.UkAddress
+import org.scalacheck.Arbitrary.*
+
 trait ModelGenerators {
+
+  implicit lazy val arbitraryUkAddress: Arbitrary[UkAddress] =
+    Arbitrary {
+      for {
+        addressLine1 <- arbitrary[String]
+        addressLine2 <- arbitrary[String]
+      } yield UkAddress(addressLine1, addressLine2)
+    }
 
   implicit lazy val arbitraryTypeOfReport: Arbitrary[TypeOfReport] =
     Arbitrary {
