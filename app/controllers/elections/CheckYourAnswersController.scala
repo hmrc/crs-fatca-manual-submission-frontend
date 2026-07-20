@@ -50,7 +50,7 @@ class CheckYourAnswersController @Inject() (
 
   def onPageLoad(year: Int): Action[AnyContent] = (identify andThen getData andThen requireData andThen electionIdRequiredAction) {
     implicit request =>
-      implicit val electionsId = request.electionsId
+      implicit val electionsId: ElectionsId = request.electionsId
       validator.validate(request.userAnswers, year) match {
         case Left(redirectUrl) =>
           logger.error("Mandatory values are missing in UA")

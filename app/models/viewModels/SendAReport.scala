@@ -68,9 +68,10 @@ final case class SendAReportSections(
       SendAReportSection(
         headingKey = "sendAReport.filerCategory.heading",
         idPrefix = "filer-category",
-        tasks = task("sendAReport.filerCategory.subHeading",
-                     filerCategory,
-                     href = Some(controllers.manual.filercategory.routes.FilerCategoryController.onPageLoad().url)
+        tasks = task(
+          "sendAReport.filerCategory.subHeading",
+          filerCategory,
+          href = Some(controllers.manual.filercategory.routes.WhatTypeOfFilerIsSponsorController.onPageLoad(NormalMode).url)
         )
       ),
       SendAReportSection(

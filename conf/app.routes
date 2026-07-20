@@ -122,9 +122,6 @@ POST       /manual/filer-category/change-sponsor                      controller
 GET        /manual/filer-category/check-answers                       controllers.manual.filercategory.FilerCategoryCheckAnswersController.onPageLoad()
 POST       /manual/filer-category/check-answers                       controllers.manual.filercategory.FilerCategoryCheckAnswersController.onSubmit()
 
-GET        /manual/filer-category/filer-category                      controllers.manual.filercategory.FilerCategoryController.onPageLoad(mode: Mode = NormalMode)
-
-
 GET        /manual/sponsor/uk-postcode                        controllers.manual.sponsor.UKPostcodeController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/sponsor/uk-postcode                        controllers.manual.sponsor.UKPostcodeController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/sponsor/change-uk-postcode                  controllers.manual.sponsor.UKPostcodeController.onPageLoad(mode: Mode = CheckMode)

@@ -55,7 +55,7 @@ class WhatTypeOfFilerIsSponsorController @Inject() (
       implicit val reportId: ReportId = request.reportId
       request.userAnswers
         .get(SponsorNamePage())
-        .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)) {
+        .fold(Redirect(controllers.manual.filercategory.routes.WhatTypeOfFilerController.onPageLoad(mode).url)) {
           sponsorName =>
             val preparedForm = request.userAnswers.get(WhatTypeOfFilerIsSponsorPage()) match {
               case None        => form
