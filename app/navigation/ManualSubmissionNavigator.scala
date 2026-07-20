@@ -20,6 +20,7 @@ import controllers.manual.reportdetails.routes.*
 import controllers.routes
 import models.*
 import pages.*
+import pages.manual.account.HaveNumberPage
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.{HaveSponsorPage, IsSponsorBasedInUKPage, SponsorNamePage, UKPostcodePage, WhatIsGIINForSponsorPage}
 import play.api.mvc.Call
@@ -46,17 +47,29 @@ class ManualSubmissionNavigator @Inject() () {
 
   def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId): Call =
     page match {
-      case HaveSponsorPage() =>
-        userAnswers.get(HaveSponsorPage()) match {
-          case Some(true)  => controllers.manual.sponsor.routes.SponsorNameController.onPageLoad(mode)
-          case Some(false) => routes.UnderConstructionController.onPageLoad()
-          case None        => routes.JourneyRecoveryController.onPageLoad()
-        }
+      case HaveSponsorPage()          => haveSponsorNavigation(mode, userAnswers)
       case SponsorNamePage()          => controllers.manual.sponsor.routes.WhatIsGIINForSponsorController.onPageLoad(NormalMode)
       case WhatIsGIINForSponsorPage() => controllers.manual.sponsor.routes.IsSponsorBasedInUKController.onPageLoad(NormalMode)
       case IsSponsorBasedInUKPage()   => handleSponsorBasedUKNavigation(userAnswers, mode)
       case UKPostcodePage()           => routes.UnderConstructionController.onPageLoad()
+      case IsSponsorBasedInUKPage()   => routes.UnderConstructionController.onPageLoad()
+      case HaveNumberPage()           => haveNumberNavigation(mode, userAnswers)
+      case NumberTypePage()           => routes.UnderConstructionController.onPageLoad()
       case _                          => routes.IndexController.onPageLoad()
+    }
+
+  private def haveSponsorNavigation(mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
+    userAnswers.get(HaveSponsorPage()) match {
+      case Some(true)  => controllers.manual.sponsor.routes.SponsorNameController.onPageLoad(mode)
+      case Some(false) => routes.UnderConstructionController.onPageLoad()
+      case None        => routes.JourneyRecoveryController.onPageLoad()
+    }
+
+  private def haveNumberNavigation(mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
+    userAnswers.get(HaveNumberPage()) match {
+      case Some(true)  => controllers.manual.account.routes.NumberTypeController.onPageLoad(mode)
+      case Some(false) => routes.UnderConstructionController.onPageLoad()
+      case None        => routes.JourneyRecoveryController.onPageLoad()
     }
 
   private def handleSponsorBasedUKNavigation(userAnswers: UserAnswers, mode: Mode)(implicit reportId: ReportId) =

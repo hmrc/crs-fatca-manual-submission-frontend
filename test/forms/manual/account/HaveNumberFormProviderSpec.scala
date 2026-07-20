@@ -14,27 +14,32 @@
  * limitations under the License.
  */
 
-package generators
+package forms.manual.account
 
-import models.{CrsOrFatca, TypeOfReport}
-import org.scalacheck.{Arbitrary, Gen}
+import forms.behaviours.BooleanFieldBehaviours
+import play.api.data.FormError
 
-import models.NumberType
+class HaveNumberFormProviderSpec extends BooleanFieldBehaviours {
 
-trait ModelGenerators {
+  val requiredKey = "haveNumber.error.required"
+  val invalidKey  = "error.boolean"
 
-  implicit lazy val arbitraryNumberType: Arbitrary[NumberType] =
-    Arbitrary {
-      Gen.oneOf(NumberType.values.toSeq)
-    }
+  val form = new HaveNumberFormProvider()()
 
-  implicit lazy val arbitraryTypeOfReport: Arbitrary[TypeOfReport] =
-    Arbitrary {
-      Gen.oneOf(TypeOfReport.values)
-    }
+  ".value" - {
 
-  implicit lazy val arbitraryCrsOrFatca: Arbitrary[CrsOrFatca] =
-    Arbitrary {
-      Gen.oneOf(CrsOrFatca.values)
-    }
+    val fieldName = "value"
+
+    behave like booleanField(
+      form,
+      fieldName,
+      invalidError = FormError(fieldName, invalidKey)
+    )
+
+    behave like mandatoryField(
+      form,
+      fieldName,
+      requiredError = FormError(fieldName, requiredKey)
+    )
+  }
 }
