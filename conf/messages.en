@@ -272,7 +272,7 @@ whatIsGIINForSponsor.error.invalidChar = GIIN must only include letters a to z, 
 whatIsGIINForSponsor.error.invalidFormat = GIIN must be in the right format
 whatIsGIINForSponsor.error.notReal = Enter a real GIIN
 
-uKPostcode.title = What is the postcode for {0}?
+uKPostcode.title = What is the postcode for the sponsor?
 uKPostcode.heading = What is the postcode for {0}?
 uKPostcode.p1 = Enter the postcode to find the address automatically.
 uKPostcode.p2 = Or enter the address manually
