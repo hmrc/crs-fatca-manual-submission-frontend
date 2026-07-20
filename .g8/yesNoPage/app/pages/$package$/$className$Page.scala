@@ -1,4 +1,4 @@
-package pages
+package pages.$package$
 
 import models.ReportId
 import play.api.libs.json.JsPath
