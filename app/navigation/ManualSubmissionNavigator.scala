@@ -56,7 +56,7 @@ class ManualSubmissionNavigator @Inject() () {
       case WhatIsGIINForSponsorPage()     => controllers.manual.sponsor.routes.IsSponsorBasedInUKController.onPageLoad(NormalMode)
       case IsSponsorBasedInUKPage()       => handleSponsorBasedUKNavigation(userAnswers, mode)
       case UKPostcodePage()               => routes.UnderConstructionController.onPageLoad()
-      case AddressNonUkPage()         => routes.UnderConstructionController.onPageLoad()
+      case AddressNonUkPage()             => routes.UnderConstructionController.onPageLoad()
       case WhatTypeOfFilerPage()          => controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad()
       case WhatTypeOfFilerIsSponsorPage() => controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad()
       case _                              => routes.IndexController.onPageLoad()
