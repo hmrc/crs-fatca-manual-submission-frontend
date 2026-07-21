@@ -26,25 +26,27 @@ trait ModelGenerators {
   implicit lazy val arbitraryUkAddress: Arbitrary[UkAddress] =
     Arbitrary {
       for {
-        addressLine1 <- arbitrary[String]
-        addressLine2 <- arbitrary[String]
-        city         <- arbitrary[String]
-        county       <- arbitrary[Option[String]]
-        postcode     <- arbitrary[String]
-        country      <- arbitrary[String]
-      } yield UkAddress(addressLine1, Some(addressLine2), city, county, postcode, country)
+        addressLine1 <- Arbitrary.arbitrary[String]
+        addressLine2 <- Arbitrary.arbitrary[Option[String]]
+        city         <- Arbitrary.arbitrary[String]
+        county       <- Arbitrary.arbitrary[Option[String]]
+        postcode     <- Arbitrary.arbitrary[String]
+        country      <- Arbitrary.arbitrary[String]
+      } yield UkAddress(addressLine1, addressLine2, city, county, postcode, country)
+    }
 
   implicit lazy val arbitraryNumberType: Arbitrary[NumberType] =
     Arbitrary {
       Gen.oneOf(NumberType.values.toSeq)
+    }
 
   implicit lazy val arbitraryTypeOfReport: Arbitrary[TypeOfReport] =
     Arbitrary {
-      Gen.oneOf(TypeOfReport.values)
+      Gen.oneOf(TypeOfReport.values.toSeq)
     }
 
   implicit lazy val arbitraryCrsOrFatca: Arbitrary[CrsOrFatca] =
     Arbitrary {
-      Gen.oneOf(CrsOrFatca.values)
+      Gen.oneOf(CrsOrFatca.values.toSeq)
     }
 }
