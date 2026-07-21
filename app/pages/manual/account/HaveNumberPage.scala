@@ -14,27 +14,12 @@
  * limitations under the License.
  */
 
-package generators
+package pages.manual.account
 
-import models.{CrsOrFatca, TypeOfReport}
-import org.scalacheck.{Arbitrary, Gen}
+import models.ReportId
+import pages.QuestionPage
+import play.api.libs.json.JsPath
 
-import models.NumberType
+final case class HaveNumberPage()(implicit reportId: ReportId) extends QuestionPage[Boolean]:
 
-trait ModelGenerators {
-
-  implicit lazy val arbitraryNumberType: Arbitrary[NumberType] =
-    Arbitrary {
-      Gen.oneOf(NumberType.values.toSeq)
-    }
-
-  implicit lazy val arbitraryTypeOfReport: Arbitrary[TypeOfReport] =
-    Arbitrary {
-      Gen.oneOf(TypeOfReport.values)
-    }
-
-  implicit lazy val arbitraryCrsOrFatca: Arbitrary[CrsOrFatca] =
-    Arbitrary {
-      Gen.oneOf(CrsOrFatca.values)
-    }
-}
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "haveNumber"
