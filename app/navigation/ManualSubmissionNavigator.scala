@@ -21,7 +21,7 @@ import controllers.routes
 import models.*
 import pages.*
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
-import pages.manual.sponsor.{HaveSponsorPage, IsSponsorBasedInUKPage, SponsorNamePage, UKPostcodePage, WhatIsGIINForSponsorPage}
+import pages.manual.sponsor.{AddressNonUkPage, HaveSponsorPage, IsSponsorBasedInUKPage, SponsorNamePage, UKPostcodePage, WhatIsGIINForSponsorPage}
 import play.api.mvc.Call
 
 import javax.inject.{Inject, Singleton}
@@ -56,13 +56,14 @@ class ManualSubmissionNavigator @Inject() () {
       case WhatIsGIINForSponsorPage() => controllers.manual.sponsor.routes.IsSponsorBasedInUKController.onPageLoad(NormalMode)
       case IsSponsorBasedInUKPage()   => handleSponsorBasedUKNavigation(userAnswers, mode)
       case UKPostcodePage()           => routes.UnderConstructionController.onPageLoad()
+      case AddressNonUkPage()         => routes.UnderConstructionController.onPageLoad()
       case _                          => routes.IndexController.onPageLoad()
     }
 
   private def handleSponsorBasedUKNavigation(userAnswers: UserAnswers, mode: Mode)(implicit reportId: ReportId) =
     userAnswers.get(IsSponsorBasedInUKPage()) match {
       case Some(true)  => controllers.manual.sponsor.routes.UKPostcodeController.onPageLoad(mode)
-      case Some(false) => routes.UnderConstructionController.onPageLoad()
+      case Some(false) => controllers.manual.sponsor.routes.AddressNonUkController.onPageLoad(mode)
       case None        => routes.JourneyRecoveryController.onPageLoad()
     }
 }

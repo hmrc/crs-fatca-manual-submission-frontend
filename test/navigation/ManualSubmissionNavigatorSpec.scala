@@ -95,10 +95,10 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
       }
 
       "IsSponsorBasedInUKPage" - {
-        "must go to UNDERCONSTRUCTION when user selects false" in {
+        "must go to Non UK Address page when user selects false" in {
           val ua = UserAnswers("id").withPage(IsSponsorBasedInUKPage(), false)
           navigator.nextPage(IsSponsorBasedInUKPage(), NormalMode, ua) mustBe
-            controllers.routes.UnderConstructionController.onPageLoad()
+            controllers.manual.sponsor.routes.AddressNonUkController.onPageLoad(NormalMode)
         }
 
         "must go to UK Postcode when user selects true" in {
@@ -122,6 +122,13 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         }
       }
 
+      "AddressNonUkPage" - {
+        "must go to UNDERCONSTRUCTION page after user hits submit" in {
+          val ua = UserAnswers("id")
+          navigator.nextPage(UKPostcodePage(), NormalMode, ua) mustBe
+            controllers.routes.UnderConstructionController.onPageLoad()
+        }
+      }
     }
   }
 }

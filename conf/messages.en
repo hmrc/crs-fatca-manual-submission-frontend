@@ -284,3 +284,43 @@ uKPostcode.error.format = Enter a real postcode or enter the address manually
 uKPostcode.error.notfound = No addresses found — enter a different postcode or enter the address manually
 uKPostcode.change.hidden = UKPostcode
 ukPostcode.btn = Find address
+
+addressNonUk.title=What is the sponsor''s address?
+addressNonUk.heading= What is the address for {0}?
+addressNonUk.addressLine1 = Address line 1
+addressNonUk.addressLine2 = Address line 2 (optional)
+addressNonUk.addressLine3 = City
+addressNonUk.addressLine4 = Region (optional)
+addressNonUk.postcode = Postcode (optional)
+addressNonUk.country = Country
+
+addressNonUk.checkYourAnswersLabel = AddressNonUk
+addressNonUk.error.addressLine1.required = Enter Address line 1
+addressNonUk.error.addressLine3.required = Enter city
+addressNonUk.error.country.required = Select country
+
+addressNonUk.error.addressLine1.length = Address line 1 must be 200 characters or less
+addressNonUk.error.addressLine2.length = Address line 2 must be 200 characters or less
+addressNonUk.error.addressLine3.length = City must be 200 characters or less
+addressNonUk.error.addressLine4.length = Region must be 200 characters or less
+addressNonUk.error.postcode.length = Postcode must be 20 characters or less
+
+addressNonUk.error.addressLine1.invalid = Address line 1 must only include letters a to z, numbers 0 to 9, apostrophes, commas, ampersands (&), hyphens, full stops and spaces
+addressNonUk.error.addressLine2.invalid = Address line 2 must only include letters a to z, numbers 0 to 9, apostrophes, commas, ampersands (&), hyphens, full stops and spaces
+addressNonUk.error.addressLine3.invalid = City must only include letters a to z, numbers 0 to 9, apostrophes, commas, ampersands (&), hyphens, full stops and spaces
+addressNonUk.error.addressLine4.invalid = Region must only include letters a to z, numbers 0 to 9, apostrophes, commas, ampersands (&), hyphens, full stops and spaces
+addressNonUk.error.postcode.invalid = Postcode must only include letters a to z, numbers 0 to 9, hyphens, full stops, spaces and forward slashes (/)
+
+addressNonUk.error.addressLine1.invalidCombination = Address line 1 must not include a double dash (--)
+addressNonUk.error.addressLine2.invalidCombination = Address line 2 must not include a double dash (--)
+addressNonUk.error.addressLine3.invalidCombination = City must not include a double dash (--)
+addressNonUk.error.addressLine4.invalidCombination = Region must not include a double dash (--)
+addressNonUk.error.postcode.invalidCombination = Postcode must not include a double dash (--)
+
+addressNonUk.addressLine1.change.hidden = Address line 1
+addressNonUk.addressLine2.change.hidden = Address line 2
+addressNonUk.addressLine3.change.hidden = City
+addressNonUk.addressLine4.change.hidden = Region
+addressNonUk.postcode.change.hidden = Postcode
+addressNonUk.country.change.hidden = Country
+addressNonUk.change.hidden = Change sponsor address
