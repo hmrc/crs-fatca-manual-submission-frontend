@@ -17,8 +17,10 @@
 package forms.mappings
 
 import models.Enumerable
-import play.api.data.FormError
+import play.api.data.{FieldMapping, FormError, Forms}
 import play.api.data.format.Formatter
+import play.api.data.validation.Invalid
+import utils.RegexConstants
 
 import scala.util.control.Exception.nonFatalCatch
 
@@ -133,6 +135,67 @@ trait Formatters extends Transforms {
       override def unbind(key: String, value: BigDecimal): Map[String, String] =
         baseFormatter.unbind(key, value.toString)
     }
+
+  protected def mandatoryAddress(
+    requiredKey: String,
+    lengthKey: String,
+    invalidCharKey: String,
+    invalidCombinationCharKey: String
+  ): FieldMapping[String] =
+    Forms.of(mandatoryAddressFormatter(requiredKey, lengthKey, invalidCharKey, invalidCombinationCharKey))
+
+  protected def optionalAddress(
+    lengthKey: String,
+    invalidCharKey: String,
+    invalidCombinationCharKey: String
+  ): FieldMapping[Option[String]] =
+    Forms.of(optionalAddressFormatter(lengthKey, invalidCharKey, invalidCombinationCharKey))
+
+  private[mappings] def mandatoryAddressFormatter(
+    requiredKey: String,
+    lengthKey: String,
+    invalidCharKey: String,
+    invalidCombinationCharKey: String
+  ): Formatter[String] = new Formatter[String] {
+
+    override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], String] =
+      data
+        .get(key)
+        .map(
+          s => s.trim
+        ) match {
+        case None | Some("")                                   => Left(Seq(FormError(key, requiredKey)))
+        case Some(v) if v.length > 200                         => Left(Seq(FormError(key, lengthKey)))
+        case Some(v) if !v.matches("""^[A-Za-z0-9\s,.'-]*$""") => Left(Seq(FormError(key, invalidCharKey)))
+        case Some(v) if v.matches(RegexConstants.DOUBLE_DASH)  => Left(Seq(FormError(key, invalidCombinationCharKey)))
+
+        case Some(v) => Right(v)
+      }
+
+    override def unbind(key: String, value: String): Map[String, String] = Map(key -> value)
+  }
+
+  private[mappings] def optionalAddressFormatter(
+    lengthKey: String,
+    invalidCharKey: String,
+    invalidCombinationCharKey: String
+  ): Formatter[Option[String]] = new Formatter[Option[String]] {
+
+    override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], Option[String]] =
+      data
+        .get(key)
+        .map(
+          s => s.trim
+        ) match {
+        case Some(v) if v.length > 200                         => Left(Seq(FormError(key, lengthKey)))
+        case Some(v) if !v.matches("""^[A-Za-z0-9\s,.'-]*$""") => Left(Seq(FormError(key, invalidCharKey)))
+        case Some(v) if v.matches(RegexConstants.DOUBLE_DASH)  => Left(Seq(FormError(key, invalidCombinationCharKey)))
+        case Some(v)                                           => Right(Some(v))
+        case None                                              => Right(None)
+      }
+
+    override def unbind(key: String, value: Option[String]): Map[String, String] = Map(key -> value.getOrElse(""))
+  }
 
   private[mappings] def mandatoryGIINFormatter(
     requiredKey: String,

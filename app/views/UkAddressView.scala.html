@@ -81,31 +81,45 @@
             .withWidth(OneThird)
             .withAutocomplete("postal-code")
         )
-
-        @govukSelect(Select(
-            id = "country",
-            name = "country",
-            classes = "govuk-!-width-two-thirds",
-            items = Seq(
-                SelectItem(
-                    value = Some(""),
-                    text = "Select country or territory"
+        <div class="govuk-!-width-three-quarters">
+            @govukSelect(Select(
+                id = "country",
+                name = "country",
+                classes = "govuk-!-width-one-third",
+                value = form("country").value,
+                items = Seq(
+                    SelectItem(
+                        value = Some(""),
+                        text = "Select country or territory"
+                    ),
+                    SelectItem(
+                        value = Some("GB"),
+                        text = "United Kingdom"
+                    ),
+                    SelectItem(
+                        value = Some("JE"),
+                        text = "Jersey"
+                    ),
+                    SelectItem(
+                        value = Some("GG"),
+                        text = "Guernsey"
+                    ),
+                    SelectItem(
+                        value = Some("IM"),
+                        text = "Isle of Man"
+                    ),
                 ),
-                SelectItem(
-                    value = Some("AF-Afghanistan"),
-                    text = "Afghanistan"
+                label = Label(
+                    content = Text("Country")
                 ),
-            ),
-            label = Label(
-                content = Text("Country")
-            ),
-            attributes = Map(
-                "data-show-all-values" -> "false",
-                "data-auto-select" -> "false",
-                "data-default-value" -> "",
-                "data-module" -> "hmrc-accessible-autocomplete"
-            )
-        ))
+                attributes = Map(
+                    "data-show-all-values" -> "false",
+                    "data-auto-select" -> "false",
+                    "data-default-value" -> "",
+                    "data-module" -> "hmrc-accessible-autocomplete"
+                )
+            ))
+        </div>
 
         @govukButton(
             ButtonViewModel(messages("site.saveContinue"))

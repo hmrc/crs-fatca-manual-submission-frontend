@@ -16,15 +16,14 @@
 
 package viewmodels.checkAnswers
 
-import controllers.routes
 import models.{CheckMode, ReportId, UserAnswers}
 import pages.UkAddressPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
-import viewmodels.govuk.summarylist._
-import viewmodels.implicits._
+import viewmodels.govuk.summarylist.*
+import viewmodels.implicits.*
 
 object UkAddressSummary {
 
@@ -32,7 +31,7 @@ object UkAddressSummary {
     answers.get(UkAddressPage()).map {
       answer =>
 
-        val value = HtmlFormat.escape(answer.addressLine1).toString + "<br/>" + HtmlFormat.escape(answer.addressLine2).toString
+        val value = HtmlFormat.escape(answer.addressLine1).toString + "<br/>" + HtmlFormat.escape(answer.addressLine2.getOrElse("")).toString
 
         SummaryListRowViewModel(
           key = "ukAddress.checkYourAnswersLabel",

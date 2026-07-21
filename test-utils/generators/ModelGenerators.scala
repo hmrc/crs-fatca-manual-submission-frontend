@@ -29,7 +29,11 @@ trait ModelGenerators {
       for {
         addressLine1 <- arbitrary[String]
         addressLine2 <- arbitrary[String]
-      } yield UkAddress(addressLine1, addressLine2)
+        city         <- arbitrary[String]
+        county       <- arbitrary[Option[String]]
+        postcode     <- arbitrary[String]
+        country      <- arbitrary[String]
+      } yield UkAddress(addressLine1, Some(addressLine2), city, county, postcode, country)
     }
 
   implicit lazy val arbitraryTypeOfReport: Arbitrary[TypeOfReport] =

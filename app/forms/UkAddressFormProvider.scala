@@ -17,27 +17,50 @@
 package forms
 
 import javax.inject.Inject
-
 import forms.mappings.Mappings
 import play.api.data.Form
-import play.api.data.Forms._
+import play.api.data.Forms.*
 import models.UkAddress
+import utils.RegexConstants.{POSTCODE_FORMAT, POSTCODE_VALID}
 
 class UkAddressFormProvider @Inject() extends Mappings {
 
   def apply(): Form[UkAddress] = Form(
     mapping(
-      "addressLine1" -> text("ukAddress.error.addressLine1.required")
-        .verifying(maxLength(200, "ukAddress.error.addressLine1.length")),
-      "addressLine2" -> text("ukAddress.error.addressLine2.required")
-        .verifying(maxLength(200, "ukAddress.error.addressLine2.length")),
-      "city" -> text("ukAddress.error.city.required")
-        .verifying(maxLength(200, "ukAddress.error.city.length")),
-      "county" -> optional(text().verifying(maxLength(200, "ukAddress.error.county.length"))),
-      "postCode" -> text("ukAddress.error.postCode.required")
-        .verifying(maxLength(10, "ukAddress.error.postCode.length"))
+      "addressLine1" -> mandatoryAddress(
+        "ukAddress.error.addressLine1.required",
+        "ukAddress.error.addressLine1.length",
+        "ukAddress.error.addressLine1.invalid.characters",
+        "ukAddress.error.addressLine1.invalid.characters.combination"
+      ),
+      "addressLine2" -> optionalAddress(
+        "ukAddress.error.addressLine2.length",
+        "ukAddress.error.addressLine2.invalid.characters",
+        "ukAddress.error.addressLine2.invalid.characters.combination"
+      ),
+      "city" -> mandatoryAddress(
+        "ukAddress.error.city.required",
+        "ukAddress.error.city.length",
+        "ukAddress.error.city.invalid.characters",
+        "ukAddress.error.city.invalid.characters.combination"
+      ),
+      "county" ->
+        optionalAddress(
+          "ukAddress.error.county.length",
+          "ukAddress.error.county.invalid.characters",
+          "ukAddress.error.county.invalid.characters.combination"
+        ),
+      "postCode" -> mandatoryPostcode(
+        "ukAddress.error.postCode.required",
+        "ukAddress.error.postCode.length",
+        POSTCODE_VALID,
+        "ukAddress.error.postCode.invalid",
+        POSTCODE_FORMAT,
+        "ukAddress.error.postCode.format"
+      ),
+      "country" -> text("ukAddress.error.country.required")
     )(UkAddress.apply)(
-      x => Some((x.addressLine1, x.addressLine2, x.city, x.county, x.postcode))
+      x => Some((x.addressLine1, x.addressLine2, x.city, x.county, x.postcode, x.country))
     )
   )
 }
