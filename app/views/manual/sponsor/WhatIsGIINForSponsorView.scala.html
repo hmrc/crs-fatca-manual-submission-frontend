@@ -45,7 +45,7 @@
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(messages("whatIsGIINForSponsor.subheading", sponsorName)).withCssClass("govuk-label  govuk-label--m")
+                label = LabelViewModel(messages("whatIsGIINForSponsor.subheading", sponsorName)).withCssClass("govuk-label  govuk-label--m wrappable")
             )
             .withWidth(Fixed20)
             .withHint(HintViewModel(HtmlContent(messages("whatIsGIINForSponsor.hint"))))
