@@ -14,61 +14,47 @@
  * limitations under the License.
  */
 
-package views.manual.sponsor
+package views.manual.account
 
 import base.SpecBase
-import forms.manual.sponsor.SponsorNameFormProvider
+import forms.manual.sponsor.HaveSponsorFormProvider
 import models.NormalMode
 import org.jsoup.Jsoup
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
-import views.html.manual.sponsor.UKPostcodeView
+import views.html.manual.account.HaveNumberView
 
-class UKPostcodeViewSpec extends SpecBase {
+class HaveNumberViewSpec extends SpecBase {
 
   private val application = applicationBuilder().build()
 
-  private val view: UKPostcodeView                                       = application.injector.instanceOf[UKPostcodeView]
+  private val view: HaveNumberView                                       = application.injector.instanceOf[HaveNumberView]
   private val messagesControllerComponents: MessagesControllerComponents = application.injector.instanceOf[MessagesControllerComponents]
-  val formProvider                                                       = new SponsorNameFormProvider()
+  val formProvider                                                       = new HaveSponsorFormProvider()
   val form                                                               = formProvider()
 
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
   implicit private val messages: Messages               = messagesControllerComponents.messagesApi.preferred(Seq(Lang("en")))
 
-  "UKPostcodeView" - {
+  "HaveNumberView" - {
 
     "should render page components" - {
 
-      val sponsorName = "testName"
-
-      val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, sponsorName)
+      val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode)
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
       "must display title" in {
-        doc.title() must include(s"What is the postcode for the sponsor?")
+        doc.title() must include("Does the account have an official account number or identification number?")
       }
 
       "must display heading" in {
-        doc.select("h1").text() must include(s"What is the postcode for $sponsorName?")
-      }
-
-      "must display paragraph" in {
-        doc.select("p").text() must include("Enter the postcode to find the address automatically.")
-      }
-
-      "must display link" in {
-        doc.select("a").text() must include("Or enter the address manually")
-      }
-
-      "must have autocomplete" in {
-        doc.select("input").attr("autocomplete") must include("postal-code")
+        doc.select("h1").text() must include("Does the account have an official account number or identification number?")
       }
 
       "must display button" in {
-        doc.select("#submit").text() mustBe "Find address"
+        doc.select("#submit").text() mustBe "Save and continue"
       }
 
     }

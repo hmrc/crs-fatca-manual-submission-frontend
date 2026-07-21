@@ -18,9 +18,8 @@ package generators
 
 import models.{CrsOrFatca, TypeOfReport}
 import org.scalacheck.{Arbitrary, Gen}
-
+import models.NumberType
 import models.UkAddress
-import org.scalacheck.Arbitrary.*
 
 trait ModelGenerators {
 
@@ -34,7 +33,10 @@ trait ModelGenerators {
         postcode     <- arbitrary[String]
         country      <- arbitrary[String]
       } yield UkAddress(addressLine1, Some(addressLine2), city, county, postcode, country)
-    }
+
+  implicit lazy val arbitraryNumberType: Arbitrary[NumberType] =
+    Arbitrary {
+      Gen.oneOf(NumberType.values.toSeq)
 
   implicit lazy val arbitraryTypeOfReport: Arbitrary[TypeOfReport] =
     Arbitrary {
