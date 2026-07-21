@@ -16,62 +16,73 @@
 
 package controllers.manual.sponsor
 
-import controllers.actions._
+import connectors.DatabaseConnector
+import controllers.actions.*
 import forms.manual.sponsor.IsThisAddressForSponsorFormProvider
-import javax.inject.Inject
+import models.response.{Address, Country}
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.sponsor.IsThisAddressForSponsorPage
+import pages.manual.sponsor.{IsThisAddressForSponsorPage, SponsorNamePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import connectors.DatabaseConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.sponsor.IsThisAddressForSponsorView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class IsThisAddressForSponsorController @Inject()(
-                                         override val messagesApi: MessagesApi,
-                                         repository: DatabaseConnector,
-                                         navigator: ManualSubmissionNavigator,
-                                         identify: IdentifierAction,
-                                         getData: DataRetrievalAction,
-                                         requireData: DataRequiredAction,
-                                         reportIdAction: ReportIdRequiredAction,
-                                         formProvider: IsThisAddressForSponsorFormProvider,
-                                         val controllerComponents: MessagesControllerComponents,
-                                         view: IsThisAddressForSponsorView
-                                 )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+class IsThisAddressForSponsorController @Inject() (
+  override val messagesApi: MessagesApi,
+  repository: DatabaseConnector,
+  navigator: ManualSubmissionNavigator,
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
+  reportIdAction: ReportIdRequiredAction,
+  formProvider: IsThisAddressForSponsorFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: IsThisAddressForSponsorView
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
+    with I18nSupport {
 
-  val form = formProvider()
+  val form    = formProvider()
+  val address = Address(None, "testLine1", None, "testLine3", None, Some("zz1 1zz"), Country.GB)
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
     implicit request =>
-
       implicit val reportId: ReportId = request.reportId
+      request.userAnswers
+        .get(SponsorNamePage())
+        .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)) {
+          sponsorName =>
 
-      val preparedForm = request.userAnswers.get(IsThisAddressForSponsorPage()) match {
-        case None => form
-        case Some(value) => form.fill(value)
-      }
-
-      Ok(view(preparedForm, mode))
+            val preparedForm = request.userAnswers.get(IsThisAddressForSponsorPage()) match {
+              case None        => form
+              case Some(value) => form.fill(value)
+            }
+            Ok(view(preparedForm, mode, address, sponsorName))
+        }
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
-
-      form.bindFromRequest().fold(
-        formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors, mode))),
-
-        value =>
-          for {
-            updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(IsThisAddressForSponsorPage(), value))
-            _              <- repository.set(updatedAnswers)
-          } yield Redirect(navigator.nextPage(IsThisAddressForSponsorPage(), mode, updatedAnswers))
-      )
+      request.userAnswers
+        .get(SponsorNamePage())
+        .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))) {
+          sponsorName =>
+            form
+              .bindFromRequest()
+              .fold(
+                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, address, sponsorName))),
+                value =>
+                  for {
+                    updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(IsThisAddressForSponsorPage(), value))
+                    _              <- repository.set(updatedAnswers)
+                  } yield  Redirect(navigator.nextPage(IsThisAddressForSponsorPage(), mode, updatedAnswers))
+              )
+        }
   }
 }

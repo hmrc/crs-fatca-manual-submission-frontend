@@ -293,8 +293,8 @@ whatIsAddressForSponsor.checkYourAnswersLabel = What is the sponsor’s address?
 whatIsAddressForSponsor.error.required = Select whatIsAddressForSponsor
 whatIsAddressForSponsor.change.hidden = WhatIsAddressForSponsor
 
-isThisAddressForSponsor.title = isThisAddressForSponsor
-isThisAddressForSponsor.heading = isThisAddressForSponsor
-isThisAddressForSponsor.checkYourAnswersLabel = isThisAddressForSponsor
-isThisAddressForSponsor.error.required = Select yes if isThisAddressForSponsor
+isThisAddressForSponsor.title = Is this the sponsor’s address?
+isThisAddressForSponsor.heading = Is this the address for {0}?
+isThisAddressForSponsor.checkYourAnswersLabel = Is this the sponsor’s address?
+isThisAddressForSponsor.error.required = Select yes if this is the sponsor’s address
 isThisAddressForSponsor.change.hidden = IsThisAddressForSponsor

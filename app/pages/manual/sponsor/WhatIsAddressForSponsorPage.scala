@@ -16,7 +16,6 @@
 
 package pages.manual.sponsor
 
-import play.api.libs.json.JsPath
 import models.ReportId
 import models.manual.sponsor.WhatIsAddressForSponsor
 import pages.ReportPage
