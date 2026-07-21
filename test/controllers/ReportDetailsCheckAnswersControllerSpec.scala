@@ -29,7 +29,7 @@ import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import uk.gov.hmrc.http.InternalServerException
-import utils.ReportDetailsCheckAnswersUtil
+import utils.CheckAnswersUtil
 import viewmodels.govuk.all.SummaryListViewModel
 import views.html.ReportDetailsCheckAnswersView
 
@@ -48,11 +48,11 @@ class ReportDetailsCheckAnswersControllerSpec extends SpecBase {
       .withPage(CrsOrFatcaPage, Crs)
 
     "must return OK and the correct view for a GET" in {
-      val mockUtil = mock[ReportDetailsCheckAnswersUtil]
+      val mockUtil = mock[CheckAnswersUtil]
       when(mockUtil.getReportDetailsRows(any())(any())).thenReturn(SummaryListViewModel(Seq.empty))
 
       val application = applicationBuilder(maybeUserAnswers = Some(ua))
-        .overrides(bind[ReportDetailsCheckAnswersUtil].toInstance(mockUtil))
+        .overrides(bind[CheckAnswersUtil].toInstance(mockUtil))
         .build()
 
       running(application) {

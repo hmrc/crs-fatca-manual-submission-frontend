@@ -21,8 +21,10 @@ import controllers.routes
 import models.*
 import pages.*
 import pages.manual.account.HaveNumberPage
+import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.{AddressNonUkPage, HaveSponsorPage, IsSponsorBasedInUKPage, SponsorNamePage, UKPostcodePage, WhatIsGIINForSponsorPage}
+import pages.manual.sponsor.*
 import play.api.mvc.Call
 
 import javax.inject.{Inject, Singleton}
@@ -47,16 +49,17 @@ class ManualSubmissionNavigator @Inject() () {
 
   def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId): Call =
     page match {
-      case HaveSponsorPage()          => haveSponsorNavigation(mode, userAnswers)
-      case SponsorNamePage()          => controllers.manual.sponsor.routes.WhatIsGIINForSponsorController.onPageLoad(NormalMode)
-      case WhatIsGIINForSponsorPage() => controllers.manual.sponsor.routes.IsSponsorBasedInUKController.onPageLoad(NormalMode)
-      case IsSponsorBasedInUKPage()   => handleSponsorBasedUKNavigation(userAnswers, mode)
-      case UKPostcodePage()           => routes.UnderConstructionController.onPageLoad()
+      case HaveSponsorPage()              => haveSponsorNavigation(mode, userAnswers)
+      case HaveNumberPage()               => haveNumberNavigation(mode, userAnswers)
+      case NumberTypePage()               => routes.UnderConstructionController.onPageLoad()
+      case SponsorNamePage()              => controllers.manual.sponsor.routes.WhatIsGIINForSponsorController.onPageLoad(NormalMode)
+      case WhatIsGIINForSponsorPage()     => controllers.manual.sponsor.routes.IsSponsorBasedInUKController.onPageLoad(NormalMode)
+      case IsSponsorBasedInUKPage()       => handleSponsorBasedUKNavigation(userAnswers, mode)
+      case UKPostcodePage()               => routes.UnderConstructionController.onPageLoad()
       case AddressNonUkPage()         => routes.UnderConstructionController.onPageLoad()
-      case IsSponsorBasedInUKPage()   => routes.UnderConstructionController.onPageLoad()
-      case HaveNumberPage()           => haveNumberNavigation(mode, userAnswers)
-      case NumberTypePage()           => routes.UnderConstructionController.onPageLoad()
-      case _                          => routes.IndexController.onPageLoad()
+      case WhatTypeOfFilerPage()          => controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad()
+      case WhatTypeOfFilerIsSponsorPage() => controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad()
+      case _                              => routes.IndexController.onPageLoad()
     }
 
   private def haveSponsorNavigation(mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =

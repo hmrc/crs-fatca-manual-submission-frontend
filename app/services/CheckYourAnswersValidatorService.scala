@@ -48,13 +48,13 @@ class CheckYourAnswersValidatorService @Inject() {
   private enum ElectionGroup:
     case CRS, FATCA, NONE
 
-  private def hasAny(pages: Set[QuestionPage[Boolean]], userAnswers: UserAnswers)(implicit electionsId: ElectionsId): Boolean =
+  private def hasAny(pages: Set[QuestionPage[Boolean]], userAnswers: UserAnswers): Boolean =
     pages.exists(userAnswers.get(_).isDefined)
 
-  private def hasNone(pages: Set[QuestionPage[Boolean]], userAnswers: UserAnswers)(implicit electionsId: ElectionsId): Boolean =
+  private def hasNone(pages: Set[QuestionPage[Boolean]], userAnswers: UserAnswers): Boolean =
     pages.forall(userAnswers.get(_).isEmpty)
 
-  private def allPresent(pages: Set[QuestionPage[Boolean]], userAnswers: UserAnswers)(implicit electionsId: ElectionsId): Boolean =
+  private def allPresent(pages: Set[QuestionPage[Boolean]], userAnswers: UserAnswers): Boolean =
     pages.forall(userAnswers.get(_).isDefined)
 
   private def electionGroup(userAnswers: UserAnswers)(implicit electionsId: ElectionsId): ElectionGroup =

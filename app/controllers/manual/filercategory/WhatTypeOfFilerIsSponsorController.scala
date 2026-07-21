@@ -14,83 +14,74 @@
  * limitations under the License.
  */
 
-package controllers.manual.sponsor
+package controllers.manual.filercategory
 
-import connectors.{AddressLookupConnector, DatabaseConnector}
+import connectors.DatabaseConnector
 import controllers.actions.*
-import forms.manual.sponsor.UKPostcodeFormProvider
+import forms.manual.filercategory.WhatTypeOfFilerIsSponsorFormProvider
+import models.manual.filercategory.WhatTypeOfFilerIsSponsor
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.sponsor.{AddressLookupPage, SponsorNamePage, UKPostcodePage}
-import play.api.data.{Form, FormError}
+import pages.manual.filercategory.WhatTypeOfFilerIsSponsorPage
+import pages.manual.sponsor.SponsorNamePage
+import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.manual.sponsor.UKPostcodeView
+import views.html.manual.filercategory.WhatTypeOfFilerIsSponsorView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class UKPostcodeController @Inject() (
+class WhatTypeOfFilerIsSponsorController @Inject() (
   override val messagesApi: MessagesApi,
-  repository: DatabaseConnector,
+  sessionRepository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   reportIdAction: ReportIdRequiredAction,
-  formProvider: UKPostcodeFormProvider,
-  addressLookupConnector: AddressLookupConnector,
+  formProvider: WhatTypeOfFilerIsSponsorFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: UKPostcodeView
+  view: WhatTypeOfFilerIsSponsorView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  val form: Form[String] = formProvider()
+  val form: Form[WhatTypeOfFilerIsSponsor] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
     implicit request =>
-
       implicit val reportId: ReportId = request.reportId
-
       request.userAnswers
         .get(SponsorNamePage())
-        .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())) {
-          name =>
-            val preparedForm = request.userAnswers.get(UKPostcodePage()) match {
+        .fold(Redirect(controllers.manual.filercategory.routes.WhatTypeOfFilerController.onPageLoad(mode).url)) {
+          sponsorName =>
+            val preparedForm = request.userAnswers.get(WhatTypeOfFilerIsSponsorPage()) match {
               case None        => form
               case Some(value) => form.fill(value)
             }
 
-            Ok(view(preparedForm, mode, name))
+            Ok(view(preparedForm, mode, sponsorName))
         }
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
     implicit request =>
-
       implicit val reportId: ReportId = request.reportId
       request.userAnswers
         .get(SponsorNamePage())
-        .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))) {
+        .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))) {
           sponsorName =>
-            val formReturned = form.bindFromRequest()
-            formReturned
+            form
+              .bindFromRequest()
               .fold(
                 formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, sponsorName))),
-                postcode =>
-                  addressLookupConnector.findByPostCode(postcode.toUpperCase).flatMap {
-                    case Nil =>
-                      val formError = formReturned.withError(FormError("value", List("uKPostcode.error.notfound")))
-                      Future.successful(BadRequest(view(formError, mode, sponsorName)))
-                    case address =>
-                      for {
-                        uaWithUKPostcode    <- Future.fromTry(request.userAnswers.setWithReportId(UKPostcodePage(), postcode))
-                        uaWithAddressLookup <- Future.fromTry(uaWithUKPostcode.setWithReportId(AddressLookupPage(), address))
-                        _                   <- repository.set(uaWithAddressLookup)
-                      } yield Redirect(navigator.nextPage(UKPostcodePage(), mode, uaWithAddressLookup))
-                  }
+                value =>
+                  for {
+                    updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(WhatTypeOfFilerIsSponsorPage(), value))
+                    _              <- sessionRepository.set(updatedAnswers)
+                  } yield Redirect(navigator.nextPage(WhatTypeOfFilerIsSponsorPage(), mode, updatedAnswers))
               )
         }
   }
