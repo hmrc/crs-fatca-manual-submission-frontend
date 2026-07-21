@@ -30,7 +30,7 @@ import scala.concurrent.Future
 
 class FilerCategoryCheckAnswersController @Inject() (override val messagesApi: MessagesApi,
                                                      identify: IdentifierAction,
-                                                     getData: FrontendDataRetrievalAction,
+                                                     getData: DataRetrievalAction,
                                                      requireData: DataRequiredAction,
                                                      reportIdAction: ReportIdRequiredAction,
                                                      val controllerComponents: MessagesControllerComponents,
