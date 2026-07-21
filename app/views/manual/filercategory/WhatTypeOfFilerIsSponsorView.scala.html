@@ -14,41 +14,32 @@
  * limitations under the License.
  *@
 
-@import viewmodels.InputWidth._
+@import models.manual.filercategory.WhatTypeOfFilerIsSponsor
 
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
-    govukInput: GovukInput,
-    govukButton: GovukButton,
-    heading: components.Heading,
-    para: components.Paragraph
+    govukRadios: GovukRadios,
+    govukButton: GovukButton
 )
 
 @(form: Form[_], mode: Mode, sponsorName: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("whatIsGIINForSponsor.title"))) {
+@layout(pageTitle = title(form, messages("whatTypeOfFilerIsSponsor.title"))) {
 
-    @formHelper(action = controllers.manual.sponsor.routes.WhatIsGIINForSponsorController.onSubmit(mode)) {
+    @formHelper(action = controllers.manual.filercategory.routes.WhatTypeOfFilerIsSponsorController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
-            @govukErrorSummary(ErrorSummaryViewModel(form))
+            @govukErrorSummary(ErrorSummaryViewModel(form,  errorLinkOverrides = Map("value" -> "value_0")))
         }
 
-        @heading(messages("whatIsGIINForSponsor.heading"))
-
-        @para(messages("whatIsGIINForSponsor.para.1", sponsorName))
-
-        @para(messages("whatIsGIINForSponsor.para.2", sponsorName))
-
-        @govukInput(
-            InputViewModel(
-                field = form("value"),
-                label = LabelViewModel(messages("whatIsGIINForSponsor.subheading", sponsorName)).withCssClass("govuk-label  govuk-label--m wrappable")
+        @govukRadios(
+            RadiosViewModel(
+                field  = form("value"),
+                legend = LegendViewModel(messages("whatTypeOfFilerIsSponsor.heading", sponsorName)).asPageHeading(),
+                items  = WhatTypeOfFilerIsSponsor.options
             )
-            .withWidth(Fixed20)
-            .withHint(HintViewModel(HtmlContent(messages("whatIsGIINForSponsor.hint"))))
         )
 
         @govukButton(

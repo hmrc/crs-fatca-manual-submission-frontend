@@ -60,7 +60,7 @@ trait FieldsetFluency {
     def asPageHeading(size: LegendSize = LegendSize.Large): Legend =
       legend
         .copy(isPageHeading = true)
-        .withCssClass(size.toString)
+        .withCssClass(s"${size.toString} wrappable")
 
     def withCssClass(newClass: String): Legend =
       legend.copy(classes = s"${legend.classes} $newClass")

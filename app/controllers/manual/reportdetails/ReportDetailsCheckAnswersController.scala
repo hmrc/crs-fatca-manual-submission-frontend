@@ -19,14 +19,14 @@ package controllers.manual.reportdetails
 import connectors.DatabaseConnector
 import controllers.actions.*
 import models.{ReportId, UserAnswers}
+import pages.*
 import pages.manual.FINamePage
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage}
-import pages.*
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.ReportDetailsCheckAnswersUtil
+import utils.CheckAnswersUtil
 import views.html.ReportDetailsCheckAnswersView
 
 import javax.inject.Inject
@@ -40,7 +40,7 @@ class ReportDetailsCheckAnswersController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: ReportDetailsCheckAnswersView,
   dbConnector: DatabaseConnector,
-  util: ReportDetailsCheckAnswersUtil
+  util: CheckAnswersUtil
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport

@@ -272,6 +272,27 @@ whatIsGIINForSponsor.error.invalidChar = GIIN must only include letters a to z, 
 whatIsGIINForSponsor.error.invalidFormat = GIIN must be in the right format
 whatIsGIINForSponsor.error.notReal = Enter a real GIIN
 
+whatTypeOfFiler.title = What type of filer is the financial institution?
+whatTypeOfFiler.heading = What type of filer is {0}?
+whatTypeOfFiler.foreign = Participating foreign financial institution
+whatTypeOfFiler.registered = Registered deemed-compliant foreign financial institution
+whatTypeOfFiler.withholding = Withholding agent
+whatTypeOfFiler.checkYourAnswersLabel = What type of filer is the financial institution?
+whatTypeOfFiler.error.required = Select what type of filer the financial institution is
+whatTypeOfFiler.change.hidden = Change what type of filer the financial institution is
+
+whatTypeOfFilerIsSponsor.title = What type of filer is the sponsor?
+whatTypeOfFilerIsSponsor.heading = What type of filer is {0}?
+whatTypeOfFilerIsSponsor.foreignFI = Sponsor of a sponsored foreign financial institution
+whatTypeOfFilerIsSponsor.directNonFinancial = Sponsor of a sponsored direct reporting non-financial foreign entity
+whatTypeOfFilerIsSponsor.trustee = Trustee of a trustee-documented trust
+whatTypeOfFilerIsSponsor.checkYourAnswersLabel = What type of filer is the sponsor?
+whatTypeOfFilerIsSponsor.error.required = Select what type of filer the sponsor is
+whatTypeOfFilerIsSponsor.change.hidden = Change what type of filer the sponsor is
+
+filerCategoryCheckAnswers.title = Check your answers for the filer category
+filerCategoryCheckAnswers.heading = Check your answers for the filer category
+
 uKPostcode.title = What is the postcode for the sponsor?
 uKPostcode.heading = What is the postcode for {0}?
 uKPostcode.p1 = Enter the postcode to find the address automatically.
