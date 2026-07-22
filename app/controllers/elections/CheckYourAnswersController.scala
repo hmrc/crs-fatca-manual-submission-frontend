@@ -19,6 +19,7 @@ package controllers.elections
 import com.google.inject.Inject
 import controllers.actions.{DataRequiredAction, ElectionIdRequiredAction, FrontendDataRetrievalAction, IdentifierAction}
 import controllers.routes
+import models.ElectionsId
 import pages.FiDetailsPage
 import pages.elections.CRSContractsPage
 import play.api.Logging

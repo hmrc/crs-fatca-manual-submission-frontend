@@ -18,7 +18,6 @@ package forms
 
 import forms.behaviours.StringFieldBehaviours
 import org.scalatest.matchers.should.Matchers.shouldBe
-import play.api.data.FormError
 
 class UkAddressFormProviderSpec extends StringFieldBehaviours {
 

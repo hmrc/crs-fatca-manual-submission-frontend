@@ -34,7 +34,8 @@ trait ModelGenerators {
         postcode     <- Arbitrary.arbitrary[String]
         country      <- Arbitrary.arbitrary[String]
       } yield UkAddress(addressLine1, addressLine2, city, county, postcode, country)
-      
+    }
+
   implicit lazy val arbitraryWhatTypeOfFilerIsSponsor: Arbitrary[WhatTypeOfFilerIsSponsor] =
     Arbitrary {
       Gen.oneOf(WhatTypeOfFilerIsSponsor.values)

@@ -19,7 +19,6 @@ package forms.mappings
 import models.Enumerable
 import play.api.data.{FieldMapping, FormError, Forms}
 import play.api.data.format.Formatter
-import play.api.data.validation.Invalid
 import utils.RegexConstants
 
 import scala.util.control.Exception.nonFatalCatch
