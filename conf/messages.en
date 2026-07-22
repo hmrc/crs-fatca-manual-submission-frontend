@@ -272,6 +272,27 @@ whatIsGIINForSponsor.error.invalidChar = GIIN must only include letters a to z, 
 whatIsGIINForSponsor.error.invalidFormat = GIIN must be in the right format
 whatIsGIINForSponsor.error.notReal = Enter a real GIIN
 
+whatTypeOfFiler.title = What type of filer is the financial institution?
+whatTypeOfFiler.heading = What type of filer is {0}?
+whatTypeOfFiler.foreign = Participating foreign financial institution
+whatTypeOfFiler.registered = Registered deemed-compliant foreign financial institution
+whatTypeOfFiler.withholding = Withholding agent
+whatTypeOfFiler.checkYourAnswersLabel = What type of filer is the financial institution?
+whatTypeOfFiler.error.required = Select what type of filer the financial institution is
+whatTypeOfFiler.change.hidden = Change what type of filer the financial institution is
+
+whatTypeOfFilerIsSponsor.title = What type of filer is the sponsor?
+whatTypeOfFilerIsSponsor.heading = What type of filer is {0}?
+whatTypeOfFilerIsSponsor.foreignFI = Sponsor of a sponsored foreign financial institution
+whatTypeOfFilerIsSponsor.directNonFinancial = Sponsor of a sponsored direct reporting non-financial foreign entity
+whatTypeOfFilerIsSponsor.trustee = Trustee of a trustee-documented trust
+whatTypeOfFilerIsSponsor.checkYourAnswersLabel = What type of filer is the sponsor?
+whatTypeOfFilerIsSponsor.error.required = Select what type of filer the sponsor is
+whatTypeOfFilerIsSponsor.change.hidden = Change what type of filer the sponsor is
+
+filerCategoryCheckAnswers.title = Check your answers for the filer category
+filerCategoryCheckAnswers.heading = Check your answers for the filer category
+
 uKPostcode.title = What is the postcode for the sponsor?
 uKPostcode.heading = What is the postcode for {0}?
 uKPostcode.p1 = Enter the postcode to find the address automatically.
@@ -298,3 +319,21 @@ isThisAddressForSponsor.heading = Is this the address for {0}?
 isThisAddressForSponsor.checkYourAnswersLabel = Is this the sponsor’s address?
 isThisAddressForSponsor.error.required = Select yes if this is the sponsor’s address
 isThisAddressForSponsor.change.hidden = IsThisAddressForSponsor
+
+haveNumber.title = Does the account have an official account number or identification number?
+haveNumber.heading = Does the account have an official account number or identification number?
+haveNumber.checkYourAnswersLabel = haveNumber
+haveNumber.error.required = Select yes if the account has an official account number or identification number
+haveNumber.change.hidden = HaveNumber
+
+numberType.title = What type of account number or identification number is this?
+numberType.heading = What type of account number or identification number is this?
+numberType.iBAN = International Bank Account Number (IBAN)
+numberType.oBAN = Other Bank Account Number (OBAN)
+numberType.iSIN = International Securities Identification Number (ISIN)
+numberType.oSIN = Other Securities Identification Number (OSIN)
+numberType.sEMP = Specified Electronic Money Product (SEMP)
+numberType.oTHER = Any other type of account number or identification number
+numberType.checkYourAnswersLabel = What type of account number or identification number is this?
+numberType.error.required = Select what type of account number or identification number this is
+numberType.change.hidden = NumberType

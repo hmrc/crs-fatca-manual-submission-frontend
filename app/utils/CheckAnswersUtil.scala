@@ -16,9 +16,10 @@
 
 package utils
 
-import models.UserAnswers
+import models.{ReportId, UserAnswers}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
+import viewmodels.checkAnswers.manual.filercategory.{WhatTypeOfFilerIsSponsorSummary, WhatTypeOfFilerSummary}
 import viewmodels.checkAnswers.{CrsOrFatcaSummary, ReportingYearSummary, TypeOfReportSummary}
 import viewmodels.govuk.all.SummaryListViewModel
 import viewmodels.govuk.summarylist.FluentSummaryList
@@ -26,11 +27,16 @@ import viewmodels.govuk.summarylist.FluentSummaryList
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class ReportDetailsCheckAnswersUtil @Inject() {
+class CheckAnswersUtil @Inject() {
 
   def getReportDetailsRows(ua: UserAnswers)(implicit messages: Messages): SummaryList =
     SummaryListViewModel(
       rows = Seq(CrsOrFatcaSummary.row(ua), ReportingYearSummary.row(ua), TypeOfReportSummary.row(ua)).flatten
+    ).withCssClass("govuk-!-margin-bottom-9")
+
+  def getFilerCategoryRows(ua: UserAnswers)(implicit messages: Messages, reportId: ReportId): SummaryList =
+    SummaryListViewModel(
+      rows = Seq(WhatTypeOfFilerIsSponsorSummary.row(ua), WhatTypeOfFilerSummary.row(ua)).flatten
     ).withCssClass("govuk-!-margin-bottom-9")
 
 }

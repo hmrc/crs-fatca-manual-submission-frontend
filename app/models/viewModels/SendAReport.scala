@@ -68,13 +68,20 @@ final case class SendAReportSections(
       SendAReportSection(
         headingKey = "sendAReport.filerCategory.heading",
         idPrefix = "filer-category",
-        tasks = task("sendAReport.filerCategory.subHeading", filerCategory, href = Some(controllers.routes.UnderConstructionController.onPageLoad().url))
+        tasks = task(
+          "sendAReport.filerCategory.subHeading",
+          filerCategory,
+          href = Some(controllers.manual.filercategory.routes.WhatTypeOfFilerIsSponsorController.onPageLoad(NormalMode).url)
+        )
       ),
       SendAReportSection(
         headingKey = "sendAReport.accountsInformation.heading",
         idPrefix = "accounts-information",
         tasks = Seq(
-          task("sendAReport.accountsInformation.accounts", accounts, href = Some(controllers.routes.UnderConstructionController.onPageLoad().url)),
+          task("sendAReport.accountsInformation.accounts",
+               accounts,
+               href = Some(controllers.manual.account.routes.HaveNumberController.onPageLoad(NormalMode).url)
+          ),
           task("sendAReport.accountsInformation.accountHolders", accountHolders, href = Some(controllers.routes.UnderConstructionController.onPageLoad().url)),
           task("sendAReport.accountsInformation.controllingPersons",
                controllingPersons,
