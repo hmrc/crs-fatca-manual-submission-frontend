@@ -90,28 +90,28 @@
                 items = Seq(
                     SelectItem(
                         value = Some(""),
-                        text = "Select country or territory"
+                        text = messages("ukAddress.selectCountry")
 
                     ),
                     SelectItem(
                         value = Some("GB"),
-                        text = "United Kingdom"
-                    ),
+                        text = messages("ukAddress.uk"),
+                        ),
                     SelectItem(
                         value = Some("JE"),
-                        text = "Jersey"
+                        text = messages("ukAddress.jersey")
                     ),
                     SelectItem(
                         value = Some("GG"),
-                        text = "Guernsey"
+                        text = messages("ukAddress.guernsey")
                     ),
                     SelectItem(
                         value = Some("IM"),
-                        text = "Isle of Man"
+                        text = messages("ukAddress.isleOfMan")
                     ),
                 ),
                 label = Label(
-                    content = Text("Country")
+                    content = Text(messages("ukAddress.country"))
                 ),
                 attributes = Map(
                     "data-show-all-values" -> "false",
