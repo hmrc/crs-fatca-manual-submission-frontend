@@ -28,80 +28,81 @@ import views.html.UkAddressView
 class UkAddressViewSpec extends SpecBase {
   private val application = applicationBuilder().build()
 
-  private val view: UkAddressView = application.injector.instanceOf[UkAddressView]
+  private val view: UkAddressView                                        = application.injector.instanceOf[UkAddressView]
   private val messagesControllerComponents: MessagesControllerComponents = application.injector.instanceOf[MessagesControllerComponents]
-  val formProvider = new UkAddressFormProvider()
-
+  val formProvider                                                       = new UkAddressFormProvider()
 
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
-  implicit private val messages: Messages = messagesControllerComponents.messagesApi.preferred(Seq(Lang("en")))
+  implicit private val messages: Messages               = messagesControllerComponents.messagesApi.preferred(Seq(Lang("en")))
 
   "UkAddressView" - {
     "should render page components" - {
-        val renderedHtml = view(formProvider(), NormalMode, "Test Sponsor Name")
-        lazy val doc = Jsoup.parse(renderedHtml.body)
-        println(renderedHtml.body)
-        val expectedTitleLabels = Seq(
-            "Address line 1 ",
-            "Address line 2 (Optional)",
-            "City",
-            "County (Optional)",
-            "Postcode",
-            "Country"
+      val renderedHtml = view(formProvider(), NormalMode, "Test Sponsor Name")
+      lazy val doc     = Jsoup.parse(renderedHtml.body)
+      println(renderedHtml.body)
+      val expectedTitleLabels = Seq(
+        "Address line 1 ",
+        "Address line 2 (Optional)",
+        "City",
+        "County (Optional)",
+        "Postcode",
+        "Country"
+      )
+
+      "must display title" in {
+        doc.title() must include("What is the sponsor’s registered address?")
+      }
+
+      "must display heading" in {
+        doc.select("h1").text() must include("What is the registered address for Test Sponsor Name?")
+      }
+
+      "must display all address fields" in {
+        val labels = doc.select(".govuk-label").eachText()
+        expectedTitleLabels.foreach {
+          label =>
+            labels must contain(label.trim())
+        }
+      }
+
+      "must display all address fields with correct autocomplete attributes" in {
+        val expectedAutocompleteAttributes = Map(
+          "addressLine1" -> "address-line1",
+          "addressLine2" -> "address-line2",
+          "city"         -> "address-level2",
+          "county"       -> "address-level1",
+          "postCode"     -> "postal-code"
         )
 
-        "must display title" in {
-            doc.title() must include("What is the sponsor’s registered address?")
+        expectedAutocompleteAttributes.foreach {
+          case (fieldId, expectedValue) =>
+            val actualValue = doc.select(s"#$fieldId").attr("autocomplete")
+            actualValue mustBe expectedValue
         }
+      }
 
-        "must display heading" in {
-            doc.select("h1").text() must include("What is the registered address for Test Sponsor Name?")
-        }
+      "must contain a country field with the correct label " in {
+        val countryLabel = doc.select("label[for=country]").text()
+        countryLabel mustBe "Country"
+        val nameAttribute = doc.select("#country").attr("name")
+        nameAttribute mustBe "country"
 
-        "must display all address fields" in {
-            val labels = doc.select(".govuk-label").eachText()
-            expectedTitleLabels.foreach { label =>
-                labels must contain(label.trim())
-            }
-        }
+        val gbOption = doc.select("#country option[value=GB]")
+        gbOption.isEmpty mustBe false
+        gbOption.text() mustBe "United Kingdom"
 
-        "must display all address fields with correct autocomplete attributes" in {
-            val expectedAutocompleteAttributes = Map(
-                "addressLine1" -> "address-line1",
-                "addressLine2" -> "address-line2",
-                "city" -> "address-level2",
-                "county" -> "address-level1",
-                "postCode" -> "postal-code"
-            )
+        val ggOption = doc.select("#country option[value=GG]")
+        ggOption.isEmpty mustBe false
+        ggOption.text() mustBe "Guernsey"
 
-            expectedAutocompleteAttributes.foreach { case (fieldId, expectedValue) =>
-                val actualValue = doc.select(s"#$fieldId").attr("autocomplete")
-                actualValue mustBe expectedValue
-            }
-        }
+        val imOption = doc.select("#country option[value=IM]")
+        imOption.isEmpty mustBe false
+        imOption.text() mustBe "Isle of Man"
+      }
 
-        "must contain a country field with the correct label " in {
-            val countryLabel = doc.select("label[for=country]").text()
-            countryLabel mustBe "Country"
-            val nameAttribute = doc.select("#country").attr("name")
-            nameAttribute mustBe "country"
-
-            val gbOption = doc.select("#country option[value=GB]")
-            gbOption.isEmpty mustBe false
-            gbOption.text() mustBe "United Kingdom"
-
-            val ggOption = doc.select("#country option[value=GG]")
-            ggOption.isEmpty mustBe false
-            ggOption.text() mustBe "Guernsey"
-
-            val imOption = doc.select("#country option[value=IM]")
-            imOption.isEmpty mustBe false
-            imOption.text() mustBe "Isle of Man"
-        }
-      
-        "must display button" in {
-            doc.select(".govuk-button").text() mustBe "Save and continue"
-        }
+      "must display button" in {
+        doc.select(".govuk-button").text() mustBe "Save and continue"
+      }
     }
   }
 }
