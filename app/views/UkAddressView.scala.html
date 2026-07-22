@@ -96,6 +96,7 @@
                     SelectItem(
                         value = Some("GB"),
                         text = messages("ukAddress.uk"),
+                        attributes = Map("data-text" -> "United Kingdom:UK:Great Britain:Northern Ireland")
                         ),
                     SelectItem(
                         value = Some("JE"),
@@ -113,12 +114,6 @@
                 label = Label(
                     content = Text(messages("ukAddress.country"))
                 ),
-                attributes = Map(
-                    "data-show-all-values" -> "false",
-                    "data-auto-select" -> "false",
-                    "data-default-value" -> "",
-                    "data-module" -> "hmrc-accessible-autocomplete"
-                )
             ))
         </div>
 
