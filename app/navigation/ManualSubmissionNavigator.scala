@@ -57,6 +57,7 @@ class ManualSubmissionNavigator @Inject() () {
       case UKPostcodePage()               => routes.UnderConstructionController.onPageLoad()
       case WhatTypeOfFilerPage()          => controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad()
       case WhatTypeOfFilerIsSponsorPage() => controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad()
+      case UkAddressPage()                => routes.UnderConstructionController.onPageLoad()
       case _                              => routes.IndexController.onPageLoad()
     }
 

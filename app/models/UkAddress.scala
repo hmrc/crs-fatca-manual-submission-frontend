@@ -14,23 +14,13 @@
  * limitations under the License.
  */
 
-package forms.manual.sponsor
+package models
 
-import forms.mappings.Mappings
-import play.api.data.Form
-import utils.RegexConstants
+import play.api.libs.json._
 
-import javax.inject.Inject
+case class UkAddress(addressLine1: String, addressLine2: Option[String], city: String, county: Option[String] = None, postcode: String, country: String)
 
-class SponsorNameFormProvider @Inject() extends Mappings {
+object UkAddress {
 
-  def apply(): Form[String] =
-    Form(
-      "value" -> text("sponsorName.error.required")
-        .verifying(
-          maxLength(200, "sponsorName.error.length"),
-          regexp(RegexConstants.SPONSER_NAME_VALID, "sponsorName.error.invalid"),
-          regexShouldNotContain(RegexConstants.DOUBLE_DASH, "sponsorName.error.doubedash")
-        )
-    )
+  implicit val format: OFormat[UkAddress] = Json.format
 }

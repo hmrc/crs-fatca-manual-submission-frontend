@@ -16,36 +16,31 @@
 
 package generators
 
-import models.manual.filercategory.*
 import models.{CrsOrFatca, TypeOfReport}
 import org.scalacheck.{Arbitrary, Gen}
-
 import models.NumberType
+import models.UkAddress
 
 trait ModelGenerators {
 
-  implicit lazy val arbitraryWhatTypeOfFilerIsSponsor: Arbitrary[WhatTypeOfFilerIsSponsor] =
+  implicit lazy val arbitraryUkAddress: Arbitrary[UkAddress] =
     Arbitrary {
-      Gen.oneOf(WhatTypeOfFilerIsSponsor.values)
-    }
-
-  implicit lazy val arbitraryWhatTypeOfFiler: Arbitrary[WhatTypeOfFiler] =
-    Arbitrary {
-      Gen.oneOf(WhatTypeOfFiler.values.toSeq)
+      for {
+        addressLine1 <- Arbitrary.arbitrary[String]
+        addressLine2 <- Arbitrary.arbitrary[Option[String]]
+        city         <- Arbitrary.arbitrary[String]
+        county       <- Arbitrary.arbitrary[Option[String]]
+        postcode     <- Arbitrary.arbitrary[String]
+        country      <- Arbitrary.arbitrary[String]
+      } yield UkAddress(addressLine1, addressLine2, city, county, postcode, country)
     }
 
   implicit lazy val arbitraryNumberType: Arbitrary[NumberType] =
-    Arbitrary {
-      Gen.oneOf(NumberType.values.toSeq)
-    }
+    Arbitrary(Gen.oneOf(NumberType.values.toSeq))
 
   implicit lazy val arbitraryTypeOfReport: Arbitrary[TypeOfReport] =
-    Arbitrary {
-      Gen.oneOf(TypeOfReport.values)
-    }
+    Arbitrary(Gen.oneOf(TypeOfReport.values.toSeq))
 
   implicit lazy val arbitraryCrsOrFatca: Arbitrary[CrsOrFatca] =
-    Arbitrary {
-      Gen.oneOf(CrsOrFatca.values)
-    }
+    Arbitrary(Gen.oneOf(CrsOrFatca.values.toSeq))
 }

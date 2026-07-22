@@ -14,23 +14,11 @@
  * limitations under the License.
  */
 
-package forms.manual.sponsor
+package pages
 
-import forms.mappings.Mappings
-import play.api.data.Form
-import utils.RegexConstants
+import models.{ReportId, UkAddress}
+import play.api.libs.json.JsPath
 
-import javax.inject.Inject
+final case class UkAddressPage()(implicit reportId: ReportId) extends QuestionPage[UkAddress]:
 
-class SponsorNameFormProvider @Inject() extends Mappings {
-
-  def apply(): Form[String] =
-    Form(
-      "value" -> text("sponsorName.error.required")
-        .verifying(
-          maxLength(200, "sponsorName.error.length"),
-          regexp(RegexConstants.SPONSER_NAME_VALID, "sponsorName.error.invalid"),
-          regexShouldNotContain(RegexConstants.DOUBLE_DASH, "sponsorName.error.doubedash")
-        )
-    )
-}
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "ukAddress"

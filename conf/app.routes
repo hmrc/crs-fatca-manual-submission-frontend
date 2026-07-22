@@ -136,3 +136,8 @@ GET        /manual/account/number-type                        controllers.manual
 POST       /manual/account/number-type                        controllers.manual.account.NumberTypeController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/account/change-number-type                  controllers.manual.account.NumberTypeController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/account/change-number-type                  controllers.manual.account.NumberTypeController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/sponsor/address-uk                           controllers.manual.sponsor.UkAddressController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/sponsor/address-uk                          controllers.manual.sponsor.UkAddressController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/sponsor/change-address-uk                   controllers.manual.sponsor.UkAddressController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/sponsor/change-address-uk                  controllers.manual.sponsor.UkAddressController.onSubmit(mode: Mode = CheckMode)

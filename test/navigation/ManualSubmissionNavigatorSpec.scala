@@ -80,6 +80,14 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         }
       }
 
+      "UkAddressPage" - {
+        "must go to UnderConstruction Page when Normal Mode" in {
+          val userData = UserAnswers("id")
+          navigator.nextPage(UkAddressPage(), NormalMode, userData) mustBe
+            controllers.routes.UnderConstructionController.onPageLoad()
+        }
+      }
+
       "SponsorNamePage" - {
         "must go to WhatIsGIINForSponsor Page" in {
           val userData = UserAnswers("id")
