@@ -15,12 +15,15 @@
  *@
 
 @import viewmodels.InputWidth._
+@import viewmodels.LabelSize
 
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
     govukInput: GovukInput,
+    heading: components.Heading,
+    paragraph: components.Paragraph,
     govukButton: GovukButton
 )
 
@@ -34,16 +37,21 @@
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
+        @heading(messages("identifier.heading"))
+        @paragraph(messages("identifier.p1"))
+        @paragraph(messages("identifier.p2"))
+
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(messages("identifier.heading")).asPageHeading()
+                label = LabelViewModel(messages("identifier.label")).asPageHeading(LabelSize.Medium)
             )
-            .withWidth(Full)
+            .withWidth(Fixed20)
         )
 
         @govukButton(
-            ButtonViewModel(messages("site.continue"))
+            ButtonViewModel(messages("site.saveContinue"))
+            .withAttribute("id" -> "submit")
         )
     }
 }

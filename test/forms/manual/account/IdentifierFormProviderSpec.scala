@@ -17,14 +17,16 @@
 package forms.manual.account
 
 import forms.behaviours.StringFieldBehaviours
-import forms.manual.account.IdentifierFormProvider
 import play.api.data.FormError
+import utils.RegexConstants
 
 class IdentifierFormProviderSpec extends StringFieldBehaviours {
 
-  val requiredKey = "identifier.error.required"
-  val lengthKey   = "identifier.error.length"
-  val maxLength   = 200
+  val requiredKey   = "identifier.error.required"
+  val lengthKey     = "identifier.error.length"
+  val invalidKey    = "identifier.error.invalid"
+  val doubleDashKey = "identifier.error.doubedash"
+  val maxLength     = 200
 
   val form = new IdentifierFormProvider()()
 
@@ -32,10 +34,13 @@ class IdentifierFormProviderSpec extends StringFieldBehaviours {
 
     val fieldName = "value"
 
+    val allowedChars            = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789&'\\^` "
+    val allowedSeq: Seq[String] = allowedChars.map(_.toString) :+ "-"
+
     behave like fieldThatBindsValidData(
       form,
       fieldName,
-      stringsWithMaxLength(maxLength)
+      stringsIncludeSpecificValuesWithMaxLength(maxLength, allowedChars)
     )
 
     behave like fieldWithMaxLength(
@@ -45,10 +50,22 @@ class IdentifierFormProviderSpec extends StringFieldBehaviours {
       lengthError = FormError(fieldName, lengthKey, Seq(maxLength))
     )
 
+    behave like fieldWithIncludedChars(
+      form,
+      fieldName,
+      allowedChars = allowedSeq,
+      invalidErr = FormError(fieldName, invalidKey, Seq(RegexConstants.DEFAULT_STRING_FIELD_VALID))
+    )
+
     behave like mandatoryField(
       form,
       fieldName,
       requiredError = FormError(fieldName, requiredKey)
     )
+
+    "has double dash throw error" in {
+      val result = form.bind(Map(fieldName -> "test--test")).apply(fieldName)
+      result.errors must contain only FormError(fieldName, doubleDashKey, Seq())
+    }
   }
 }

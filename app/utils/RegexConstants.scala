@@ -17,7 +17,7 @@
 package utils
 
 object RegexConstants:
-  val SPONSER_NAME_VALID: String       = """^[A-Za-z0-9&'\\^` -]+$"""
-  val SPONSER_NAME_DOUBLE_DASH: String = """.*--.*"""
-  val POSTCODE_VALID: String           = """^[A-Za-z0-9 ]*$"""
-  val POSTCODE_FORMAT: String          = """^[A-Za-z]{1,2}\d[A-Za-z0-9]?\s?\d[A-Za-z]{2}$"""
+  val DEFAULT_STRING_FIELD_VALID: String = """^[A-Za-z0-9&'\\^` -]+$"""
+  val DOUBLE_DASH_INVALID: String        = """.*--.*"""
+  val POSTCODE_VALID: String             = """^[A-Za-z0-9 ]*$"""
+  val POSTCODE_FORMAT: String            = """^[A-Za-z]{1,2}\d[A-Za-z0-9]?\s?\d[A-Za-z]{2}$"""

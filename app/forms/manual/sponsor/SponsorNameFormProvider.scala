@@ -29,8 +29,8 @@ class SponsorNameFormProvider @Inject() extends Mappings {
       "value" -> text("sponsorName.error.required")
         .verifying(
           maxLength(200, "sponsorName.error.length"),
-          regexp(RegexConstants.SPONSER_NAME_VALID, "sponsorName.error.invalid"),
-          regexShouldNotContain(RegexConstants.SPONSER_NAME_DOUBLE_DASH, "sponsorName.error.doubedash")
+          regexp(RegexConstants.DEFAULT_STRING_FIELD_VALID, "sponsorName.error.invalid"),
+          regexShouldNotContain(RegexConstants.DOUBLE_DASH_INVALID, "sponsorName.error.doubedash")
         )
     )
 }
