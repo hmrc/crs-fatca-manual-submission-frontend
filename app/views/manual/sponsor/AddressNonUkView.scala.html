@@ -17,6 +17,7 @@
 @import models.Countries
 @import viewmodels.InputWidth._
 @import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichSelect
 
 @this(
         layout: templates.Layout,
@@ -67,7 +68,7 @@
             )
         }
 
-        <h1 class="govuk-heading-l">
+        <h1 class="govuk-heading-l govuk-!-text-break-word">
         @messages("addressNonUk.heading", sponsorName)
         </h1>
 
@@ -144,14 +145,8 @@
                             messages(error.message, error.args*)
                         )
                     )
-                },
-                attributes = Map(
-                    "data-module" -> "hmrc-accessible-autocomplete",
-                    "data-show-all-values" -> "false",
-                    "data-auto-select" -> "false",
-                    "data-default-value" -> ""
-                )
-            )
+                }
+            ).asAccessibleAutocomplete()
         )
 
         </div>
