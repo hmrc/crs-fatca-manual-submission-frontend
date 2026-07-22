@@ -323,3 +323,10 @@ numberType.oTHER = Any other type of account number or identification number
 numberType.checkYourAnswersLabel = What type of account number or identification number is this?
 numberType.error.required = Select what type of account number or identification number this is
 numberType.change.hidden = NumberType
+
+identifier.title = identifier
+identifier.heading = identifier
+identifier.checkYourAnswersLabel = identifier
+identifier.error.required = Enter identifier
+identifier.error.length = Identifier must be 200 characters or less
+identifier.change.hidden = Identifier

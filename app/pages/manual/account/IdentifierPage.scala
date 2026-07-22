@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package pages
+package pages.manual.account
 
-import models.{NumberType, ReportId}
+import models.ReportId
+import pages.QuestionPage
 import play.api.libs.json.JsPath
 
-final case class NumberTypePage()(implicit reportId: ReportId) extends QuestionPage[NumberType]:
+final case class IdentifierPage()(implicit reportId: ReportId) extends QuestionPage[String]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "numberType"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "identifier"

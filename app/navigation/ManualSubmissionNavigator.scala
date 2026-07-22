@@ -16,11 +16,12 @@
 
 package navigation
 
+import controllers.manual.account
 import controllers.manual.reportdetails.routes.*
 import controllers.routes
 import models.*
 import pages.*
-import pages.manual.account.HaveNumberPage
+import pages.manual.account.{HaveNumberPage, IdentifierPage, NumberTypePage}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.*
@@ -46,19 +47,33 @@ class ManualSubmissionNavigator @Inject() () {
       case _                 => routes.IndexController.onPageLoad()
     }
 
+  private def accountNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
+    case (HaveNumberPage(), mode, ua) => haveNumberNavigation(mode, ua)
+    case (NumberTypePage(), mode, ua) => routes.UnderConstructionController.onPageLoad()
+    case (IdentifierPage(), mode, ua) => routes.UnderConstructionController.onPageLoad()
+  }
+
+  private def fillerNavigation: PartialFunction[(Page, Mode, UserAnswers), Call] = {
+    case (WhatTypeOfFilerPage(), _, _)          => controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad()
+    case (WhatTypeOfFilerIsSponsorPage(), _, _) => controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad()
+    case (IdentifierPage(), _, _)               => routes.UnderConstructionController.onPageLoad()
+  }
+
+  private def sponsorNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
+    case (HaveSponsorPage(), mode, ua)         => haveSponsorNavigation(mode, ua)
+    case (SponsorNamePage(), mode, _)          => controllers.manual.sponsor.routes.WhatIsGIINForSponsorController.onPageLoad(mode)
+    case (WhatIsGIINForSponsorPage(), mode, _) => controllers.manual.sponsor.routes.IsSponsorBasedInUKController.onPageLoad(mode)
+    case (IsSponsorBasedInUKPage(), mode, ua)  => handleSponsorBasedUKNavigation(ua, mode)
+    case (UKPostcodePage(), _, _)              => routes.UnderConstructionController.onPageLoad()
+  }
+
+  private def navigation(implicit reportId: ReportId) =
+    accountNavigation orElse sponsorNavigation orElse fillerNavigation
+
   def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId): Call =
-    page match {
-      case HaveSponsorPage()              => haveSponsorNavigation(mode, userAnswers)
-      case HaveNumberPage()               => haveNumberNavigation(mode, userAnswers)
-      case NumberTypePage()               => routes.UnderConstructionController.onPageLoad()
-      case SponsorNamePage()              => controllers.manual.sponsor.routes.WhatIsGIINForSponsorController.onPageLoad(NormalMode)
-      case WhatIsGIINForSponsorPage()     => controllers.manual.sponsor.routes.IsSponsorBasedInUKController.onPageLoad(NormalMode)
-      case IsSponsorBasedInUKPage()       => handleSponsorBasedUKNavigation(userAnswers, mode)
-      case UKPostcodePage()               => routes.UnderConstructionController.onPageLoad()
-      case WhatTypeOfFilerPage()          => controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad()
-      case WhatTypeOfFilerIsSponsorPage() => controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad()
-      case _                              => routes.IndexController.onPageLoad()
-    }
+    navigation
+      .lift((page, mode, userAnswers))
+      .getOrElse(routes.IndexController.onPageLoad())
 
   private def haveSponsorNavigation(mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
     userAnswers.get(HaveSponsorPage()) match {
@@ -69,8 +84,8 @@ class ManualSubmissionNavigator @Inject() () {
 
   private def haveNumberNavigation(mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
     userAnswers.get(HaveNumberPage()) match {
-      case Some(true)  => controllers.manual.account.routes.NumberTypeController.onPageLoad(mode)
-      case Some(false) => routes.UnderConstructionController.onPageLoad()
+      case Some(true)  => account.routes.NumberTypeController.onPageLoad(mode)
+      case Some(false) => account.routes.IdentifierController.onPageLoad(mode)
       case None        => routes.JourneyRecoveryController.onPageLoad()
     }
 
