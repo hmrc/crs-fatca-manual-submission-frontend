@@ -17,16 +17,19 @@
 package utils
 
 import base.SpecBase
-import models.CrsOrFatca
+import models.SubmissionsConstants.CRS
 import models.TypeOfReport.Information
+import models.manual.filercategory.{WhatTypeOfFiler, WhatTypeOfFilerIsSponsor}
+import models.{CrsOrFatca, ReportId}
 import org.scalatest.freespec.AnyFreeSpec
+import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import play.api.i18n.Messages
 import play.api.test.Helpers.stubMessages
 
-class ReportDetailsCheckAnswersUtilSpec extends SpecBase {
+class CheckAnswersUtilSpec extends SpecBase {
 
-  val util = new ReportDetailsCheckAnswersUtil()
+  val util = new CheckAnswersUtil()
 
   implicit val messages: Messages = stubMessages()
 
@@ -49,6 +52,27 @@ class ReportDetailsCheckAnswersUtilSpec extends SpecBase {
         val result = util.getReportDetailsRows(ua)
 
         result.rows.size mustBe 3
+      }
+    }
+
+    "getFilerCategoryRows" - {
+
+      implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
+
+      "must return an empty SummaryList when no relevant answers exist in UserAnswers" in {
+        val result = util.getFilerCategoryRows(emptyUserAnswers)
+
+        result.rows mustBe Seq.empty
+      }
+
+      "must return a populated SummaryList when matching data is present in UserAnswers" in {
+        val ua = emptyUserAnswers
+          .withPage(WhatTypeOfFilerIsSponsorPage(), WhatTypeOfFilerIsSponsor.Trustee)
+          .withPage(WhatTypeOfFilerPage(), WhatTypeOfFiler.Foreign)
+
+        val result = util.getFilerCategoryRows(ua)
+
+        result.rows.size mustBe 2
       }
     }
   }

@@ -22,6 +22,7 @@ import models.*
 import models.SubmissionsConstants.FATCA
 import pages.*
 import pages.manual.account.HaveNumberPage
+import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.{HaveSponsorPage, IsSponsorBasedInUKPage, SponsorNamePage, UKPostcodePage, WhatIsGIINForSponsorPage}
 
@@ -57,7 +58,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
       }
     }
     "with reportId" - {
-      implicit val reportId = ReportId(FATCA, 2024, None, "TestFIID")
+      implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
 
       "HaveSponsorPage" - {
         "must go to SponsorName Page when answer is Yes" in {
@@ -128,6 +129,21 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           val ua = UserAnswers("id").withPage(UKPostcodePage(), "ZZ1 1ZZ")
           navigator.nextPage(UKPostcodePage(), NormalMode, ua) mustBe
             controllers.routes.UnderConstructionController.onPageLoad()
+        }
+      }
+      "WhatTypeOfFilerPage" - {
+        "must go to FilerCategoryCheckAnswers" in {
+          val ua = UserAnswers("id")
+          navigator.nextPage(WhatTypeOfFilerPage(), NormalMode, ua) mustBe
+            controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad()
+        }
+      }
+
+      "WhatTypeOfFilerIsSponsorPage" - {
+        "must go to FilerCategoryCheckAnswers" in {
+          val ua = UserAnswers("id")
+          navigator.nextPage(WhatTypeOfFilerIsSponsorPage(), NormalMode, ua) mustBe
+            controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad()
         }
       }
 

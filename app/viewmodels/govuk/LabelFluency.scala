@@ -35,7 +35,7 @@ trait LabelFluency {
     def asPageHeading(size: LabelSize = LabelSize.Large): Label =
       label
         .copy(isPageHeading = true)
-        .withCssClass(size.toString)
+        .withCssClass(s"${size.toString} wrappable")
 
     def withCssClass(className: String): Label =
       label.copy(classes = s"${label.classes} $className")
