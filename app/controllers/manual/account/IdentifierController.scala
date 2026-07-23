@@ -18,29 +18,29 @@ package controllers.manual.account
 
 import connectors.DatabaseConnector
 import controllers.actions.*
-import forms.manual.account.NumberTypeFormProvider
+import forms.manual.account.IdentifierFormProvider
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.account.NumberTypePage
+import pages.manual.account.IdentifierPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.manual.account.NumberTypeView
+import views.html.manual.account.IdentifierView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class NumberTypeController @Inject() (
+class IdentifierController @Inject() (
   override val messagesApi: MessagesApi,
-  sessionRepository: DatabaseConnector,
+  repository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   reportIdAction: ReportIdRequiredAction,
-  formProvider: NumberTypeFormProvider,
+  formProvider: IdentifierFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: NumberTypeView
+  view: IdentifierView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -49,27 +49,31 @@ class NumberTypeController @Inject() (
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
     implicit request =>
+
       implicit val reportId: ReportId = request.reportId
-      val preparedForm = request.userAnswers.get(NumberTypePage()) match {
+
+      val preparedForm = request.userAnswers.get(IdentifierPage()) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
 
-      Ok(view(preparedForm, mode, reportId.regime))
+      Ok(view(preparedForm, mode))
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
     implicit request =>
+
       implicit val reportId: ReportId = request.reportId
+
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, reportId.regime))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(NumberTypePage(), value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(NumberTypePage(), mode, updatedAnswers))
+              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(IdentifierPage(), value))
+              _              <- repository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(IdentifierPage(), mode, updatedAnswers))
         )
   }
 }

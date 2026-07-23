@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 
-package forms.manual.sponsor
+package forms.manual.account
 
 import forms.mappings.Mappings
-import play.api.data.Form
-import utils.RegexConstants
 import models.ErrorValidation
+import play.api.data.Form
 import play.api.data.Forms.single
+import utils.RegexConstants
 
 import javax.inject.Inject
 
-class SponsorNameFormProvider @Inject() extends Mappings {
+class IdentifierFormProvider @Inject() extends Mappings {
 
   def apply(): Form[String] =
     Form(
       single(
         "value" -> defaultStringFieldFormat(
-          "sponsorName.error.required",
+          "identifier.error.required",
           200,
-          "sponsorName.error.length",
+          "identifier.error.length",
           Seq(
-            ErrorValidation(RegexConstants.DEFAULT_STRING_FIELD_VALID, "sponsorName.error.invalid"),
-            ErrorValidation(RegexConstants.DOUBLE_DASH_INVALID, "sponsorName.error.doubedash")
+            ErrorValidation(RegexConstants.DEFAULT_STRING_FIELD_VALID, "identifier.error.invalid"),
+            ErrorValidation(RegexConstants.DOUBLE_DASH_INVALID, "identifier.error.doubedash")
           )
         )
       )
