@@ -16,16 +16,15 @@
 
 package forms.manual.sponsor
 
-import javax.inject.Inject
-
 import forms.mappings.Mappings
-import models.manual.sponsor.WhatIsAddressForSponsor
 import play.api.data.Form
+
+import javax.inject.Inject
 
 class WhatIsAddressForSponsorFormProvider @Inject() extends Mappings {
 
-  def apply(): Form[WhatIsAddressForSponsor] =
+  def apply(): Form[String] =
     Form(
-      "value" -> enumerable[WhatIsAddressForSponsor]("whatIsAddressForSponsor.error.required")
+      "value" -> text("whatIsAddressForSponsor.error.required")
     )
 }

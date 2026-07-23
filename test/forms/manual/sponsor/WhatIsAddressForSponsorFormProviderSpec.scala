@@ -16,24 +16,23 @@
 
 package forms.manual.sponsor
 
-import forms.behaviours.OptionFieldBehaviours
-import models.manual.sponsor.WhatIsAddressForSponsor
+import forms.behaviours.StringFieldBehaviours
+import org.scalacheck.Gen
 import play.api.data.FormError
 
-class WhatIsAddressForSponsorFormProviderSpec extends OptionFieldBehaviours {
+class WhatIsAddressForSponsorFormProviderSpec extends StringFieldBehaviours {
 
   val form = new WhatIsAddressForSponsorFormProvider()()
 
   ".value" - {
 
-    val fieldName = "value"
+    val fieldName   = "value"
     val requiredKey = "whatIsAddressForSponsor.error.required"
 
-    behave like optionsField[WhatIsAddressForSponsor](
+    behave like fieldThatBindsValidData(
       form,
       fieldName,
-      validValues  = WhatIsAddressForSponsor.values,
-      invalidError = FormError(fieldName, "error.invalid")
+      Gen.const("1 Address line 1 Road, Address line 2 Road Town, zz11zz")
     )
 
     behave like mandatoryField(

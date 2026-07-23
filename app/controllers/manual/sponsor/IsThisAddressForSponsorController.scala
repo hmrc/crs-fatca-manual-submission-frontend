@@ -19,10 +19,9 @@ package controllers.manual.sponsor
 import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.manual.sponsor.IsThisAddressForSponsorFormProvider
-import models.response.{Address, Country}
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.sponsor.{IsThisAddressForSponsorPage, SponsorNamePage}
+import pages.manual.sponsor.{AddressLookupPage, IsThisAddressForSponsorPage, SponsorNamePage, WhatIsAddressForSponsorPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -46,43 +45,45 @@ class IsThisAddressForSponsorController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  val form    = formProvider()
-  val address = Address(None, "testLine1", None, "testLine3", None, Some("zz1 1zz"), Country.GB)
+  val form = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
-      request.userAnswers
-        .get(SponsorNamePage())
-        .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)) {
-          sponsorName =>
 
-            val preparedForm = request.userAnswers.get(IsThisAddressForSponsorPage()) match {
-              case None        => form
-              case Some(value) => form.fill(value)
-            }
-            Ok(view(preparedForm, mode, address, sponsorName))
+      (for {
+        sponsorName <- request.userAnswers.get(SponsorNamePage())
+        addresses   <- request.userAnswers.get(AddressLookupPage())
+        address     <- addresses.headOption.flatMap(_.toAddress)
+      } yield {
+        val preparedForm = request.userAnswers.get(IsThisAddressForSponsorPage()) match {
+          case None        => form
+          case Some(value) => form.fill(value)
         }
+        Ok(view(preparedForm, mode, address, sponsorName))
+      }).getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
     implicit request =>
-
       implicit val reportId: ReportId = request.reportId
-      request.userAnswers
-        .get(SponsorNamePage())
-        .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))) {
-          sponsorName =>
-            form
-              .bindFromRequest()
-              .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, address, sponsorName))),
-                value =>
-                  for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(IsThisAddressForSponsorPage(), value))
-                    _              <- repository.set(updatedAnswers)
-                  } yield  Redirect(navigator.nextPage(IsThisAddressForSponsorPage(), mode, updatedAnswers))
-              )
-        }
+
+      (for {
+        sponsorName <- request.userAnswers.get(SponsorNamePage())
+        addresses   <- request.userAnswers.get(AddressLookupPage())
+        address     <- addresses.headOption.flatMap(_.toAddress)
+      } yield form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, address, sponsorName))),
+          value =>
+            for {
+              answersWithBoolean <- Future.fromTry(request.userAnswers.setWithReportId(IsThisAddressForSponsorPage(), value))
+              answersWithMaybeAddress <-
+                if (value) { Future.fromTry(answersWithBoolean.setWithReportId(WhatIsAddressForSponsorPage(), address)) }
+                else { Future.successful(answersWithBoolean) }
+              _ <- repository.set(answersWithMaybeAddress)
+            } yield Redirect(navigator.nextPage(IsThisAddressForSponsorPage(), mode, answersWithMaybeAddress))
+        )).getOrElse(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)))
   }
 }

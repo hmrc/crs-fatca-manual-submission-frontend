@@ -54,9 +54,11 @@ class ManualSubmissionNavigator @Inject() () {
       case SponsorNamePage()              => controllers.manual.sponsor.routes.WhatIsGIINForSponsorController.onPageLoad(NormalMode)
       case WhatIsGIINForSponsorPage()     => controllers.manual.sponsor.routes.IsSponsorBasedInUKController.onPageLoad(NormalMode)
       case IsSponsorBasedInUKPage()       => handleSponsorBasedUKNavigation(userAnswers, mode)
-      case UKPostcodePage()               => routes.UnderConstructionController.onPageLoad()
+      case UKPostcodePage()               => handleUKPostcodeNavigation(userAnswers, mode)
       case WhatTypeOfFilerPage()          => controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad()
       case WhatTypeOfFilerIsSponsorPage() => controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad()
+      case WhatIsAddressForSponsorPage()  => handleWhatIsAddressForSponsorNavigation(userAnswers, NormalMode)
+      case IsThisAddressForSponsorPage()  => handleIsThisAddressForSponsorNavigation(userAnswers, NormalMode)
       case _                              => routes.IndexController.onPageLoad()
     }
 
@@ -80,4 +82,26 @@ class ManualSubmissionNavigator @Inject() () {
       case Some(false) => routes.UnderConstructionController.onPageLoad()
       case None        => routes.JourneyRecoveryController.onPageLoad()
     }
+
+  private def handleUKPostcodeNavigation(userAnswers: UserAnswers, mode: Mode)(implicit reportId: ReportId) =
+    userAnswers.get(AddressLookupPage()) match {
+      case Some(value) if value.isEmpty          => routes.JourneyRecoveryController.onPageLoad()
+      case Some(value) if value.length.equals(1) => controllers.manual.sponsor.routes.IsThisAddressForSponsorController.onPageLoad(mode)
+      case Some(value)                           => controllers.manual.sponsor.routes.WhatIsAddressForSponsorController.onPageLoad(mode)
+      case None                                  => routes.JourneyRecoveryController.onPageLoad()
+    }
+
+  private def handleWhatIsAddressForSponsorNavigation(userAnswers: UserAnswers, mode: Mode)(implicit reportId: ReportId) =
+    userAnswers.get(WhatIsAddressForSponsorPage()) match {
+      case Some(value) => routes.UnderConstructionController.onPageLoad()
+      case None        => routes.JourneyRecoveryController.onPageLoad()
+    }
+
+  private def handleIsThisAddressForSponsorNavigation(userAnswers: UserAnswers, mode: Mode)(implicit reportId: ReportId) =
+    (userAnswers.get(IsThisAddressForSponsorPage()), userAnswers.get(WhatIsAddressForSponsorPage())) match {
+      case (Some(true), Some(address)) => routes.UnderConstructionController.onPageLoad()
+      case (Some(false), Some(_))      => routes.UnderConstructionController.onPageLoad()
+      case (_, _)                      => routes.JourneyRecoveryController.onPageLoad()
+    }
+
 }

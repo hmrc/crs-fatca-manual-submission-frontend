@@ -16,58 +16,93 @@
 
 package controllers.manual.sponsor
 
-import controllers.actions._
+import connectors.DatabaseConnector
+import controllers.actions.*
 import forms.manual.sponsor.WhatIsAddressForSponsorFormProvider
-import javax.inject.Inject
+import models.response.AddressLookup
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.sponsor.WhatIsAddressForSponsorPage
+import pages.manual.sponsor.{AddressLookupPage, SponsorNamePage, WhatIsAddressForSponsorPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import connectors.DatabaseConnector
+import uk.gov.hmrc.govukfrontend.views.Aliases.Text
+import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.sponsor.WhatIsAddressForSponsorView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class WhatIsAddressForSponsorController @Inject()(
-                                       override val messagesApi: MessagesApi,
-                                       sessionRepository: DatabaseConnector,
-                                       navigator: ManualSubmissionNavigator,
-                                       identify: IdentifierAction,
-                                       getData: DataRetrievalAction,
-                                       requireData: DataRequiredAction,
-                                       reportIdAction: ReportIdRequiredAction,
-                                       formProvider: WhatIsAddressForSponsorFormProvider,
-                                       val controllerComponents: MessagesControllerComponents,
-                                       view: WhatIsAddressForSponsorView
-                                     )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+class WhatIsAddressForSponsorController @Inject() (
+  override val messagesApi: MessagesApi,
+  sessionRepository: DatabaseConnector,
+  navigator: ManualSubmissionNavigator,
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
+  reportIdAction: ReportIdRequiredAction,
+  formProvider: WhatIsAddressForSponsorFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: WhatIsAddressForSponsorView
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
+    with I18nSupport {
 
   val form = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
-      val preparedForm = request.userAnswers.get(WhatIsAddressForSponsorPage()) match {
-        case None => form
-        case Some(value) => form.fill(value)
-      }
 
-      Ok(view(preparedForm, mode))
+      (for {
+        sponsorName <- request.userAnswers.get(SponsorNamePage())
+        addresses   <- request.userAnswers.get(AddressLookupPage())
+      } yield {
+        val preparedForm = request.userAnswers.get(WhatIsAddressForSponsorPage()) match {
+          case None => form
+          case Some(savedAddress) =>
+            addresses.find(_.toAddress.contains(savedAddress)) match {
+              case Some(matched) => form.fill(matched.format)
+              case None          => form
+            }
+        }
+
+        val options: Seq[RadioItem] = addresses.map(
+          address => RadioItem(content = Text(s"${address.formatRadios}"), value = Some(s"${address.format}"))
+        )
+
+        Ok(view(preparedForm, mode, sponsorName, options))
+      }).getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
-      form.bindFromRequest().fold(
-        formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors, mode))),
 
-        value =>
-          for {
-            updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(WhatIsAddressForSponsorPage(), value))
-            _              <- sessionRepository.set(updatedAnswers)
-          } yield Redirect(navigator.nextPage(WhatIsAddressForSponsorPage(), mode, updatedAnswers))
-      )
+      (for {
+        sponsorName <- request.userAnswers.get(SponsorNamePage())
+        addresses   <- request.userAnswers.get(AddressLookupPage())
+      } yield {
+        val options: Seq[RadioItem] = addresses.map(
+          address => RadioItem(content = Text(s"${address.formatRadios}"), value = Some(s"${address.format}"))
+        )
+
+        form
+          .bindFromRequest()
+          .fold(
+            formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, sponsorName, options))),
+            selectedValue =>
+              addresses.find(_.format == selectedValue).flatMap(_.toAddress) match {
+                case None =>
+                  Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))
+                case Some(address) =>
+                  for {
+                    updatedAnswers <-
+                      Future.fromTry(request.userAnswers.setWithReportId(WhatIsAddressForSponsorPage(), address))
+                    _ <- sessionRepository.set(updatedAnswers)
+                  } yield Redirect(navigator.nextPage(WhatIsAddressForSponsorPage(), mode, updatedAnswers))
+              }
+          )
+      }).getOrElse(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)))
   }
 }

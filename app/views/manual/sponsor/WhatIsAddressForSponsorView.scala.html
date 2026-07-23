@@ -14,19 +14,22 @@
  * limitations under the License.
  *@
 
-@import models.manual.sponsor.WhatIsAddressForSponsor
-
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
     govukRadios: GovukRadios,
-    govukButton: GovukButton
+    govukButton: GovukButton,
+    heading: components.Heading,
+    para: components.Paragraph,
+    link: components.Link,
 )
 
-@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, sponsorName: String, options: Seq[RadioItem] )(implicit request: Request[_], messages: Messages)
 
+@manualAddressLink = {@link(href=routes.UnderConstructionController.onPageLoad().url, messages("whatIsAddressForSponsor.para.link"), id = Some("enter-address-link"), asPara = false)}
 @layout(pageTitle = title(form, messages("whatIsAddressForSponsor.title"))) {
+
 
     @formHelper(action = controllers.manual.sponsor.routes.WhatIsAddressForSponsorController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
@@ -34,11 +37,16 @@
             @govukErrorSummary(ErrorSummaryViewModel(form,  errorLinkOverrides = Map("value" -> "value_0")))
         }
 
+        @heading(messages("whatIsAddressForSponsor.heading", sponsorName))
+        @para(messageKey = "whatIsAddressForSponsor.para", htmlArgs = Seq(manualAddressLink))
+
+
+
         @govukRadios(
             RadiosViewModel(
                 field  = form("value"),
-                legend = LegendViewModel(messages("whatIsAddressForSponsor.heading")).asPageHeading(),
-                items  = WhatIsAddressForSponsor.options
+                legend = LegendViewModel(messages("whatIsAddressForSponsor.heading")).withCssClass("govuk-visually-hidden govuk-!-display-block"),
+                items  = options
             )
         )
 

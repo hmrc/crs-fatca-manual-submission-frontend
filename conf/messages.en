@@ -307,11 +307,11 @@ uKPostcode.change.hidden = UKPostcode
 ukPostcode.btn = Find address
 
 whatIsAddressForSponsor.title = What is the sponsor’s address?
-whatIsAddressForSponsor.heading = What is the sponsor’s address?
-whatIsAddressForSponsor.sOMEADDRESS = SOMEADDRESS
-whatIsAddressForSponsor.aNOTHERADDRESS = ANOTHERADDRESS
+whatIsAddressForSponsor.heading = What is the address for {0}?
+whatIsAddressForSponsor.para = Select from the list or {0}.
+whatIsAddressForSponsor.para.link = enter the address manually
 whatIsAddressForSponsor.checkYourAnswersLabel = What is the sponsor’s address?
-whatIsAddressForSponsor.error.required = Select whatIsAddressForSponsor
+whatIsAddressForSponsor.error.required = Select the sponsor’s address or enter it manually
 whatIsAddressForSponsor.change.hidden = WhatIsAddressForSponsor
 
 isThisAddressForSponsor.title = Is this the sponsor’s address?

@@ -34,7 +34,7 @@ case class Address(uprn: Option[Long],
     addressLine4,
     postCode,
     Some(country.description)
-  ).flatten//.mkString(", ")
+  ).flatten
 
   val isGB: Boolean           = this.country.code == Address.GBCountryCode
   val isOtherCountry: Boolean = this.country.code != Address.GBCountryCode

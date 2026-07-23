@@ -17,11 +17,10 @@
 package pages.manual.sponsor
 
 import models.ReportId
-import models.manual.sponsor.WhatIsAddressForSponsor
-import pages.ReportPage
+import models.response.Address
+import pages.QuestionPage
+import play.api.libs.json.JsPath
 
-object WhatIsAddressForSponsorPage {
+final case class WhatIsAddressForSponsorPage()(implicit reportId: ReportId) extends QuestionPage[Address]:
 
-  def apply()(implicit reportId: ReportId): ReportPage[WhatIsAddressForSponsor] =
-    ReportPage("whatIsAddressForSponsor")
-}
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "whatIsAddressForSponsor"

@@ -21,13 +21,15 @@ import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.sponsor.IsThisAddressForSponsorFormProvider
 import models.SubmissionsConstants.CRS
-import models.{NormalMode, ReportId}
+import models.response.{AddressLookup, Country}
+import models.{NormalMode, ReportId, UserAnswers}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
+import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.sponsor.IsThisAddressForSponsorPage
+import pages.manual.sponsor.{AddressLookupPage, IsThisAddressForSponsorPage, SponsorNamePage, WhatIsAddressForSponsorPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -40,18 +42,36 @@ class IsThisAddressForSponsorControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new IsThisAddressForSponsorFormProvider()
-  val form = formProvider()
+  private val formProvider = new IsThisAddressForSponsorFormProvider()
+  private val form         = formProvider()
 
-  lazy val isThisAddressForSponsorRoute = controllers.manual.sponsor.routes.IsThisAddressForSponsorController.onPageLoad(NormalMode).url
+  private lazy val isThisAddressForSponsorRoute = controllers.manual.sponsor.routes.IsThisAddressForSponsorController.onPageLoad(NormalMode).url
+
+  private val sponsorName                 = "Test Sponsor Ltd"
+  implicit private val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
+
+  private val addressLookup: AddressLookup =
+    AddressLookup(200000706253L, Some("1 Address line 1 Road"), None, Some("Address line 2 Road"), None, "Town", Some("County"), "zz11zz", Some(Country.GB))
+
+  private val addresses: Seq[AddressLookup] = Seq(addressLookup)
+
+  private val address = addressLookup.toAddress.value
+
+  private val ua = emptyUserAnswers
+    .withPage(ReportIdPage, reportId)
+    .withPage(SponsorNamePage(), sponsorName)
+
+  private val uaWithAddress = ua.withPage(AddressLookupPage(), addresses)
+
+  private val uaWithAddressOnly = emptyUserAnswers
+    .withPage(ReportIdPage, reportId)
+    .withPage(AddressLookupPage(), addresses)
 
   "IsThisAddressForSponsor Controller" - {
 
-    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS,2025,None,"TestfiID"))
-
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(uaWithAddress)).build()
 
       running(application) {
         val request = FakeRequest(GET, isThisAddressForSponsorRoute)
@@ -61,15 +81,13 @@ class IsThisAddressForSponsorControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[IsThisAddressForSponsorView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, address, sponsorName)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      implicit val reportId = ReportId(CRS,2025,None,"TestfiID")
-
-      val userAnswers = ua.set(IsThisAddressForSponsorPage(), true).success.value
+      val userAnswers = uaWithAddress.set(IsThisAddressForSponsorPage(), true).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
@@ -81,18 +99,18 @@ class IsThisAddressForSponsorControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode, address, sponsorName)(request, messages(application)).toString
       }
     }
 
-    "must redirect to the next page when valid data is submitted" in {
+    "must save the boolean and the address when the user answers Yes, then redirect" in {
 
       val mockSessionRepository = mock[DatabaseConnector]
 
       when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
 
       val application =
-        applicationBuilder(maybeUserAnswers = Some(ua))
+        applicationBuilder(maybeUserAnswers = Some(uaWithAddress))
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
             bind[DatabaseConnector].toInstance(mockSessionRepository)
@@ -108,12 +126,52 @@ class IsThisAddressForSponsorControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
+
+        val captor = ArgumentCaptor.forClass(classOf[UserAnswers])
+        verify(mockSessionRepository).set(captor.capture())(any())
+
+        val savedAnswers = captor.getValue
+        savedAnswers.get(IsThisAddressForSponsorPage()) mustBe Some(true)
+        savedAnswers.get(WhatIsAddressForSponsorPage()) mustBe Some(address)
+      }
+    }
+
+    "must save the boolean but not the address when the user answers No, then redirect, " in {
+
+      val mockSessionRepository = mock[DatabaseConnector]
+
+      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(uaWithAddress))
+          .overrides(
+            bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
+            bind[DatabaseConnector].toInstance(mockSessionRepository)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, isThisAddressForSponsorRoute)
+            .withFormUrlEncodedBody(("value", "false"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual onwardRoute.url
+
+        val captor = ArgumentCaptor.forClass(classOf[UserAnswers])
+        verify(mockSessionRepository).set(captor.capture())(any())
+
+        val savedAnswers = captor.getValue
+        savedAnswers.get(IsThisAddressForSponsorPage()) mustBe Some(false)
+        savedAnswers.get(WhatIsAddressForSponsorPage()) mustBe None
       }
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(uaWithAddress)).build()
 
       running(application) {
         val request =
@@ -127,7 +185,7 @@ class IsThisAddressForSponsorControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, address, sponsorName)(request, messages(application)).toString
       }
     }
 
@@ -139,6 +197,32 @@ class IsThisAddressForSponsorControllerSpec extends SpecBase with MockitoSugar {
         val request = FakeRequest(GET, isThisAddressForSponsorRoute)
 
         val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Journey Recovery for a GET if AddressLookupPage is missing" in {
+
+      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, isThisAddressForSponsorRoute)
+        val result  = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Journey Recovery for a GET if SponsorNamePage is missing" in {
+
+      val application = applicationBuilder(maybeUserAnswers = Some(uaWithAddressOnly)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, isThisAddressForSponsorRoute)
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url

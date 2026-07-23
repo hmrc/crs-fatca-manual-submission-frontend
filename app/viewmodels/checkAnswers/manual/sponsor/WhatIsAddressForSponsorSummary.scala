@@ -25,7 +25,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
-object WhatIsAddressForSponsorSummary  {
+object WhatIsAddressForSponsorSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
     answers.get(WhatIsAddressForSponsorPage()).map {
@@ -38,8 +38,8 @@ object WhatIsAddressForSponsorSummary  {
         )
 
         SummaryListRowViewModel(
-          key     = "whatIsAddressForSponsor.checkYourAnswersLabel",
-          value   = value,
+          key = "whatIsAddressForSponsor.checkYourAnswersLabel",
+          value = value,
           actions = Seq(
             ActionItemViewModel("site.change", controllers.manual.sponsor.routes.WhatIsAddressForSponsorController.onPageLoad(CheckMode).url)
               .withVisuallyHiddenText(messages("whatIsAddressForSponsor.change.hidden"))

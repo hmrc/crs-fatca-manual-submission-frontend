@@ -20,11 +20,12 @@ import base.SpecBase
 import controllers.manual.reportdetails.routes.{ReportDetailsCheckAnswersController, ReportingYearController, TypeOfReportController}
 import models.*
 import models.SubmissionsConstants.FATCA
+import models.response.{Address, AddressLookup, Country}
 import pages.*
 import pages.manual.account.HaveNumberPage
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
-import pages.manual.sponsor.{HaveSponsorPage, IsSponsorBasedInUKPage, SponsorNamePage, UKPostcodePage, WhatIsGIINForSponsorPage}
+import pages.manual.sponsor.*
 
 class ManualSubmissionNavigatorSpec extends SpecBase {
 
@@ -73,7 +74,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             controllers.routes.UnderConstructionController.onPageLoad()
         }
 
-        "must go to JourneyRecovery Page when Normal Mode" in {
+        "must go to JourneyRecovery Page when Normal Mode when answer is missing" in {
           val userData = UserAnswers("id")
           navigator.nextPage(HaveSponsorPage(), NormalMode, userData) mustBe
             controllers.routes.JourneyRecoveryController.onPageLoad()
@@ -117,12 +118,45 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
       }
 
       "UKPostcodePage" - {
-        "must go to UNDERCONSTRUCTION when user selects false" in {
-          val ua = UserAnswers("id").withPage(UKPostcodePage(), "ZZ1 1ZZ")
+        val addressLookup: AddressLookup =
+          AddressLookup(200000706253L,
+                        Some("1 Address line 1 Road"),
+                        None,
+                        Some("Address line 2 Road"),
+                        None,
+                        "Town",
+                        Some("County"),
+                        "zz11zz",
+                        Some(Country.GB)
+          )
+
+        "must go to IsThisAddressForSponsor when one address is found" in {
+          val address: Seq[AddressLookup] = Seq(addressLookup)
+
+          val ua = UserAnswers("id").withPage(UKPostcodePage(), "ZZ1 1ZZ").withPage(AddressLookupPage(), address)
           navigator.nextPage(UKPostcodePage(), NormalMode, ua) mustBe
-            controllers.routes.UnderConstructionController.onPageLoad()
+            controllers.manual.sponsor.routes.IsThisAddressForSponsorController.onPageLoad(NormalMode)
+        }
+        "must go to WhatIsAddressForSponsor when multiple addresses are found" in {
+          val addresses: Seq[AddressLookup] = Seq(addressLookup, addressLookup)
+
+          val ua = UserAnswers("id").withPage(UKPostcodePage(), "ZZ1 1ZZ").withPage(AddressLookupPage(), addresses)
+          navigator.nextPage(UKPostcodePage(), NormalMode, ua) mustBe
+            controllers.manual.sponsor.routes.WhatIsAddressForSponsorController.onPageLoad(NormalMode)
+        }
+        "must go to ProblemPage when no addresses are found" in {
+          val ua = UserAnswers("id").withPage(UKPostcodePage(), "ZZ1 1ZZ").withPage(AddressLookupPage(), Seq.empty)
+
+          navigator.nextPage(UKPostcodePage(), NormalMode, ua) mustBe
+            controllers.routes.JourneyRecoveryController.onPageLoad()
+        }
+        "must go to JourneyRecovery Page when AddressLookupPage is missing" in {
+          val userData = UserAnswers("id")
+          navigator.nextPage(HaveSponsorPage(), NormalMode, userData) mustBe
+            controllers.routes.JourneyRecoveryController.onPageLoad()
         }
       }
+
       "WhatTypeOfFilerPage" - {
         "must go to FilerCategoryCheckAnswers" in {
           val ua = UserAnswers("id")
@@ -169,6 +203,25 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
 
       }
 
+      "WhatIsAddressForSponsor" - {
+        "must go to UnderConstruction Page" in {
+          val address: Address =
+            Address(None, "1 Address line 1 Road", None, "Address line 2 Road", Some("Town"), Some("zz11zz"), Country.GB)
+          val userData = UserAnswers("id").withPage(WhatIsAddressForSponsorPage(), address)
+
+          navigator.nextPage(NumberTypePage(), NormalMode, userData) mustBe
+            controllers.routes.UnderConstructionController.onPageLoad()
+        }
+      }
+      "IsThisAddressForSponsorPage" - {
+        "must go to UnderConstruction Page" in {
+          val userData = UserAnswers("id").withPage(IsThisAddressForSponsorPage(), true)
+
+          navigator.nextPage(NumberTypePage(), NormalMode, userData) mustBe
+            controllers.routes.UnderConstructionController.onPageLoad()
+        }
+
+      }
     }
   }
 }
