@@ -127,6 +127,16 @@ POST       /manual/sponsor/uk-postcode                        controllers.manual
 GET        /manual/sponsor/change-uk-postcode                  controllers.manual.sponsor.UKPostcodeController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/sponsor/change-uk-postcode                  controllers.manual.sponsor.UKPostcodeController.onSubmit(mode: Mode = CheckMode)
 
+GET        /manual/sponsor/select-address                        controllers.manual.sponsor.WhatIsAddressForSponsorController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/sponsor/select-address                        controllers.manual.sponsor.WhatIsAddressForSponsorController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/sponsor/change-select-address                  controllers.manual.sponsor.WhatIsAddressForSponsorController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/sponsor/change-select-address                  controllers.manual.sponsor.WhatIsAddressForSponsorController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/sponsor/is-this-the-address                       controllers.manual.sponsor.IsThisAddressForSponsorController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/sponsor/is-this-the-address                     controllers.manual.sponsor.IsThisAddressForSponsorController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/sponsor/change-is-this-the-address                  controllers.manual.sponsor.IsThisAddressForSponsorController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/sponsor/change-is-this-the-address                  controllers.manual.sponsor.IsThisAddressForSponsorController.onSubmit(mode: Mode = CheckMode)
+
 GET        /manual/account/have-number                         controllers.manual.account.HaveNumberController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/account/have-number                         controllers.manual.account.HaveNumberController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/account/change-have-number                  controllers.manual.account.HaveNumberController.onPageLoad(mode: Mode = CheckMode)
