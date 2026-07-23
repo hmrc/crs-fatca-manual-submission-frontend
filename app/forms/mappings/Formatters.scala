@@ -16,7 +16,7 @@
 
 package forms.mappings
 
-import models.Enumerable
+import models.{Enumerable, ErrorValidation}
 import play.api.data.FormError
 import play.api.data.format.Formatter
 
@@ -186,6 +186,32 @@ trait Formatters extends Transforms {
         else if !postCode.matches(validCharRegex) then Left(Seq(FormError(key, invalidCharKey)))
         else if !postCode.matches(formatRegex) then Left(Seq(FormError(key, formatKey)))
         else Right(validPostCodeFormat(postCode))
+
+      override def unbind(key: String, value: String): Map[String, String] =
+        Map(key -> value)
+
+    }
+
+  private[mappings] def stringValidations(requiredKey: String, maxLength: Int, lengthKey: String, validations: Seq[ErrorValidation]): Formatter[String] =
+    new Formatter[String] {
+
+      override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], String] =
+        postCodeDataTransform(data.get(key)) match {
+          case None              => Left(Seq(FormError(key, requiredKey)))
+          case Some(rawPostcode) => validate(key, stripSpaces(rawPostcode))
+        }
+
+      private def validate(key: String, value: String): Either[Seq[FormError], String] =
+        if value.length > maxLength then Left(Seq(FormError(key, lengthKey, args = Seq(maxLength))))
+        else
+          validations
+            .find(
+              v => !value.matches(v.regex)
+            )
+            .map(
+              v => Left(Seq(FormError(key, v.errorKey, Seq(v.regex))))
+            )
+            .getOrElse(Right(value))
 
       override def unbind(key: String, value: String): Map[String, String] =
         Map(key -> value)

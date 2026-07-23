@@ -65,7 +65,14 @@ class IdentifierFormProviderSpec extends StringFieldBehaviours {
 
     "has double dash throw error" in {
       val result = form.bind(Map(fieldName -> "test--test")).apply(fieldName)
-      result.errors must contain only FormError(fieldName, doubleDashKey, Seq())
+      result.errors must contain only FormError(fieldName, doubleDashKey, Seq(RegexConstants.DOUBLE_DASH_INVALID))
+    }
+
+    "has multiple error - maxchar + double dash" in {
+      val maxString = (0 to 200).mkString
+
+      val result = form.bind(Map(fieldName -> s"$maxString--")).apply(fieldName)
+      result.errors must contain only FormError(fieldName, lengthKey, Seq(maxLength))
     }
   }
 }

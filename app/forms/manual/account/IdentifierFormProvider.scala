@@ -17,7 +17,9 @@
 package forms.manual.account
 
 import forms.mappings.Mappings
+import models.ErrorValidation
 import play.api.data.Form
+import play.api.data.Forms.single
 import utils.RegexConstants
 
 import javax.inject.Inject
@@ -26,11 +28,16 @@ class IdentifierFormProvider @Inject() extends Mappings {
 
   def apply(): Form[String] =
     Form(
-      "value" -> text("identifier.error.required")
-        .verifying(
-          maxLength(200, "identifier.error.length"),
-          regexp(RegexConstants.DEFAULT_STRING_FIELD_VALID, "identifier.error.invalid"),
-          regexShouldNotContain(RegexConstants.DOUBLE_DASH_INVALID, "identifier.error.doubedash")
+      single(
+        "value" -> defaultStringFieldFormat(
+          "identifier.error.required",
+          200,
+          "identifier.error.length",
+          Seq(
+            ErrorValidation(RegexConstants.DEFAULT_STRING_FIELD_VALID, "identifier.error.invalid"),
+            ErrorValidation(RegexConstants.DOUBLE_DASH_INVALID, "identifier.error.doubedash")
+          )
         )
+      )
     )
 }
