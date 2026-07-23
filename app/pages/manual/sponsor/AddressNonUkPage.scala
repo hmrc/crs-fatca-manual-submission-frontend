@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-package utils
+package pages.manual.sponsor
 
-object RegexConstants:
-  val SPONSER_NAME_VALID: String       = """^[A-Za-z0-9&'\\^` -]+$"""
-  val SPONSER_NAME_DOUBLE_DASH: String = """.*--.*"""
-  val POSTCODE_VALID: String           = """^[A-Za-z0-9 ]*$"""
-  val POSTCODE_FORMAT: String          = """^[A-Za-z]{1,2}\d[A-Za-z0-9]?\s?\d[A-Za-z]{2}$"""
+import models.{AddressNonUk, ReportId}
+import pages.QuestionPage
+import play.api.libs.json.JsPath
 
-  val nonUkAddressRegex: String =
-    """^[A-Za-z0-9 ',.&-]*$"""
+final case class AddressNonUkPage()(implicit reportId: ReportId) extends QuestionPage[AddressNonUk]:
 
-  val nonUkPostcodeRegex: String =
-    """^[A-Za-z0-9 ./-]*$"""
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "addressNonUk"
