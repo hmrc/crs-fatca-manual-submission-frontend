@@ -16,992 +16,1012 @@
 
 package models
 
+import models.response.Country
+
 object Countries {
 
   val all: Seq[Country] = Seq(
     Country(
       code = "AE",
-      name = "United Arab Emirates"
+      description = "United Arab Emirates",
+      alternativeName = Some("UAE")
     ),
     Country(
       code = "AX",
-      name = "Aland Islands"
+      description = "Aland Islands"
     ),
     Country(
       code = "CC",
-      name = "Cocos (Keeling) Islands"
+      description = "Cocos (Keeling) Islands",
+      alternativeName = Some("Keeling Islands:Cocos Islands")
     ),
     Country(
       code = "CF",
-      name = "Central African Republic"
+      description = "Central African Republic",
+      alternativeName = Some("The Central African Republic")
     ),
     Country(
       code = "CG",
-      name = "Congo"
+      description = "Congo"
     ),
     Country(
       code = "CK",
-      name = "Cook Islands"
+      description = "Cook Islands"
     ),
     Country(
       code = "DO",
-      name = "Dominican Republic"
+      description = "Dominican Republic",
+      alternativeName = Some("The Dominican Republic")
     ),
     Country(
       code = "FK",
-      name = "Falkland Islands"
+      description = "Falkland Islands"
     ),
     Country(
       code = "FO",
-      name = "Faroe Islands"
+      description = "Faroe Islands"
     ),
     Country(
       code = "GS",
-      name = "South Georgia and South Sandwich Islands"
+      description = "South Georgia and South Sandwich Islands"
     ),
     Country(
       code = "HM",
-      name = "Heard and McDonald Islands"
+      description = "Heard and McDonald Islands"
     ),
     Country(
       code = "IO",
-      name = "British Indian Ocean Territory"
+      description = "British Indian Ocean Territory"
     ),
     Country(
       code = "KY",
-      name = "Cayman Islands"
+      description = "Cayman Islands"
     ),
     Country(
       code = "MH",
-      name = "Marshall Islands"
+      description = "Marshall Islands",
+      alternativeName = Some("The Marshall Islands")
     ),
     Country(
       code = "MP",
-      name = "Northern Mariana Islands"
+      description = "Northern Mariana Islands"
     ),
     Country(
       code = "NL",
-      name = "Netherlands"
+      description = "Netherlands"
     ),
     Country(
       code = "PH",
-      name = "Philippines"
+      description = "Philippines"
     ),
     Country(
       code = "PN",
-      name = "Pitcairn, Henderson, Ducie and Oeno Islands"
+      description = "Pitcairn, Henderson, Ducie and Oeno Islands"
     ),
     Country(
       code = "PS",
-      name = "State of Palestine"
+      description = "State of Palestine"
     ),
     Country(
       code = "SB",
-      name = "Solomon Islands"
+      description = "Solomon Islands"
     ),
     Country(
       code = "TC",
-      name = "Turks and Caicos Islands"
+      description = "Turks and Caicos Islands"
     ),
     Country(
       code = "TF",
-      name = "French Southern Territories"
+      description = "French Southern Territories"
     ),
     Country(
       code = "UM",
-      name = "US Minor Outlying Islands"
+      description = "US Minor Outlying Islands",
+      alternativeName = Some("United States Minor Outlying Islands")
     ),
     Country(
       code = "US",
-      name = "United States"
+      description = "United States",
+      alternativeName = Some("USA")
     ),
     Country(
       code = "VG",
-      name = "British Virgin Islands"
+      description = "British Virgin Islands"
     ),
     Country(
       code = "VI",
-      name = "United States Virgin Islands"
+      description = "United States Virgin Islands",
+      alternativeName = Some("US Virgin Islands")
     ),
     Country(
       code = "WF",
-      name = "Wallis and Futuna Islands"
+      description = "Wallis and Futuna Islands"
     ),
     Country(
       code = "CD",
-      name = "Congo (Democratic Republic)"
+      description = "Congo (Democratic Republic)",
+      alternativeName = Some("The Democratic Republic of the Congo:Democratic Republic of the Congo")
     ),
     Country(
       code = "AD",
-      name = "Andorra"
+      description = "Andorra"
     ),
     Country(
       code = "AF",
-      name = "Afghanistan"
+      description = "Afghanistan"
     ),
     Country(
       code = "AG",
-      name = "Antigua and Barbuda"
+      description = "Antigua and Barbuda"
     ),
     Country(
       code = "AI",
-      name = "Anguilla"
+      description = "Anguilla"
     ),
     Country(
       code = "AL",
-      name = "Albania"
+      description = "Albania"
     ),
     Country(
       code = "AM",
-      name = "Armenia"
+      description = "Armenia"
     ),
     Country(
       code = "AO",
-      name = "Angola"
+      description = "Angola"
     ),
     Country(
       code = "AQ",
-      name = "Antarctica"
+      description = "Antarctica"
     ),
     Country(
       code = "AR",
-      name = "Argentina"
+      description = "Argentina"
     ),
     Country(
       code = "AS",
-      name = "American Samoa"
+      description = "American Samoa"
     ),
     Country(
       code = "AT",
-      name = "Austria"
+      description = "Austria"
     ),
     Country(
       code = "AU",
-      name = "Australia"
+      description = "Australia"
     ),
     Country(
       code = "AW",
-      name = "Aruba"
+      description = "Aruba"
     ),
     Country(
       code = "AZ",
-      name = "Azerbaijan"
+      description = "Azerbaijan"
     ),
     Country(
       code = "BA",
-      name = "Bosnia and Herzegovina"
+      description = "Bosnia and Herzegovina"
     ),
     Country(
       code = "BB",
-      name = "Barbados"
+      description = "Barbados"
     ),
     Country(
       code = "BD",
-      name = "Bangladesh"
+      description = "Bangladesh"
     ),
     Country(
       code = "BE",
-      name = "Belgium"
+      description = "Belgium"
     ),
     Country(
       code = "BF",
-      name = "Burkina Faso"
+      description = "Burkina Faso"
     ),
     Country(
       code = "BG",
-      name = "Bulgaria"
+      description = "Bulgaria"
     ),
     Country(
       code = "BH",
-      name = "Bahrain"
+      description = "Bahrain"
     ),
     Country(
       code = "BI",
-      name = "Burundi"
+      description = "Burundi"
     ),
     Country(
       code = "BJ",
-      name = "Benin"
+      description = "Benin"
     ),
     Country(
       code = "BL",
-      name = "St Barts"
+      description = "St Barts",
+      alternativeName = Some("Saint Barthelemy:Saint Barts")
     ),
     Country(
       code = "BM",
-      name = "Bermuda"
+      description = "Bermuda"
     ),
     Country(
       code = "BN",
-      name = "Brunei"
+      description = "Brunei"
     ),
     Country(
       code = "BO",
-      name = "Bolivia"
+      description = "Bolivia"
     ),
     Country(
       code = "BQ",
-      name = "Bonaire, Sint Eustatius and Saba"
+      description = "Bonaire, Sint Eustatius and Saba"
     ),
     Country(
       code = "BR",
-      name = "Brazil"
+      description = "Brazil"
     ),
     Country(
       code = "BS",
-      name = "The Bahamas"
+      description = "The Bahamas"
     ),
     Country(
       code = "BT",
-      name = "Bhutan"
+      description = "Bhutan"
     ),
     Country(
       code = "BV",
-      name = "Bouvet Island"
+      description = "Bouvet Island"
     ),
     Country(
       code = "BW",
-      name = "Botswana"
+      description = "Botswana"
     ),
     Country(
       code = "BY",
-      name = "Belarus"
+      description = "Belarus"
     ),
     Country(
       code = "BZ",
-      name = "Belize"
+      description = "Belize"
     ),
     Country(
       code = "CA",
-      name = "Canada"
+      description = "Canada"
     ),
     Country(
       code = "CH",
-      name = "Switzerland"
+      description = "Switzerland"
     ),
     Country(
       code = "CI",
-      name = "Ivory Coast"
+      description = "Ivory Coast",
+      alternativeName = Some("The Republic of Cote D'Ivoire:Republic of Cote D'Ivoire:Cote D'Ivoire")
     ),
     Country(
       code = "CL",
-      name = "Chile"
+      description = "Chile"
     ),
     Country(
       code = "CM",
-      name = "Cameroon"
+      description = "Cameroon"
     ),
     Country(
       code = "CN",
-      name = "China"
+      description = "China"
     ),
     Country(
       code = "CO",
-      name = "Colombia"
+      description = "Colombia"
     ),
     Country(
       code = "CR",
-      name = "Costa Rica"
+      description = "Costa Rica"
     ),
     Country(
       code = "CU",
-      name = "Cuba"
+      description = "Cuba"
     ),
     Country(
       code = "CV",
-      name = "Cape Verde"
+      description = "Cape Verde"
     ),
     Country(
       code = "CW",
-      name = "Curacao"
+      description = "Curacao"
     ),
     Country(
       code = "CX",
-      name = "Christmas Island"
+      description = "Christmas Island"
     ),
     Country(
       code = "CY",
-      name = "Cyprus"
+      description = "Cyprus"
     ),
     Country(
       code = "CZ",
-      name = "Czechia"
+      description = "Czechia"
     ),
     Country(
       code = "DE",
-      name = "Germany"
+      description = "Germany"
     ),
     Country(
       code = "DJ",
-      name = "Djibouti"
+      description = "Djibouti"
     ),
     Country(
       code = "DK",
-      name = "Denmark"
+      description = "Denmark"
     ),
     Country(
       code = "DM",
-      name = "Dominica"
+      description = "Dominica"
     ),
     Country(
       code = "DZ",
-      name = "Algeria"
+      description = "Algeria"
     ),
     Country(
       code = "EC",
-      name = "Ecuador"
+      description = "Ecuador"
     ),
     Country(
       code = "EE",
-      name = "Estonia"
+      description = "Estonia"
     ),
     Country(
       code = "EG",
-      name = "Egypt"
+      description = "Egypt"
     ),
     Country(
       code = "EH",
-      name = "Western Sahara"
+      description = "Western Sahara"
     ),
     Country(
       code = "ER",
-      name = "Eritrea"
+      description = "Eritrea"
     ),
     Country(
       code = "ES",
-      name = "Spain"
+      description = "Spain"
     ),
     Country(
       code = "ET",
-      name = "Ethiopia"
+      description = "Ethiopia"
     ),
     Country(
       code = "FI",
-      name = "Finland"
+      description = "Finland"
     ),
     Country(
       code = "FJ",
-      name = "Fiji"
+      description = "Fiji"
     ),
     Country(
       code = "FM",
-      name = "Micronesia"
+      description = "Micronesia",
+      alternativeName = Some("Federated States of Micronesia:The Federated States of Micronesia")
     ),
     Country(
       code = "FR",
-      name = "France"
+      description = "France"
     ),
     Country(
       code = "GA",
-      name = "Gabon"
+      description = "Gabon"
     ),
     Country(
       code = "GD",
-      name = "Grenada"
+      description = "Grenada"
     ),
     Country(
       code = "GE",
-      name = "Georgia"
+      description = "Georgia"
     ),
     Country(
       code = "GF",
-      name = "French Guiana"
+      description = "French Guiana"
     ),
     Country(
       code = "GH",
-      name = "Ghana"
+      description = "Ghana"
     ),
     Country(
       code = "GI",
-      name = "Gibraltar"
+      description = "Gibraltar"
     ),
     Country(
       code = "GL",
-      name = "Greenland"
+      description = "Greenland"
     ),
     Country(
       code = "GM",
-      name = "The Gambia"
+      description = "The Gambia"
     ),
     Country(
       code = "GN",
-      name = "Guinea"
+      description = "Guinea"
     ),
     Country(
       code = "GP",
-      name = "Guadeloupe"
+      description = "Guadeloupe"
     ),
     Country(
       code = "GQ",
-      name = "Equatorial Guinea"
+      description = "Equatorial Guinea"
     ),
     Country(
       code = "GR",
-      name = "Greece"
+      description = "Greece"
     ),
     Country(
       code = "GT",
-      name = "Guatemala"
+      description = "Guatemala"
     ),
     Country(
       code = "GU",
-      name = "Guam"
+      description = "Guam"
     ),
     Country(
       code = "GW",
-      name = "Guinea-Bissau"
+      description = "Guinea-Bissau"
     ),
     Country(
       code = "GY",
-      name = "Guyana"
+      description = "Guyana"
     ),
     Country(
       code = "HK",
-      name = "Hong Kong"
+      description = "Hong Kong"
     ),
     Country(
       code = "HN",
-      name = "Honduras"
+      description = "Honduras"
     ),
     Country(
       code = "HR",
-      name = "Croatia"
+      description = "Croatia"
     ),
     Country(
       code = "HT",
-      name = "Haiti"
+      description = "Haiti"
     ),
     Country(
       code = "HU",
-      name = "Hungary"
+      description = "Hungary"
     ),
     Country(
       code = "ID",
-      name = "Indonesia"
+      description = "Indonesia"
     ),
     Country(
       code = "IE",
-      name = "Ireland"
+      description = "Ireland"
     ),
     Country(
       code = "IL",
-      name = "Israel"
+      description = "Israel"
     ),
     Country(
       code = "IN",
-      name = "India"
+      description = "India"
     ),
     Country(
       code = "IQ",
-      name = "Iraq"
+      description = "Iraq"
     ),
     Country(
       code = "IR",
-      name = "Iran"
+      description = "Iran"
     ),
     Country(
       code = "IS",
-      name = "Iceland"
+      description = "Iceland"
     ),
     Country(
       code = "IT",
-      name = "Italy"
+      description = "Italy"
     ),
     Country(
       code = "JM",
-      name = "Jamaica"
+      description = "Jamaica"
     ),
     Country(
       code = "JO",
-      name = "Jordan"
+      description = "Jordan"
     ),
     Country(
       code = "JP",
-      name = "Japan"
+      description = "Japan"
     ),
     Country(
       code = "KE",
-      name = "Kenya"
+      description = "Kenya"
     ),
     Country(
       code = "KG",
-      name = "Kyrgyzstan"
+      description = "Kyrgyzstan"
     ),
     Country(
       code = "KH",
-      name = "Cambodia"
+      description = "Cambodia"
     ),
     Country(
       code = "KI",
-      name = "Kiribati"
+      description = "Kiribati"
     ),
     Country(
       code = "KM",
-      name = "Comoros"
+      description = "Comoros"
     ),
     Country(
       code = "KN",
-      name = "St Kitts and Nevis"
+      description = "St Kitts and Nevis",
+      alternativeName = Some("Saint Kitts and Nevis")
     ),
     Country(
       code = "KP",
-      name = "North Korea"
+      description = "North Korea"
     ),
     Country(
       code = "KR",
-      name = "South Korea"
+      description = "South Korea"
     ),
     Country(
       code = "KW",
-      name = "Kuwait"
+      description = "Kuwait"
     ),
     Country(
       code = "KZ",
-      name = "Kazakhstan"
+      description = "Kazakhstan"
     ),
     Country(
       code = "LA",
-      name = "Laos"
+      description = "Laos"
     ),
     Country(
       code = "LB",
-      name = "Lebanon"
+      description = "Lebanon"
     ),
     Country(
       code = "LC",
-      name = "St Lucia"
+      description = "St Lucia",
+      alternativeName = Some("Saint Lucia")
     ),
     Country(
       code = "LI",
-      name = "Liechtenstein"
+      description = "Liechtenstein"
     ),
     Country(
       code = "LK",
-      name = "Sri Lanka"
+      description = "Sri Lanka"
     ),
     Country(
       code = "LR",
-      name = "Liberia"
+      description = "Liberia"
     ),
     Country(
       code = "LS",
-      name = "Lesotho"
+      description = "Lesotho"
     ),
     Country(
       code = "LT",
-      name = "Lithuania"
+      description = "Lithuania"
     ),
     Country(
       code = "LU",
-      name = "Luxembourg"
+      description = "Luxembourg"
     ),
     Country(
       code = "LV",
-      name = "Latvia"
+      description = "Latvia"
     ),
     Country(
       code = "LY",
-      name = "Libya"
+      description = "Libya"
     ),
     Country(
       code = "MA",
-      name = "Morocco"
+      description = "Morocco"
     ),
     Country(
       code = "MC",
-      name = "Monaco"
+      description = "Monaco"
     ),
     Country(
       code = "MD",
-      name = "Moldova"
+      description = "Moldova"
     ),
     Country(
       code = "ME",
-      name = "Montenegro"
+      description = "Montenegro"
     ),
     Country(
       code = "MF",
-      name = "St Martin (French part)"
+      description = "St Martin (French part)",
+      alternativeName = Some("Saint Martin (French part)")
     ),
     Country(
       code = "MG",
-      name = "Madagascar"
+      description = "Madagascar"
     ),
     Country(
       code = "MK",
-      name = "North Macedonia"
+      description = "North Macedonia"
     ),
     Country(
       code = "ML",
-      name = "Mali"
+      description = "Mali"
     ),
     Country(
       code = "MM",
-      name = "Myanmar (Burma)"
+      description = "Myanmar (Burma)"
     ),
     Country(
       code = "MN",
-      name = "Mongolia"
+      description = "Mongolia"
     ),
     Country(
       code = "MO",
-      name = "Macao"
+      description = "Macao"
     ),
     Country(
       code = "MQ",
-      name = "Martinique"
+      description = "Martinique"
     ),
     Country(
       code = "MR",
-      name = "Mauritania"
+      description = "Mauritania"
     ),
     Country(
       code = "MS",
-      name = "Montserrat"
+      description = "Montserrat"
     ),
     Country(
       code = "MT",
-      name = "Malta"
+      description = "Malta"
     ),
     Country(
       code = "MU",
-      name = "Mauritius"
+      description = "Mauritius"
     ),
     Country(
       code = "MV",
-      name = "Maldives"
+      description = "Maldives"
     ),
     Country(
       code = "MW",
-      name = "Malawi"
+      description = "Malawi"
     ),
     Country(
       code = "MX",
-      name = "Mexico"
+      description = "Mexico"
     ),
     Country(
       code = "MY",
-      name = "Malaysia"
+      description = "Malaysia"
     ),
     Country(
       code = "MZ",
-      name = "Mozambique"
+      description = "Mozambique"
     ),
     Country(
       code = "NA",
-      name = "Namibia"
+      description = "Namibia"
     ),
     Country(
       code = "NC",
-      name = "New Caledonia"
+      description = "New Caledonia"
     ),
     Country(
       code = "NE",
-      name = "Niger"
+      description = "Niger"
     ),
     Country(
       code = "NF",
-      name = "Norfolk Island"
+      description = "Norfolk Island"
     ),
     Country(
       code = "NG",
-      name = "Nigeria"
+      description = "Nigeria"
     ),
     Country(
       code = "NI",
-      name = "Nicaragua"
+      description = "Nicaragua"
     ),
     Country(
       code = "NO",
-      name = "Norway"
+      description = "Norway"
     ),
     Country(
       code = "NP",
-      name = "Nepal"
+      description = "Nepal"
     ),
     Country(
       code = "NR",
-      name = "Nauru"
+      description = "Nauru"
     ),
     Country(
       code = "NU",
-      name = "Niue"
+      description = "Niue"
     ),
     Country(
       code = "NZ",
-      name = "New Zealand"
+      description = "New Zealand"
     ),
     Country(
       code = "OM",
-      name = "Oman"
+      description = "Oman"
     ),
     Country(
       code = "PA",
-      name = "Panama"
+      description = "Panama"
     ),
     Country(
       code = "PE",
-      name = "Peru"
+      description = "Peru"
     ),
     Country(
       code = "PF",
-      name = "French Polynesia"
+      description = "French Polynesia"
     ),
     Country(
       code = "PG",
-      name = "Papua New Guinea"
+      description = "Papua New Guinea"
     ),
     Country(
       code = "PK",
-      name = "Pakistan"
+      description = "Pakistan"
     ),
     Country(
       code = "PL",
-      name = "Poland"
+      description = "Poland"
     ),
     Country(
       code = "PM",
-      name = "St Pierre and Miquelon"
+      description = "St Pierre and Miquelon",
+      alternativeName = Some("Saint Pierre and Miquelon")
     ),
     Country(
       code = "PR",
-      name = "Puerto Rico"
+      description = "Puerto Rico"
     ),
     Country(
       code = "PT",
-      name = "Portugal"
+      description = "Portugal"
     ),
     Country(
       code = "PW",
-      name = "Palau"
+      description = "Palau"
     ),
     Country(
       code = "PY",
-      name = "Paraguay"
+      description = "Paraguay"
     ),
     Country(
       code = "QA",
-      name = "Qatar"
+      description = "Qatar"
     ),
     Country(
       code = "RE",
-      name = "Reunion Island"
+      description = "Reunion Island"
     ),
     Country(
       code = "RO",
-      name = "Romania"
+      description = "Romania"
     ),
     Country(
       code = "RS",
-      name = "Serbia"
+      description = "Serbia"
     ),
     Country(
       code = "RU",
-      name = "Russia"
+      description = "Russia"
     ),
     Country(
       code = "RW",
-      name = "Rwanda"
+      description = "Rwanda"
     ),
     Country(
       code = "SA",
-      name = "Saudi Arabia"
+      description = "Saudi Arabia"
     ),
     Country(
       code = "SC",
-      name = "Seychelles"
+      description = "Seychelles"
     ),
     Country(
       code = "SD",
-      name = "Sudan"
+      description = "Sudan"
     ),
     Country(
       code = "SE",
-      name = "Sweden"
+      description = "Sweden"
     ),
     Country(
       code = "SG",
-      name = "Singapore"
+      description = "Singapore"
     ),
     Country(
       code = "SH",
-      name = "St Helena"
+      description = "St Helena",
+      alternativeName = Some("Saint Helena")
     ),
     Country(
       code = "SI",
-      name = "Slovenia"
+      description = "Slovenia"
     ),
     Country(
       code = "SJ",
-      name = "Svalbard and Jan Mayen"
+      description = "Svalbard and Jan Mayen"
     ),
     Country(
       code = "SK",
-      name = "Slovakia"
+      description = "Slovakia"
     ),
     Country(
       code = "SL",
-      name = "Sierra Leone"
+      description = "Sierra Leone"
     ),
     Country(
       code = "SM",
-      name = "San Marino"
+      description = "San Marino"
     ),
     Country(
       code = "SN",
-      name = "Senegal"
+      description = "Senegal"
     ),
     Country(
       code = "SO",
-      name = "Somalia"
+      description = "Somalia"
     ),
     Country(
       code = "SR",
-      name = "Suriname"
+      description = "Suriname"
     ),
     Country(
       code = "SS",
-      name = "South Sudan"
+      description = "South Sudan"
     ),
     Country(
       code = "ST",
-      name = "Sao Tome and Principe"
+      description = "Sao Tome and Principe"
     ),
     Country(
       code = "SV",
-      name = "El Salvador"
+      description = "El Salvador"
     ),
     Country(
       code = "SX",
-      name = "Sint Maarten (Dutch part)"
+      description = "Sint Maarten (Dutch part)"
     ),
     Country(
       code = "SY",
-      name = "Syria"
+      description = "Syria"
     ),
     Country(
       code = "SZ",
-      name = "Eswatini"
+      description = "Eswatini"
     ),
     Country(
       code = "TD",
-      name = "Chad"
+      description = "Chad"
     ),
     Country(
       code = "TG",
-      name = "Togo"
+      description = "Togo"
     ),
     Country(
       code = "TH",
-      name = "Thailand"
+      description = "Thailand"
     ),
     Country(
       code = "TJ",
-      name = "Tajikistan"
+      description = "Tajikistan"
     ),
     Country(
       code = "TK",
-      name = "Tokelau"
+      description = "Tokelau"
     ),
     Country(
       code = "TL",
-      name = "East Timor"
+      description = "East Timor"
     ),
     Country(
       code = "TM",
-      name = "Turkmenistan"
+      description = "Turkmenistan"
     ),
     Country(
       code = "TN",
-      name = "Tunisia"
+      description = "Tunisia"
     ),
     Country(
       code = "TO",
-      name = "Tonga"
+      description = "Tonga"
     ),
     Country(
       code = "TR",
-      name = "Turkey"
+      description = "Turkey"
     ),
     Country(
       code = "TT",
-      name = "Trinidad and Tobago"
+      description = "Trinidad and Tobago"
     ),
     Country(
       code = "TV",
-      name = "Tuvalu"
+      description = "Tuvalu"
     ),
     Country(
       code = "TW",
-      name = "Taiwan"
+      description = "Taiwan"
     ),
     Country(
       code = "TZ",
-      name = "Tanzania"
+      description = "Tanzania"
     ),
     Country(
       code = "UA",
-      name = "Ukraine"
+      description = "Ukraine"
     ),
     Country(
       code = "UG",
-      name = "Uganda"
+      description = "Uganda"
     ),
     Country(
       code = "UY",
-      name = "Uruguay"
+      description = "Uruguay"
     ),
     Country(
       code = "UZ",
-      name = "Uzbekistan"
+      description = "Uzbekistan"
     ),
     Country(
       code = "VA",
-      name = "Vatican City"
+      description = "Vatican City"
     ),
     Country(
       code = "VC",
-      name = "St Vincent"
+      description = "St Vincent",
+      alternativeName = Some("Saint Vincent")
     ),
     Country(
       code = "VE",
-      name = "Venezuela"
+      description = "Venezuela"
     ),
     Country(
       code = "VN",
-      name = "Vietnam"
+      description = "Vietnam"
     ),
     Country(
       code = "VU",
-      name = "Vanuatu"
+      description = "Vanuatu"
     ),
     Country(
       code = "WS",
-      name = "Samoa"
+      description = "Samoa"
     ),
     Country(
       code = "XK",
-      name = "Kosovo"
+      description = "Kosovo"
     ),
     Country(
       code = "YE",
-      name = "Yemen"
+      description = "Yemen"
     ),
     Country(
       code = "YT",
-      name = "Mayotte"
+      description = "Mayotte"
     ),
     Country(
       code = "ZA",
-      name = "South Africa"
+      description = "South Africa"
     ),
     Country(
       code = "ZM",
-      name = "Zambia"
+      description = "Zambia"
     ),
     Country(
       code = "ZW",
-      name = "Zimbabwe"
+      description = "Zimbabwe"
     )
   )
 }

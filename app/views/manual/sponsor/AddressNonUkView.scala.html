@@ -14,41 +14,23 @@
  * limitations under the License.
  *@
 
-@import models.Countries
-@import viewmodels.InputWidth._
 @import uk.gov.hmrc.govukfrontend.views.html.components._
-@import uk.gov.hmrc.govukfrontend.views.Implicits.RichSelect
+@import viewmodels.InputWidth._
 
 @this(
         layout: templates.Layout,
         formHelper: FormWithCSRF,
         govukErrorSummary: GovukErrorSummary,
-        govukInput: GovukInput,
-        govukSelect: GovukSelect,
-        govukButton: GovukButton
+        govukButton: GovukButton,
+        heading: views.html.components.Heading,
+        textInput: views.html.components.TextInput,
+        countrySelect: views.html.components.CountrySelect
 )
 
 @(form: Form[_], mode: Mode, sponsorName: String)(
         implicit request: Request[_],
         messages: Messages
 )
-
-@countryItems = @{
-    SelectItem(
-        value = Some(""),
-        text = "",
-        selected = form("country").value.forall(_.isEmpty)
-    ) +:
-            Countries.all
-            .sortBy(_.name)
-            .map { country =>
-                SelectItem(
-                    value = Some(country.code),
-                    text = country.name,
-                    selected = form("country").value.contains(country.code)
-                )
-            }
-}
 
 @layout(
     pageTitle = title(
@@ -68,88 +50,52 @@
             )
         }
 
-        <h1 class="govuk-heading-l govuk-!-text-break-word">
-        @messages("addressNonUk.heading", sponsorName)
-        </h1>
-
-        @govukInput(
-            InputViewModel(
-                field = form("addressLine1"),
-                label = LabelViewModel(
-                    messages("addressNonUk.addressLine1")
-                )
+        @heading(
+            headingContent = messages(
+                "addressNonUk.heading",
+                sponsorName
             )
-            .withWidth(TwoThirds)
-            .withAutocomplete("address-line1")
         )
 
-        @govukInput(
-            InputViewModel(
-                field = form("addressLine2"),
-                label = LabelViewModel(
-                    messages("addressNonUk.addressLine2")
-                )
-            )
-            .withWidth(TwoThirds)
-            .withAutocomplete("address-line2")
+        @textInput(
+            field = form("addressLine1"),
+            label = messages("addressNonUk.addressLine1"),
+            width = TwoThirds,
+            autocomplete = Some("address-line1")
         )
 
-        @govukInput(
-            InputViewModel(
-                field = form("addressLine3"),
-                label = LabelViewModel(
-                    messages("addressNonUk.addressLine3")
-                )
-            )
-            .withWidth(TwoThirds)
-            .withAutocomplete("address-line3")
+        @textInput(
+            field = form("addressLine2"),
+            label = messages("addressNonUk.addressLine2"),
+            width = TwoThirds,
+            autocomplete = Some("address-line2")
         )
 
-        @govukInput(
-            InputViewModel(
-                field = form("addressLine4"),
-                label = LabelViewModel(
-                    messages("addressNonUk.addressLine4")
-                )
-            )
-            .withWidth(TwoThirds)
-            .withAutocomplete("address-line4")
+        @textInput(
+            field = form("addressLine3"),
+            label = messages("addressNonUk.addressLine3"),
+            width = TwoThirds,
+            autocomplete = Some("address-line3")
         )
 
-        @govukInput(
-            InputViewModel(
-                field = form("postcode"),
-                label = LabelViewModel(
-                    messages("addressNonUk.postcode")
-                )
-            )
-            .withWidth(Fixed10)
-            .withAutocomplete("address-postcode")
+        @textInput(
+            field = form("addressLine4"),
+            label = messages("addressNonUk.addressLine4"),
+            width = TwoThirds,
+            autocomplete = Some("address-line4")
         )
 
-        <div class="govuk-!-width-two-thirds">
-
-        @govukSelect(
-            Select(
-                id = "country",
-                name = "country",
-                items = countryItems,
-                label = Label(
-                    content = Text(
-                        messages("addressNonUk.country")
-                    )
-                ),
-                errorMessage = form("country").error.map { error =>
-                    ErrorMessage(
-                        content = Text(
-                            messages(error.message, error.args*)
-                        )
-                    )
-                }
-            ).asAccessibleAutocomplete()
+        @textInput(
+            field = form("postcode"),
+            label = messages("addressNonUk.postcode"),
+            width = Fixed10,
+            autocomplete = Some("address-postcode")
         )
 
-        </div>
+        @countrySelect(
+            field = form("country"),
+            label = messages("addressNonUk.country")
+        )
 
         @govukButton(
             ButtonViewModel(

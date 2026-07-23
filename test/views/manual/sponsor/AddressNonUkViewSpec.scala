@@ -137,16 +137,18 @@ class AddressNonUkViewSpec extends SpecBase {
         doc.select("#country").size() mustBe 1
       }
 
-      "must display a blank option first" in {
+      "must display the no-JavaScript country placeholder first" in {
         val firstOption =
           doc.select("#country option").first()
 
-        firstOption.text() mustBe ""
+        firstOption.text() mustBe
+          messages("addressNonUk.country.select")
+
         firstOption.attr("value") mustBe ""
         firstOption.hasAttr("selected") mustBe true
       }
 
-      "must display all countries and the blank option" in {
+      "must display all countries and the placeholder option" in {
         doc.select("#country option").size() mustBe
           Countries.all.size + 1
       }
@@ -159,12 +161,28 @@ class AddressNonUkViewSpec extends SpecBase {
         france.text() mustBe "France"
       }
 
-      "must configure the country field as an accessible autocomplete" in {
-        val countrySelect =
-          doc.select("#country")
+      "must add country codes and aliases to the country options" in {
+        val unitedStates =
+          doc.select("#country option[value=US]").first()
 
-        countrySelect.attr("data-module") mustBe
-          "hmrc-accessible-autocomplete"
+        unitedStates.attr("data-text") must include(
+          "United States"
+        )
+
+        unitedStates.attr("data-text") must include(
+          "US"
+        )
+
+        unitedStates.attr("data-text") must include(
+          "USA"
+        )
+      }
+
+      "must configure the country field for the custom autocomplete" in {
+        val countrySelect =
+          doc.select("#country").first()
+
+        countrySelect.hasAttr("data-module") mustBe false
 
         countrySelect.attr("data-show-all-values") mustBe
           "false"
@@ -172,7 +190,7 @@ class AddressNonUkViewSpec extends SpecBase {
         countrySelect.attr("data-auto-select") mustBe
           "false"
 
-        countrySelect.attr("data-default-value") mustBe ""
+        countrySelect.hasAttr("data-default-value") mustBe false
       }
 
       "must submit to the AddressNonUk controller" in {

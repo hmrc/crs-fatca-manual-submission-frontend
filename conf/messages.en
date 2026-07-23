@@ -345,6 +345,7 @@ addressNonUk.addressLine4.change.hidden = Region
 addressNonUk.postcode.change.hidden = Postcode
 addressNonUk.country.change.hidden = Country
 addressNonUk.change.hidden = Change sponsor address
+addressNonUk.country.select = Select country
 
 haveNumber.title = Does the account have an official account number or identification number?
 haveNumber.heading = Does the account have an official account number or identification number?

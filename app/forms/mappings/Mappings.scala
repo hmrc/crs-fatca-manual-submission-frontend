@@ -17,8 +17,8 @@
 package forms.mappings
 
 import models.Enumerable
-import play.api.data.FieldMapping
-import play.api.data.Forms.of
+import play.api.data.Forms.{of, optional}
+import play.api.data.{FieldMapping, Mapping}
 import play.api.i18n.Messages
 
 import java.time.LocalDate
@@ -37,8 +37,20 @@ trait Mappings extends Formatters with Constraints {
   ): FieldMapping[String] =
     of(validatedTextFormatter(requiredKey, invalidKey, lengthKey, regex, maxLength, msgArg))
 
-  protected def validatedOptionalText(invalidKey: String, lengthKey: String, regex: String, length: Int): FieldMapping[Option[String]] =
-    of(validatedOptionalTextFormatter(invalidKey, lengthKey, regex, length))
+  protected def validatedOptionalText(invalidKey: String, lengthKey: String, regex: String, length: Int): Mapping[Option[String]] =
+    optional(play.api.data.Forms.text)
+      .transform[Option[String]](
+        value => value.map(_.trim).filter(_.nonEmpty),
+        value => value
+      )
+      .verifying(
+        invalidKey,
+        value => value.forall(_.matches(regex))
+      )
+      .verifying(
+        lengthKey,
+        value => value.forall(_.length <= length)
+      )
 
   protected def int(requiredKey: String = "error.required",
                     wholeNumberKey: String = "error.wholeNumber",
@@ -84,12 +96,13 @@ trait Mappings extends Formatters with Constraints {
                                   formatKey: String
   ): FieldMapping[String] =
     of(
-      mandatoryPostcodeFormatter(requiredKey = requiredKey,
-                                 lengthKey = lengthKey,
-                                 validCharRegex = validCharRegex,
-                                 invalidCharKey = invalidKey,
-                                 formatRegex = regex,
-                                 formatKey = formatKey
+      mandatoryPostcodeFormatter(
+        requiredKey = requiredKey,
+        lengthKey = lengthKey,
+        validCharRegex = validCharRegex,
+        invalidCharKey = invalidKey,
+        formatRegex = regex,
+        formatKey = formatKey
       )
     )
 
