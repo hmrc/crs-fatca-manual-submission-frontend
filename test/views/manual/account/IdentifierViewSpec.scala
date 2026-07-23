@@ -54,7 +54,7 @@ class IdentifierViewSpec extends SpecBase {
       }
 
       "must display sub heading" in {
-        doc.select("h1").text() must include("What number, code or description should we use to identify the account?")
+        doc.select(".govuk-label--m").text() must include("What number, code or description should we use to identify the account?")
       }
 
       "must display paragraphs" in {

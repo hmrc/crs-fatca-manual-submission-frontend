@@ -44,7 +44,7 @@
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(messages("identifier.label")).asPageHeading(LabelSize.Medium)
+                label = LabelViewModel(messages("identifier.label")).withCssClass("govuk-label--m")
             )
             .withWidth(Fixed20)
         )
