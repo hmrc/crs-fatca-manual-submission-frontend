@@ -27,11 +27,19 @@ final case class HaveSponsorPage()(implicit reportId: ReportId) extends Question
   override def path: JsPath = JsPath \ reportId.mongoKey \ "haveSponsor"
 
   override def cleanupWithReportId(
-    value: Option[Boolean],
-    userData: UserAnswers
-  )(implicit reportId: ReportId): Try[UserAnswers] =
+                                    value: Option[Boolean],
+                                    userData: UserAnswers
+                                  )(implicit reportId: ReportId): Try[UserAnswers] =
     value match {
-      case Some(false) => userData.remove(SponsorNamePage())
-      case _           => Success(userData)
+      case Some(false) => cleanUpPages.foldLeft(Try(userData))(removePage())
+
+      case _ => Success(userData)
     }
+
+
+  private val cleanUpPages: Seq[QuestionPage[_]] = List(
+    SponsorNamePage(),
+    WhatIsAddressForSponsorPage(),
+    IsThisAddressForSponsorPage()
+  )
 }
