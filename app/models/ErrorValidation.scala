@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-package utils
+package models
 
-object RegexConstants:
-  val DEFAULT_STRING_FIELD_VALID: String = """^[A-Za-z0-9&'\\^` -]+$"""
-  val DOUBLE_DASH_INVALID: String        = "^(?!.*--).+$"
-  val POSTCODE_VALID: String             = """^[A-Za-z0-9 ]*$"""
-  val POSTCODE_FORMAT: String            = """^[A-Za-z]{1,2}\d[A-Za-z0-9]?\s?\d[A-Za-z]{2}$"""
+case class ErrorValidation(regex: String, errorKey: String)
