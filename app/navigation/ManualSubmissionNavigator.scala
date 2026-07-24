@@ -60,10 +60,10 @@ class ManualSubmissionNavigator @Inject() () {
   }
 
   private def sponsorNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
-    case (HaveSponsorPage(), mode, ua)         => haveSponsorNavigation(mode, ua)
-    case (SponsorNamePage(), mode, _)          => controllers.manual.sponsor.routes.WhatIsGIINForSponsorController.onPageLoad(mode)
-    case (WhatIsGIINForSponsorPage(), mode, _) => controllers.manual.sponsor.routes.IsSponsorBasedInUKController.onPageLoad(mode)
-    case (IsSponsorBasedInUKPage(), mode, ua)  => handleSponsorBasedUKNavigation(ua, mode)
+    case (HaveSponsorPage(), mode, ua)             => haveSponsorNavigation(mode, ua)
+    case (SponsorNamePage(), mode, _)              => controllers.manual.sponsor.routes.WhatIsGIINForSponsorController.onPageLoad(mode)
+    case (WhatIsGIINForSponsorPage(), mode, _)     => controllers.manual.sponsor.routes.IsSponsorBasedInUKController.onPageLoad(mode)
+    case (IsSponsorBasedInUKPage(), mode, ua)      => handleSponsorBasedUKNavigation(ua, mode)
     case (UKPostcodePage(), mode, ua)              => handleUKPostcodeNavigation(ua, mode)
     case (WhatIsAddressForSponsorPage(), mode, ua) => handleWhatIsAddressForSponsorNavigation(ua, mode)
     case (IsThisAddressForSponsorPage(), mode, ua) => handleIsThisAddressForSponsorNavigation(ua, mode)
