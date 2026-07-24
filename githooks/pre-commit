@@ -1,0 +1,15 @@
+#!/bin/sh
+
+echo "Running pre-commit checks..."
+
+sbt precommit
+
+RESULT=$?
+
+if [ $RESULT -ne 0 ]; then
+  echo "Pre-commit checks failed. Commit aborted."
+  exit 1
+fi
+
+echo "Pre-commit checks passed."
+exit 0
