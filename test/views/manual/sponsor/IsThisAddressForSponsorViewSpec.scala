@@ -19,15 +19,13 @@ package views.manual.sponsor
 import base.SpecBase
 import forms.manual.sponsor.HaveSponsorFormProvider
 import models.NormalMode
-import models.response.{Address, AddressLookup, Country}
+import models.response.{Address, Country}
 import org.jsoup.Jsoup
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
-import uk.gov.hmrc.govukfrontend.views.Aliases.Text
-import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
-import views.html.manual.sponsor.{IsThisAddressForSponsorView, WhatIsAddressForSponsorView}
+import views.html.manual.sponsor.IsThisAddressForSponsorView
 
 class IsThisAddressForSponsorViewSpec extends SpecBase {
 

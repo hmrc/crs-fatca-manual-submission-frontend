@@ -63,14 +63,15 @@ trait SpecBase
       userData.set(page, value).success.value
   }
 
-  
   def mustBeRemoved(userAnswers: UserAnswers, pages: QuestionPage[_]*): Assertion =
-    forAll(pages) { page =>
-      userAnswers.data.transform(page.path.json.pick).asOpt mustBe empty
+    forAll(pages) {
+      page =>
+        userAnswers.data.transform(page.path.json.pick).asOpt mustBe empty
     }
 
-   def mustBeUnaffected(userAnswers: UserAnswers, pages: QuestionPage[_]*): Assertion =
-    forAll(pages) { page =>
-      userAnswers.data.transform(page.path.json.pick).asOpt mustNot be(empty)
+  def mustBeUnaffected(userAnswers: UserAnswers, pages: QuestionPage[_]*): Assertion =
+    forAll(pages) {
+      page =>
+        userAnswers.data.transform(page.path.json.pick).asOpt mustNot be(empty)
     }
 }
