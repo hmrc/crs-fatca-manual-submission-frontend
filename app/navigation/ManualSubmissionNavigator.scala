@@ -66,7 +66,7 @@ class ManualSubmissionNavigator @Inject() () {
     case (WhatIsGIINForSponsorPage(), mode, _) => controllers.manual.sponsor.routes.IsSponsorBasedInUKController.onPageLoad(mode)
     case (IsSponsorBasedInUKPage(), mode, ua)  => handleSponsorBasedUKNavigation(ua, mode)
     case (UKPostcodePage(), _, _)              => routes.UnderConstructionController.onPageLoad()
-    case AddressNonUkPage()                    => routes.UnderConstructionController.onPageLoad()
+    case (AddressNonUkPage(), _, _)            => routes.UnderConstructionController.onPageLoad()
 
   }
 
