@@ -49,6 +49,10 @@ lazy val microservice = (project in file("."))
 addCommandAlias("testAll", "; scalafmtAll ; test ; it/test")
 addCommandAlias(
   "precommit",
+  "; clean ; scalafmtAll ; coverage ; test ; it/test ; coverageReport ; coverageOff"
+)
+addCommandAlias(
+  "precommitCheck",
   "; clean ; scalafmtCheckAll ; coverage ; test ; it/test ; coverageReport ; coverageOff"
 )
 lazy val testSettings: Seq[Def.Setting[_]] = Seq(
