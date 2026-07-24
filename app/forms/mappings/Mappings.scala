@@ -20,7 +20,7 @@ import models.Enumerable
 import play.api.data.Forms.{of, optional}
 import play.api.data.{FieldMapping, Mapping}
 import play.api.i18n.Messages
-
+import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 import java.time.LocalDate
 
 trait Mappings extends Formatters with Constraints {
@@ -37,19 +37,44 @@ trait Mappings extends Formatters with Constraints {
   ): FieldMapping[String] =
     of(validatedTextFormatter(requiredKey, invalidKey, lengthKey, regex, maxLength, msgArg))
 
-  protected def validatedOptionalText(invalidKey: String, lengthKey: String, regex: String, length: Int): Mapping[Option[String]] =
+  protected def validatedOptionalText(
+    invalidKey: String,
+    invalidCombinationKey: String,
+    lengthKey: String,
+    regex: String,
+    maxLength: Int
+  ): Mapping[Option[String]] =
     optional(play.api.data.Forms.text)
       .transform[Option[String]](
         value => value.map(_.trim).filter(_.nonEmpty),
         value => value
       )
       .verifying(
-        invalidKey,
-        value => value.forall(_.matches(regex))
-      )
-      .verifying(
-        lengthKey,
-        value => value.forall(_.length <= length)
+        Constraint[Option[String]] {
+          case Some(value) if value.length > maxLength =>
+            Invalid(
+              Seq(
+                ValidationError(lengthKey)
+              )
+            )
+
+          case Some(value) if !value.matches(regex) =>
+            Invalid(
+              Seq(
+                ValidationError(invalidKey)
+              )
+            )
+
+          case Some(value) if value.contains("--") =>
+            Invalid(
+              Seq(
+                ValidationError(invalidCombinationKey)
+              )
+            )
+
+          case _ =>
+            Valid
+        }
       )
 
   protected def int(requiredKey: String = "error.required",

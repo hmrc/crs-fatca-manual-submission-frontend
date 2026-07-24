@@ -212,11 +212,11 @@ trait Formatters extends Transforms {
         dataFormatter
           .bind(key, data)
           .flatMap {
-            case str if !str.matches(regex) =>
-              Left(Seq(FormError(key, invalidKey)))
-
             case str if str.length > maxLength =>
               Left(Seq(FormError(key, lengthKey)))
+
+            case str if !str.matches(regex) =>
+              Left(Seq(FormError(key, invalidKey)))
 
             case str =>
               Right(str)

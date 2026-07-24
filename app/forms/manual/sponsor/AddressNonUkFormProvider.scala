@@ -37,58 +37,54 @@ class AddressNonUkFormProvider @Inject() extends Mappings {
       mapping(
         "addressLine1" ->
           validatedText(
-            "addressNonUk.error.addressLine1.required",
-            "addressNonUk.error.addressLine1.invalid",
-            "addressNonUk.error.addressLine1.length",
-            nonUkAddressRegex,
-            addressLineLength
+            requiredKey = "addressNonUk.error.addressLine1.required",
+            invalidKey = "addressNonUk.error.addressLine1.invalid",
+            lengthKey = "addressNonUk.error.addressLine1.length",
+            regex = nonUkAddressRegex,
+            maxLength = addressLineLength
           ).verifying(
             "addressNonUk.error.addressLine1.invalidCombination",
-            value => doesNotContainDoubleDash(value)
+            doesNotContainDoubleDash
           ),
         "addressLine2" ->
           validatedOptionalText(
-            "addressNonUk.error.addressLine2.invalid",
-            "addressNonUk.error.addressLine2.length",
-            nonUkAddressRegex,
-            addressLineLength
-          ).verifying(
-            "addressNonUk.error.addressLine2.invalidCombination",
-            value => value.forall(doesNotContainDoubleDash)
+            invalidKey = "addressNonUk.error.addressLine2.invalid",
+            invalidCombinationKey = "addressNonUk.error.addressLine2.invalidCombination",
+            lengthKey = "addressNonUk.error.addressLine2.length",
+            regex = nonUkAddressRegex,
+            maxLength = addressLineLength
           ),
         "addressLine3" ->
           validatedText(
-            "addressNonUk.error.addressLine3.required",
-            "addressNonUk.error.addressLine3.invalid",
-            "addressNonUk.error.addressLine3.length",
-            nonUkAddressRegex,
-            addressLineLength
+            requiredKey = "addressNonUk.error.addressLine3.required",
+            invalidKey = "addressNonUk.error.addressLine3.invalid",
+            lengthKey = "addressNonUk.error.addressLine3.length",
+            regex = nonUkAddressRegex,
+            maxLength = addressLineLength
           ).verifying(
             "addressNonUk.error.addressLine3.invalidCombination",
-            value => doesNotContainDoubleDash(value)
+            doesNotContainDoubleDash
           ),
         "addressLine4" ->
           validatedOptionalText(
-            "addressNonUk.error.addressLine4.invalid",
-            "addressNonUk.error.addressLine4.length",
-            nonUkAddressRegex,
-            addressLineLength
-          ).verifying(
-            "addressNonUk.error.addressLine4.invalidCombination",
-            value => value.forall(doesNotContainDoubleDash)
+            invalidKey = "addressNonUk.error.addressLine4.invalid",
+            invalidCombinationKey = "addressNonUk.error.addressLine4.invalidCombination",
+            lengthKey = "addressNonUk.error.addressLine4.length",
+            regex = nonUkAddressRegex,
+            maxLength = addressLineLength
           ),
         "postcode" ->
           validatedOptionalText(
-            "addressNonUk.error.postcode.invalid",
-            "addressNonUk.error.postcode.length",
-            nonUkPostcodeRegex,
-            postcodeLength
-          ).verifying(
-            "addressNonUk.error.postcode.invalidCombination",
-            value => value.forall(doesNotContainDoubleDash)
+            invalidKey = "addressNonUk.error.postcode.invalid",
+            invalidCombinationKey = "addressNonUk.error.postcode.invalidCombination",
+            lengthKey = "addressNonUk.error.postcode.length",
+            regex = nonUkPostcodeRegex,
+            maxLength = postcodeLength
           ),
         "country" ->
-          text("addressNonUk.error.country.required")
+          text(
+            "addressNonUk.error.country.required"
+          )
       )(AddressNonUk.apply)(
         address =>
           Some(
