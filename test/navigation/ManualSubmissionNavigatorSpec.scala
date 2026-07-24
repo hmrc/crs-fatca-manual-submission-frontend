@@ -21,7 +21,7 @@ import controllers.manual.reportdetails.routes.{ReportDetailsCheckAnswersControl
 import models.*
 import models.SubmissionsConstants.FATCA
 import pages.*
-import pages.manual.account.HaveNumberPage
+import pages.manual.account.{HaveNumberPage, IdentifierPage, NumberTypePage}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.{HaveSponsorPage, IsSponsorBasedInUKPage, SponsorNamePage, UKPostcodePage, WhatIsGIINForSponsorPage}
@@ -149,7 +149,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         "must go to UnderConstruction Page when when answer is No" in {
           val userData = UserAnswers("id").withPage(HaveNumberPage(), false)
           navigator.nextPage(HaveNumberPage(), NormalMode, userData) mustBe
-            controllers.routes.UnderConstructionController.onPageLoad()
+            controllers.manual.account.routes.IdentifierController.onPageLoad(NormalMode)
         }
 
         "must go to JourneyRecovery Page when Normal Mode" in {
@@ -164,6 +164,16 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         "must go to UnderConstruction Page when when answer is No" in {
           val userData = UserAnswers("id").withPage(NumberTypePage(), NumberType.Iban)
           navigator.nextPage(NumberTypePage(), NormalMode, userData) mustBe
+            controllers.routes.UnderConstructionController.onPageLoad()
+        }
+
+      }
+
+      "IdentifierPage" - {
+
+        "must go to UnderConstruction Page when when answer is No" in {
+          val userData = UserAnswers("id").withPage(IdentifierPage(), "testId")
+          navigator.nextPage(IdentifierPage(), NormalMode, userData) mustBe
             controllers.routes.UnderConstructionController.onPageLoad()
         }
 

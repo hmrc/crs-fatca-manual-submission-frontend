@@ -16,7 +16,7 @@
 
 package forms.mappings
 
-import models.Enumerable
+import models.{Enumerable, ErrorValidation}
 import play.api.data.Forms.{of, optional}
 import play.api.data.{FieldMapping, Mapping}
 import play.api.i18n.Messages
@@ -129,6 +129,11 @@ trait Mappings extends Formatters with Constraints {
         formatRegex = regex,
         formatKey = formatKey
       )
+    )
+
+  protected def defaultStringFieldFormat(requiredKey: String, maxLength: Int, lengthKey: String, validations: Seq[ErrorValidation]): FieldMapping[String] =
+    of(
+      stringValidations(requiredKey = requiredKey, maxLength = maxLength, lengthKey = lengthKey, validations = validations)
     )
 
 }
