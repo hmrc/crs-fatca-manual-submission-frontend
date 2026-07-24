@@ -196,9 +196,12 @@ trait Formatters extends Transforms {
     new Formatter[String] {
 
       override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], String] =
-        postCodeDataTransform(data.get(key)) match {
-          case None              => Left(Seq(FormError(key, requiredKey)))
-          case Some(rawPostcode) => validate(key, stripSpaces(rawPostcode))
+        data.get(key) match {
+          case None => Left(Seq(FormError(key, requiredKey)))
+          case Some(value) =>
+            val trimmedValue = value.trim
+            if trimmedValue.isEmpty then Left(Seq(FormError(key, requiredKey)))
+            else validate(key, trimmedValue)
         }
 
       private def validate(key: String, value: String): Either[Seq[FormError], String] =
