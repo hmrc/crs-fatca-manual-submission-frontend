@@ -1,6 +1,8 @@
 import play.sbt.routes.RoutesKeys
 import sbt.Def
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
+import scala.collection.Seq
+
 
 lazy val appName: String = "crs-fatca-manual-submission-frontend"
 
@@ -43,8 +45,15 @@ lazy val microservice = (project in file("."))
     scalacOptions ~= (_.distinct),
     libraryDependencies ++= AppDependencies(),
     retrieveManaged := true,
-    pipelineStages := Seq(digest),
-    Assets / pipelineStages := Seq(concat)
+    // concatenate js
+    Concat.groups := Seq(
+      "javascripts/application.js" ->
+        group(Seq(
+          "javascripts/app.js"
+        ))
+    ),
+    pipelineStages          := Seq(digest),
+    Assets / pipelineStages := Seq(concat, digest)
   )
 addCommandAlias("testAll", "; scalafmtAll ; test ; it/test")
 addCommandAlias(

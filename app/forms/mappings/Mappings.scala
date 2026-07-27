@@ -17,16 +17,65 @@
 package forms.mappings
 
 import models.{Enumerable, ErrorValidation}
-import play.api.data.FieldMapping
-import play.api.data.Forms.of
+import play.api.data.Forms.{of, optional}
+import play.api.data.{FieldMapping, Mapping}
 import play.api.i18n.Messages
-
+import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 import java.time.LocalDate
 
 trait Mappings extends Formatters with Constraints {
 
   protected def text(errorKey: String = "error.required", args: Seq[String] = Seq.empty): FieldMapping[String] =
     of(stringFormatter(errorKey, args))
+
+  protected def validatedText(requiredKey: String,
+                              invalidKey: String,
+                              lengthKey: String,
+                              regex: String,
+                              maxLength: Int,
+                              msgArg: String = ""
+  ): FieldMapping[String] =
+    of(validatedTextFormatter(requiredKey, invalidKey, lengthKey, regex, maxLength, msgArg))
+
+  protected def validatedOptionalText(
+    invalidKey: String,
+    invalidCombinationKey: String,
+    lengthKey: String,
+    regex: String,
+    maxLength: Int
+  ): Mapping[Option[String]] =
+    optional(play.api.data.Forms.text)
+      .transform[Option[String]](
+        value => value.map(_.trim).filter(_.nonEmpty),
+        value => value
+      )
+      .verifying(
+        Constraint[Option[String]] {
+          case Some(value) if value.length > maxLength =>
+            Invalid(
+              Seq(
+                ValidationError(lengthKey)
+              )
+            )
+
+          case Some(value) if !value.matches(regex) =>
+            Invalid(
+              Seq(
+                ValidationError(invalidKey)
+              )
+            )
+
+          case Some(value) if value.contains("--") =>
+            Invalid(
+              Seq(
+                ValidationError(invalidCombinationKey)
+              )
+            )
+
+          case _ =>
+            Valid
+        }
+      )
 
   protected def int(requiredKey: String = "error.required",
                     wholeNumberKey: String = "error.wholeNumber",
@@ -72,12 +121,13 @@ trait Mappings extends Formatters with Constraints {
                                   formatKey: String
   ): FieldMapping[String] =
     of(
-      mandatoryPostcodeFormatter(requiredKey = requiredKey,
-                                 lengthKey = lengthKey,
-                                 validCharRegex = validCharRegex,
-                                 invalidCharKey = invalidKey,
-                                 formatRegex = regex,
-                                 formatKey = formatKey
+      mandatoryPostcodeFormatter(
+        requiredKey = requiredKey,
+        lengthKey = lengthKey,
+        validCharRegex = validCharRegex,
+        invalidCharKey = invalidKey,
+        formatRegex = regex,
+        formatKey = formatKey
       )
     )
 

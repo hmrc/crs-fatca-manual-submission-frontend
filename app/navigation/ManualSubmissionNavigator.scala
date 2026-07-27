@@ -24,6 +24,7 @@ import pages.*
 import pages.manual.account.{HaveNumberPage, IdentifierPage, NumberTypePage}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
+import pages.manual.sponsor.{AddressNonUkPage, HaveSponsorPage, IsSponsorBasedInUKPage, SponsorNamePage, UKPostcodePage, WhatIsGIINForSponsorPage}
 import pages.manual.sponsor.*
 import play.api.mvc.Call
 
@@ -65,6 +66,8 @@ class ManualSubmissionNavigator @Inject() () {
     case (WhatIsGIINForSponsorPage(), mode, _) => controllers.manual.sponsor.routes.IsSponsorBasedInUKController.onPageLoad(mode)
     case (IsSponsorBasedInUKPage(), mode, ua)  => handleSponsorBasedUKNavigation(ua, mode)
     case (UKPostcodePage(), _, _)              => routes.UnderConstructionController.onPageLoad()
+    case (AddressNonUkPage(), _, _)            => routes.UnderConstructionController.onPageLoad()
+
   }
 
   private def navigation(implicit reportId: ReportId) =
@@ -92,7 +95,7 @@ class ManualSubmissionNavigator @Inject() () {
   private def handleSponsorBasedUKNavigation(userAnswers: UserAnswers, mode: Mode)(implicit reportId: ReportId) =
     userAnswers.get(IsSponsorBasedInUKPage()) match {
       case Some(true)  => controllers.manual.sponsor.routes.UKPostcodeController.onPageLoad(mode)
-      case Some(false) => routes.UnderConstructionController.onPageLoad()
+      case Some(false) => controllers.manual.sponsor.routes.AddressNonUkController.onPageLoad(mode)
       case None        => routes.JourneyRecoveryController.onPageLoad()
     }
 }

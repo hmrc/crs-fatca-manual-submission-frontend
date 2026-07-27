@@ -1,0 +1,106 @@
+@*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import viewmodels.InputWidth._
+
+@this(
+        layout: templates.Layout,
+        formHelper: FormWithCSRF,
+        govukErrorSummary: GovukErrorSummary,
+        govukButton: GovukButton,
+        heading: views.html.components.Heading,
+        textInput: views.html.components.TextInput,
+        countrySelect: views.html.components.CountrySelect
+)
+
+@(form: Form[_], mode: Mode, sponsorName: String)(
+        implicit request: Request[_],
+        messages: Messages
+)
+
+@layout(
+    pageTitle = title(
+        form,
+        messages("addressNonUk.title", sponsorName)
+    )
+) {
+
+    @formHelper(
+        action = controllers.manual.sponsor.routes.AddressNonUkController.onSubmit(mode),
+        Symbol("autoComplete") -> "off"
+    ) {
+
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(
+                ErrorSummaryViewModel(form)
+            )
+        }
+
+        @heading(
+            headingContent = messages(
+                "addressNonUk.heading",
+                sponsorName
+            )
+        )
+
+        @textInput(
+            field = form("addressLine1"),
+            label = messages("addressNonUk.addressLine1"),
+            width = TwoThirds,
+            autocomplete = Some("address-line1")
+        )
+
+        @textInput(
+            field = form("addressLine2"),
+            label = messages("addressNonUk.addressLine2"),
+            width = TwoThirds,
+            autocomplete = Some("address-line2")
+        )
+
+        @textInput(
+            field = form("addressLine3"),
+            label = messages("addressNonUk.addressLine3"),
+            width = TwoThirds,
+            autocomplete = Some("address-line3")
+        )
+
+        @textInput(
+            field = form("addressLine4"),
+            label = messages("addressNonUk.addressLine4"),
+            width = TwoThirds,
+            autocomplete = Some("address-line4")
+        )
+
+        @textInput(
+            field = form("postcode"),
+            label = messages("addressNonUk.postcode"),
+            width = Fixed10,
+            autocomplete = Some("address-postcode")
+        )
+
+        @countrySelect(
+            field = form("country"),
+            label = messages("addressNonUk.country")
+        )
+
+        @govukButton(
+            ButtonViewModel(
+                messages("site.saveContinue")
+            )
+        )
+    }
+}

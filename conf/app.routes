@@ -127,6 +127,11 @@ POST       /manual/sponsor/uk-postcode                        controllers.manual
 GET        /manual/sponsor/change-uk-postcode                  controllers.manual.sponsor.UKPostcodeController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/sponsor/change-uk-postcode                  controllers.manual.sponsor.UKPostcodeController.onSubmit(mode: Mode = CheckMode)
 
+GET        /manual/sponsor/address-non-uk                      controllers.manual.sponsor.AddressNonUkController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/sponsor/address-non-uk                       controllers.manual.sponsor.AddressNonUkController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/sponsor/change-address-non-uk                 controllers.manual.sponsor.AddressNonUkController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/sponsor/change-address-non-uk                controllers.manual.sponsor.AddressNonUkController.onSubmit(mode: Mode = CheckMode)
+
 GET        /manual/account/have-number                         controllers.manual.account.HaveNumberController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/account/have-number                         controllers.manual.account.HaveNumberController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/account/change-have-number                  controllers.manual.account.HaveNumberController.onPageLoad(mode: Mode = CheckMode)
