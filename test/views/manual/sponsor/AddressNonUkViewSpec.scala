@@ -69,7 +69,7 @@ class AddressNonUkViewSpec extends SpecBase {
 
       "must display the page title" in {
         doc.title() must include(
-          "What is the sponsor's address?"
+          "What is the sponsor’s address?"
         )
       }
 
@@ -121,13 +121,13 @@ class AddressNonUkViewSpec extends SpecBase {
           "address-line2"
 
         doc.select("#addressLine3").attr("autocomplete") mustBe
-          "address-line3"
+          "address-level2"
 
-        doc.select("#addressLine4").attr("autocomplete") mustBe
-          "address-line4"
+        doc.select("#addressLine4").hasAttr("autocomplete") mustBe
+          false
 
         doc.select("#postcode").attr("autocomplete") mustBe
-          "address-postcode"
+          "postal-code"
       }
 
       "must display the country field" in {
@@ -289,7 +289,7 @@ class AddressNonUkViewSpec extends SpecBase {
 
       "must display the address line 1 error" in {
         doc.select("#addressLine1-error").text() must include(
-          "Enter Address line 1"
+          "Enter address line 1"
         )
       }
 
