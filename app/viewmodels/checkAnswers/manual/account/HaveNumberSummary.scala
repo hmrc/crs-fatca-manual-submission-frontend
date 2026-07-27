@@ -17,7 +17,7 @@
 package viewmodels.checkAnswers.manual.account
 
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.account.HaveNumberPage
+import pages.manual.account.{CurrentAccountIdPage, HaveNumberPage}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist.*
@@ -26,18 +26,18 @@ import viewmodels.implicits.*
 object HaveNumberSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
-    answers.get(HaveNumberPage()).map {
-      answer =>
+    for {
+      currentAccountId <- answers.get(CurrentAccountIdPage()(reportId))
+      answer           <- answers.get(HaveNumberPage(currentAccountId)(reportId))
+    } yield
+      val value = if (answer) "site.yes" else "site.no"
 
-        val value = if (answer) "site.yes" else "site.no"
-
-        SummaryListRowViewModel(
-          key = "haveNumber.checkYourAnswersLabel",
-          value = ValueViewModel(value),
-          actions = Seq(
-            ActionItemViewModel("site.change", controllers.manual.account.routes.HaveNumberController.onPageLoad(CheckMode).url)
-              .withVisuallyHiddenText(messages("haveNumber.change.hidden"))
-          )
+      SummaryListRowViewModel(
+        key = "haveNumber.checkYourAnswersLabel",
+        value = ValueViewModel(value),
+        actions = Seq(
+          ActionItemViewModel("site.change", controllers.manual.account.routes.HaveNumberController.onPageLoad(CheckMode).url)
+            .withVisuallyHiddenText(messages("haveNumber.change.hidden"))
         )
-    }
+      )
 }

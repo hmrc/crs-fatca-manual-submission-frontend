@@ -38,6 +38,7 @@ class NumberTypeController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   reportIdAction: ReportIdRequiredAction,
+  accountIdRequiredAction: AccountIdRequiredAction,
   formProvider: NumberTypeFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: NumberTypeView
@@ -47,10 +48,10 @@ class NumberTypeController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction andThen accountIdRequiredAction) {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
-      val preparedForm = request.userAnswers.get(NumberTypePage()) match {
+      val preparedForm = request.userAnswers.get(NumberTypePage(request.accountId)) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
@@ -58,7 +59,7 @@ class NumberTypeController @Inject() (
       Ok(view(preparedForm, mode, reportId.regime))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction andThen accountIdRequiredAction).async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
       form
@@ -67,9 +68,9 @@ class NumberTypeController @Inject() (
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, reportId.regime))),
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(NumberTypePage(), value))
+              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(NumberTypePage(request.accountId), value))
               _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(NumberTypePage(), mode, updatedAnswers))
+            } yield Redirect(navigator.nextPage(NumberTypePage(request.accountId), mode, updatedAnswers))
         )
   }
 }

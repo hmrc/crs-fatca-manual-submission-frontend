@@ -38,6 +38,7 @@ class HaveNumberController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   reportIdAction: ReportIdRequiredAction,
+  accountIdRequiredAction: AccountIdRequiredAction,
   formProvider: HaveNumberFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: HaveNumberView
@@ -47,12 +48,12 @@ class HaveNumberController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction andThen accountIdRequiredAction) {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
 
-      val preparedForm = request.userAnswers.get(HaveNumberPage()) match {
+      val preparedForm = request.userAnswers.get(HaveNumberPage(request.accountId)) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
@@ -60,7 +61,7 @@ class HaveNumberController @Inject() (
       Ok(view(preparedForm, mode))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction andThen accountIdRequiredAction).async {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
@@ -71,9 +72,9 @@ class HaveNumberController @Inject() (
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(HaveNumberPage(), value))
+              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(HaveNumberPage(request.accountId), value))
               _              <- repository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(HaveNumberPage(), mode, updatedAnswers))
+            } yield Redirect(navigator.nextPage(HaveNumberPage(request.accountId), mode, updatedAnswers))
         )
   }
 }
