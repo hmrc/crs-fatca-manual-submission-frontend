@@ -14,33 +14,33 @@
  * limitations under the License.
  */
 
-package controllers.manual.account
+package controllers.manual.sponsor
 
 import connectors.DatabaseConnector
 import controllers.actions.*
-import forms.manual.account.NumberTypeFormProvider
+import forms.manual.sponsor.AddressNonUkFormProvider
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.account.NumberTypePage
+import pages.manual.sponsor.{AddressNonUkPage, SponsorNamePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.manual.account.NumberTypeView
+import views.html.manual.sponsor.AddressNonUkView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class NumberTypeController @Inject() (
+class AddressNonUkController @Inject() (
   override val messagesApi: MessagesApi,
-  sessionRepository: DatabaseConnector,
+  repository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   reportIdAction: ReportIdRequiredAction,
-  formProvider: NumberTypeFormProvider,
+  formProvider: AddressNonUkFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: NumberTypeView
+  view: AddressNonUkView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -50,26 +50,31 @@ class NumberTypeController @Inject() (
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
-      val preparedForm = request.userAnswers.get(NumberTypePage()) match {
+
+      val preparedForm = request.userAnswers.get(AddressNonUkPage()) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
 
-      Ok(view(preparedForm, mode, reportId.regime))
+      val sponsorName = request.userAnswers.get(SponsorNamePage()).get
+
+      Ok(view(preparedForm, mode, sponsorName))
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
+      val sponsorName                 = request.userAnswers.get(SponsorNamePage()).get
+
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, reportId.regime))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, sponsorName))),
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(NumberTypePage(), value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(NumberTypePage(), mode, updatedAnswers))
+              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(AddressNonUkPage(), value))
+              _              <- repository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(AddressNonUkPage(), mode, updatedAnswers))
         )
   }
 }

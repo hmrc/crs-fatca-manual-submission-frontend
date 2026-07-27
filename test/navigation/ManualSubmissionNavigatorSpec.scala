@@ -21,7 +21,7 @@ import controllers.manual.reportdetails.routes.{ReportDetailsCheckAnswersControl
 import models.*
 import models.SubmissionsConstants.FATCA
 import pages.*
-import pages.manual.account.HaveNumberPage
+import pages.manual.account.{HaveNumberPage, IdentifierPage, NumberTypePage}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.{HaveSponsorPage, IsSponsorBasedInUKPage, SponsorNamePage, UKPostcodePage, WhatIsGIINForSponsorPage}
@@ -105,10 +105,10 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
       }
 
       "IsSponsorBasedInUKPage" - {
-        "must go to UNDERCONSTRUCTION when user selects false" in {
+        "must go to Non UK Address page when user selects false" in {
           val ua = UserAnswers("id").withPage(IsSponsorBasedInUKPage(), false)
           navigator.nextPage(IsSponsorBasedInUKPage(), NormalMode, ua) mustBe
-            controllers.routes.UnderConstructionController.onPageLoad()
+            controllers.manual.sponsor.routes.AddressNonUkController.onPageLoad(NormalMode)
         }
 
         "must go to UK Postcode when user selects true" in {
@@ -157,7 +157,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         "must go to UnderConstruction Page when when answer is No" in {
           val userData = UserAnswers("id").withPage(HaveNumberPage(), false)
           navigator.nextPage(HaveNumberPage(), NormalMode, userData) mustBe
-            controllers.routes.UnderConstructionController.onPageLoad()
+            controllers.manual.account.routes.IdentifierController.onPageLoad(NormalMode)
         }
 
         "must go to JourneyRecovery Page when Normal Mode" in {
@@ -177,6 +177,23 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
 
       }
 
+      "IdentifierPage" - {
+
+        "must go to UnderConstruction Page when when answer is No" in {
+          val userData = UserAnswers("id").withPage(IdentifierPage(), "testId")
+          navigator.nextPage(IdentifierPage(), NormalMode, userData) mustBe
+            controllers.routes.UnderConstructionController.onPageLoad()
+        }
+
+      }
+
+      "AddressNonUkPage" - {
+        "must go to UNDERCONSTRUCTION page after user hits submit" in {
+          val ua = UserAnswers("id")
+          navigator.nextPage(UKPostcodePage(), NormalMode, ua) mustBe
+            controllers.routes.UnderConstructionController.onPageLoad()
+        }
+      }
     }
   }
 }

@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-package forms.manual.sponsor
+package forms.manual.account
 
 import forms.behaviours.StringFieldBehaviours
 import play.api.data.FormError
 import utils.RegexConstants
 
-class SponsorNameFormProviderSpec extends StringFieldBehaviours {
+class IdentifierFormProviderSpec extends StringFieldBehaviours {
 
-  val requiredKey   = "sponsorName.error.required"
-  val lengthKey     = "sponsorName.error.length"
-  val invalidKey    = "sponsorName.error.invalid"
-  val doubleDashKey = "sponsorName.error.doubedash"
+  val requiredKey   = "identifier.error.required"
+  val lengthKey     = "identifier.error.length"
+  val invalidKey    = "identifier.error.invalid"
+  val doubleDashKey = "identifier.error.doubedash"
   val maxLength     = 200
 
-  val form = new SponsorNameFormProvider()()
+  val form = new IdentifierFormProvider()()
 
   ".value" - {
 

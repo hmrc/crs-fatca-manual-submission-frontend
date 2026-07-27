@@ -16,8 +16,9 @@
 
 package forms.mappings
 
-import models.Enumerable
 import play.api.data.{FieldMapping, FormError, Forms}
+import models.{Enumerable, ErrorValidation}
+import play.api.data.FormError
 import play.api.data.format.Formatter
 import utils.RegexConstants
 
@@ -227,6 +228,70 @@ trait Formatters extends Transforms {
       Map(key -> value)
   }
 
+  private def removeNonBreakingSpaces(str: String) =
+    str.replaceAll("\u00A0", " ")
+
+  private[mappings] def stringTrimFormatter(errorKey: String, msgArg: String = ""): Formatter[String] = new Formatter[String] {
+
+    override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], String] =
+      data.get(key) match {
+        case None =>
+          msgArg.isEmpty match {
+            case true  => Left(Seq(FormError(key, errorKey)))
+            case false => Left(Seq(FormError(key, errorKey, Seq(msgArg))))
+          }
+        case Some(s) =>
+          s.trim match {
+            case "" =>
+              msgArg.isEmpty match {
+                case true  => Left(Seq(FormError(key, errorKey)))
+                case false => Left(Seq(FormError(key, errorKey, Seq(msgArg))))
+              }
+            case s1 => Right(removeNonBreakingSpaces(s1))
+          }
+      }
+
+    override def unbind(key: String, value: String): Map[String, String] =
+      Map(key -> value)
+  }
+
+  protected def validatedTextFormatter(
+    requiredKey: String,
+    invalidKey: String,
+    lengthKey: String,
+    regex: String,
+    maxLength: Int,
+    msgArg: String = ""
+  ): Formatter[String] =
+    new Formatter[String] {
+
+      private val dataFormatter: Formatter[String] =
+        stringTrimFormatter(requiredKey, msgArg)
+
+      override def bind(
+        key: String,
+        data: Map[String, String]
+      ): Either[Seq[FormError], String] =
+        dataFormatter
+          .bind(key, data)
+          .flatMap {
+            case str if str.length > maxLength =>
+              Left(Seq(FormError(key, lengthKey)))
+
+            case str if !str.matches(regex) =>
+              Left(Seq(FormError(key, invalidKey)))
+
+            case str =>
+              Right(str)
+          }
+
+      override def unbind(
+        key: String,
+        value: String
+      ): Map[String, String] =
+        Map(key -> value)
+    }
+
   private[mappings] def mandatoryPostcodeFormatter(requiredKey: String,
                                                    lengthKey: String,
                                                    validCharRegex: String,
@@ -248,6 +313,35 @@ trait Formatters extends Transforms {
         else if !postCode.matches(validCharRegex) then Left(Seq(FormError(key, invalidCharKey)))
         else if !postCode.matches(formatRegex) then Left(Seq(FormError(key, formatKey)))
         else Right(validPostCodeFormat(postCode))
+
+      override def unbind(key: String, value: String): Map[String, String] =
+        Map(key -> value)
+
+    }
+
+  private[mappings] def stringValidations(requiredKey: String, maxLength: Int, lengthKey: String, validations: Seq[ErrorValidation]): Formatter[String] =
+    new Formatter[String] {
+
+      override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], String] =
+        data.get(key) match {
+          case None => Left(Seq(FormError(key, requiredKey)))
+          case Some(value) =>
+            val trimmedValue = value.trim
+            if trimmedValue.isEmpty then Left(Seq(FormError(key, requiredKey)))
+            else validate(key, trimmedValue)
+        }
+
+      private def validate(key: String, value: String): Either[Seq[FormError], String] =
+        if value.length > maxLength then Left(Seq(FormError(key, lengthKey, args = Seq(maxLength))))
+        else
+          validations
+            .find(
+              v => !value.matches(v.regex)
+            )
+            .map(
+              v => Left(Seq(FormError(key, v.errorKey, Seq(v.regex))))
+            )
+            .getOrElse(Right(value))
 
       override def unbind(key: String, value: String): Map[String, String] =
         Map(key -> value)
