@@ -376,3 +376,11 @@ identifier.error.length = Account identifier must be 200 characters or less
 identifier.error.invalid = Account identifier must only include letters a to z, numbers 0 to 9, ampersands (&), apostrophes, backslashes, carets (^), grave accents (`), hyphens and spaces
 identifier.error.doubedash = Account identifier must not include a double dash (--)
 identifier.change.hidden = Identifier
+
+sponsorResidentForTax.title = Where is the sponsor resident for tax?
+sponsorResidentForTax.heading = Where is {0} resident for tax?
+sponsorResidentForTax.paragraph = If they are resident for tax in more than one country, then you can add other countries on the next page.
+sponsorResidentForTax.checkYourAnswersLabel = sponsorResidentForTax
+sponsorResidentForTax.error.required = 	Select where the sponsor is resident for tax
+sponsorResidentForTax.error.length = SponsorResidentForTax must be 100 characters or less
+sponsorResidentForTax.change.hidden = SponsorResidentForTax
