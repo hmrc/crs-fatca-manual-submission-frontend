@@ -229,6 +229,34 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         }
       }
 
+      "IsThisAddressForSponsorPage" - {
+        "must go to UnderConstruction Page when answer is Yes" in {
+          val userData = UserAnswers("id")
+            .withPage(IsThisAddressForSponsorPage(), true)
+            .withPage(WhatIsAddressForSponsorPage(),
+                      Address(None, "1 Address line 1 Road", None, "Address line 2 Road", Some("Town"), Some("zz11zz"), Country.GB)
+            )
+          navigator.nextPage(IsThisAddressForSponsorPage(), NormalMode, userData) mustBe
+            controllers.routes.UnderConstructionController.onPageLoad()
+        }
+
+        "must go to UkAddress Page when answer is No" in {
+          val userData = UserAnswers("id")
+            .withPage(IsThisAddressForSponsorPage(), false)
+            .withPage(WhatIsAddressForSponsorPage(),
+                      Address(None, "1 Address line 1 Road", None, "Address line 2 Road", Some("Town"), Some("zz11zz"), Country.GB)
+            )
+          navigator.nextPage(IsThisAddressForSponsorPage(), NormalMode, userData) mustBe
+            controllers.manual.sponsor.routes.UkAddressController.onPageLoad(NormalMode)
+        }
+
+        "must go to JourneyRecovery Page when Normal Mode" in {
+          val userData = UserAnswers("id")
+          navigator.nextPage(IsThisAddressForSponsorPage(), NormalMode, userData) mustBe
+            controllers.routes.JourneyRecoveryController.onPageLoad()
+        }
+      }
+
     }
   }
 }

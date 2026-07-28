@@ -117,7 +117,7 @@ class ManualSubmissionNavigator @Inject() () {
   private def handleIsThisAddressForSponsorNavigation(userAnswers: UserAnswers, mode: Mode)(implicit reportId: ReportId) =
     (userAnswers.get(IsThisAddressForSponsorPage()), userAnswers.get(WhatIsAddressForSponsorPage())) match {
       case (Some(true), Some(address)) => routes.UnderConstructionController.onPageLoad()
-      case (Some(false), Some(_))      => routes.UnderConstructionController.onPageLoad()
+      case (Some(false), Some(_))      => controllers.manual.sponsor.routes.UkAddressController.onPageLoad(mode)
       case (_, _)                      => routes.JourneyRecoveryController.onPageLoad()
     }
 

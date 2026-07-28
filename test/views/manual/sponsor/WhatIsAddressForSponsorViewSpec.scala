@@ -18,7 +18,7 @@ package views.manual.sponsor
 
 import base.SpecBase
 import forms.manual.sponsor.HaveSponsorFormProvider
-import models.NormalMode
+import models.{CheckMode, NormalMode}
 import org.jsoup.Jsoup
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
@@ -49,7 +49,6 @@ class WhatIsAddressForSponsorViewSpec extends SpecBase {
 
       val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, "TestSponsorName", addressRadios)
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
-
       "must display title" in {
         doc.title() must include("What is the sponsor’s address?")
       }
@@ -64,6 +63,10 @@ class WhatIsAddressForSponsorViewSpec extends SpecBase {
 
       "must display button" in {
         doc.select("#submit").text() mustBe "Save and continue"
+      }
+
+      "must display enter the manual address link" in {
+        doc.select("a#enter-address-link").attr("href") mustBe controllers.manual.sponsor.routes.UkAddressController.onPageLoad(CheckMode).url
       }
 
     }
