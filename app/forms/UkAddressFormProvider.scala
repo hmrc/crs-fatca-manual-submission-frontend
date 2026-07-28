@@ -21,34 +21,54 @@ import forms.mappings.Mappings
 import play.api.data.Form
 import play.api.data.Forms.*
 import models.UkAddress
-import utils.RegexConstants.{POSTCODE_FORMAT, POSTCODE_VALID}
+import utils.RegexConstants
+import utils.RegexConstants.{ukAddressRegex, POSTCODE_FORMAT, POSTCODE_VALID}
 
 class UkAddressFormProvider @Inject() extends Mappings {
+  private val addressLineLength = 200
+
+  private def doesNotContainDoubleDash(value: String): Boolean =
+    value.matches(RegexConstants.DOUBLE_DASH_INVALID)
 
   def apply(): Form[UkAddress] = Form(
     mapping(
-      "addressLine1" -> mandatoryAddress(
-        "ukAddress.error.addressLine1.required",
-        "ukAddress.error.addressLine1.length",
-        "ukAddress.error.addressLine1.invalid.characters",
-        "ukAddress.error.addressLine1.invalid.characters.combination"
-      ),
-      "addressLine2" -> optionalAddress(
-        "ukAddress.error.addressLine2.length",
-        "ukAddress.error.addressLine2.invalid.characters",
-        "ukAddress.error.addressLine2.invalid.characters.combination"
-      ),
-      "city" -> mandatoryAddress(
-        "ukAddress.error.city.required",
-        "ukAddress.error.city.length",
-        "ukAddress.error.city.invalid.characters",
-        "ukAddress.error.city.invalid.characters.combination"
-      ),
+      "addressLine1" ->
+        validatedText(
+          requiredKey = "ukAddress.error.addressLine1.required",
+          invalidKey = "ukAddress.error.addressLine1.invalid.characters",
+          lengthKey = "ukAddress.error.addressLine1.length",
+          regex = ukAddressRegex,
+          maxLength = addressLineLength
+        ).verifying(
+          "ukAddress.error.addressLine1.invalid.characters.combination",
+          doesNotContainDoubleDash
+        ),
+      "addressLine2" ->
+        validatedOptionalText(
+          invalidKey = "ukAddress.error.addressLine2.invalid.characters",
+          invalidCombinationKey = "ukAddress.error.addressLine2.invalid.characters.combination",
+          lengthKey = "ukAddress.error.addressLine2.length",
+          regex = ukAddressRegex,
+          maxLength = addressLineLength
+        ),
+      "city" ->
+        validatedText(
+          requiredKey = "ukAddress.error.city.required",
+          invalidKey = "ukAddress.error.city.invalid.characters",
+          lengthKey = "ukAddress.error.city.length",
+          regex = ukAddressRegex,
+          maxLength = addressLineLength
+        ).verifying(
+          "ukAddress.error.city.invalid.characters.combination",
+          doesNotContainDoubleDash
+        ),
       "county" ->
-        optionalAddress(
-          "ukAddress.error.county.length",
-          "ukAddress.error.county.invalid.characters",
-          "ukAddress.error.county.invalid.characters.combination"
+        validatedOptionalText(
+          invalidKey = "ukAddress.error.county.invalid.characters",
+          invalidCombinationKey = "ukAddress.error.county.invalid.characters.combination",
+          lengthKey = "ukAddress.error.county.length",
+          regex = ukAddressRegex,
+          maxLength = addressLineLength
         ),
       "postCode" -> mandatoryPostcode(
         "ukAddress.error.postCode.required",

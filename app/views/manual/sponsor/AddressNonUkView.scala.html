@@ -16,6 +16,7 @@
 
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import viewmodels.InputWidth._
+@import models.response.Country
 
 @this(
         layout: templates.Layout,
@@ -27,7 +28,8 @@
         countrySelect: views.html.components.CountrySelect
 )
 
-@(form: Form[_], mode: Mode, sponsorName: String)(
+
+@(form: Form[_], mode: Mode, sponsorName: String, countries: Seq[Country])(
         implicit request: Request[_],
         messages: Messages
 )
@@ -91,12 +93,13 @@
             width = Fixed10,
             autocomplete = Some("address-postcode")
         )
-
-        @countrySelect(
-            field = form("country"),
-            label = messages("addressNonUk.country")
-        )
-
+        <div class="govuk-!-width-two-thirds">
+            @countrySelect(
+                field = form("country"),
+                label = messages("addressNonUk.country"),
+                countries = countries
+            )
+        </div>
         @govukButton(
             ButtonViewModel(
                 messages("site.saveContinue")

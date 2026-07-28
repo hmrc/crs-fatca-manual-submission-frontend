@@ -19,7 +19,7 @@ package controllers.manual.sponsor
 import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.manual.sponsor.AddressNonUkFormProvider
-import models.{Mode, ReportId}
+import models.{Countries, Mode, ReportId}
 import navigation.ManualSubmissionNavigator
 import pages.manual.sponsor.{AddressNonUkPage, SponsorNamePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -58,7 +58,7 @@ class AddressNonUkController @Inject() (
 
       val sponsorName = request.userAnswers.get(SponsorNamePage()).get
 
-      Ok(view(preparedForm, mode, sponsorName))
+      Ok(view(preparedForm, mode, sponsorName, Countries.all))
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
@@ -69,7 +69,7 @@ class AddressNonUkController @Inject() (
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, sponsorName))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, sponsorName, Countries.all))),
           value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(AddressNonUkPage(), value))

@@ -19,7 +19,7 @@ package controllers.manual.sponsor
 import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.UkAddressFormProvider
-import models.{Mode, ReportId}
+import models.{Countries, Mode, ReportId}
 import navigation.ManualSubmissionNavigator
 import pages.UkAddressPage
 import pages.manual.sponsor.SponsorNamePage
@@ -59,7 +59,7 @@ class UkAddressController @Inject() (
               case None        => form
               case Some(value) => form.fill(value)
             }
-            Ok(view(preparedForm, mode, sponsorName))
+            Ok(view(preparedForm, mode, sponsorName, Countries.ukTerritories))
         }
   }
 
@@ -73,7 +73,7 @@ class UkAddressController @Inject() (
             form
               .bindFromRequest()
               .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, sponsorName))),
+                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, sponsorName, Countries.ukTerritories))),
                 value =>
                   for {
                     updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(UkAddressPage(), value))

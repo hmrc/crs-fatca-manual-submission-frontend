@@ -52,6 +52,7 @@ class AddressNonUkViewSpec extends SpecBase {
     )
 
   private val sponsorName = "Test Sponsor"
+  private val countries   = Countries.all
 
   "AddressNonUkView" - {
 
@@ -61,7 +62,8 @@ class AddressNonUkViewSpec extends SpecBase {
         view(
           form,
           NormalMode,
-          sponsorName
+          sponsorName,
+          countries
         )
 
       lazy val doc =
@@ -226,7 +228,8 @@ class AddressNonUkViewSpec extends SpecBase {
         view(
           form.fill(address),
           NormalMode,
-          sponsorName
+          sponsorName,
+          countries
         )
 
       lazy val doc =
@@ -277,7 +280,8 @@ class AddressNonUkViewSpec extends SpecBase {
         view(
           invalidForm,
           NormalMode,
-          sponsorName
+          sponsorName,
+          countries
         )
 
       lazy val doc =

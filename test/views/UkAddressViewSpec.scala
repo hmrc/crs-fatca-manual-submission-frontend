@@ -18,7 +18,7 @@ package views
 
 import base.SpecBase
 import forms.UkAddressFormProvider
-import models.NormalMode
+import models.{Countries, NormalMode}
 import org.jsoup.Jsoup
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
@@ -37,7 +37,7 @@ class UkAddressViewSpec extends SpecBase {
 
   "UkAddressView" - {
     "should render page components" - {
-      val renderedHtml = view(formProvider(), NormalMode, "Test Sponsor Name")
+      val renderedHtml = view(formProvider(), NormalMode, "Test Sponsor Name", Countries.ukTerritories)
       lazy val doc     = Jsoup.parse(renderedHtml.body)
       println(renderedHtml.body)
       val expectedTitleLabels = Seq(

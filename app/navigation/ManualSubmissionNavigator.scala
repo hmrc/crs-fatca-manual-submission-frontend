@@ -24,7 +24,6 @@ import pages.*
 import pages.manual.account.{HaveNumberPage, IdentifierPage, NumberTypePage}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
-import pages.manual.sponsor.{AddressNonUkPage, HaveSponsorPage, IsSponsorBasedInUKPage, SponsorNamePage, UKPostcodePage, WhatIsGIINForSponsorPage}
 import pages.manual.sponsor.*
 import play.api.mvc.Call
 
@@ -67,8 +66,7 @@ class ManualSubmissionNavigator @Inject() () {
     case (IsSponsorBasedInUKPage(), mode, ua)  => handleSponsorBasedUKNavigation(ua, mode)
     case (UKPostcodePage(), _, _)              => routes.UnderConstructionController.onPageLoad()
     case (AddressNonUkPage(), _, _)            => routes.UnderConstructionController.onPageLoad()
-    case UkAddressPage()                => routes.UnderConstructionController.onPageLoad()
-
+    case (UkAddressPage(), _, _)               => routes.UnderConstructionController.onPageLoad()
 
   }
 

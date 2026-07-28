@@ -20,6 +20,26 @@ import models.response.Country
 
 object Countries {
 
+  val ukTerritories: Seq[Country] = Seq(
+    Country(
+      code = "GB",
+      description = "United Kingdom",
+      alternativeName = Some("United Kingdom:UK:Great Britain:Northern Ireland")
+    ),
+    Country(
+      code = "GG",
+      description = "Guernsey"
+    ),
+    Country(
+      code = "IM",
+      description = "Isle of Man"
+    ),
+    Country(
+      code = "JE",
+      description = "Jersey"
+    )
+  )
+
   val all: Seq[Country] = Seq(
     Country(
       code = "AE",

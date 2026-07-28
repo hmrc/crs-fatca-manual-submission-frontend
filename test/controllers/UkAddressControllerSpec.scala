@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import forms.UkAddressFormProvider
-import models.UkAddress
+import models.{Countries, NormalMode, ReportId, UkAddress, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -30,7 +30,6 @@ import play.api.test.Helpers.*
 import connectors.DatabaseConnector
 import views.html.UkAddressView
 import models.SubmissionsConstants.CRS
-import models.{NormalMode, ReportId, UserAnswers}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import pages.manual.sponsor.SponsorNamePage
 import pages.{ReportIdPage, UkAddressPage}
@@ -46,6 +45,7 @@ class UkAddressControllerSpec extends SpecBase with MockitoSugar {
   implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
   lazy val ukAddressRoute         = controllers.manual.sponsor.routes.UkAddressController.onPageLoad(NormalMode).url
   val sponsorName                 = "Test Sponsor Name"
+  val countries                   = Countries.ukTerritories
 
   val userAnswers = UserAnswers(
     userAnswersId,
@@ -73,7 +73,7 @@ class UkAddressControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, sponsorName)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, sponsorName, countries)(request, messages(application)).toString
       }
     }
 
@@ -105,7 +105,7 @@ class UkAddressControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode, sponsorName)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode, sponsorName, countries)(request, messages(application)).toString
       }
     }
 
@@ -157,7 +157,7 @@ class UkAddressControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, sponsorName)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, sponsorName, countries)(request, messages(application)).toString
       }
     }
 
