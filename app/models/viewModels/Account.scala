@@ -16,9 +16,10 @@
 
 package models.viewModels
 
+import models.NumberType
 import play.api.libs.json.{Json, OFormat}
 
-case class Account(haveNumber: Option[Boolean] = None)
+case class Account(haveNumber: Option[Boolean] = None, identifier: Option[String] = None, numberType: Option[NumberType] = None)
 
 object Account {
   implicit val format: OFormat[Account] = Json.format[Account]

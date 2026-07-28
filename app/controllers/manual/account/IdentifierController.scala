@@ -51,8 +51,7 @@ class IdentifierController @Inject() (
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction andThen accountIdRequiredAction) {
     implicit request =>
 
-      implicit val reportId: ReportId = request.reportId
-
+      given reportId: ReportId = request.reportId
       val preparedForm = request.userAnswers.get(IdentifierPage(request.accountId)) match {
         case None        => form
         case Some(value) => form.fill(value)
@@ -64,8 +63,7 @@ class IdentifierController @Inject() (
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction andThen accountIdRequiredAction).async {
     implicit request =>
 
-      implicit val reportId: ReportId = request.reportId
-
+      given reportId: ReportId = request.reportId
       form
         .bindFromRequest()
         .fold(

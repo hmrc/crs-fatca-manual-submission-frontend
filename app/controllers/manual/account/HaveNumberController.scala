@@ -38,7 +38,7 @@ class HaveNumberController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   reportIdAction: ReportIdRequiredAction,
-  accountIdRequiredAction: AccountIdRequiredAction,
+  accountIdCreationAction: AccountIdCreationAction,
   formProvider: HaveNumberFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: HaveNumberView
@@ -48,11 +48,9 @@ class HaveNumberController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction andThen accountIdRequiredAction) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction andThen accountIdCreationAction) {
     implicit request =>
-
-      implicit val reportId: ReportId = request.reportId
-
+      given reportId: ReportId = request.reportId
       val preparedForm = request.userAnswers.get(HaveNumberPage(request.accountId)) match {
         case None        => form
         case Some(value) => form.fill(value)
@@ -61,11 +59,9 @@ class HaveNumberController @Inject() (
       Ok(view(preparedForm, mode))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction andThen accountIdRequiredAction).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction andThen accountIdCreationAction).async {
     implicit request =>
-
-      implicit val reportId: ReportId = request.reportId
-
+      given reportId: ReportId = request.reportId
       form
         .bindFromRequest()
         .fold(

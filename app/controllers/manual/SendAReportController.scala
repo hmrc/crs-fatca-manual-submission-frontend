@@ -16,11 +16,9 @@
 
 package controllers.manual
 
-import connectors.DatabaseConnector
 import controllers.actions.*
+import models.viewModels.SendAReportSections
 import models.viewModels.TaskStatus.*
-import models.viewModels.{AccountId, Accounts, SendAReportSections}
-import pages.manual.account.{AccountsPage, CurrentAccountIdPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -34,7 +32,6 @@ class SendAReportController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   reportIdAction: ReportIdRequiredAction,
-  repository: DatabaseConnector,
   val controllerComponents: MessagesControllerComponents,
   view: SendAReportView
 ) extends FrontendBaseController
@@ -42,17 +39,6 @@ class SendAReportController @Inject() (
 
   def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
     implicit request =>
-      implicit val reportId = request.reportId
-      val existingIds       = request.userAnswers.get(AccountsPage()).map(_.accounts.keySet).getOrElse(Set.empty[String])
-      request.userAnswers
-        .get(CurrentAccountIdPage())
-        .fold {
-          request.userAnswers
-            .set(CurrentAccountIdPage(), AccountId.generate(existingIds))
-            .foreach(repository.set)
-        }(
-          _ => ()
-        )
       val sections = SendAReportSections(
         reportDetails = Some(NotStarted),
         financialInstitutionDetails = Some(NotStarted),
