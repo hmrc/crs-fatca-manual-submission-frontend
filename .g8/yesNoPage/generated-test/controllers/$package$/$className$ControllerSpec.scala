@@ -1,20 +1,22 @@
-package controllers
+package controllers.$package$
 
 import base.SpecBase
 import connectors.DatabaseConnector
-import forms.$className$FormProvider
+import controllers.routes
+import forms.$package$.$className$FormProvider
 import models.SubmissionsConstants.CRS
 import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{ReportIdPage, $className$Page}
+import pages.{ReportIdPage}
+import pages.$package$.$className$Page
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import views.html.$className$View
+import views.html.$package$.$className$View
 
 import scala.concurrent.Future
 
@@ -25,7 +27,7 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar {
   val formProvider = new $className$FormProvider()
   val form = formProvider()
 
-  lazy val $className;format="decap"$Route = routes.$className$Controller.onPageLoad(NormalMode).url
+  lazy val $className;format="decap"$Route = controllers.$package$.routes.$className$Controller.onPageLoad(NormalMode).url
 
   "$className$ Controller" - {
 
