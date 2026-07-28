@@ -36,11 +36,12 @@
         }
         @heading(messages("isThisAddressForSponsor.heading", sponsorName))
 
-        <div class="govuk-body">
-            @for(addressLine <- address.formatAsSeq){
-            <p class="govuk-body govuk-!-margin-bottom-0">@addressLine</p>
+        <p class="govuk-body">
+            @for(addressLine <- address.formatAsSeq) {
+            <span>@addressLine</span><br>
             }
-        </div>
+        </p>
+
 
         @govukRadios(
             RadiosViewModel.yesNo(

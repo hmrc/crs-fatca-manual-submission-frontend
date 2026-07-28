@@ -33,7 +33,7 @@ case class Address(uprn: Option[Long],
     Some(addressLine3),
     addressLine4,
     postCode,
-    Some(country.description)
+    if (isOtherCountry) Some(country.description) else None
   ).flatten
 
   val isGB: Boolean           = this.country.code == Address.GBCountryCode
