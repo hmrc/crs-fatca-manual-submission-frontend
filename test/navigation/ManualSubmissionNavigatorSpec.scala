@@ -98,10 +98,10 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
       }
 
       "IsSponsorBasedInUKPage" - {
-        "must go to UNDERCONSTRUCTION when user selects false" in {
+        "must go to Non UK Address page when user selects false" in {
           val ua = UserAnswers("id").withPage(IsSponsorBasedInUKPage(), false)
           navigator.nextPage(IsSponsorBasedInUKPage(), NormalMode, ua) mustBe
-            controllers.routes.UnderConstructionController.onPageLoad()
+            controllers.manual.sponsor.routes.AddressNonUkController.onPageLoad(NormalMode)
         }
 
         "must go to UK Postcode when user selects true" in {
@@ -213,25 +213,14 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
 
       }
 
-      "WhatIsAddressForSponsor" - {
-        "must go to UnderConstruction Page" in {
-          val address: Address =
-            Address(None, "1 Address line 1 Road", None, "Address line 2 Road", Some("Town"), Some("zz11zz"), Country.GB)
-          val userData = UserAnswers("id").withPage(WhatIsAddressForSponsorPage(), address)
-
-          navigator.nextPage(NumberTypePage(), NormalMode, userData) mustBe
+      "AddressNonUkPage" - {
+        "must go to UNDERCONSTRUCTION page after user hits submit" in {
+          val ua = UserAnswers("id")
+          navigator.nextPage(AddressNonUkPage(), NormalMode, ua) mustBe
             controllers.routes.UnderConstructionController.onPageLoad()
         }
       }
-      "IsThisAddressForSponsorPage" - {
-        "must go to UnderConstruction Page" in {
-          val userData = UserAnswers("id").withPage(IsThisAddressForSponsorPage(), true)
 
-          navigator.nextPage(NumberTypePage(), NormalMode, userData) mustBe
-            controllers.routes.UnderConstructionController.onPageLoad()
-        }
-
-      }
     }
   }
 }
