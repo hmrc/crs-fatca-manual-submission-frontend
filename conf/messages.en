@@ -306,8 +306,8 @@ uKPostcode.error.notfound = No addresses found — enter a different postcode or
 uKPostcode.change.hidden = UKPostcode
 ukPostcode.btn = Find address
 
-addressNonUk.title=What is the sponsor''s address?
-addressNonUk.heading= What is the address for {0}?
+addressNonUk.title = What is the sponsor’s address?
+addressNonUk.heading = What is the address for {0}?
 addressNonUk.addressLine1 = Address line 1
 addressNonUk.addressLine2 = Address line 2 (optional)
 addressNonUk.addressLine3 = City
@@ -316,7 +316,7 @@ addressNonUk.postcode = Postcode (optional)
 addressNonUk.country = Country
 
 addressNonUk.checkYourAnswersLabel = AddressNonUk
-addressNonUk.error.addressLine1.required = Enter Address line 1
+addressNonUk.error.addressLine1.required = Enter address line 1
 addressNonUk.error.addressLine3.required = Enter city
 addressNonUk.error.country.required = Select country
 
