@@ -68,7 +68,7 @@ class ManualSubmissionNavigator @Inject() () {
     case (AddressNonUkPage(), _, _)                => routes.UnderConstructionController.onPageLoad()
     case (WhatIsAddressForSponsorPage(), mode, ua) => handleWhatIsAddressForSponsorNavigation(ua, mode)
     case (IsThisAddressForSponsorPage(), mode, ua) => handleIsThisAddressForSponsorNavigation(ua, mode)
-    case (UkAddressPage(), _, _)               => routes.UnderConstructionController.onPageLoad()
+    case (UkAddressPage(), _, _)                   => routes.UnderConstructionController.onPageLoad()
   }
 
   private def navigation(implicit reportId: ReportId) =
