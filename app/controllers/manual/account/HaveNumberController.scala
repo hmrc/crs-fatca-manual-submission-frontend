@@ -32,13 +32,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class HaveNumberController @Inject() (
   override val messagesApi: MessagesApi,
+  actions: Actions,
   repository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
-  identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  reportIdAction: ReportIdRequiredAction,
-  accountIdCreationAction: AccountIdCreationAction,
   formProvider: HaveNumberFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: HaveNumberView
@@ -48,7 +44,7 @@ class HaveNumberController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction andThen accountIdCreationAction) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdCreation() {
     implicit request =>
       given reportId: ReportId = request.reportId
       val preparedForm = request.userAnswers.get(HaveNumberPage(request.accountId)) match {
@@ -59,7 +55,7 @@ class HaveNumberController @Inject() (
       Ok(view(preparedForm, mode))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction andThen accountIdCreationAction).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdCreation().async {
     implicit request =>
       given reportId: ReportId = request.reportId
       form

@@ -34,11 +34,7 @@ class NumberTypeController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
-  identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  reportIdAction: ReportIdRequiredAction,
-  accountIdRequiredAction: AccountIdRequiredAction,
+  actions: Actions,
   formProvider: NumberTypeFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: NumberTypeView
@@ -48,7 +44,7 @@ class NumberTypeController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction andThen accountIdRequiredAction) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdRequired() {
     implicit request =>
       given reportId: ReportId = request.reportId
       val preparedForm = request.userAnswers.get(NumberTypePage(request.accountId)) match {
@@ -59,7 +55,7 @@ class NumberTypeController @Inject() (
       Ok(view(preparedForm, mode, reportId.regime))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction andThen accountIdRequiredAction).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdRequired().async {
     implicit request =>
       given reportId: ReportId = request.reportId
       form

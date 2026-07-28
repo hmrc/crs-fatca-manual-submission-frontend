@@ -34,11 +34,7 @@ class IdentifierController @Inject() (
   override val messagesApi: MessagesApi,
   repository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
-  identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  reportIdAction: ReportIdRequiredAction,
-  accountIdRequiredAction: AccountIdRequiredAction,
+  actions: Actions,
   formProvider: IdentifierFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: IdentifierView
@@ -48,7 +44,7 @@ class IdentifierController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction andThen accountIdRequiredAction) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdRequired() {
     implicit request =>
 
       given reportId: ReportId = request.reportId
@@ -60,7 +56,7 @@ class IdentifierController @Inject() (
       Ok(view(preparedForm, mode))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction andThen accountIdRequiredAction).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdRequired().async {
     implicit request =>
 
       given reportId: ReportId = request.reportId
