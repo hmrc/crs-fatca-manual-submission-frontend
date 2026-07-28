@@ -95,12 +95,13 @@
                 width = Fixed10,
                 autocomplete = Some("postal-code")
             )
-
+            <div class="govuk-!-width-two-thirds">
             @countrySelect(
                 field = form("country"),
-                label = messages("addressNonUk.country")
+                label = messages("addressNonUk.country"),
                 countries = countries
             )
+            </div>
 
         </fieldset>
 
