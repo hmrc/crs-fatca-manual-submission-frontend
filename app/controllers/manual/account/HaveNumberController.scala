@@ -19,9 +19,10 @@ package controllers.manual.account
 import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.manual.account.HaveNumberFormProvider
-import models.{Mode, ReportId}
+import models.requests.AccountIdRequest
+import models.{Mode, ReportId, UserAnswers}
 import navigation.ManualSubmissionNavigator
-import pages.manual.account.HaveNumberPage
+import pages.manual.account.{AccountIdPage, HaveNumberPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -64,9 +65,18 @@ class HaveNumberController @Inject() (
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(HaveNumberPage(request.accountId), value))
-              _              <- repository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(HaveNumberPage(request.accountId), mode, updatedAnswers))
+              updatedAnswers              <- Future.fromTry(request.userAnswers.setWithReportId(HaveNumberPage(request.accountId), value))
+              updatedAnswersWithAccountId <- checkAndSetAccountId(request, updatedAnswers)
+              _                           <- repository.set(updatedAnswersWithAccountId)
+            } yield Redirect(navigator.nextPage(HaveNumberPage(request.accountId), mode, updatedAnswersWithAccountId))
         )
   }
+
+  private def checkAndSetAccountId(request: AccountIdRequest[AnyContent], updatedAnswers: UserAnswers)(implicit reportId: ReportId) =
+    Future.fromTry {
+      updatedAnswers.get(AccountIdPage(request.accountId)) match {
+        case Some(_) => scala.util.Success(updatedAnswers)
+        case None    => updatedAnswers.setWithReportId(AccountIdPage(request.accountId), request.accountId)
+      }
+    }
 }

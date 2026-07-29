@@ -37,13 +37,7 @@ object AccountId {
   @tailrec
   final def generate(existingIds: Set[String]): AccountId = {
 
-    val accountId = AccountId(
-      (1 to 10)
-        .map(
-          _ => random.nextInt(10)
-        )
-        .mkString
-    )
+    val accountId = AccountId(random.nextInt(99).toString)
 
     if (existingIds.contains(accountId.value)) {
       generate(existingIds)

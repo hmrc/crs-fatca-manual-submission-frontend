@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package models.viewModels
+package pages.manual.account
 
-import models.NumberType
-import play.api.libs.json.{Json, OFormat}
+import models.ReportId
+import models.viewModels.AccountId
+import pages.QuestionPage
+import play.api.libs.json.JsPath
 
-case class Account(haveNumber: Option[Boolean] = None, identifier: Option[String] = None, numberType: Option[NumberType] = None, accountId: AccountId)
+final case class AccountIdPage(accountId: AccountId)(implicit reportId: ReportId) extends QuestionPage[AccountId]:
 
-object Account {
-  implicit val format: OFormat[Account] = Json.format[Account]
-}
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "accounts" \ accountId.value \ "accountId"

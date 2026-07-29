@@ -61,8 +61,13 @@ class AccountIdCreationActionImpl @Inject() (repository: DatabaseConnector)(impl
 
   private def createAndSetAccountId[A](request: ReportIdRequest[A])(implicit reportId: ReportId) = {
     given hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
-    val existingIds         = request.userAnswers.get(AccountsPage()).map(_.accounts.keySet).getOrElse(Set.empty[String])
-    val accountId           = AccountId.generate(existingIds)
+    val existingIds = request.userAnswers
+      .get(AccountsPage())
+      .map(
+        acc => acc.accounts.keySet
+      )
+      .getOrElse(Set.empty)
+    val accountId = AccountId.generate(existingIds)
 
     request.userAnswers
       .get(CurrentAccountIdPage())

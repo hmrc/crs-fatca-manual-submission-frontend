@@ -18,7 +18,7 @@ package models.viewModels
 
 import play.api.libs.json.{Json, OFormat}
 
-case class Accounts(currentAccountId: AccountId, accounts: Map[String, Account])
+case class Accounts(accounts: Map[String, Account])
 
 object Accounts:
   implicit val format: OFormat[Accounts] = Json.format[Accounts]
