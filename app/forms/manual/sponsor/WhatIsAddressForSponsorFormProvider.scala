@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package pages
+package forms.manual.sponsor
 
-import models.UserAnswers
-import queries.{Gettable, Settable}
+import forms.mappings.Mappings
+import play.api.data.Form
 
-import scala.util.Try
+import javax.inject.Inject
 
-trait QuestionPage[A] extends Page with Gettable[A] with Settable[A] {
+class WhatIsAddressForSponsorFormProvider @Inject() extends Mappings {
 
-  def removePage(): (Try[UserAnswers], QuestionPage[_]) => Try[UserAnswers] =
-    (ua: Try[UserAnswers], page: QuestionPage[_]) => ua.flatMap(_.remove(page))
+  def apply(): Form[String] =
+    Form(
+      "value" -> text("whatIsAddressForSponsor.error.required")
+    )
 }

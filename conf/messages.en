@@ -306,8 +306,8 @@ uKPostcode.error.notfound = No addresses found — enter a different postcode or
 uKPostcode.change.hidden = UKPostcode
 ukPostcode.btn = Find address
 
-addressNonUk.title=What is the sponsor''s address?
-addressNonUk.heading= What is the address for {0}?
+addressNonUk.title = What is the sponsor’s address?
+addressNonUk.heading = What is the address for {0}?
 addressNonUk.addressLine1 = Address line 1
 addressNonUk.addressLine2 = Address line 2 (optional)
 addressNonUk.addressLine3 = City
@@ -316,7 +316,7 @@ addressNonUk.postcode = Postcode (optional)
 addressNonUk.country = Country
 
 addressNonUk.checkYourAnswersLabel = AddressNonUk
-addressNonUk.error.addressLine1.required = Enter Address line 1
+addressNonUk.error.addressLine1.required = Enter address line 1
 addressNonUk.error.addressLine3.required = Enter city
 addressNonUk.error.country.required = Select country
 
@@ -346,6 +346,20 @@ addressNonUk.postcode.change.hidden = Postcode
 addressNonUk.country.change.hidden = Country
 addressNonUk.change.hidden = Change sponsor address
 addressNonUk.country.select = Select country
+
+whatIsAddressForSponsor.title = What is the sponsor’s address?
+whatIsAddressForSponsor.heading = What is the address for {0}?
+whatIsAddressForSponsor.para = Select from the list or {0}.
+whatIsAddressForSponsor.para.link = enter the address manually
+whatIsAddressForSponsor.checkYourAnswersLabel = What is the sponsor’s address?
+whatIsAddressForSponsor.error.required = Select the sponsor’s address or enter it manually
+whatIsAddressForSponsor.change.hidden = WhatIsAddressForSponsor
+
+isThisAddressForSponsor.title = Is this the sponsor’s address?
+isThisAddressForSponsor.heading = Is this the address for {0}?
+isThisAddressForSponsor.checkYourAnswersLabel = Is this the sponsor’s address?
+isThisAddressForSponsor.error.required = Select yes if this is the sponsor’s address
+isThisAddressForSponsor.change.hidden = IsThisAddressForSponsor
 
 haveNumber.title = Does the account have an official account number or identification number?
 haveNumber.heading = Does the account have an official account number or identification number?
