@@ -251,3 +251,257 @@
         );
     }
 })();
+
+(function () {
+    'use strict';
+
+    var currencySelect = document.querySelector('select#currency');
+
+    if (
+        currencySelect === null ||
+        typeof window.HMRCAccessibleAutocomplete === 'undefined'
+    ) {
+        return;
+    }
+
+    currencySelect.removeAttribute('data-module');
+
+    var currencyOptions = currencySelect.options;
+    var currencies = [];
+
+    function normalise(value) {
+        return (value || '').toLowerCase().trim();
+    }
+
+    function getSearchTerms(option) {
+        var dataText = option.getAttribute('data-text');
+
+        var rawTerms = dataText
+            ? dataText.split(':')
+            : [option.textContent || ''];
+
+        var terms = [];
+
+        for (var i = 0; i < rawTerms.length; i++) {
+            var term = rawTerms[i].trim();
+
+            if (term && terms.indexOf(term) === -1) {
+                terms.push(term);
+            }
+        }
+
+        return terms;
+    }
+
+    function getDisplayName(option) {
+        var searchTerms = getSearchTerms(option);
+
+        return searchTerms.length > 0
+            ? searchTerms[0]
+            : option.textContent.trim();
+    }
+
+    for (var i = 0; i < currencyOptions.length; i++) {
+        var option = currencyOptions[i];
+
+        if (!option.value) {
+            continue;
+        }
+
+        currencies.push({
+            name: getDisplayName(option),
+            value: option.value,
+            searchTerms: getSearchTerms(option)
+        });
+    }
+
+    function getDefaultValue() {
+        var selectedOption =
+            currencySelect.options[currencySelect.selectedIndex];
+
+        if (!selectedOption || !selectedOption.value) {
+            return '';
+        }
+
+        return getDisplayName(selectedOption);
+    }
+
+    function findcurrencyByInput(value) {
+        var normalisedValue = normalise(value);
+
+        if (!normalisedValue) {
+            return null;
+        }
+
+        for (var i = 0; i < currencies.length; i++) {
+            var currency = currencies[i];
+
+            for (var j = 0; j < currency.searchTerms.length; j++) {
+                if (
+                    normalise(currency.searchTerms[j]) === normalisedValue
+                ) {
+                    return currency;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    function setSelectedcurrency(currency) {
+
+        for (var i = 0; i < currencyOptions.length; i++) {
+            currencyOptions[i].selected = false;
+        }
+
+        if (!currency) {
+            currencySelect.value = '';
+
+            if (currencyOptions.length > 0) {
+                currencyOptions[0].selected = true;
+            }
+
+            return;
+        }
+
+        currencySelect.value = currency.value;
+
+        for (var j = 0; j < currencyOptions.length; j++) {
+            if (currencyOptions[j].value === currency.value) {
+                currencyOptions[j].selected = true;
+                break;
+            }
+        }
+
+        /*
+         * Dispatch a change event in case anything else on the page is
+         * listening for changes to the original select.
+         */
+        currencySelect.dispatchEvent(
+            new Event('change', {
+                bubbles: true
+            })
+        );
+    }
+
+    window.HMRCAccessibleAutocomplete.enhanceSelectElement({
+        selectElement: currencySelect,
+        defaultValue: getDefaultValue(),
+
+        showAllValues:
+            currencySelect.getAttribute('data-show-all-values') === 'true',
+
+        autoselect:
+            currencySelect.getAttribute('data-auto-select') === 'true',
+
+        minLength: 2,
+
+        source: function (query, syncResults) {
+            var normalisedQuery = normalise(query);
+
+            if (!normalisedQuery) {
+                syncResults([]);
+                return;
+            }
+
+            var exactMatches = [];
+            var partialMatches = [];
+
+            for (var i = 0; i < currencies.length; i++) {
+                var currency = currencies[i];
+                var exactMatch = false;
+                var partialMatch = false;
+
+                for (
+                    var j = 0;
+                    j < currency.searchTerms.length;
+                    j++
+                ) {
+                    var searchTerm =
+                        normalise(currency.searchTerms[j]);
+
+                    if (searchTerm === normalisedQuery) {
+                        exactMatch = true;
+                    }
+
+                    if (
+                        searchTerm.indexOf(normalisedQuery) !== -1
+                    ) {
+                        partialMatch = true;
+                    }
+                }
+
+                if (exactMatch) {
+                    exactMatches.push(currency);
+                } else if (partialMatch) {
+                    partialMatches.push(currency);
+                }
+            }
+
+            syncResults(
+                exactMatches.length > 0
+                    ? exactMatches
+                    : partialMatches
+            );
+        },
+
+        templates: {
+            inputValue: function (currency) {
+                return currency
+                    ? currency.name
+                    : '';
+            },
+
+            suggestion: function (currency) {
+                return currency.name;
+            }
+        },
+
+        onConfirm: function (currency) {
+            setSelectedcurrency(currency || null);
+        }
+    });
+
+    var autocompleteInput =
+        document.querySelector('input#currency');
+
+    if (autocompleteInput !== null) {
+
+        autocompleteInput.addEventListener(
+            'input',
+            function () {
+                var currentlySelected =
+                    currencies.find(function (currency) {
+                        return (
+                            currency.value === currencySelect.value
+                        );
+                    });
+
+                if (
+                    currentlySelected &&
+                    normalise(this.value) !==
+                    normalise(currentlySelected.name)
+                ) {
+                    setSelectedcurrency(null);
+                }
+            }
+        );
+    }
+
+
+    if (currencySelect.form !== null) {
+        currencySelect.form.addEventListener(
+            'submit',
+            function () {
+                if (autocompleteInput === null) {
+                    return;
+                }
+
+                var currency =
+                    findcurrencyByInput(autocompleteInput.value);
+
+                setSelectedcurrency(currency);
+            }
+        );
+    }
+})();
