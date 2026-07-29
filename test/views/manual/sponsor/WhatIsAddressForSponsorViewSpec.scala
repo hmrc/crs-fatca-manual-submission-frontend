@@ -66,7 +66,7 @@ class WhatIsAddressForSponsorViewSpec extends SpecBase {
       }
 
       "must display enter the manual address link" in {
-        doc.select("a#enter-address-link").attr("href") mustBe controllers.manual.sponsor.routes.UkAddressController.onPageLoad(CheckMode).url
+        doc.select("a#enter-address-link").attr("href") mustBe controllers.manual.sponsor.routes.UkAddressController.onPageLoad(NormalMode).url
       }
 
     }
