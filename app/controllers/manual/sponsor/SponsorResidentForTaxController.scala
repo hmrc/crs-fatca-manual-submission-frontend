@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.manual.sponsor
 
+import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.SponsorResidentForTaxFormProvider
-
-import javax.inject.Inject
-import models.{Mode, ReportId}
+import models.{Mode, ReportId, SponsorResidentTaxCountryCodes}
 import navigation.ManualSubmissionNavigator
 import pages.SponsorResidentForTaxPage
+import pages.manual.sponsor.SponsorNamePage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import connectors.DatabaseConnector
-import pages.manual.sponsor.SponsorNamePage
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.SponsorResidentForTaxView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class SponsorResidentForTaxController @Inject() (
@@ -60,10 +59,13 @@ class SponsorResidentForTaxController @Inject() (
           sponsorName =>
             val preparedForm = request.userAnswers.get(SponsorResidentForTaxPage()) match {
               case None        => form
-              case Some(value) => form.fill(value)
+              case Some(sponsorResidentTaxCountryCodes) =>
+                val value = sponsorResidentTaxCountryCodes.getCountryCode(idx)
+                println(value + s" value ${idx} ${sponsorResidentTaxCountryCodes}")
+                form.fill(value)
             }
 
-            Ok(view(preparedForm, mode, sponsorName))
+            Ok(view(preparedForm, mode, sponsorName, idx))
         }
   }
 
@@ -76,10 +78,17 @@ class SponsorResidentForTaxController @Inject() (
           form
             .bindFromRequest()
             .fold(
-              formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, sponsorName))),
+              formWithErrors =>
+                println(formWithErrors.errors)
+                Future.successful(BadRequest(view(formWithErrors, mode, sponsorName, idx))),
               value =>
+                val sponsorResidentTaxCountryCodes = request.userAnswers.get(SponsorResidentForTaxPage()).getOrElse(SponsorResidentTaxCountryCodes(Seq()))
+                val updatedSponsorResidentTaxCountryCodes = if sponsorResidentTaxCountryCodes.resCountryCodes.size == 0 ||  sponsorResidentTaxCountryCodes.getCountryCode(idx) == "" then
+                  sponsorResidentTaxCountryCodes.copy(resCountryCodes = sponsorResidentTaxCountryCodes.resCountryCodes :+ value)
+                else
+                  sponsorResidentTaxCountryCodes.copy(resCountryCodes = sponsorResidentTaxCountryCodes.resCountryCodes.updated(idx.getOrElse(0), value))
                 for {
-                  updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(SponsorResidentForTaxPage(), value))
+                  updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(SponsorResidentForTaxPage(), updatedSponsorResidentTaxCountryCodes))
                   _              <- repository.set(updatedAnswers)
                 } yield Redirect(navigator.nextPage(SponsorResidentForTaxPage(), mode, updatedAnswers))
             )

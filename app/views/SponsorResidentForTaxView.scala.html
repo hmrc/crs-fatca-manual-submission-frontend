@@ -15,35 +15,39 @@
  *@
 
 @import viewmodels.InputWidth._
-
+@import uk.gov.hmrc.govukfrontend.views.html.components._
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
     govukInput: GovukInput,
-    govukButton: GovukButton
+    govukButton: GovukButton,
+    countrySelect: views.html.components.CountrySelect,
+    heading: views.html.components.Heading,
 )
 
-@(form: Form[_], mode: Mode, sponsorName: String)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, sponsorName: String, idx: Option[Int])(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("sponsorResidentForTax.title"))) {
 
-    @formHelper(action = routes.SponsorResidentForTaxController.onSubmit(mode)) {
+    @formHelper(action = controllers.manual.sponsor.routes.SponsorResidentForTaxController.onSubmit(mode, idx)) {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
-        <h1 class="govuk-heading-l">@messages("sponsorResidentForTax.heading", sponsorName)</h1>
+        @heading(messages("sponsorResidentForTax.heading", sponsorName))
+
         <p class="govuk-body">
             @messages("sponsorResidentForTax.paragraph")
         </p>
-        @govukInput(
-            InputViewModel(
-                field = form("value"),
-                label = LabelViewModel(messages("sponsorResidentForTax.heading")).asPageHeading()
+
+        <div class="govuk-!-width-two-thirds">
+            @countrySelect(
+                field = form("country"),
+                label = ""
             )
-            .withWidth(Full)
-        )
+        </div>
+
 
         @govukButton(
             ButtonViewModel(messages("site.continue"))

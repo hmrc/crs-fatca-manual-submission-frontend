@@ -24,7 +24,6 @@ import pages.*
 import pages.manual.account.{HaveNumberPage, IdentifierPage, NumberTypePage}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
-import pages.manual.sponsor.{AddressNonUkPage, HaveSponsorPage, IsSponsorBasedInUKPage, SponsorNamePage, UKPostcodePage, WhatIsGIINForSponsorPage}
 import pages.manual.sponsor.*
 import play.api.mvc.Call
 

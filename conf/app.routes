@@ -147,7 +147,7 @@ POST       /manual/account/identifier                        controllers.manual.
 GET        /manual/account/change-identifier                  controllers.manual.account.IdentifierController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/account/change-identifier                  controllers.manual.account.IdentifierController.onSubmit(mode: Mode = CheckMode)
 
-GET        /manual/sponsor/resident-for-tax                        controllers.SponsorResidentForTaxController.onPageLoad(mode: Mode = NormalMode, idx: Option[Int] = None)
-POST       /manual/sponsor/resident-for-tax                        controllers.SponsorResidentForTaxController.onSubmit(mode: Mode = NormalMode, idx: Option[Int] = None)
-GET        /manual/sponsor/change-resident-for-tax                  controllers.SponsorResidentForTaxController.onPageLoad(mode: Mode = CheckMode, idx: Option[Int] = None)
-POST       /manual/sponsor/chnage-resident-for-tax                  controllers.SponsorResidentForTaxController.onSubmit(mode: Mode = CheckMode, idx: Option[Int] = None)
+GET        /manual/sponsor/resident-for-tax                        controllers.manual.sponsor.SponsorResidentForTaxController.onPageLoad(mode: Mode = NormalMode, idx: Option[Int] ?= None)
+POST       /manual/sponsor/resident-for-tax                        controllers.manual.sponsor.SponsorResidentForTaxController.onSubmit(mode: Mode = NormalMode, idx: Option[Int] ?= None)
+GET        /manual/sponsor/change-resident-for-tax                  controllers.manual.sponsor.SponsorResidentForTaxController.onPageLoad(mode: Mode = CheckMode, idx: Option[Int] ?= None)
+POST       /manual/sponsor/change-resident-for-tax                  controllers.manual.sponsor.SponsorResidentForTaxController.onSubmit(mode: Mode = CheckMode, idx: Option[Int] ?= None)

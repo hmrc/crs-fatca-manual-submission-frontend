@@ -25,7 +25,7 @@ class SponsorResidentForTaxFormProvider @Inject() extends Mappings {
 
   def apply(): Form[String] =
     Form(
-      "value" -> text("sponsorResidentForTax.error.required")
+      "country" -> text("sponsorResidentForTax.error.required")
         .verifying(maxLength(100, "sponsorResidentForTax.error.length"))
     )
 }

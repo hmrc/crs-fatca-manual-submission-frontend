@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-package pages
+package models
 
-import models.{ReportId, SponsorResidentTaxCountryCodes}
-import play.api.libs.json.JsPath
+import play.api.libs.json.{Json, OFormat}
 
-final case class SponsorResidentForTaxPage()(implicit reportId: ReportId) extends QuestionPage[SponsorResidentTaxCountryCodes]:
+case class SponsorResidentTaxCountryCodes(resCountryCodes: Seq[String]) {
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "sponsorResidentForTax"
+  def getCountryCode(idx: Option[Int]): String = idx.flatMap(resCountryCodes.lift).getOrElse("")
+}
+
+object SponsorResidentTaxCountryCodes {
+  implicit val format: OFormat[SponsorResidentTaxCountryCodes] = Json.format[SponsorResidentTaxCountryCodes]
+}
