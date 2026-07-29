@@ -20,7 +20,6 @@ import forms.behaviours.StringFieldBehaviours
 import forms.manual.sponsor.AddressNonUkFormProvider
 import models.AddressNonUk
 import org.scalatest.OptionValues
-import play.api.data.FormError
 
 class AddressNonUkFormProviderSpec extends StringFieldBehaviours with OptionValues {
 
