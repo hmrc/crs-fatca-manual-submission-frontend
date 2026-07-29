@@ -19,17 +19,15 @@ package controllers.actions
 import base.SpecBase
 import connectors.DatabaseConnector
 import models.SubmissionsConstants.FATCA
-import models.{ReportId, UserAnswers}
-import models.requests.{AccountIdRequest, IdentifierRequest, OptionalDataRequest, ReportIdRequest}
+import models.requests.{AccountIdRequest, ReportIdRequest}
 import models.viewModels.AccountId
+import models.{ReportId, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.*
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
 import pages.manual.account.CurrentAccountIdPage
-import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import uk.gov.hmrc.auth.core.AffinityGroup.Organisation
 
 import scala.concurrent.Future
 
