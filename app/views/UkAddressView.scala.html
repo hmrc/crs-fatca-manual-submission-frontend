@@ -38,60 +38,64 @@
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
-        @heading(messages("ukAddress.heading", sponsorName))
+        <fieldset class="govuk-fieldset">
 
-        @govukInput(
-            InputViewModel(
-                field = form("addressLine1"),
-                label = LabelViewModel(messages("ukAddress.addressLine1"))
-            )
-            .withWidth(ThreeQuarters)
-            .withAutocomplete("address-line1")
-        )
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            @heading(messages("ukAddress.heading", sponsorName))
+            </legend>
 
-        @govukInput(
-            InputViewModel(
-                field = form("addressLine2"),
-                label = LabelViewModel(messages("ukAddress.addressLine2"))
+            @govukInput(
+                InputViewModel(
+                    field = form("addressLine1"),
+                    label = LabelViewModel(messages("ukAddress.addressLine1"))
+                )
+                .withWidth(ThreeQuarters)
+                .withAutocomplete("address-line1")
             )
-            .withWidth(ThreeQuarters)
-            .withAutocomplete("address-line2")
-        )
 
-        @govukInput(
-            InputViewModel(
-                field = form("city"),
-                label = LabelViewModel(messages("ukAddress.city"))
+            @govukInput(
+                InputViewModel(
+                    field = form("addressLine2"),
+                    label = LabelViewModel(messages("ukAddress.addressLine2"))
+                )
+                .withWidth(ThreeQuarters)
+                .withAutocomplete("address-line2")
             )
-            .withWidth(ThreeQuarters)
-            .withAutocomplete("address-level2")
-        )
 
-        @govukInput(
-            InputViewModel(
-                field = form("county"),
-                label = LabelViewModel(messages("ukAddress.county"))
+            @govukInput(
+                InputViewModel(
+                    field = form("city"),
+                    label = LabelViewModel(messages("ukAddress.city"))
+                )
+                .withWidth(ThreeQuarters)
+                .withAutocomplete("address-level2")
             )
-            .withWidth(ThreeQuarters)
-            .withAutocomplete("address-level1")
-        )
 
-        @govukInput(
-            InputViewModel(
-                field = form("postCode"),
-                label = LabelViewModel(messages("ukAddress.postCode"))
+            @govukInput(
+                InputViewModel(
+                    field = form("county"),
+                    label = LabelViewModel(messages("ukAddress.county"))
+                )
+                .withWidth(ThreeQuarters)
+                .withAutocomplete("address-level1")
             )
-            .withWidth(OneThird)
-            .withAutocomplete("postal-code")
-        )
-        <div class="govuk-!-width-three-quarters">
-            @countrySelect(
-                field = form("country"),
-                label = messages("ukAddress.country"),
-                countries = countries
-            )
-        </div>
 
+            @govukInput(
+                InputViewModel(
+                    field = form("postCode"),
+                    label = LabelViewModel(messages("ukAddress.postCode"))
+                )
+                .withWidth(OneThird)
+                .withAutocomplete("postal-code")
+            )
+            <div class="govuk-!-width-three-quarters">
+                @countrySelect(
+                    field = form("country"),
+                    label = messages("ukAddress.country"),
+                    countries = countries
+                )
+            </div>
+        </fieldset>
 
         @govukButton(
             ButtonViewModel(messages("site.saveContinue"))
