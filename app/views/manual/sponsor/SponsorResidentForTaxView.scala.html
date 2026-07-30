@@ -26,7 +26,7 @@
     heading: views.html.components.Heading,
 )
 
-@(form: Form[_], mode: Mode, sponsorName: String, idx: Option[Int])(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, sponsorName: String, idx: Option[Int] = None)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("sponsorResidentForTax.title"))) {
 

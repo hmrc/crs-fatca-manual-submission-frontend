@@ -17,6 +17,7 @@
 package controllers.manual.sponsor
 
 import connectors.DatabaseConnector
+import controllers.*
 import controllers.actions.*
 import forms.SponsorResidentForTaxFormProvider
 import models.{Mode, ReportId, SponsorResidentTaxCountryCodes}
@@ -26,8 +27,8 @@ import pages.manual.sponsor.SponsorNamePage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.SponsorResidentForTaxView
-
+import views.html.manual.sponsor.SponsorResidentForTaxView
+import play.api.mvc.Results.Redirect
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -47,25 +48,30 @@ class SponsorResidentForTaxController @Inject() (
     with I18nSupport {
 
   val form = formProvider()
+  private val journeyRecoveryCall = routes.JourneyRecoveryController.onPageLoad()
 
   def onPageLoad(mode: Mode, idx: Option[Int] = None): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
+      val effectiveIdx = idx.orElse(request.getQueryString("idx").flatMap(_.toIntOption))
+      val sponsorResidentTaxCountryCodes = request.userAnswers.get(SponsorResidentForTaxPage())
+      val invalidIdxRequested            = effectiveIdx.exists(i => sponsorResidentTaxCountryCodes.exists(_.resCountryCodes.lift(i).isEmpty))
 
-      request.userAnswers
+      if (invalidIdxRequested) {
+        Redirect(journeyRecoveryCall)
+      } else request.userAnswers
         .get(SponsorNamePage())
-        .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)) {
+        .fold(Redirect(journeyRecoveryCall)) {
           sponsorName =>
-            val preparedForm = request.userAnswers.get(SponsorResidentForTaxPage()) match {
+            val preparedForm = sponsorResidentTaxCountryCodes match {
               case None        => form
               case Some(sponsorResidentTaxCountryCodes) =>
-                val value = sponsorResidentTaxCountryCodes.getCountryCode(idx)
-                println(value + s" value ${idx} ${sponsorResidentTaxCountryCodes}")
+                val value = sponsorResidentTaxCountryCodes.getCountryCode(effectiveIdx)
                 form.fill(value)
             }
 
-            Ok(view(preparedForm, mode, sponsorName, idx))
+            Ok(view(preparedForm, mode, sponsorName, effectiveIdx))
         }
   }
 
@@ -73,25 +79,36 @@ class SponsorResidentForTaxController @Inject() (
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
+      val effectiveIdx = idx.orElse(request.getQueryString("idx").flatMap(_.toIntOption))
+      val sponsorResidentTaxCountryCodes = request.userAnswers.get(SponsorResidentForTaxPage()).getOrElse(SponsorResidentTaxCountryCodes(Seq()))
+      val invalidIdxRequested            = effectiveIdx.exists(i => sponsorResidentTaxCountryCodes.resCountryCodes.lift(i).isEmpty)
       request.userAnswers.get(SponsorNamePage())
-        .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))) { sponsorName =>
+        .fold(Future.successful(Redirect(journeyRecoveryCall))) { sponsorName =>
+          if (invalidIdxRequested) {
+            Future.successful(Redirect(journeyRecoveryCall))
+          } else {
           form
             .bindFromRequest()
             .fold(
               formWithErrors =>
-                println(formWithErrors.errors)
-                Future.successful(BadRequest(view(formWithErrors, mode, sponsorName, idx))),
+                Future.successful(BadRequest(view(formWithErrors, mode, sponsorName, effectiveIdx))),
               value =>
                 val sponsorResidentTaxCountryCodes = request.userAnswers.get(SponsorResidentForTaxPage()).getOrElse(SponsorResidentTaxCountryCodes(Seq()))
-                val updatedSponsorResidentTaxCountryCodes = if sponsorResidentTaxCountryCodes.resCountryCodes.size == 0 ||  sponsorResidentTaxCountryCodes.getCountryCode(idx) == "" then
+                val updatedSponsorResidentTaxCountryCodes = if sponsorResidentTaxCountryCodes.resCountryCodes.size == 0  then
                   sponsorResidentTaxCountryCodes.copy(resCountryCodes = sponsorResidentTaxCountryCodes.resCountryCodes :+ value)
-                else
-                  sponsorResidentTaxCountryCodes.copy(resCountryCodes = sponsorResidentTaxCountryCodes.resCountryCodes.updated(idx.getOrElse(0), value))
+                else {
+                  effectiveIdx.map(
+                    idx => sponsorResidentTaxCountryCodes.copy(resCountryCodes = sponsorResidentTaxCountryCodes.resCountryCodes.updated(idx, value))
+                  ).getOrElse(
+                    sponsorResidentTaxCountryCodes.copy(resCountryCodes = sponsorResidentTaxCountryCodes.resCountryCodes :+ value)
+                  )
+                }
                 for {
                   updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(SponsorResidentForTaxPage(), updatedSponsorResidentTaxCountryCodes))
                   _              <- repository.set(updatedAnswers)
                 } yield Redirect(navigator.nextPage(SponsorResidentForTaxPage(), mode, updatedAnswers))
             )
+          }
         }
   }
 }
