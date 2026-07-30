@@ -67,7 +67,7 @@ class ManualSubmissionNavigator @Inject() () {
     case (UKPostcodePage(), mode, ua)              => handleUKPostcodeNavigation(ua, mode)
     case (AddressNonUkPage(), _, _)                => routes.UnderConstructionController.onPageLoad()
     case (WhatIsAddressForSponsorPage(), mode, ua) => handleWhatIsAddressForSponsorNavigation(ua)
-    case (IsThisAddressForSponsorPage(), mode, ua) => handleIsThisAddressForSponsorNavigation(ua)
+    case (IsThisAddressForSponsorPage(), mode, ua) => handleIsThisAddressForSponsorNavigation(ua, mode)
     case (UkAddressPage(), _, _)                   => routes.UnderConstructionController.onPageLoad()
   }
 
@@ -114,7 +114,7 @@ class ManualSubmissionNavigator @Inject() () {
       case None        => routes.JourneyRecoveryController.onPageLoad()
     }
 
-  private def handleIsThisAddressForSponsorNavigation(userAnswers: UserAnswers)(implicit reportId: ReportId) =
+  private def handleIsThisAddressForSponsorNavigation(userAnswers: UserAnswers, mode: Mode)(implicit reportId: ReportId) =
     (userAnswers.get(IsThisAddressForSponsorPage()), userAnswers.get(WhatIsAddressForSponsorPage())) match {
       case (Some(true), Some(address)) => routes.UnderConstructionController.onPageLoad()
       case (Some(false), Some(_))      => controllers.manual.sponsor.routes.UkAddressController.onPageLoad(mode)
