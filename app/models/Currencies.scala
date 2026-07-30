@@ -16,9 +16,21 @@
 
 package models
 
+import models.SubmissionsConstants.{FATCA, RegimeType}
+
 object Currencies {
 
-  val all: Seq[Currency] = Seq(
+  def all(regime: RegimeType): Seq[Currency] =
+    if (regime == FATCA) {
+      baseCurrencies.appended(
+        Currency(
+          code = "VED",
+          displayName = "Venezuelan Bolivar (VED)"
+        )
+      )
+    } else { baseCurrencies }
+
+  private val baseCurrencies = Seq(
     Currency(
       code = "AED",
       displayName = "UAE Dirham (AED)",
@@ -825,4 +837,5 @@ object Currencies {
       displayName = "Zimbabwean Dollar (ZWL)"
     )
   )
+
 }

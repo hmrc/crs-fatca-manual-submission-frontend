@@ -17,13 +17,13 @@
 package forms.manual.account
 
 import forms.behaviours.FieldBehaviours
-import models.Currencies
 import models.SubmissionsConstants.*
+import models.{Currencies, Currency}
 import play.api.data.FormError
 
 class WhatWasTheAccountBalanceFormProviderSpec extends FieldBehaviours {
 
-  private val currency            = Currencies.all.head
+  private val currency            = Currencies.all(FATCA).head
   private val requiredCurrencyKey = "whatWasTheAccountBalance.error.required.currency"
   private val requiredAmountKey   = "whatWasTheAccountBalance.error.required.amount"
 
@@ -115,6 +115,20 @@ class WhatWasTheAccountBalanceFormProviderSpec extends FieldBehaviours {
       val form   = new WhatWasTheAccountBalanceFormProvider()(FATCA)
       val result = form.bind(Map(fieldName -> "", "amount" -> "123"))
       result.errors must contain(FormError(fieldName, requiredCurrencyKey))
+    }
+    "when regime is FATCA" - {
+      "must include VED" in {
+        val form   = new WhatWasTheAccountBalanceFormProvider()(FATCA)
+        val result = form.bind(Map(fieldName -> "VED", "amount" -> "123"))
+        result.value.value.currency mustBe Currency("VED", "Venezuelan Bolivar (VED)")
+      }
+    }
+    "when regime is CRS" - {
+      "must NOT include VED" in {
+        val form   = new WhatWasTheAccountBalanceFormProvider()(CRS)
+        val result = form.bind(Map(fieldName -> "VED", "amount" -> "123"))
+        result.errors must contain(FormError(fieldName, requiredCurrencyKey))
+      }
     }
   }
 }

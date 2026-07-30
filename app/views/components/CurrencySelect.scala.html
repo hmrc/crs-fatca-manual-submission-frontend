@@ -18,10 +18,12 @@
 @import play.api.data.Field
 @import play.api.i18n.Messages
 @import uk.gov.hmrc.govukfrontend.views.html.components._
+@import models.SubmissionsConstants.RegimeType
+
 
 @this(govukSelect: GovukSelect)
 
-@(field: Field, labelText: String, selectId: String = "currency", selectName: String = "currency")(implicit messages: Messages)
+@(field: Field, labelText: String, regime: RegimeType, selectId: String = "currency", selectName: String = "currency")(implicit messages: Messages)
 
 @currencyItems = @{
   val defaultOption = SelectItem(
@@ -29,7 +31,7 @@
     selected = field.value.forall(_.isEmpty)
   )
 
-  val items = Currencies.all.map { currency =>
+  val items = Currencies.all(regime).map { currency =>
         val aliases = currency.alias.toSeq.flatMap(_.split(":")).map(_.trim).filter(_.nonEmpty)
 
         val dataText = (Seq(currency.displayName, currency.code) ++ aliases).distinct.mkString(":")

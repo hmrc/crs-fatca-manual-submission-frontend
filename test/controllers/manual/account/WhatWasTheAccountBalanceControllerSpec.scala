@@ -39,8 +39,9 @@ class WhatWasTheAccountBalanceControllerSpec extends SpecBase with MockitoSugar 
 
   def onwardRoute = Call("GET", "/foo")
 
+  private val regime       = CRS
   private val formProvider = new WhatWasTheAccountBalanceFormProvider()
-  private val form         = formProvider(CRS)
+  private val form         = formProvider(regime)
 
   private lazy val whatWasTheAccountBalanceRoute = routes.WhatWasTheAccountBalanceController.onPageLoad(NormalMode).url
   private val accountBalance: AccountBalance     = AccountBalance(Currency.GBP, "123")
@@ -70,7 +71,7 @@ class WhatWasTheAccountBalanceControllerSpec extends SpecBase with MockitoSugar 
         val view = application.injector.instanceOf[WhatWasTheAccountBalanceView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, regime)(request, messages(application)).toString
       }
     }
 
@@ -90,7 +91,7 @@ class WhatWasTheAccountBalanceControllerSpec extends SpecBase with MockitoSugar 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(accountBalance), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(accountBalance), NormalMode, regime)(request, messages(application)).toString
       }
     }
 
@@ -111,7 +112,7 @@ class WhatWasTheAccountBalanceControllerSpec extends SpecBase with MockitoSugar 
       running(application) {
         val request =
           FakeRequest(POST, whatWasTheAccountBalanceRoute)
-            .withFormUrlEncodedBody(validFormData.toSeq*) // do this
+            .withFormUrlEncodedBody(validFormData.toSeq*)
 
         val result = route(application, request).value
 
@@ -136,7 +137,7 @@ class WhatWasTheAccountBalanceControllerSpec extends SpecBase with MockitoSugar 
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, regime)(request, messages(application)).toString
       }
     }
 

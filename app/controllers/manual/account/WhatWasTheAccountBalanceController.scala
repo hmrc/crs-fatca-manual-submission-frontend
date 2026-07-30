@@ -21,7 +21,6 @@ import controllers.actions.*
 import forms.manual.account.WhatWasTheAccountBalanceFormProvider
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.ReportIdPage
 import pages.manual.account.WhatWasTheAccountBalancePage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -48,7 +47,8 @@ class WhatWasTheAccountBalanceController @Inject() (
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
     implicit request =>
-      val form = formProvider(request.reportId.regime)
+      val regime = request.reportId.regime
+      val form   = formProvider(regime)
 
       implicit val reportId: ReportId = request.reportId
 
@@ -57,19 +57,20 @@ class WhatWasTheAccountBalanceController @Inject() (
         case Some(value) => form.fill(value)
       }
 
-      Ok(view(preparedForm, mode))
+      Ok(view(preparedForm, mode, regime))
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
     implicit request =>
-      val form = formProvider(request.userAnswers.get(ReportIdPage).get.regime)
+      val regime = request.reportId.regime
+      val form   = formProvider(regime)
 
       implicit val reportId: ReportId = request.reportId
 
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, regime))),
           value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(WhatWasTheAccountBalancePage(), value))
