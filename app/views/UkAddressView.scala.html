@@ -41,7 +41,9 @@
         <fieldset class="govuk-fieldset">
 
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-            @heading(messages("ukAddress.heading", sponsorName))
+                <h1 class="govuk-fieldset__heading wrappable">
+                     @messages("ukAddress.heading", sponsorName)
+                </h1>
             </legend>
 
             @govukInput(
