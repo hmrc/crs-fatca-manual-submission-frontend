@@ -21,13 +21,14 @@ import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.account.NumberTypeFormProvider
 import models.SubmissionsConstants.CRS
+import models.viewModels.AccountId
 import models.{NormalMode, NumberType, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.account.NumberTypePage
+import pages.manual.account.{CurrentAccountIdPage, NumberTypePage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -43,10 +44,13 @@ class NumberTypeControllerSpec extends SpecBase with MockitoSugar {
   lazy val numberTypeRoute: String = controllers.manual.account.routes.NumberTypeController.onPageLoad(NormalMode).url
 
   val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
+  val accountId          = AccountId("TestAccountId")
+  val formProvider       = new NumberTypeFormProvider()
+  val form               = formProvider()
 
-  val formProvider = new NumberTypeFormProvider()
-  val form         = formProvider()
-  val ua           = emptyUserAnswers.withPage(ReportIdPage, reportId)
+  val ua = emptyUserAnswers
+    .withPage(ReportIdPage, reportId)
+    .withPage(CurrentAccountIdPage()(reportId), accountId)
 
   "NumberType Controller" - {
 
@@ -67,9 +71,8 @@ class NumberTypeControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-      implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
 
-      val userAnswers = ua.set(NumberTypePage(), NumberType.values.head).success.value
+      val userAnswers = ua.set(NumberTypePage(accountId)(reportId), NumberType.values.head).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 

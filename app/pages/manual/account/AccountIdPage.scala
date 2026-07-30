@@ -16,23 +16,11 @@
 
 package pages.manual.account
 
+import models.ReportId
 import models.viewModels.AccountId
-import models.{ReportId, UserAnswers}
 import pages.QuestionPage
 import play.api.libs.json.JsPath
 
-import scala.util.{Success, Try}
+final case class AccountIdPage(accountId: AccountId)(implicit reportId: ReportId) extends QuestionPage[AccountId]:
 
-final case class HaveNumberPage(accountId: AccountId)(implicit reportId: ReportId) extends QuestionPage[Boolean]:
-
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "accounts" \ accountId.value \ "haveNumber"
-
-  override def cleanupWithReportId(
-    value: Option[Boolean],
-    userData: UserAnswers
-  )(implicit reportId: ReportId): Try[UserAnswers] =
-    value match {
-      case Some(true)  => userData.remove(IdentifierPage(accountId))
-      case Some(false) => userData.remove(NumberTypePage(accountId))
-      case _           => Success(userData)
-    }
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "accounts" \ accountId.value \ "accountId"

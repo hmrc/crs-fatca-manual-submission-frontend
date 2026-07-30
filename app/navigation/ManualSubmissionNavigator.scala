@@ -20,6 +20,7 @@ import controllers.manual.account
 import controllers.manual.reportdetails.routes.*
 import controllers.routes
 import models.*
+import models.viewModels.AccountId
 import pages.*
 import pages.manual.account.{HaveNumberPage, IdentifierPage, NumberTypePage}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
@@ -48,15 +49,14 @@ class ManualSubmissionNavigator @Inject() () {
     }
 
   private def accountNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
-    case (HaveNumberPage(), mode, ua) => haveNumberNavigation(mode, ua)
-    case (NumberTypePage(), mode, ua) => routes.UnderConstructionController.onPageLoad()
-    case (IdentifierPage(), mode, ua) => routes.UnderConstructionController.onPageLoad()
+    case (HaveNumberPage(accountId), mode, ua) => haveNumberNavigation(accountId, mode, ua)
+    case (NumberTypePage(_), mode, ua)         => routes.UnderConstructionController.onPageLoad()
+    case (IdentifierPage(_), mode, ua)         => routes.UnderConstructionController.onPageLoad()
   }
 
   private def fillerNavigation: PartialFunction[(Page, Mode, UserAnswers), Call] = {
     case (WhatTypeOfFilerPage(), _, _)          => controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad()
     case (WhatTypeOfFilerIsSponsorPage(), _, _) => controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad()
-    case (IdentifierPage(), _, _)               => routes.UnderConstructionController.onPageLoad()
   }
 
   private def sponsorNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
@@ -68,6 +68,7 @@ class ManualSubmissionNavigator @Inject() () {
     case (AddressNonUkPage(), mode, ua)            => handleNavigationToSponsorResidentTaxView(ua, mode)
     case (WhatIsAddressForSponsorPage(), mode, ua) => handleWhatIsAddressForSponsorNavigation(ua, mode)
     case (IsThisAddressForSponsorPage(), mode, ua) => handleIsThisAddressForSponsorNavigation(ua, mode)
+    case (UkAddressPage(), _, _)                   => routes.UnderConstructionController.onPageLoad()
     case (SponsorResidentForTaxPage(), mode, ua)   => routes.UnderConstructionController.onPageLoad()
   }
 
@@ -92,8 +93,8 @@ class ManualSubmissionNavigator @Inject() () {
       case None        => routes.JourneyRecoveryController.onPageLoad()
     }
 
-  private def haveNumberNavigation(mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
-    userAnswers.get(HaveNumberPage()) match {
+  private def haveNumberNavigation(accountId: AccountId, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
+    userAnswers.get(HaveNumberPage(accountId)) match {
       case Some(true)  => account.routes.NumberTypeController.onPageLoad(mode)
       case Some(false) => account.routes.IdentifierController.onPageLoad(mode)
       case None        => routes.JourneyRecoveryController.onPageLoad()
@@ -123,7 +124,7 @@ class ManualSubmissionNavigator @Inject() () {
   private def handleIsThisAddressForSponsorNavigation(userAnswers: UserAnswers, mode: Mode)(implicit reportId: ReportId) =
     (userAnswers.get(IsThisAddressForSponsorPage()), userAnswers.get(WhatIsAddressForSponsorPage())) match {
       case (Some(true), Some(address)) => handleNavigationToSponsorResidentTaxView(userAnswers, mode)
-      case (Some(false), Some(_))      => handleNavigationToSponsorResidentTaxView(userAnswers, mode)
+      case (Some(false), Some(_))      => controllers.manual.sponsor.routes.UkAddressController.onPageLoad(mode)
       case (_, _)                      => routes.JourneyRecoveryController.onPageLoad()
     }
 

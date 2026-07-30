@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package pages.manual.account
+package pages
 
-import models.ReportId
-import models.viewModels.AccountId
-import pages.QuestionPage
+import models.{ReportId, UkAddress}
 import play.api.libs.json.JsPath
 
-final case class IdentifierPage(accountId: AccountId)(implicit reportId: ReportId) extends QuestionPage[String]:
+final case class UkAddressPage()(implicit reportId: ReportId) extends QuestionPage[UkAddress]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "accounts" \ accountId.value \ "identifier"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "ukAddressForSponsor"

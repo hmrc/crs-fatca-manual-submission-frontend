@@ -17,7 +17,7 @@
 package viewmodels.checkAnswers.manual.account
 
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.account.NumberTypePage
+import pages.manual.account.{CurrentAccountIdPage, NumberTypePage}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
@@ -28,22 +28,23 @@ import viewmodels.implicits.*
 object NumberTypeSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
-    answers.get(NumberTypePage()).map {
-      answer =>
-
-        val value = ValueViewModel(
-          HtmlContent(
-            HtmlFormat.escape(messages(s"numberType.$answer"))
-          )
+    for {
+      currentAccountId <- answers.get(CurrentAccountIdPage()(reportId))
+      answer           <- answers.get(NumberTypePage(currentAccountId)(reportId))
+    } yield
+      val value = ValueViewModel(
+        HtmlContent(
+          HtmlFormat.escape(messages(s"numberType.$answer"))
         )
+      )
 
-        SummaryListRowViewModel(
-          key = "numberType.checkYourAnswersLabel",
-          value = value,
-          actions = Seq(
-            ActionItemViewModel("site.change", controllers.manual.account.routes.NumberTypeController.onPageLoad(CheckMode).url)
-              .withVisuallyHiddenText(messages("numberType.change.hidden"))
-          )
+      SummaryListRowViewModel(
+        key = "numberType.checkYourAnswersLabel",
+        value = value,
+        actions = Seq(
+          ActionItemViewModel("site.change", controllers.manual.account.routes.NumberTypeController.onPageLoad(CheckMode).url)
+            .withVisuallyHiddenText(messages("numberType.change.hidden"))
         )
-    }
+      )
+
 }

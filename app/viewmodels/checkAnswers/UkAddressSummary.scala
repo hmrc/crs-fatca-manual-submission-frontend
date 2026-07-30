@@ -14,28 +14,32 @@
  * limitations under the License.
  */
 
-package viewmodels.checkAnswers.manual.account
+package viewmodels.checkAnswers
 
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.account.{CurrentAccountIdPage, IdentifierPage}
+import pages.UkAddressPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist.*
 import viewmodels.implicits.*
 
-object IdentifierSummary {
+object UkAddressSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
-    for {
-      currentAccountId <- answers.get(CurrentAccountIdPage()(reportId))
-      answer           <- answers.get(IdentifierPage(currentAccountId)(reportId))
-    } yield SummaryListRowViewModel(
-      key = "identifier.checkYourAnswersLabel",
-      value = ValueViewModel(HtmlFormat.escape(answer).toString),
-      actions = Seq(
-        ActionItemViewModel("site.change", controllers.manual.account.routes.IdentifierController.onPageLoad(CheckMode).url)
-          .withVisuallyHiddenText(messages("identifier.change.hidden"))
-      )
-    )
+    answers.get(UkAddressPage()).map {
+      answer =>
+
+        val value = HtmlFormat.escape(answer.addressLine1).toString + "<br/>" + HtmlFormat.escape(answer.addressLine2.getOrElse("")).toString
+
+        SummaryListRowViewModel(
+          key = "ukAddress.checkYourAnswersLabel",
+          value = ValueViewModel(HtmlContent(value)),
+          actions = Seq(
+            ActionItemViewModel("site.change", controllers.manual.sponsor.routes.UkAddressController.onPageLoad(CheckMode).url)
+              .withVisuallyHiddenText(messages("ukAddress.change.hidden"))
+          )
+        )
+    }
 }

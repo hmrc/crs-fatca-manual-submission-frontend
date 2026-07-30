@@ -1,8 +1,8 @@
 import play.sbt.routes.RoutesKeys
 import sbt.Def
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
-import scala.collection.Seq
 
+import scala.collection.Seq
 
 lazy val appName: String = "crs-fatca-manual-submission-frontend"
 
@@ -59,6 +59,10 @@ addCommandAlias("testAll", "; scalafmtAll ; test ; it/test")
 addCommandAlias(
   "precommit",
   "; clean ; scalafmtAll ; coverage ; test ; it/test ; coverageReport ; coverageOff"
+)
+addCommandAlias(
+  "precommitCheck",
+  "; clean ; scalafmtCheckAll ; coverage ; test ; it/test ; coverageReport ; coverageOff"
 )
 lazy val testSettings: Seq[Def.Setting[_]] = Seq(
   fork := true,
