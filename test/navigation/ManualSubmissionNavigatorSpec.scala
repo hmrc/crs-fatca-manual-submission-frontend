@@ -20,8 +20,8 @@ import base.SpecBase
 import controllers.manual.reportdetails.routes.{ReportDetailsCheckAnswersController, ReportingYearController, TypeOfReportController}
 import models.*
 import models.SubmissionsConstants.FATCA
+import models.response.{AddressLookup, Country}
 import models.viewModels.AccountId
-import models.response.{Address, AddressLookup, Country}
 import pages.*
 import pages.manual.account.{HaveNumberPage, IdentifierPage, NumberTypePage, WhatWasTheAccountBalancePage}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
@@ -223,7 +223,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
       "WhatWasTheAccountBalancePage" - {
         "must go to UNDERCONSTRUCTION page when submitted" in {
           val ua = UserAnswers("id")
-          navigator.nextPage(WhatWasTheAccountBalancePage(), NormalMode, ua) mustBe
+          navigator.nextPage(WhatWasTheAccountBalancePage(accountId), NormalMode, ua) mustBe
             controllers.routes.UnderConstructionController.onPageLoad()
         }
       }

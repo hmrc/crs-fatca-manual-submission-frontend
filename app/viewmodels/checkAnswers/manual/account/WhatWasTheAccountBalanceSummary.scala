@@ -17,7 +17,7 @@
 package viewmodels.checkAnswers.manual.account
 
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.account.WhatWasTheAccountBalancePage
+import pages.manual.account.{CurrentAccountIdPage, WhatWasTheAccountBalancePage}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
@@ -27,15 +27,15 @@ import viewmodels.implicits.*
 object WhatWasTheAccountBalanceSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
-    answers.get(WhatWasTheAccountBalancePage()).map {
-      answer =>
-        SummaryListRowViewModel(
-          key = "whatWasTheAccountBalance.checkYourAnswersLabel",
-          value = ValueViewModel(HtmlFormat.escape(s"${answer.amount} ${answer.currency.displayName}").toString),
-          actions = Seq(
-            ActionItemViewModel("site.change", controllers.manual.account.routes.WhatWasTheAccountBalanceController.onPageLoad(CheckMode).url)
-              .withVisuallyHiddenText(messages("whatWasTheAccountBalance.change.hidden"))
-          )
-        )
-    }
+    for {
+      currentAccountId <- answers.get(CurrentAccountIdPage()(reportId))
+      answer           <- answers.get(WhatWasTheAccountBalancePage(currentAccountId)(reportId))
+    } yield SummaryListRowViewModel(
+      key = "whatWasTheAccountBalance.checkYourAnswersLabel",
+      value = ValueViewModel(HtmlFormat.escape(s"${answer.amount} ${answer.currency.displayName}").toString),
+      actions = Seq(
+        ActionItemViewModel("site.change", controllers.manual.account.routes.WhatWasTheAccountBalanceController.onPageLoad(CheckMode).url)
+          .withVisuallyHiddenText(messages("whatWasTheAccountBalance.change.hidden"))
+      )
+    )
 }

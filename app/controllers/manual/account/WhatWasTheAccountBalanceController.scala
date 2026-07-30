@@ -49,7 +49,7 @@ class WhatWasTheAccountBalanceController @Inject() (
 
       implicit val reportId: ReportId = request.reportId
 
-      val preparedForm = request.userAnswers.get(WhatWasTheAccountBalancePage()) match {
+      val preparedForm = request.userAnswers.get(WhatWasTheAccountBalancePage(request.accountId)) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
@@ -70,9 +70,9 @@ class WhatWasTheAccountBalanceController @Inject() (
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, regime))),
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(WhatWasTheAccountBalancePage(), value))
+              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(WhatWasTheAccountBalancePage(request.accountId), value))
               _              <- repository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(WhatWasTheAccountBalancePage(), mode, updatedAnswers))
+            } yield Redirect(navigator.nextPage(WhatWasTheAccountBalancePage(request.accountId), mode, updatedAnswers))
         )
   }
 }

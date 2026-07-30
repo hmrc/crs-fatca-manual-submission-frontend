@@ -84,7 +84,7 @@ class WhatWasTheAccountBalanceControllerSpec extends SpecBase with MockitoSugar 
 
       implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
 
-      val userAnswers = ua.set(WhatWasTheAccountBalancePage(), accountBalance).success.value
+      val userAnswers = ua.set(WhatWasTheAccountBalancePage(accountId), accountBalance).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
