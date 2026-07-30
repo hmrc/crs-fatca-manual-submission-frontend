@@ -390,3 +390,9 @@ identifier.error.length = Account identifier must be 200 characters or less
 identifier.error.invalid = Account identifier must only include letters a to z, numbers 0 to 9, ampersands (&), apostrophes, backslashes, carets (^), grave accents (`), hyphens and spaces
 identifier.error.doubedash = Account identifier must not include a double dash (--)
 identifier.change.hidden = Identifier
+
+accountClosed.title = Is the account closed?
+accountClosed.heading = Is the account closed?
+accountClosed.checkYourAnswersLabel = accountClosed
+accountClosed.error.required = Select yes if the account is closed
+accountClosed.change.hidden = AccountClosed

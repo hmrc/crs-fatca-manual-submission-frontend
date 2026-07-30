@@ -156,3 +156,8 @@ GET        /manual/account/identifier                        controllers.manual.
 POST       /manual/account/identifier                        controllers.manual.account.IdentifierController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/account/change-identifier                  controllers.manual.account.IdentifierController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/account/change-identifier                  controllers.manual.account.IdentifierController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/account/closed                        controllers.manual.account.AccountClosedController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account/closed                        controllers.manual.account.AccountClosedController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account/change-closed                  controllers.manual.account.AccountClosedController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account/change-closed                  controllers.manual.account.AccountClosedController.onSubmit(mode: Mode = CheckMode)
