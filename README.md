@@ -3,6 +3,11 @@
 
 This service is used to manual file upload process.
 
+# Setup
+```
+git config core.hooksPath githooks
+ ```
+
 ## Running the service
 
 Service manager: CRS_FATCA_MANUAL
