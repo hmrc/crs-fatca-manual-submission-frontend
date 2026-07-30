@@ -59,7 +59,7 @@ class WhatWasTheAccountBalanceControllerSpec extends SpecBase with MockitoSugar 
   "WhatWasTheAccountBalance Controller" - {
 
     val accountId: AccountId = AccountId("TestAccountId")
-    val reportId = ReportId(CRS, 2025, None, "TestfiID")
+    val reportId             = ReportId(CRS, 2025, None, "TestfiID")
     val ua = emptyUserAnswers
       .withPage(ReportIdPage, reportId)
       .withPage(CurrentAccountIdPage()(reportId), accountId)
