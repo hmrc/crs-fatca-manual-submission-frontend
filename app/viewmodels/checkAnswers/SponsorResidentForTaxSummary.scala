@@ -16,7 +16,6 @@
 
 package viewmodels.checkAnswers
 
-import controllers.routes
 import models.{CheckMode, ReportId, UserAnswers}
 import pages.SponsorResidentForTaxPage
 import play.api.i18n.Messages
@@ -27,7 +26,7 @@ import viewmodels.implicits._
 
 object SponsorResidentForTaxSummary {
 
-  // todo
+
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
     answers.get(SponsorResidentForTaxPage()).map {
       answer =>

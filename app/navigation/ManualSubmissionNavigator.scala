@@ -68,6 +68,7 @@ class ManualSubmissionNavigator @Inject() () {
     case (AddressNonUkPage(), mode, ua)            => handleNavigationToSponsorResidentTaxView(ua, mode)
     case (WhatIsAddressForSponsorPage(), mode, ua) => handleWhatIsAddressForSponsorNavigation(ua, mode)
     case (IsThisAddressForSponsorPage(), mode, ua) => handleIsThisAddressForSponsorNavigation(ua, mode)
+    case (SponsorResidentForTaxPage(), mode, ua)   => routes.UnderConstructionController.onPageLoad()
   }
 
   private def handleNavigationToSponsorResidentTaxView(ua: UserAnswers, mode: Mode)(implicit reportId: ReportId): Call =

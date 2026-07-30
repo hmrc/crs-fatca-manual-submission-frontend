@@ -54,9 +54,8 @@ class SponsorResidentForTaxController @Inject() (
     implicit request =>
 
       implicit val reportId: ReportId    = request.reportId
-      val effectiveIdx                   = idx.orElse(request.getQueryString("idx").flatMap(_.toIntOption))
       val sponsorResidentTaxCountryCodes = request.userAnswers.get(SponsorResidentForTaxPage())
-      val invalidIdxRequested = effectiveIdx.exists(
+      val invalidIdxRequested = idx.exists(
         i => sponsorResidentTaxCountryCodes.exists(_.resCountryCodes.lift(i).isEmpty)
       )
 
@@ -70,11 +69,11 @@ class SponsorResidentForTaxController @Inject() (
               val preparedForm = sponsorResidentTaxCountryCodes match {
                 case None => form
                 case Some(sponsorResidentTaxCountryCodes) =>
-                  val value = sponsorResidentTaxCountryCodes.getCountryCode(effectiveIdx)
+                  val value = sponsorResidentTaxCountryCodes.getCountryCode(idx)
                   form.fill(value)
               }
 
-              Ok(view(preparedForm, mode, sponsorName, effectiveIdx))
+              Ok(view(preparedForm, mode, sponsorName, idx))
           }
   }
 
@@ -82,9 +81,8 @@ class SponsorResidentForTaxController @Inject() (
     implicit request =>
 
       implicit val reportId: ReportId    = request.reportId
-      val effectiveIdx                   = idx.orElse(request.getQueryString("idx").flatMap(_.toIntOption))
       val sponsorResidentTaxCountryCodes = request.userAnswers.get(SponsorResidentForTaxPage()).getOrElse(SponsorResidentTaxCountryCodes(Seq()))
-      val invalidIdxRequested = effectiveIdx.exists(
+      val invalidIdxRequested = idx.exists(
         i => sponsorResidentTaxCountryCodes.resCountryCodes.lift(i).isEmpty
       )
       request.userAnswers
@@ -97,14 +95,14 @@ class SponsorResidentForTaxController @Inject() (
               form
                 .bindFromRequest()
                 .fold(
-                  formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, sponsorName, effectiveIdx))),
+                  formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, sponsorName, idx))),
                   value =>
                     val sponsorResidentTaxCountryCodes = request.userAnswers.get(SponsorResidentForTaxPage()).getOrElse(SponsorResidentTaxCountryCodes(Seq()))
                     val updatedSponsorResidentTaxCountryCodes =
                       if sponsorResidentTaxCountryCodes.resCountryCodes.size == 0 then
                         sponsorResidentTaxCountryCodes.copy(resCountryCodes = sponsorResidentTaxCountryCodes.resCountryCodes :+ value)
                       else {
-                        effectiveIdx
+                        idx
                           .map(
                             idx => sponsorResidentTaxCountryCodes.copy(resCountryCodes = sponsorResidentTaxCountryCodes.resCountryCodes.updated(idx, value))
                           )
