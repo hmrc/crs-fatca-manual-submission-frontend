@@ -115,15 +115,15 @@ class SponsorResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
-
-      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+      val useranswers = ua.withPage(SponsorNamePage(), sponsorName)
+      val application = applicationBuilder(maybeUserAnswers = Some(useranswers)).build()
 
       running(application) {
         val request =
           FakeRequest(POST, sponsorResidentForTaxRoute)
-            .withFormUrlEncodedBody(("value", ""))
+            .withFormUrlEncodedBody(("country", ""))
 
-        val boundForm = form.bind(Map("value" -> ""))
+        val boundForm = form.bind(Map("country" -> ""))
 
         val view = application.injector.instanceOf[SponsorResidentForTaxView]
 
@@ -150,12 +150,10 @@ class SponsorResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to Journey Recovery for a GET if an invalid idx is passed when sponsor resident is present" in {
       val userAnswers = ua
-        .withPage(ReportIdPage, reportId)
         .withPage(SponsorResidentForTaxPage(), SponsorResidentTaxCountryCodes(Seq("GB")))
         .withPage(SponsorNamePage(), sponsorName)
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
-        .configure("play.http.router" -> "app.Routes")
         .build()
 
       running(application) {
@@ -174,7 +172,6 @@ class SponsorResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
         .withPage(SponsorResidentForTaxPage(), SponsorResidentTaxCountryCodes(Seq("GB")))
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
-        .configure("play.http.router" -> "app.Routes")
         .build()
 
       running(application) {
@@ -209,7 +206,6 @@ class SponsorResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
         .withPage(SponsorResidentForTaxPage(), SponsorResidentTaxCountryCodes(Seq("GB")))
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
-        .configure("play.http.router" -> "app.Routes")
         .build()
 
       running(application) {
@@ -230,7 +226,6 @@ class SponsorResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
         .withPage(SponsorResidentForTaxPage(), SponsorResidentTaxCountryCodes(Seq("GB")))
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
-        .configure("play.http.router" -> "app.Routes")
         .build()
 
       running(application) {
