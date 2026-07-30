@@ -26,7 +26,6 @@ import viewmodels.implicits._
 
 object SponsorResidentForTaxSummary {
 
-
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
     answers.get(SponsorResidentForTaxPage()).map {
       answer =>
