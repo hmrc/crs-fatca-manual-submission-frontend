@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package pages
+package pages.manual.sponsor
 
-import models.UserAnswers
-import queries.{Gettable, Settable}
+import models.ReportId
+import models.response.Address
+import pages.QuestionPage
+import play.api.libs.json.JsPath
 
-import scala.util.Try
+final case class WhatIsAddressForSponsorPage()(implicit reportId: ReportId) extends QuestionPage[Address]:
 
-trait QuestionPage[A] extends Page with Gettable[A] with Settable[A] {
-
-  def removePage(): (Try[UserAnswers], QuestionPage[_]) => Try[UserAnswers] =
-    (ua: Try[UserAnswers], page: QuestionPage[_]) => ua.flatMap(_.remove(page))
-}
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "whatIsAddressForSponsor"

@@ -18,11 +18,13 @@ package base
 
 import controllers.actions.*
 import models.UserAnswers
+import org.scalatest.Inspectors.forAll
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
-import org.scalatest.{BeforeAndAfterEach, OptionValues, TryValues}
+import org.scalatest.{Assertion, BeforeAndAfterEach, OptionValues, TryValues}
 import org.scalatestplus.mockito.MockitoSugar
+import pages.QuestionPage
 import play.api.Application
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
@@ -61,4 +63,15 @@ trait SpecBase
       userData.set(page, value).success.value
   }
 
+  def mustBeRemoved(userAnswers: UserAnswers, pages: QuestionPage[_]*): Assertion =
+    forAll(pages) {
+      page =>
+        userAnswers.data.transform(page.path.json.pick).asOpt mustBe empty
+    }
+
+  def mustBeUnaffected(userAnswers: UserAnswers, pages: QuestionPage[_]*): Assertion =
+    forAll(pages) {
+      page =>
+        userAnswers.data.transform(page.path.json.pick).asOpt mustNot be(empty)
+    }
 }
