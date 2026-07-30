@@ -119,4 +119,17 @@
             }
         }
     });
+
+    // When the user clears the autocomplete input, reset the underlying
+    // <select> so the form submits an empty country value.
+    var autocompleteInput = document.getElementById('country');
+
+    if (autocompleteInput) {
+        autocompleteInput.addEventListener('input', function () {
+            if (!this.value || !this.value.trim()) {
+                countrySelect.value = '';
+                countrySelect.selectedIndex = 0;
+            }
+        });
+    }
 })();
