@@ -71,7 +71,6 @@ class WhatWasTheAccountBalanceController @Inject() (
           value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(WhatWasTheAccountBalancePage(), value))
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(currentaccountid(), "666"))
               _              <- repository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(WhatWasTheAccountBalancePage(), mode, updatedAnswers))
         )
