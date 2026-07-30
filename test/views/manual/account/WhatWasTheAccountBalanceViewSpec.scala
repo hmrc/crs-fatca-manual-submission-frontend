@@ -30,11 +30,11 @@ import views.html.manual.account.WhatWasTheAccountBalanceView
 
 class WhatWasTheAccountBalanceViewSpec extends SpecBase {
 
-  private val application = applicationBuilder().build()
-private val regime = CRS
+  private val application                                                = applicationBuilder().build()
+  private val regime                                                     = CRS
   private val view: WhatWasTheAccountBalanceView                         = application.injector.instanceOf[WhatWasTheAccountBalanceView]
   private val messagesControllerComponents: MessagesControllerComponents = application.injector.instanceOf[MessagesControllerComponents]
-  val form                                                       = new WhatWasTheAccountBalanceFormProvider()(regime)
+  val form                                                               = new WhatWasTheAccountBalanceFormProvider()(regime)
 
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
   implicit private val messages: Messages               = messagesControllerComponents.messagesApi.preferred(Seq(Lang("en")))
@@ -59,7 +59,7 @@ private val regime = CRS
       }
 
       "must display currency field" in {
-        val elements                            = doc.select("#currency")
+        val elements = doc.select("#currency")
         elements.size() mustBe 1
       }
 
