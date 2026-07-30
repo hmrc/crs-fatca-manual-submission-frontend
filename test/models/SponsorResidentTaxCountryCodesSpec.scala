@@ -30,10 +30,10 @@ class SponsorResidentTaxCountryCodesSpec extends SpecBase {
         "IM"
       )
 
-      val actualCountryCodes =  SponsorResidentTaxCountryCodes(expectedCountryCodes).getCountryCode(Some(0))
+      val actualCountryCodes = SponsorResidentTaxCountryCodes(expectedCountryCodes).getCountryCode(Some(0))
 
       actualCountryCodes mustEqual expectedCountryCodes.head
-      
+
       SponsorResidentTaxCountryCodes(expectedCountryCodes).getCountryCode(Some(10)) mustEqual ""
     }
   }

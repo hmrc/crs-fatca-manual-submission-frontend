@@ -37,8 +37,8 @@ import scala.concurrent.Future
 
 class SponsorResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
-  private val sponsorName = "Test Sponsor"
+  def onwardRoute                 = Call("GET", "/foo")
+  private val sponsorName         = "Test Sponsor"
   implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
 
   val formProvider = new SponsorResidentForTaxFormProvider()
@@ -70,7 +70,8 @@ class SponsorResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
 
       implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
 
-      val userAnswers = ua.withPage(SponsorResidentForTaxPage(), SponsorResidentTaxCountryCodes(Seq("GB")))
+      val userAnswers = ua
+        .withPage(SponsorResidentForTaxPage(), SponsorResidentTaxCountryCodes(Seq("GB")))
         .withPage(SponsorNamePage(), sponsorName)
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
@@ -88,7 +89,7 @@ class SponsorResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to the next page when valid data is submitted" in {
-      val userAnswers = ua.withPage(SponsorNamePage(), sponsorName)
+      val userAnswers           = ua.withPage(SponsorNamePage(), sponsorName)
       val mockSessionRepository = mock[DatabaseConnector]
 
       when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
@@ -148,13 +149,13 @@ class SponsorResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to Journey Recovery for a GET if an invalid idx is passed when sponsor resident is present" in {
-      val userAnswers = ua.withPage(ReportIdPage, reportId)
+      val userAnswers = ua
+        .withPage(ReportIdPage, reportId)
         .withPage(SponsorResidentForTaxPage(), SponsorResidentTaxCountryCodes(Seq("GB")))
         .withPage(SponsorNamePage(), sponsorName)
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
-        .configure(
-          "play.http.router" -> "app.Routes")
+        .configure("play.http.router" -> "app.Routes")
         .build()
 
       running(application) {
@@ -168,12 +169,12 @@ class SponsorResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to Journey Recovery for a GET if sponsor name is not present" in {
-      val userAnswers = ua.withPage(ReportIdPage, reportId)
+      val userAnswers = ua
+        .withPage(ReportIdPage, reportId)
         .withPage(SponsorResidentForTaxPage(), SponsorResidentTaxCountryCodes(Seq("GB")))
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
-        .configure(
-          "play.http.router" -> "app.Routes")
+        .configure("play.http.router" -> "app.Routes")
         .build()
 
       running(application) {
@@ -185,7 +186,6 @@ class SponsorResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
-
 
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
@@ -204,12 +204,13 @@ class SponsorResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to Journey Recovery for a POST if sponsor name is not found" in {
-      val userAnswers = ua.withPage(ReportIdPage, reportId)
+      val userAnswers = ua
+        .withPage(ReportIdPage, reportId)
         .withPage(SponsorResidentForTaxPage(), SponsorResidentTaxCountryCodes(Seq("GB")))
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
-        .configure(
-          "play.http.router" -> "app.Routes").build()
+        .configure("play.http.router" -> "app.Routes")
+        .build()
 
       running(application) {
         val request =
@@ -224,12 +225,13 @@ class SponsorResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to Journey Recovery for a POST if idx is invalid" in {
-      val userAnswers = ua.withPage(ReportIdPage, reportId)
+      val userAnswers = ua
+        .withPage(ReportIdPage, reportId)
         .withPage(SponsorResidentForTaxPage(), SponsorResidentTaxCountryCodes(Seq("GB")))
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
-        .configure(
-          "play.http.router" -> "app.Routes").build()
+        .configure("play.http.router" -> "app.Routes")
+        .build()
 
       running(application) {
         val request =
