@@ -16,10 +16,11 @@
 
 package pages.manual.account
 
+import models.viewModels.AccountId
 import models.{NumberType, ReportId}
 import pages.QuestionPage
 import play.api.libs.json.JsPath
 
-final case class NumberTypePage()(implicit reportId: ReportId) extends QuestionPage[NumberType]:
+final case class NumberTypePage(accountId: AccountId)(implicit reportId: ReportId) extends QuestionPage[NumberType]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "numberType"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "accounts" \ accountId.value \ "numberType"
