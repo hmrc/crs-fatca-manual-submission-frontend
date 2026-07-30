@@ -34,10 +34,7 @@ class WhatWasTheAccountBalanceController @Inject() (
   override val messagesApi: MessagesApi,
   repository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
-  identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  reportIdAction: ReportIdRequiredAction,
+  actions: Actions,
   formProvider: WhatWasTheAccountBalanceFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: WhatWasTheAccountBalanceView
@@ -45,7 +42,7 @@ class WhatWasTheAccountBalanceController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdRequired() {
     implicit request =>
       val regime = request.reportId.regime
       val form   = formProvider(regime)
@@ -60,7 +57,7 @@ class WhatWasTheAccountBalanceController @Inject() (
       Ok(view(preparedForm, mode, regime))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdRequired().async {
     implicit request =>
       val regime = request.reportId.regime
       val form   = formProvider(regime)
@@ -74,6 +71,7 @@ class WhatWasTheAccountBalanceController @Inject() (
           value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(WhatWasTheAccountBalancePage(), value))
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(currentaccountid(), "666"))
               _              <- repository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(WhatWasTheAccountBalancePage(), mode, updatedAnswers))
         )

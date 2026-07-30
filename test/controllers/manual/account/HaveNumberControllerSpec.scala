@@ -21,13 +21,14 @@ import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.account.HaveNumberFormProvider
 import models.SubmissionsConstants.CRS
+import models.viewModels.AccountId
 import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.account.HaveNumberPage
+import pages.manual.account.{CurrentAccountIdPage, HaveNumberPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -47,7 +48,11 @@ class HaveNumberControllerSpec extends SpecBase with MockitoSugar {
 
   "HaveNumber Controller" - {
 
-    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
+    val accountId: AccountId = AccountId("TestAccountId")
+    val reportId             = ReportId(CRS, 2025, None, "TestfiID")
+    val ua = emptyUserAnswers
+      .withPage(ReportIdPage, reportId)
+      .withPage(CurrentAccountIdPage()(reportId), accountId)
 
     "must return OK and the correct view for a GET" in {
 
@@ -67,9 +72,7 @@ class HaveNumberControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
-
-      val userAnswers = ua.set(HaveNumberPage(), true).success.value
+      val userAnswers = ua.set(HaveNumberPage(accountId)(reportId), true).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 

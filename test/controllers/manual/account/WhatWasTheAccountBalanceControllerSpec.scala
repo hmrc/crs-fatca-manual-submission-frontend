@@ -20,13 +20,14 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import forms.manual.account.WhatWasTheAccountBalanceFormProvider
 import models.SubmissionsConstants.CRS
+import models.viewModels.AccountId
 import models.{AccountBalance, Currency, NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.account.WhatWasTheAccountBalancePage
+import pages.manual.account.{CurrentAccountIdPage, WhatWasTheAccountBalancePage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -57,7 +58,11 @@ class WhatWasTheAccountBalanceControllerSpec extends SpecBase with MockitoSugar 
   )
   "WhatWasTheAccountBalance Controller" - {
 
-    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
+    val accountId: AccountId = AccountId("TestAccountId")
+    val reportId = ReportId(CRS, 2025, None, "TestfiID")
+    val ua = emptyUserAnswers
+      .withPage(ReportIdPage, reportId)
+      .withPage(CurrentAccountIdPage()(reportId), accountId)
 
     "must return OK and the correct view for a GET" in {
 

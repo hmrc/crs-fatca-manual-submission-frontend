@@ -50,7 +50,6 @@ class SendAReportController @Inject() (
         tbc1 = Some(Incomplete),
         tbc2 = Some(Incomplete)
       )
-
       Ok(view(sections))
   }
 }

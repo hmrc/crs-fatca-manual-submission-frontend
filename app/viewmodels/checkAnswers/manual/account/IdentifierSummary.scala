@@ -17,7 +17,7 @@
 package viewmodels.checkAnswers.manual.account
 
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.account.IdentifierPage
+import pages.manual.account.{CurrentAccountIdPage, IdentifierPage}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
@@ -27,15 +27,15 @@ import viewmodels.implicits.*
 object IdentifierSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
-    answers.get(IdentifierPage()).map {
-      answer =>
-        SummaryListRowViewModel(
-          key = "identifier.checkYourAnswersLabel",
-          value = ValueViewModel(HtmlFormat.escape(answer).toString),
-          actions = Seq(
-            ActionItemViewModel("site.change", controllers.manual.account.routes.IdentifierController.onPageLoad(CheckMode).url)
-              .withVisuallyHiddenText(messages("identifier.change.hidden"))
-          )
-        )
-    }
+    for {
+      currentAccountId <- answers.get(CurrentAccountIdPage()(reportId))
+      answer           <- answers.get(IdentifierPage(currentAccountId)(reportId))
+    } yield SummaryListRowViewModel(
+      key = "identifier.checkYourAnswersLabel",
+      value = ValueViewModel(HtmlFormat.escape(answer).toString),
+      actions = Seq(
+        ActionItemViewModel("site.change", controllers.manual.account.routes.IdentifierController.onPageLoad(CheckMode).url)
+          .withVisuallyHiddenText(messages("identifier.change.hidden"))
+      )
+    )
 }

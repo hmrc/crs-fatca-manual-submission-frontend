@@ -19,9 +19,10 @@ package controllers.manual.account
 import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.manual.account.HaveNumberFormProvider
-import models.{Mode, ReportId}
+import models.requests.AccountIdRequest
+import models.{Mode, ReportId, UserAnswers}
 import navigation.ManualSubmissionNavigator
-import pages.manual.account.HaveNumberPage
+import pages.manual.account.{AccountIdPage, HaveNumberPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -32,12 +33,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class HaveNumberController @Inject() (
   override val messagesApi: MessagesApi,
+  actions: Actions,
   repository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
-  identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  reportIdAction: ReportIdRequiredAction,
   formProvider: HaveNumberFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: HaveNumberView
@@ -47,12 +45,10 @@ class HaveNumberController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdCreation() {
     implicit request =>
-
-      implicit val reportId: ReportId = request.reportId
-
-      val preparedForm = request.userAnswers.get(HaveNumberPage()) match {
+      given reportId: ReportId = request.reportId
+      val preparedForm = request.userAnswers.get(HaveNumberPage(request.accountId)) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
@@ -60,20 +56,27 @@ class HaveNumberController @Inject() (
       Ok(view(preparedForm, mode))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdCreation().async {
     implicit request =>
-
-      implicit val reportId: ReportId = request.reportId
-
+      given reportId: ReportId = request.reportId
       form
         .bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(HaveNumberPage(), value))
-              _              <- repository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(HaveNumberPage(), mode, updatedAnswers))
+              updatedAnswers              <- Future.fromTry(request.userAnswers.setWithReportId(HaveNumberPage(request.accountId), value))
+              updatedAnswersWithAccountId <- checkAndSetAccountId(request, updatedAnswers)
+              _                           <- repository.set(updatedAnswersWithAccountId)
+            } yield Redirect(navigator.nextPage(HaveNumberPage(request.accountId), mode, updatedAnswersWithAccountId))
         )
   }
+
+  private def checkAndSetAccountId(request: AccountIdRequest[AnyContent], updatedAnswers: UserAnswers)(implicit reportId: ReportId) =
+    Future.fromTry {
+      updatedAnswers.get(AccountIdPage(request.accountId)) match {
+        case Some(_) => scala.util.Success(updatedAnswers)
+        case None    => updatedAnswers.setWithReportId(AccountIdPage(request.accountId), request.accountId)
+      }
+    }
 }
