@@ -60,6 +60,10 @@ addCommandAlias(
   "precommit",
   "; clean ; scalafmtAll ; coverage ; test ; it/test ; coverageReport ; coverageOff"
 )
+addCommandAlias(
+  "precommitCheck",
+  "; clean ; scalafmtCheckAll ; coverage ; test ; it/test ; coverageReport ; coverageOff"
+)
 lazy val testSettings: Seq[Def.Setting[_]] = Seq(
   fork := true,
   unmanagedSourceDirectories += baseDirectory.value / "test-utils"
