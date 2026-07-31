@@ -428,3 +428,9 @@ ukAddress.uk = United Kingdom
 ukAddress.jersey = Jersey
 ukAddress.guernsey = Guernsey
 ukAddress.isleOfMan = Isle of Man
+
+accountClosed.title = Is the account closed?
+accountClosed.heading = Is the account closed?
+accountClosed.checkYourAnswersLabel = accountClosed
+accountClosed.error.required = Select yes if the account is closed
+accountClosed.change.hidden = AccountClosed
