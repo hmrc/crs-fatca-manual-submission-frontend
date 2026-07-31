@@ -1,3 +1,4 @@
+
 (function () {
     'use strict';
 
@@ -119,6 +120,10 @@
             }
         }
     });
+       var enhancedCurrencyInput = document.getElementById('country');
+        if (enhancedCurrencyInput) {
+            enhancedCurrencyInput.setAttribute('spellcheck', 'false');
+        }
 })();
 
 (function () {
@@ -242,4 +247,8 @@
             }
         }
     });
+       var enhancedCurrencyInput = document.getElementById('currency');
+        if (enhancedCurrencyInput) {
+            enhancedCurrencyInput.setAttribute('spellcheck', 'false');
+        }
 })();

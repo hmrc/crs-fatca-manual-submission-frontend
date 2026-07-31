@@ -405,3 +405,4 @@ whatWasTheAccountBalance.error.invalid.CRS = Amount must only include numbers 0 
 whatWasTheAccountBalance.error.invalid.FATCA = Amount must only include numbers 0 to 9, a minus sign and a full stop
 whatWasTheAccountBalance.error.minus.FATCA = Amount can only include a minus sign as the first character
 whatWasTheAccountBalance.error.decimalPlaces = Amount cannot have more than 2 decimal places
+currency.select = Select currency
