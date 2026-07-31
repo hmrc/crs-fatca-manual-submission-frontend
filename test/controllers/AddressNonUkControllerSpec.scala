@@ -20,7 +20,7 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import forms.manual.sponsor.AddressNonUkFormProvider
 import models.SubmissionsConstants.CRS
-import models.{AddressNonUk, NormalMode, ReportId}
+import models.{AddressNonUk, Countries, NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -32,6 +32,7 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import views.html.manual.sponsor.AddressNonUkView
+
 import scala.concurrent.Future
 
 class AddressNonUkControllerSpec extends SpecBase with MockitoSugar {
@@ -44,6 +45,7 @@ class AddressNonUkControllerSpec extends SpecBase with MockitoSugar {
   implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
 
   private val sponsorName = "Test Sponsor"
+  private val countries   = Countries.all
 
   private val validAddress = AddressNonUk(
     addressLine1 = "1 Test Street",
@@ -101,7 +103,8 @@ class AddressNonUkControllerSpec extends SpecBase with MockitoSugar {
           view(
             form,
             NormalMode,
-            sponsorName
+            sponsorName,
+            countries
           )(request, messages(application)).toString
       }
     }
@@ -131,7 +134,8 @@ class AddressNonUkControllerSpec extends SpecBase with MockitoSugar {
           view(
             form.fill(validAddress),
             NormalMode,
-            sponsorName
+            sponsorName,
+            countries
           )(request, messages(application)).toString
       }
     }
@@ -191,7 +195,8 @@ class AddressNonUkControllerSpec extends SpecBase with MockitoSugar {
           view(
             boundForm,
             NormalMode,
-            sponsorName
+            sponsorName,
+            countries
           )(request, messages(application)).toString
       }
     }
