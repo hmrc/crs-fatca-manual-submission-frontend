@@ -18,10 +18,7 @@ package models
 
 import play.api.libs.json.{Json, OFormat}
 
-case class SponsorResidentTaxCountryCodes(resCountryCodes: Seq[String]) {
-
-  def getCountryCode(idx: Option[Int]): String = idx.flatMap(resCountryCodes.lift).getOrElse("")
-}
+case class SponsorResidentTaxCountryCodes(resCountryCodes: Seq[String])
 
 object SponsorResidentTaxCountryCodes {
   implicit val format: OFormat[SponsorResidentTaxCountryCodes] = Json.format[SponsorResidentTaxCountryCodes]
