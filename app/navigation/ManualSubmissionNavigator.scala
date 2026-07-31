@@ -49,10 +49,10 @@ class ManualSubmissionNavigator @Inject() () {
     }
 
   private def accountNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
-    case (HaveNumberPage(accountId), mode, ua)       => haveNumberNavigation(accountId, mode, ua)
-    case (NumberTypePage(_), mode, ua)               => routes.UnderConstructionController.onPageLoad()
-    case (IdentifierPage(_), mode, ua)               => routes.UnderConstructionController.onPageLoad()
-    case (WhatWasTheAccountBalancePage(_), mode, ua) => routes.UnderConstructionController.onPageLoad()
+    case (HaveNumberPage(accountId), mode, ua)        => haveNumberNavigation(accountId, mode, ua)
+    case (NumberTypePage(_), mode, ua)                => routes.UnderConstructionController.onPageLoad()
+    case (IdentifierPage(_), mode, ua)                => routes.UnderConstructionController.onPageLoad()
+    case (WhatWasTheAccountBalancePage(_), mode, ua)  => routes.UnderConstructionController.onPageLoad()
     case (WhatWasTheAccountCurrencyPage(_), mode, ua) => routes.UnderConstructionController.onPageLoad()
   }
 
