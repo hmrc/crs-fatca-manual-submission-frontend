@@ -20,10 +20,10 @@ import base.SpecBase
 import controllers.manual.reportdetails.routes.{ReportDetailsCheckAnswersController, ReportingYearController, TypeOfReportController}
 import models.*
 import models.SubmissionsConstants.FATCA
+import models.response.{AddressLookup, Country}
 import models.viewModels.AccountId
-import models.response.{Address, AddressLookup, Country}
 import pages.*
-import pages.manual.account.{HaveNumberPage, IdentifierPage, NumberTypePage}
+import pages.manual.account.{HaveNumberPage, IdentifierPage, NumberTypePage, WhatWasTheAccountBalancePage}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.*
@@ -205,23 +205,19 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
       }
 
       "NumberTypePage" - {
-
         "must go to UnderConstruction Page when when answer is No" in {
           val userData = UserAnswers("id").withPage(NumberTypePage(accountId), NumberType.Iban)
           navigator.nextPage(NumberTypePage(accountId), NormalMode, userData) mustBe
             controllers.routes.UnderConstructionController.onPageLoad()
         }
-
       }
 
       "IdentifierPage" - {
-
         "must go to UnderConstruction Page when when answer is No" in {
           val userData = UserAnswers("id").withPage(IdentifierPage(accountId), "testId")
           navigator.nextPage(IdentifierPage(accountId), NormalMode, userData) mustBe
             controllers.routes.UnderConstructionController.onPageLoad()
         }
-
       }
 
       "AddressNonUkPage" - {
@@ -257,6 +253,14 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           val userData = UserAnswers("id")
           navigator.nextPage(IsThisAddressForSponsorPage(), NormalMode, userData) mustBe
             controllers.routes.JourneyRecoveryController.onPageLoad()
+        }
+      }
+
+      "WhatWasTheAccountBalancePage" - {
+        "must go to UNDERCONSTRUCTION page when submitted" in {
+          val ua = UserAnswers("id")
+          navigator.nextPage(WhatWasTheAccountBalancePage(accountId), NormalMode, ua) mustBe
+            controllers.routes.UnderConstructionController.onPageLoad()
         }
       }
 
