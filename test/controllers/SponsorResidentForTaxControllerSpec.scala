@@ -66,29 +66,6 @@ class SponsorResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    // TODO Will be implemented in https://jira.tools.tax.service.gov.uk/browse/DAC6-4406 when there is a currentCountryPage object
-//    "must populate the view correctly on a GET when the question has previously been answered" in {
-//
-//      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
-//
-//      val userAnswers = ua
-//        .withPage(SponsorResidentForTaxPage(), SponsorResidentTaxCountryCodes(Seq("GB")))
-//        .withPage(SponsorNamePage(), sponsorName)
-//
-//      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
-//
-//      running(application) {
-//        val request = FakeRequest(GET, controllers.manual.sponsor.routes.SponsorResidentForTaxController.onPageLoad(NormalMode).url)
-//
-//        val view = application.injector.instanceOf[SponsorResidentForTaxView]
-//
-//        val result = route(application, request).value
-//
-//        status(result) mustEqual OK
-//        contentAsString(result) mustEqual view(form.fill("GB"), NormalMode, sponsorName, Countries.all)(request, messages(application)).toString
-//      }
-//    }
-
     "must redirect to the next page when valid data is submitted" in {
       val userAnswers           = ua.withPage(SponsorNamePage(), sponsorName)
       val mockSessionRepository = mock[DatabaseConnector]

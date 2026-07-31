@@ -25,6 +25,7 @@
     govukButton: GovukButton,
     countrySelect: views.html.components.CountrySelect,
     heading: views.html.components.Heading,
+    paragraph: views.html.components.Paragraph,
 )
 
 @(form: Form[_], mode: Mode, sponsorName: String, countries: Seq[Country])(implicit request: Request[_], messages: Messages)
@@ -38,9 +39,7 @@
         }
         @heading(messages("sponsorResidentForTax.heading", sponsorName))
 
-        <p class="govuk-body">
-            @messages("sponsorResidentForTax.paragraph")
-        </p>
+        @paragraph(messages("sponsorResidentForTax.paragraph"))
 
         <div class="govuk-!-width-two-thirds">
             @countrySelect(
