@@ -294,20 +294,19 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         val address = Address(None, "string", None, "string", None, None, Country.GB)
         "must go to Tax resident page after user hits submit when there are no tax tax resident country codes and it is the address" in {
 
-            val ua = UserAnswers("id")
-              .withPage(IsThisAddressForSponsorPage(), true)
-              .withPage(WhatIsAddressForSponsorPage(), address)
-            navigator.nextPage(IsThisAddressForSponsorPage(), NormalMode, ua) mustBe
-              controllers.manual.sponsor.routes.SponsorResidentForTaxController.onPageLoad(NormalMode)
+          val ua = UserAnswers("id")
+            .withPage(IsThisAddressForSponsorPage(), true)
+            .withPage(WhatIsAddressForSponsorPage(), address)
+          navigator.nextPage(IsThisAddressForSponsorPage(), NormalMode, ua) mustBe
+            controllers.manual.sponsor.routes.SponsorResidentForTaxController.onPageLoad(NormalMode)
 
-            val userAnswers = UserAnswers("id")
-              .withPage(SponsorResidentForTaxPage(), SponsorResidentTaxCountryCodes(Seq()))
-              .withPage(IsThisAddressForSponsorPage(), true)
-              .withPage(WhatIsAddressForSponsorPage(), address)
+          val userAnswers = UserAnswers("id")
+            .withPage(SponsorResidentForTaxPage(), SponsorResidentTaxCountryCodes(Seq()))
+            .withPage(IsThisAddressForSponsorPage(), true)
+            .withPage(WhatIsAddressForSponsorPage(), address)
 
-            navigator.nextPage(IsThisAddressForSponsorPage(), NormalMode, userAnswers) mustBe
-              controllers.manual.sponsor.routes.SponsorResidentForTaxController.onPageLoad(NormalMode)
-
+          navigator.nextPage(IsThisAddressForSponsorPage(), NormalMode, userAnswers) mustBe
+            controllers.manual.sponsor.routes.SponsorResidentForTaxController.onPageLoad(NormalMode)
 
         }
 
@@ -329,7 +328,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           val userData = UserAnswers("id")
             .withPage(IsThisAddressForSponsorPage(), false)
             .withPage(WhatIsAddressForSponsorPage(),
-              Address(None, "1 Address line 1 Road", None, "Address line 2 Road", Some("Town"), Some("zz11zz"), Country.GB)
+                      Address(None, "1 Address line 1 Road", None, "Address line 2 Road", Some("Town"), Some("zz11zz"), Country.GB)
             )
           navigator.nextPage(IsThisAddressForSponsorPage(), NormalMode, userData) mustBe
             controllers.manual.sponsor.routes.UkAddressController.onPageLoad(NormalMode)
