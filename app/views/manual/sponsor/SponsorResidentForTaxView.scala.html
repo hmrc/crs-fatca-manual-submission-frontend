@@ -16,6 +16,7 @@
 
 @import viewmodels.InputWidth._
 @import uk.gov.hmrc.govukfrontend.views.html.components._
+@import models.response.Country
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
@@ -26,7 +27,7 @@
     heading: views.html.components.Heading,
 )
 
-@(form: Form[_], mode: Mode, sponsorName: String, idx: Option[Int] = None)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, sponsorName: String, countries: Seq[Country], idx: Option[Int] = None)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("sponsorResidentForTax.title"))) {
 
@@ -44,7 +45,8 @@
         <div class="govuk-!-width-two-thirds">
             @countrySelect(
                 field = form("country"),
-                label = ""
+                label = "",
+                countries = countries
             )
         </div>
 

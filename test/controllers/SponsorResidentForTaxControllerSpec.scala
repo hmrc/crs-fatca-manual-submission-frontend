@@ -20,7 +20,7 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import forms.SponsorResidentForTaxFormProvider
 import models.SubmissionsConstants.CRS
-import models.{NormalMode, ReportId, SponsorResidentTaxCountryCodes}
+import models.{NormalMode, ReportId, SponsorResidentTaxCountryCodes, Countries}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -62,7 +62,7 @@ class SponsorResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[SponsorResidentForTaxView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, sponsorName, None)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, sponsorName, Countries.all, None)(request, messages(application)).toString
       }
     }
 
@@ -84,7 +84,7 @@ class SponsorResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill("GB"), NormalMode, sponsorName, Some(0))(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill("GB"), NormalMode, sponsorName, Countries.all, Some(0))(request, messages(application)).toString
       }
     }
 
@@ -130,7 +130,7 @@ class SponsorResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, sponsorName, None)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, sponsorName, Countries.all, None)(request, messages(application)).toString
       }
     }
 

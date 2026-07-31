@@ -1,8 +1,24 @@
+/*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package views.manual.sponsor
 
 import base.SpecBase
 import forms.SponsorResidentForTaxFormProvider
-import models.NormalMode
+import models.{Countries, NormalMode}
 import org.jsoup.Jsoup
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
@@ -25,7 +41,7 @@ class SponsorResidentForTaxViewSpec extends SpecBase {
   "SponsorResidentForTaxView" - {
     val sponsorName = "Sponsor Name"
 
-    val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, sponsorName, None)
+    val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, sponsorName, Countries.all, None)
     lazy val doc                            = Jsoup.parse(renderedHtml.body)
     println(renderedHtml.body)
 

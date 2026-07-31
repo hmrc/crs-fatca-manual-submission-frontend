@@ -40,7 +40,7 @@ object Countries {
     )
   )
 
-  val all: Seq[Country] = Seq(
+  val nonUkTerritories: Seq[Country] = Seq(
     Country(
       code = "AE",
       description = "United Arab Emirates",
@@ -1044,4 +1044,6 @@ object Countries {
       description = "Zimbabwe"
     )
   )
+  
+  val all: Seq[Country] = ukTerritories ++ nonUkTerritories
 }

@@ -20,7 +20,7 @@ import connectors.DatabaseConnector
 import controllers.*
 import controllers.actions.*
 import forms.SponsorResidentForTaxFormProvider
-import models.{Mode, ReportId, SponsorResidentTaxCountryCodes}
+import models.{Countries, Mode, ReportId, SponsorResidentTaxCountryCodes}
 import navigation.ManualSubmissionNavigator
 import pages.SponsorResidentForTaxPage
 import pages.manual.sponsor.SponsorNamePage
@@ -29,6 +29,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.sponsor.SponsorResidentForTaxView
 import play.api.mvc.Results.Redirect
+
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -73,7 +74,7 @@ class SponsorResidentForTaxController @Inject() (
                   form.fill(value)
               }
 
-              Ok(view(preparedForm, mode, sponsorName, idx))
+              Ok(view(preparedForm, mode, sponsorName, Countries.all, idx))
           }
   }
 
@@ -95,7 +96,7 @@ class SponsorResidentForTaxController @Inject() (
               form
                 .bindFromRequest()
                 .fold(
-                  formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, sponsorName, idx))),
+                  formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, sponsorName, Countries.all, idx))),
                   value =>
                     val sponsorResidentTaxCountryCodes = request.userAnswers.get(SponsorResidentForTaxPage()).getOrElse(SponsorResidentTaxCountryCodes(Seq()))
                     val updatedSponsorResidentTaxCountryCodes =
