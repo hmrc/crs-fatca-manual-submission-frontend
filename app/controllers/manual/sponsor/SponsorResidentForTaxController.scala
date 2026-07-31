@@ -60,7 +60,7 @@ class SponsorResidentForTaxController @Inject() (
         .get(SponsorNamePage())
         .fold(Redirect(journeyRecoveryCall)) {
           sponsorName =>
-            //Todo prefill will be implemented in https://jira.tools.tax.service.gov.uk/browse/DAC6-4406 when currentCountryPage is present
+            // Todo prefill will be implemented in https://jira.tools.tax.service.gov.uk/browse/DAC6-4406 when currentCountryPage is present
             val preparedForm = form
             Ok(view(preparedForm, mode, sponsorName, Countries.all))
         }
