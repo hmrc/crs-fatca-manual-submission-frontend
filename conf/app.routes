@@ -162,7 +162,7 @@ POST       /manual/sponsor/address-uk                          controllers.manua
 GET        /manual/sponsor/change-address-uk                   controllers.manual.sponsor.UkAddressController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/sponsor/change-address-uk                  controllers.manual.sponsor.UkAddressController.onSubmit(mode: Mode = CheckMode)
 
-GET        /manual/sponsor/resident-for-tax                        controllers.manual.sponsor.SponsorResidentForTaxController.onPageLoad(mode: Mode = NormalMode, idx: Option[Int] ?= None)
-POST       /manual/sponsor/resident-for-tax                        controllers.manual.sponsor.SponsorResidentForTaxController.onSubmit(mode: Mode = NormalMode, idx: Option[Int] ?= None)
-GET        /manual/sponsor/change-resident-for-tax                  controllers.manual.sponsor.SponsorResidentForTaxController.onPageLoad(mode: Mode = CheckMode, idx: Option[Int] ?= None)
-POST       /manual/sponsor/change-resident-for-tax                  controllers.manual.sponsor.SponsorResidentForTaxController.onSubmit(mode: Mode = CheckMode, idx: Option[Int] ?= None)
+GET        /manual/sponsor/resident-for-tax                        controllers.manual.sponsor.SponsorResidentForTaxController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/sponsor/resident-for-tax                        controllers.manual.sponsor.SponsorResidentForTaxController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/sponsor/change-resident-for-tax                  controllers.manual.sponsor.SponsorResidentForTaxController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/sponsor/change-resident-for-tax                  controllers.manual.sponsor.SponsorResidentForTaxController.onSubmit(mode: Mode = CheckMode)

@@ -62,31 +62,32 @@ class SponsorResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[SponsorResidentForTaxView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, sponsorName, Countries.all, None)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, sponsorName, Countries.all)(request, messages(application)).toString
       }
     }
 
-    "must populate the view correctly on a GET when the question has previously been answered" in {
-
-      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
-
-      val userAnswers = ua
-        .withPage(SponsorResidentForTaxPage(), SponsorResidentTaxCountryCodes(Seq("GB")))
-        .withPage(SponsorNamePage(), sponsorName)
-
-      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
-
-      running(application) {
-        val request = FakeRequest(GET, controllers.manual.sponsor.routes.SponsorResidentForTaxController.onPageLoad(NormalMode, Some(0)).url)
-
-        val view = application.injector.instanceOf[SponsorResidentForTaxView]
-
-        val result = route(application, request).value
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill("GB"), NormalMode, sponsorName, Countries.all, Some(0))(request, messages(application)).toString
-      }
-    }
+    //TODO Will be implemented in https://jira.tools.tax.service.gov.uk/browse/DAC6-4406 when there is a currentCountryPage object
+//    "must populate the view correctly on a GET when the question has previously been answered" in {
+//
+//      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
+//
+//      val userAnswers = ua
+//        .withPage(SponsorResidentForTaxPage(), SponsorResidentTaxCountryCodes(Seq("GB")))
+//        .withPage(SponsorNamePage(), sponsorName)
+//
+//      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
+//
+//      running(application) {
+//        val request = FakeRequest(GET, controllers.manual.sponsor.routes.SponsorResidentForTaxController.onPageLoad(NormalMode).url)
+//
+//        val view = application.injector.instanceOf[SponsorResidentForTaxView]
+//
+//        val result = route(application, request).value
+//
+//        status(result) mustEqual OK
+//        contentAsString(result) mustEqual view(form.fill("GB"), NormalMode, sponsorName, Countries.all)(request, messages(application)).toString
+//      }
+//    }
 
     "must redirect to the next page when valid data is submitted" in {
       val userAnswers           = ua.withPage(SponsorNamePage(), sponsorName)
@@ -130,7 +131,7 @@ class SponsorResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, sponsorName, Countries.all, None)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, sponsorName, Countries.all)(request, messages(application)).toString
       }
     }
 
@@ -140,24 +141,6 @@ class SponsorResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request = FakeRequest(GET, sponsorResidentForTaxRoute)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-      }
-    }
-
-    "must redirect to Journey Recovery for a GET if an invalid idx is passed when sponsor resident is present" in {
-      val userAnswers = ua
-        .withPage(SponsorResidentForTaxPage(), SponsorResidentTaxCountryCodes(Seq("GB")))
-        .withPage(SponsorNamePage(), sponsorName)
-
-      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
-        .build()
-
-      running(application) {
-        val request = FakeRequest(GET, controllers.manual.sponsor.routes.SponsorResidentForTaxController.onPageLoad(NormalMode, Some(23)).url)
 
         val result = route(application, request).value
 
@@ -211,26 +194,6 @@ class SponsorResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, sponsorResidentForTaxRoute)
-            .withFormUrlEncodedBody(("country", "GB"))
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-      }
-    }
-
-    "must redirect to Journey Recovery for a POST if idx is invalid" in {
-      val userAnswers = ua
-        .withPage(ReportIdPage, reportId)
-        .withPage(SponsorResidentForTaxPage(), SponsorResidentTaxCountryCodes(Seq("GB")))
-
-      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
-        .build()
-
-      running(application) {
-        val request =
-          FakeRequest(POST, controllers.manual.sponsor.routes.SponsorResidentForTaxController.onPageLoad(NormalMode, Some(23)).url)
             .withFormUrlEncodedBody(("country", "GB"))
 
         val result = route(application, request).value

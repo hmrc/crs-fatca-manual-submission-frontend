@@ -41,9 +41,8 @@ class SponsorResidentForTaxViewSpec extends SpecBase {
   "SponsorResidentForTaxView" - {
     val sponsorName = "Sponsor Name"
 
-    val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, sponsorName, Countries.all, None)
+    val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, sponsorName, Countries.all)
     lazy val doc                            = Jsoup.parse(renderedHtml.body)
-    println(renderedHtml.body)
 
     "must display title" in {
       doc.title() must include(s"Where is the sponsor resident for tax")

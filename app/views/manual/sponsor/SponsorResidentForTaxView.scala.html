@@ -27,11 +27,11 @@
     heading: views.html.components.Heading,
 )
 
-@(form: Form[_], mode: Mode, sponsorName: String, countries: Seq[Country], idx: Option[Int] = None)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, sponsorName: String, countries: Seq[Country])(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("sponsorResidentForTax.title"))) {
 
-    @formHelper(action = controllers.manual.sponsor.routes.SponsorResidentForTaxController.onSubmit(mode, idx)) {
+    @formHelper(action = controllers.manual.sponsor.routes.SponsorResidentForTaxController.onSubmit(mode)) {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))

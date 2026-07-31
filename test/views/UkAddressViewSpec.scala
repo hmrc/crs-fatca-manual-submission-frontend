@@ -39,7 +39,6 @@ class UkAddressViewSpec extends SpecBase {
     "should render page components" - {
       val renderedHtml = view(formProvider(), NormalMode, "Test Sponsor Name", Countries.ukTerritories)
       lazy val doc     = Jsoup.parse(renderedHtml.body)
-      println(renderedHtml.body)
       val expectedTitleLabels = Seq(
         "Address line 1 ",
         "Address line 2 (Optional)",
