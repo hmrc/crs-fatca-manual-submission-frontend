@@ -66,7 +66,7 @@ class SponsorResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    //TODO Will be implemented in https://jira.tools.tax.service.gov.uk/browse/DAC6-4406 when there is a currentCountryPage object
+    // TODO Will be implemented in https://jira.tools.tax.service.gov.uk/browse/DAC6-4406 when there is a currentCountryPage object
 //    "must populate the view correctly on a GET when the question has previously been answered" in {
 //
 //      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")

@@ -54,13 +54,13 @@ class SponsorResidentForTaxController @Inject() (
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
     implicit request =>
 
-      implicit val reportId: ReportId    = request.reportId
+      implicit val reportId: ReportId = request.reportId
 
       request.userAnswers
         .get(SponsorNamePage())
         .fold(Redirect(journeyRecoveryCall)) {
           sponsorName =>
-            //Todo prefill will be implemented in https://jira.tools.tax.service.gov.uk/browse/DAC6-4406 when currentCountryPage is present
+            // Todo prefill will be implemented in https://jira.tools.tax.service.gov.uk/browse/DAC6-4406 when currentCountryPage is present
             val preparedForm = form
             Ok(view(preparedForm, mode, sponsorName, Countries.all))
         }
@@ -68,19 +68,19 @@ class SponsorResidentForTaxController @Inject() (
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
     implicit request =>
-      implicit val reportId: ReportId    = request.reportId
+      implicit val reportId: ReportId = request.reportId
       request.userAnswers
         .get(SponsorNamePage())
         .fold(Future.successful(Redirect(journeyRecoveryCall))) {
           sponsorName =>
-
             form
               .bindFromRequest()
               .fold(
                 formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, sponsorName, Countries.all))),
                 value =>
                   val sponsorResidentTaxCountryCodes = request.userAnswers.get(SponsorResidentForTaxPage()).getOrElse(SponsorResidentTaxCountryCodes(Seq()))
-                  val updatedSponsorResidentTaxCountryCodes =  sponsorResidentTaxCountryCodes.copy(resCountryCodes = sponsorResidentTaxCountryCodes.resCountryCodes :+ value)
+                  val updatedSponsorResidentTaxCountryCodes =
+                    sponsorResidentTaxCountryCodes.copy(resCountryCodes = sponsorResidentTaxCountryCodes.resCountryCodes :+ value)
                   for {
                     updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(SponsorResidentForTaxPage(), updatedSponsorResidentTaxCountryCodes))
                     _              <- repository.set(updatedAnswers)
