@@ -15,34 +15,37 @@
  *@
 
 @import viewmodels.InputWidth._
+@import views.html.components._
+@import models.SubmissionsConstants.RegimeType
 
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
     govukInput: GovukInput,
-    govukButton: GovukButton
+    govukButton: GovukButton,
+    currencySelect: CurrencySelect,
+    heading: Heading
 )
 
-@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, regimeType: RegimeType)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("sponsorName.title"))) {
+@layout(pageTitle = title(form, messages("whatWasTheAccountCurrency.title"))) {
 
-    @formHelper(action = controllers.manual.sponsor.routes.SponsorNameController.onSubmit(mode)) {
+    @formHelper(action = controllers.manual.account.routes.WhatWasTheAccountCurrencyController.onSubmit(mode)) {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
+            
+        @heading(messages("whatWasTheAccountCurrency.heading"))
 
-        @govukInput(
-            InputViewModel(
-                field = form("value"),
-                label = LabelViewModel(messages("sponsorName.heading")).asPageHeading()
-            )
-            .withWidth(Full)
-            .withCssClass("govuk-input govuk-!-width-three-quarters")
-            .withAutocomplete("organization")
+        @currencySelect(
+            field = form("currency"),
+            labelText = "",
+            regime = regimeType
         )
+
 
         @govukButton(
             ButtonViewModel(messages("site.saveContinue"))

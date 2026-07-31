@@ -167,7 +167,7 @@ POST       /manual/account/balance                        controllers.manual.acc
 GET        /manual/account/change-balance                  controllers.manual.account.WhatWasTheAccountBalanceController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/account/change-balance                  controllers.manual.account.WhatWasTheAccountBalanceController.onSubmit(mode: Mode = CheckMode)
 
-GET        /whatWasTheAccountCurrency                        controllers.manual.account.WhatWasTheAccountCurrencyController.onPageLoad(mode: Mode = NormalMode)
-POST       /whatWasTheAccountCurrency                        controllers.manual.account.WhatWasTheAccountCurrencyController.onSubmit(mode: Mode = NormalMode)
-GET        /changeWhatWasTheAccountCurrency                  controllers.manual.account.WhatWasTheAccountCurrencyController.onPageLoad(mode: Mode = CheckMode)
-POST       /changeWhatWasTheAccountCurrency                  controllers.manual.account.WhatWasTheAccountCurrencyController.onSubmit(mode: Mode = CheckMode)
+GET        /manual/account/currency                         controllers.manual.account.WhatWasTheAccountCurrencyController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account/currency                         controllers.manual.account.WhatWasTheAccountCurrencyController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account/change-currency                  controllers.manual.account.WhatWasTheAccountCurrencyController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account/change-currency                  controllers.manual.account.WhatWasTheAccountCurrencyController.onSubmit(mode: Mode = CheckMode)

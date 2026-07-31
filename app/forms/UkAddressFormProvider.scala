@@ -16,19 +16,19 @@
 
 package forms
 
-import javax.inject.Inject
 import forms.mappings.Mappings
+import models.UkAddress
 import play.api.data.Form
 import play.api.data.Forms.*
-import models.UkAddress
 import utils.RegexConstants
-import utils.RegexConstants.{ukAddressRegex, POSTCODE_FORMAT, POSTCODE_VALID}
 
-class UkAddressFormProvider @Inject() extends Mappings {
+import javax.inject.Inject
+
+class UkAddressFormProvider @Inject() extends Mappings with RegexConstants {
   private val addressLineLength = 200
 
   private def doesNotContainDoubleDash(value: String): Boolean =
-    value.matches(RegexConstants.DOUBLE_DASH_INVALID)
+    value.matches(DOUBLE_DASH_INVALID)
 
   def apply(): Form[UkAddress] = Form(
     mapping(

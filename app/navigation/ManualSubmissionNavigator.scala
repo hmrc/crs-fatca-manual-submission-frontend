@@ -22,7 +22,7 @@ import controllers.routes
 import models.*
 import models.viewModels.AccountId
 import pages.*
-import pages.manual.account.{HaveNumberPage, IdentifierPage, NumberTypePage, WhatWasTheAccountBalancePage}
+import pages.manual.account.{HaveNumberPage, IdentifierPage, NumberTypePage, WhatWasTheAccountBalancePage, WhatWasTheAccountCurrencyPage}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.*
@@ -53,6 +53,7 @@ class ManualSubmissionNavigator @Inject() () {
     case (NumberTypePage(_), mode, ua)               => routes.UnderConstructionController.onPageLoad()
     case (IdentifierPage(_), mode, ua)               => routes.UnderConstructionController.onPageLoad()
     case (WhatWasTheAccountBalancePage(_), mode, ua) => routes.UnderConstructionController.onPageLoad()
+    case (WhatWasTheAccountCurrencyPage(_), mode, ua) => routes.UnderConstructionController.onPageLoad()
   }
 
   private def fillerNavigation: PartialFunction[(Page, Mode, UserAnswers), Call] = {

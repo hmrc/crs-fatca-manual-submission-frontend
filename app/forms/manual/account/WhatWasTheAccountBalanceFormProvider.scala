@@ -22,15 +22,11 @@ import models.{AccountBalance, Currencies, Currency}
 import play.api.data.Form
 import play.api.data.Forms.*
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
+import utils.RegexConstants
 
 import javax.inject.Inject
 
-class WhatWasTheAccountBalanceFormProvider @Inject() extends Mappings {
-
-  private val crsAmountFormatRegex   = "^[0-9.]+$".r
-  private val fatcaAmountFormatRegex = "^[-0-9.]+$".r
-  private val minusPositionRegex     = "^-?[^-]*$".r
-  private val decimalFormatRegex     = "^-?[0-9]+(\\.[0-9]{1,2})?$".r
+class WhatWasTheAccountBalanceFormProvider @Inject() extends Mappings with RegexConstants {
 
   def apply(regime: RegimeType): Form[AccountBalance] = {
 

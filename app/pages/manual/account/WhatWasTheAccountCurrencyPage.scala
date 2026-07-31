@@ -14,25 +14,13 @@
  * limitations under the License.
  */
 
-package forms.manual.sponsor
+package pages.manual.account
 
-import forms.mappings.Mappings
-import play.api.data.Form
-import utils.RegexConstants
+import models.{Currency, ReportId}
+import models.viewModels.AccountId
+import pages.QuestionPage
+import play.api.libs.json.JsPath
 
-import javax.inject.Inject
+final case class WhatWasTheAccountCurrencyPage(accountId: AccountId)(implicit reportId: ReportId) extends QuestionPage[Currency]:
 
-class UKPostcodeFormProvider @Inject() extends Mappings with RegexConstants {
-
-  def apply(): Form[String] =
-    Form(
-      "value" -> mandatoryPostcode(
-        "uKPostcode.error.required",
-        "uKPostcode.error.length",
-        POSTCODE_VALID,
-        "uKPostcode.error.invalid",
-        POSTCODE_FORMAT,
-        "uKPostcode.error.format"
-      )
-    )
-}
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "accounts" \ accountId.value \ "whatWasTheAccountCurrency"

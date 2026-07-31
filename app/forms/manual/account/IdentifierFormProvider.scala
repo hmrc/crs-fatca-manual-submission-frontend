@@ -24,7 +24,7 @@ import utils.RegexConstants
 
 import javax.inject.Inject
 
-class IdentifierFormProvider @Inject() extends Mappings {
+class IdentifierFormProvider @Inject() extends Mappings with RegexConstants {
 
   def apply(): Form[String] =
     Form(
@@ -34,8 +34,8 @@ class IdentifierFormProvider @Inject() extends Mappings {
           200,
           "identifier.error.length",
           Seq(
-            ErrorValidation(RegexConstants.DEFAULT_STRING_FIELD_VALID, "identifier.error.invalid"),
-            ErrorValidation(RegexConstants.DOUBLE_DASH_INVALID, "identifier.error.doubedash")
+            ErrorValidation(DEFAULT_STRING_FIELD_VALID, "identifier.error.invalid"),
+            ErrorValidation(DOUBLE_DASH_INVALID, "identifier.error.doubedash")
           )
         )
       )

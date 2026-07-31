@@ -20,11 +20,11 @@ import forms.mappings.Mappings
 import models.AddressNonUk
 import play.api.data.Form
 import play.api.data.Forms.*
-import utils.RegexConstants.{nonUkAddressRegex, nonUkPostcodeRegex}
+import utils.RegexConstants
 
 import javax.inject.Inject
 
-class AddressNonUkFormProvider @Inject() extends Mappings {
+class AddressNonUkFormProvider @Inject() extends Mappings with RegexConstants {
 
   private val addressLineLength = 200
   private val postcodeLength    = 20

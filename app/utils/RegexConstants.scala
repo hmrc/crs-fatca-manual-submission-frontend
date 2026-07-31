@@ -16,7 +16,9 @@
 
 package utils
 
-object RegexConstants:
+import scala.util.matching.Regex
+
+trait RegexConstants:
   val DEFAULT_STRING_FIELD_VALID: String = """^[A-Za-z0-9&'\\^` -]+$"""
   val DOUBLE_DASH_INVALID: String        = "^(?!.*--).+$"
   val POSTCODE_VALID: String             = """^[A-Za-z0-9 ]*$"""
@@ -28,3 +30,8 @@ object RegexConstants:
 
   val nonUkPostcodeRegex: String =
     """^[A-Za-z0-9 ./-]*$"""
+
+  val crsAmountFormatRegex: Regex   = "^[0-9.]+$".r
+  val fatcaAmountFormatRegex: Regex = "^[-0-9.]+$".r
+  val minusPositionRegex: Regex     = "^-?[^-]*$".r
+  val decimalFormatRegex: Regex     = "^-?[0-9]+(\\.[0-9]{1,2})?$".r
