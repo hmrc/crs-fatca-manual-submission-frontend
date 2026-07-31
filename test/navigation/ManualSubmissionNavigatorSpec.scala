@@ -20,7 +20,7 @@ import base.SpecBase
 import controllers.manual.reportdetails.routes.{ReportDetailsCheckAnswersController, ReportingYearController, TypeOfReportController}
 import models.*
 import models.SubmissionsConstants.FATCA
-import models.response.{AddressLookup, Country}
+import models.response.{Address, AddressLookup, Country}
 import models.viewModels.AccountId
 import pages.*
 import pages.manual.account.{AccountClosedPage, HaveNumberPage, IdentifierPage, NumberTypePage}
