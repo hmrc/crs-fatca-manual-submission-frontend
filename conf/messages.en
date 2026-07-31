@@ -432,6 +432,4 @@ ukAddress.isleOfMan = Isle of Man
 sponsorResidentForTax.title = Where is the sponsor resident for tax?
 sponsorResidentForTax.heading = Where is {0} resident for tax?
 sponsorResidentForTax.paragraph = If they are resident for tax in more than one country, then you can add other countries on the next page.
-sponsorResidentForTax.checkYourAnswersLabel = sponsorResidentForTax
 sponsorResidentForTax.country.error.required = 	Select where the sponsor is resident for tax
-sponsorResidentForTax.change.hidden = SponsorResidentForTax
