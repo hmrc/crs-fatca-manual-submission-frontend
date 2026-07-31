@@ -17,12 +17,12 @@
 package forms.manual.account
 
 import forms.behaviours.StringFieldBehaviours
+import models.Currency
 import models.SubmissionsConstants.{CRS, FATCA}
-import models.{Currencies, Currency}
 import play.api.data.FormError
 
 class WhatWasTheAccountCurrencyFormProviderSpec extends StringFieldBehaviours {
-  
+
   private val requiredCurrencyKey = "whatWasTheAccountBalance.error.required.currency"
 
   "Currency field" - {

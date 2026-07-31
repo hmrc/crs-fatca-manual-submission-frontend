@@ -28,6 +28,7 @@
 @currencyItems = @{
   val defaultOption = SelectItem(
     value = Some(""),
+    text = messages("currency.select"),
     selected = field.value.forall(_.isEmpty)
   )
 

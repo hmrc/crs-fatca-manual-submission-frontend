@@ -449,3 +449,4 @@ whatWasTheAccountCurrency.heading = What was the account currency?
 whatWasTheAccountCurrency.checkYourAnswersLabel = What was the account currency?
 whatWasTheAccountCurrency.error.required = Select an option for the currency
 whatWasTheAccountCurrency.change.hidden = WhatWasTheAccountCurrency
+currency.select = Select currency
