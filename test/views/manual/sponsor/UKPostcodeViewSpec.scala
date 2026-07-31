@@ -60,7 +60,8 @@ class UKPostcodeViewSpec extends SpecBase {
       }
 
       "must display link" in {
-        doc.select("a").text() must include("Or enter the address manually")
+        doc.select("a#enter-manually-id").text() must include("Or enter the address manually")
+        doc.select("a#enter-manually-id").attr("href") mustBe controllers.manual.sponsor.routes.UkAddressController.onPageLoad(NormalMode).url
       }
 
       "must have autocomplete" in {

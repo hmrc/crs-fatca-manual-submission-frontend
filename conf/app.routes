@@ -161,3 +161,8 @@ GET        /manual/account/closed                        controllers.manual.acco
 POST       /manual/account/closed                        controllers.manual.account.AccountClosedController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/account/change-closed                  controllers.manual.account.AccountClosedController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/account/change-closed                  controllers.manual.account.AccountClosedController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/sponsor/address-uk                           controllers.manual.sponsor.UkAddressController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/sponsor/address-uk                          controllers.manual.sponsor.UkAddressController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/sponsor/change-address-uk                   controllers.manual.sponsor.UkAddressController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/sponsor/change-address-uk                  controllers.manual.sponsor.UkAddressController.onSubmit(mode: Mode = CheckMode)
