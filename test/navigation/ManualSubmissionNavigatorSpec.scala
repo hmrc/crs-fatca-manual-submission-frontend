@@ -23,7 +23,7 @@ import models.SubmissionsConstants.FATCA
 import models.response.{Address, AddressLookup, Country}
 import models.viewModels.AccountId
 import pages.*
-import pages.manual.account.{HaveNumberPage, IdentifierPage, NumberTypePage, WhatWasTheAccountBalancePage, WhatWasTheAccountCurrencyPage}
+import pages.manual.account.*
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.*
@@ -213,9 +213,18 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
       }
 
       "IdentifierPage" - {
-        "must go to UnderConstruction Page when when answer is No" in {
+        "must go to AccountClosed Page" in {
           val userData = UserAnswers("id").withPage(IdentifierPage(accountId), "testId")
           navigator.nextPage(IdentifierPage(accountId), NormalMode, userData) mustBe
+            controllers.manual.account.routes.AccountClosedController.onPageLoad(NormalMode)
+        }
+
+      }
+
+      "AccountClosed" - {
+        "must go to UnderConstruction Page" in {
+          val userData = UserAnswers("id").withPage(AccountClosedPage(accountId), true)
+          navigator.nextPage(AccountClosedPage(accountId), NormalMode, userData) mustBe
             controllers.routes.UnderConstructionController.onPageLoad()
         }
       }
