@@ -45,6 +45,7 @@ class WhatWasTheAccountBalanceFormProvider @Inject() extends Mappings with Trans
             currency => currency.code
           ),
         "amount" -> text("whatWasTheAccountBalance.error.required.amount")
+          .verifying(loneCharConstraint)
           .transform(normaliseDecimalAmount, identity)
           .verifying(if (isFATCA) fatcaAmountConstraint else crsAmountConstraint)
       )(AccountBalance.apply)(
@@ -63,15 +64,21 @@ class WhatWasTheAccountBalanceFormProvider @Inject() extends Mappings with Trans
       }
   }
 
-  private val fatcaAmountConstraint: Constraint[String] = Constraint("contraint.amount") {
+  private val loneCharConstraint = Constraint("constraint.lone.chars") {
     value =>
-      if (value == "-") {
+      val strippedValue = stripSpaces(value.toString)
+      if (strippedValue == "-" || strippedValue == ".") {
+        Invalid(ValidationError("whatWasTheAccountBalance.error.required.amount"))
+      } else { Valid }
+  }
+
+  private val fatcaAmountConstraint: Constraint[String] = Constraint("contraint.amount") {
+    normalisedValue =>
+      if (!fatcaAmountFormatRegex.matches(normalisedValue)) {
         Invalid(ValidationError("whatWasTheAccountBalance.error.invalid.FATCA"))
-      } else if (!fatcaAmountFormatRegex.matches(value)) {
-        Invalid(ValidationError("whatWasTheAccountBalance.error.invalid.FATCA"))
-      } else if (!minusPositionRegex.matches(value)) {
+      } else if (!minusPositionRegex.matches(normalisedValue)) {
         Invalid(ValidationError("whatWasTheAccountBalance.error.minus.FATCA"))
-      } else if (!decimalFormatRegex.matches(value)) {
+      } else if (!decimalFormatRegex.matches(normalisedValue)) {
         Invalid(ValidationError("whatWasTheAccountBalance.error.decimalPlaces"))
       } else {
         Valid

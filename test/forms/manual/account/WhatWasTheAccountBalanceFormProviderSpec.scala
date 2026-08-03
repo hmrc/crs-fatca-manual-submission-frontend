@@ -69,13 +69,7 @@ class WhatWasTheAccountBalanceFormProviderSpec extends FieldBehaviours {
         val result = form.bind(Map("currency" -> currency.code, fieldName -> ""))
         result.errors must contain(FormError(fieldName, requiredAmountKey))
       }
-
-      "must not bind a sole minus sign" in {
-        val result = form.bind(Map("currency" -> currency.code, fieldName -> "-"))
-        result.errors must contain(FormError(fieldName, "whatWasTheAccountBalance.error.invalid.FATCA"))
-      }
     }
-
     "when regime is CRS" - {
 
       val form = new WhatWasTheAccountBalanceFormProvider()(CRS)
@@ -111,24 +105,38 @@ class WhatWasTheAccountBalanceFormProviderSpec extends FieldBehaviours {
       }
     }
 
-    "must strip whitespace" in {
+    "when normalised" - {
       val form = new WhatWasTheAccountBalanceFormProvider()(FATCA)
 
-      val result = form.bind(Map("currency" -> currency.code, fieldName -> " 123.45 "))
-      result.value.value.amount mustBe "123.45"
-    }
+      "must not bind a sole minus sign (-)" in {
+        val result = form.bind(Map("currency" -> currency.code, fieldName -> " - "))
+        result.errors must contain(FormError(fieldName, "whatWasTheAccountBalance.error.required.amount"))
+      }
 
-    "must normalise leading decimal as 0 (e.g .5 = 0.5)" in {
-      val form = new WhatWasTheAccountBalanceFormProvider()(FATCA)
+      "must not bind a sole full stop (.)" in {
+        val result = form.bind(Map("currency" -> currency.code, fieldName -> " . "))
+        result.errors must contain(FormError(fieldName, "whatWasTheAccountBalance.error.required.amount"))
+      }
 
-      val result = form.bind(Map("currency" -> currency.code, fieldName -> " .5 "))
-      result.value.value.amount mustBe "0.5"
-    }
-    "must normalise leading negative decimal as -0 (e.g -.5 = -0.5)" in {
-      val form = new WhatWasTheAccountBalanceFormProvider()(FATCA)
+      "must strip whitespace" in {
+        val result = form.bind(Map("currency" -> currency.code, fieldName -> " 123.45 "))
+        result.value.value.amount mustBe "123.45"
+      }
 
-      val result = form.bind(Map("currency" -> currency.code, fieldName -> " -.5 "))
-      result.value.value.amount mustBe "-0.5"
+      "transform leading decimal to 0. (e.g .5 = 0.5)" in {
+        val result = form.bind(Map("currency" -> currency.code, fieldName -> " .5 "))
+        result.value.value.amount mustBe "0.5"
+      }
+
+      "transform leading negative decimal to -0. (e.g -.5 = -0.5)" in {
+        val result = form.bind(Map("currency" -> currency.code, fieldName -> " -.5 "))
+        result.value.value.amount mustBe "-0.5"
+      }
+
+      "transform trailing decimal to an integer (e.g 5. = 5)" in {
+        val result = form.bind(Map("currency" -> currency.code, fieldName -> " 5. "))
+        result.value.value.amount mustBe "5"
+      }
     }
   }
 
