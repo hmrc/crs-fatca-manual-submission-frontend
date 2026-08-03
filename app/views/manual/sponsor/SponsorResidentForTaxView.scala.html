@@ -44,8 +44,9 @@
         <div class="govuk-!-width-two-thirds">
             @countrySelect(
                 field = form("country"),
-                label = "",
-                countries = countries
+                label = messages("sponsorResidentForTax.heading", sponsorName),
+                countries = countries,
+                labelClasses = "govuk-label govuk-visually-hidden"
             )
         </div>
 

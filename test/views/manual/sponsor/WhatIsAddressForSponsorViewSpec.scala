@@ -18,7 +18,7 @@ package views.manual.sponsor
 
 import base.SpecBase
 import forms.manual.sponsor.HaveSponsorFormProvider
-import models.{CheckMode, NormalMode}
+import models.NormalMode
 import org.jsoup.Jsoup
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
