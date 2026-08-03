@@ -22,7 +22,7 @@ import controllers.routes
 import models.*
 import models.viewModels.AccountId
 import pages.*
-import pages.manual.account.{HaveNumberPage, IdentifierPage, NumberTypePage, WhatWasTheAccountBalancePage}
+import pages.manual.account.{AccountClosedPage, HaveNumberPage, IdentifierPage, NumberTypePage, WhatWasTheAccountBalancePage}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.*
@@ -51,7 +51,8 @@ class ManualSubmissionNavigator @Inject() () {
   private def accountNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
     case (HaveNumberPage(accountId), mode, ua)       => haveNumberNavigation(accountId, mode, ua)
     case (NumberTypePage(_), mode, ua)               => routes.UnderConstructionController.onPageLoad()
-    case (IdentifierPage(_), mode, ua)               => routes.UnderConstructionController.onPageLoad()
+    case (IdentifierPage(_), mode, ua)               => controllers.manual.account.routes.AccountClosedController.onPageLoad(mode)
+    case (AccountClosedPage(_), mode, ua)      => routes.UnderConstructionController.onPageLoad()
     case (WhatWasTheAccountBalancePage(_), mode, ua) => routes.UnderConstructionController.onPageLoad()
   }
 
@@ -68,7 +69,8 @@ class ManualSubmissionNavigator @Inject() () {
     case (UKPostcodePage(), mode, ua)              => handleUKPostcodeNavigation(ua, mode)
     case (AddressNonUkPage(), _, _)                => routes.UnderConstructionController.onPageLoad()
     case (WhatIsAddressForSponsorPage(), mode, ua) => handleWhatIsAddressForSponsorNavigation(ua)
-    case (IsThisAddressForSponsorPage(), mode, ua) => handleIsThisAddressForSponsorNavigation(ua)
+    case (IsThisAddressForSponsorPage(), mode, ua) => handleIsThisAddressForSponsorNavigation(ua, mode)
+    case (UkAddressPage(), _, _)                   => routes.UnderConstructionController.onPageLoad()
   }
 
   private def navigation(implicit reportId: ReportId) =
@@ -114,10 +116,10 @@ class ManualSubmissionNavigator @Inject() () {
       case None        => routes.JourneyRecoveryController.onPageLoad()
     }
 
-  private def handleIsThisAddressForSponsorNavigation(userAnswers: UserAnswers)(implicit reportId: ReportId) =
+  private def handleIsThisAddressForSponsorNavigation(userAnswers: UserAnswers, mode: Mode)(implicit reportId: ReportId) =
     (userAnswers.get(IsThisAddressForSponsorPage()), userAnswers.get(WhatIsAddressForSponsorPage())) match {
       case (Some(true), Some(address)) => routes.UnderConstructionController.onPageLoad()
-      case (Some(false), Some(_))      => routes.UnderConstructionController.onPageLoad()
+      case (Some(false), Some(_))      => controllers.manual.sponsor.routes.UkAddressController.onPageLoad(mode)
       case (_, _)                      => routes.JourneyRecoveryController.onPageLoad()
     }
 

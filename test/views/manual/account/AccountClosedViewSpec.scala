@@ -14,62 +14,54 @@
  * limitations under the License.
  */
 
-package views.manual.sponsor
+package views.manual.account
 
 import base.SpecBase
-import forms.manual.sponsor.SponsorNameFormProvider
+import forms.manual.sponsor.HaveSponsorFormProvider
 import models.NormalMode
 import org.jsoup.Jsoup
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
-import views.html.manual.sponsor.UKPostcodeView
+import views.html.manual.account.AccountClosedView
 
-class UKPostcodeViewSpec extends SpecBase {
+class AccountClosedViewSpec extends SpecBase {
 
   private val application = applicationBuilder().build()
 
-  private val view: UKPostcodeView                                       = application.injector.instanceOf[UKPostcodeView]
+  private val view: AccountClosedView                                    = application.injector.instanceOf[AccountClosedView]
   private val messagesControllerComponents: MessagesControllerComponents = application.injector.instanceOf[MessagesControllerComponents]
-  val formProvider                                                       = new SponsorNameFormProvider()
+  val formProvider                                                       = new HaveSponsorFormProvider()
   val form                                                               = formProvider()
 
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
   implicit private val messages: Messages               = messagesControllerComponents.messagesApi.preferred(Seq(Lang("en")))
 
-  "UKPostcodeView" - {
+  "AccountClosedView" - {
 
     "should render page components" - {
 
-      val sponsorName = "testName"
-
-      val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, sponsorName)
+      val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode)
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
       "must display title" in {
-        doc.title() must include(s"What is the postcode for the sponsor?")
+        doc.title() must include("Is the account closed?")
       }
 
       "must display heading" in {
-        doc.select("h1").text() must include(s"What is the postcode for $sponsorName?")
+        doc.select("h1").text() must include("Is the account closed?")
       }
 
-      "must display paragraph" in {
-        doc.select("p").text() must include("Enter the postcode to find the address automatically.")
-      }
-
-      "must display link" in {
-        doc.select("a#enter-manually-id").text() must include("Or enter the address manually")
-        doc.select("a#enter-manually-id").attr("href") mustBe controllers.manual.sponsor.routes.UkAddressController.onPageLoad(NormalMode).url
-      }
-
-      "must have autocomplete" in {
-        doc.select("input").attr("autocomplete") must include("postal-code")
+      "must display options" in {
+        val elements = doc.select(".govuk-radios__label")
+        elements.size() mustBe 2
+        elements.get(0).text mustBe "Yes"
+        elements.get(1).text mustBe "No"
       }
 
       "must display button" in {
-        doc.select("#submit").text() mustBe "Find address"
+        doc.select("#submit").text() mustBe "Save and continue"
       }
 
     }

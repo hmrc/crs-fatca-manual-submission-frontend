@@ -23,7 +23,7 @@ import models.SubmissionsConstants.FATCA
 import models.response.{AddressLookup, Country}
 import models.viewModels.AccountId
 import pages.*
-import pages.manual.account.{HaveNumberPage, IdentifierPage, NumberTypePage, WhatWasTheAccountBalancePage}
+import pages.manual.account.{AccountClosedPage, HaveNumberPage, IdentifierPage, NumberTypePage, WhatWasTheAccountBalancePage}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.*
@@ -81,6 +81,14 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           val userData = UserAnswers("id")
           navigator.nextPage(HaveSponsorPage(), NormalMode, userData) mustBe
             controllers.routes.JourneyRecoveryController.onPageLoad()
+        }
+      }
+
+      "UkAddressPage" - {
+        "must go to UnderConstruction Page when Normal Mode" in {
+          val userData = UserAnswers("id")
+          navigator.nextPage(UkAddressPage(), NormalMode, userData) mustBe
+            controllers.routes.UnderConstructionController.onPageLoad()
         }
       }
 
@@ -205,9 +213,19 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
       }
 
       "IdentifierPage" - {
-        "must go to UnderConstruction Page when when answer is No" in {
+        "must go to AccountClosed Page" in {
           val userData = UserAnswers("id").withPage(IdentifierPage(accountId), "testId")
           navigator.nextPage(IdentifierPage(accountId), NormalMode, userData) mustBe
+            controllers.manual.account.routes.AccountClosedController.onPageLoad(NormalMode)
+        }
+
+      }
+
+      "AccountClosed" - {
+
+        "must go to UnderConstruction Page" in {
+          val userData = UserAnswers("id").withPage(AccountClosedPage(accountId), true)
+          navigator.nextPage(AccountClosedPage(accountId), NormalMode, userData) mustBe
             controllers.routes.UnderConstructionController.onPageLoad()
         }
       }
@@ -225,6 +243,34 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           val ua = UserAnswers("id")
           navigator.nextPage(WhatWasTheAccountBalancePage(accountId), NormalMode, ua) mustBe
             controllers.routes.UnderConstructionController.onPageLoad()
+        }
+      }
+
+      "IsThisAddressForSponsorPage" - {
+        "must go to UnderConstruction Page when answer is Yes" in {
+          val userData = UserAnswers("id")
+            .withPage(IsThisAddressForSponsorPage(), true)
+            .withPage(WhatIsAddressForSponsorPage(),
+                      Address(None, "1 Address line 1 Road", None, "Address line 2 Road", Some("Town"), Some("zz11zz"), Country.GB)
+            )
+          navigator.nextPage(IsThisAddressForSponsorPage(), NormalMode, userData) mustBe
+            controllers.routes.UnderConstructionController.onPageLoad()
+        }
+
+        "must go to UkAddress Page when answer is No" in {
+          val userData = UserAnswers("id")
+            .withPage(IsThisAddressForSponsorPage(), false)
+            .withPage(WhatIsAddressForSponsorPage(),
+                      Address(None, "1 Address line 1 Road", None, "Address line 2 Road", Some("Town"), Some("zz11zz"), Country.GB)
+            )
+          navigator.nextPage(IsThisAddressForSponsorPage(), NormalMode, userData) mustBe
+            controllers.manual.sponsor.routes.UkAddressController.onPageLoad(NormalMode)
+        }
+
+        "must go to JourneyRecovery Page when Normal Mode" in {
+          val userData = UserAnswers("id")
+          navigator.nextPage(IsThisAddressForSponsorPage(), NormalMode, userData) mustBe
+            controllers.routes.JourneyRecoveryController.onPageLoad()
         }
       }
 
