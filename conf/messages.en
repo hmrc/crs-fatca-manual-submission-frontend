@@ -429,11 +429,10 @@ ukAddress.jersey = Jersey
 ukAddress.guernsey = Guernsey
 ukAddress.isleOfMan = Isle of Man
 
-removeTaxResidentCountry.plural.countries.title = Are you sure you want to remove the {0} as a tax resident country for the sponsor?
+removeTaxResidentCountry.definite.articles.countries.title = Are you sure you want to remove the {0} as a tax resident country for the sponsor?
 removeTaxResidentCountry.other.countries.title = Are you sure you want to remove ‘Other country’ as a tax resident country for the sponsor?
 removeTaxResidentCountry.all.countries.title = Are you sure you want to remove {0} as a tax resident country for the sponsor?
-
-removeTaxResidentCountry.plural.countries.heading = Are you sure you want to remove the {0} as a tax resident country for {1}?
+removeTaxResidentCountry.definite.articles.countries.heading = Are you sure you want to remove the {0} as a tax resident country for {1}?
 removeTaxResidentCountry.other.countries.heading = Are you sure you want to remove ‘Other country’ as a tax resident country for {0}?
 removeTaxResidentCountry.all.countries.heading = Are you sure you want to remove {0} as a tax resident country for {1}?
 removeTaxResidentCountry.checkYourAnswersLabel = removeTaxResidentCountry
