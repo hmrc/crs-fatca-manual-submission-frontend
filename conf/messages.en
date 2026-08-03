@@ -439,3 +439,10 @@ sponsorResidentForTax.title = Where is the sponsor resident for tax?
 sponsorResidentForTax.heading = Where is {0} resident for tax?
 sponsorResidentForTax.paragraph = If they are resident for tax in more than one country, then you can add other countries on the next page.
 sponsorResidentForTax.country.error.required = 	Select where the sponsor is resident for tax
+
+taxResidentCountries.title = You have {0} where the sponsor is resident for tax
+taxResidentCountries.heading = You have {0} where {1} is resident for tax
+taxResidentCountries.sub.heading = Do you need to add another country?
+taxResidentCountries.checkYourAnswersLabel = taxResidentCountries
+taxResidentCountries.error.required = Select yes if taxResidentCountries
+taxResidentCountries.change.hidden = TaxResidentCountries
