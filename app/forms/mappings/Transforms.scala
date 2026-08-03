@@ -18,6 +18,13 @@ package forms.mappings
 
 trait Transforms {
 
+  protected def normaliseDecimalAmount(amount: String): String = {
+    val num = amount.trim.replaceAll(" ", "")
+    if (num.startsWith(".")) { "0" + num }
+    else if (num.startsWith("-.")) { "-0" + num.drop(1) }
+    else { num }
+  }
+
   protected def stripSpaces(string: String): String =
     string.trim.replaceAll(" ", "")
 

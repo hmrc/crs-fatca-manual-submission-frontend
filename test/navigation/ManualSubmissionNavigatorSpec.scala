@@ -20,7 +20,7 @@ import base.SpecBase
 import controllers.manual.reportdetails.routes.{ReportDetailsCheckAnswersController, ReportingYearController, TypeOfReportController}
 import models.*
 import models.CrsOrFatca.{Crs, Fatca}
-import models.SubmissionsConstants.FATCA
+import models.SubmissionsConstants.{CRS, FATCA}
 import models.response.{Address, AddressLookup, Country}
 import models.viewModels.AccountId
 import pages.*
@@ -225,15 +225,18 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
       "AccountClosedPage" - {
 
         "must go to UnderConstruction when AccountClosed is false and regime is Crs" in {
+          implicit val reportId: ReportId = ReportId(CRS, 2024, None, "TestFIID")
+
           val userAnswers = UserAnswers("id")
             .withPage(AccountClosedPage(accountId), false)
-            .withPage(CrsOrFatcaPage, Crs)
 
           navigator.nextPage(AccountClosedPage(accountId), NormalMode, userAnswers) mustBe
             controllers.routes.UnderConstructionController.onPageLoad()
         }
 
         "must go to WhatWasTheAccountBalance page when AccountClosed is false and regime is Fatca" in {
+          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+
           val userAnswers = UserAnswers("id")
             .withPage(AccountClosedPage(accountId), false)
             .withPage(CrsOrFatcaPage, Fatca)
@@ -257,7 +260,6 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             controllers.routes.JourneyRecoveryController.onPageLoad()
         }
       }
-
 
       "AddressNonUkPage" - {
         "must go to UNDERCONSTRUCTION page after user hits submit" in {

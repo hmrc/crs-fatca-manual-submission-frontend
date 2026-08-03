@@ -16,7 +16,7 @@
 
 package forms.manual.account
 
-import forms.mappings.Mappings
+import forms.mappings.{Mappings, Transforms}
 import models.SubmissionsConstants.{FATCA, RegimeType}
 import models.{AccountBalance, Currencies, Currency}
 import play.api.data.Form
@@ -25,7 +25,7 @@ import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 
 import javax.inject.Inject
 
-class WhatWasTheAccountBalanceFormProvider @Inject() extends Mappings {
+class WhatWasTheAccountBalanceFormProvider @Inject() extends Mappings with Transforms {
 
   private val crsAmountFormatRegex   = "^[0-9.]+$".r
   private val fatcaAmountFormatRegex = "^[-0-9.]+$".r
@@ -45,6 +45,7 @@ class WhatWasTheAccountBalanceFormProvider @Inject() extends Mappings {
             currency => currency.code
           ),
         "amount" -> text("whatWasTheAccountBalance.error.required.amount")
+          .transform(normaliseDecimalAmount, identity)
           .verifying(if (isFATCA) fatcaAmountConstraint else crsAmountConstraint)
       )(AccountBalance.apply)(
         ab => Some((ab.currency, ab.amount))
@@ -64,7 +65,9 @@ class WhatWasTheAccountBalanceFormProvider @Inject() extends Mappings {
 
   private val fatcaAmountConstraint: Constraint[String] = Constraint("contraint.amount") {
     value =>
-      if (!fatcaAmountFormatRegex.matches(value)) {
+      if (value == "-") {
+        Invalid(ValidationError("whatWasTheAccountBalance.error.invalid.FATCA"))
+      } else if (!fatcaAmountFormatRegex.matches(value)) {
         Invalid(ValidationError("whatWasTheAccountBalance.error.invalid.FATCA"))
       } else if (!minusPositionRegex.matches(value)) {
         Invalid(ValidationError("whatWasTheAccountBalance.error.minus.FATCA"))

@@ -21,6 +21,7 @@ import controllers.manual.reportdetails.routes.*
 import controllers.routes
 import models.*
 import models.CrsOrFatca.{Crs, Fatca}
+import models.SubmissionsConstants.{CRS, FATCA}
 import models.viewModels.AccountId
 import pages.*
 import pages.manual.account.*
@@ -90,11 +91,11 @@ class ManualSubmissionNavigator @Inject() () {
     }
 
   private def accountClosedNavigation(accountId: AccountId, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
-    (userAnswers.get(AccountClosedPage(accountId)), userAnswers.get(CrsOrFatcaPage)) match {
-      case (Some(false), Some(Crs))   => routes.UnderConstructionController.onPageLoad()
-      case (Some(false), Some(Fatca)) => controllers.manual.account.routes.WhatWasTheAccountBalanceController.onPageLoad(mode)
-      case (Some(true), _)            => controllers.manual.account.routes.WhatWasTheAccountBalanceController.onPageLoad(mode)
-      case _                          => routes.JourneyRecoveryController.onPageLoad()
+    (userAnswers.get(AccountClosedPage(accountId)), reportId.regime) match {
+      case (Some(false), CRS)   => routes.UnderConstructionController.onPageLoad()
+      case (Some(false), FATCA) => controllers.manual.account.routes.WhatWasTheAccountBalanceController.onPageLoad(mode)
+      case (Some(true), _)      => controllers.manual.account.routes.WhatWasTheAccountBalanceController.onPageLoad(mode)
+      case _                    => routes.JourneyRecoveryController.onPageLoad()
     }
 
   private def haveNumberNavigation(accountId: AccountId, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
