@@ -17,17 +17,47 @@
 package models.sponsor
 
 val otherCountryCodes = Seq("XX")
-val pluralCountryCodes = Seq("CC", "CF", "DO", "MH", "AE", "GB", "UM", "US", "VI", "AX", "CG","CG", "CK", "FK", "FO", "GS", "HM", "IO", "KY", "MP", "NL", "PH", "PN", "PS", "SB", "TC", "TF", "VG", "WF", "IM" )
+
+val pluralCountryCodes = Seq("CC",
+                             "CF",
+                             "DO",
+                             "MH",
+                             "AE",
+                             "GB",
+                             "UM",
+                             "US",
+                             "VI",
+                             "AX",
+                             "CG",
+                             "CG",
+                             "CK",
+                             "FK",
+                             "FO",
+                             "GS",
+                             "HM",
+                             "IO",
+                             "KY",
+                             "MP",
+                             "NL",
+                             "PH",
+                             "PN",
+                             "PS",
+                             "SB",
+                             "TC",
+                             "TF",
+                             "VG",
+                             "WF",
+                             "IM"
+)
 
 enum RemoveCountryMessage:
-  case OtherCountryMessage, AllCountryMessage, PluralCountryNameMessage
+  case OtherCountryMessage, AllOtherCountryMessage, NationsWithDefiniteArticlesMessage
 
 object RemoveCountryMessage {
 
   def getRemoveCountryMessage(code: String): RemoveCountryMessage = code match
     case c if otherCountryCodes.contains(c)  => OtherCountryMessage
-    case c if pluralCountryCodes.contains(c) => PluralCountryNameMessage
-    case _                                   => AllCountryMessage
+    case c if pluralCountryCodes.contains(c) => NationsWithDefiniteArticlesMessage
+    case _                                   => AllOtherCountryMessage
 
 }
-

@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package controllers.manual.sponsor
 
 import base.SpecBase
@@ -5,6 +21,7 @@ import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.sponsor.RemoveTaxResidentCountryFormProvider
 import models.SubmissionsConstants.CRS
+import models.sponsor.RemoveCountryMessage
 import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
@@ -15,7 +32,7 @@ import pages.manual.sponsor.RemoveTaxResidentCountryPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import views.html.manual.sponsor.RemoveTaxResidentCountryView
 
 import scala.concurrent.Future
@@ -28,6 +45,8 @@ class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar 
   val form         = formProvider()
 
   lazy val removeTaxResidentCountryRoute = controllers.manual.sponsor.routes.RemoveTaxResidentCountryController.onPageLoad(NormalMode).url
+  val country                            = "Ethopia"
+  val sponsorName                        = "Some Sponsor Name"
 
   "RemoveTaxResidentCountry Controller" - {
 
@@ -45,7 +64,10 @@ class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar 
         val view = application.injector.instanceOf[RemoveTaxResidentCountryView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, sponsorName, country, RemoveCountryMessage.NationsWithDefiniteArticlesMessage)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -65,7 +87,10 @@ class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode, sponsorName, country, RemoveCountryMessage.NationsWithDefiniteArticlesMessage)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -111,7 +136,10 @@ class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar 
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, sponsorName, country, RemoveCountryMessage.NationsWithDefiniteArticlesMessage)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 

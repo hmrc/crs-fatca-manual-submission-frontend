@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@import models.sponsor.RemoveCountryMessage.{AllCountryMessage, OtherCountryMessage, PluralCountryNameMessage}
+@import models.sponsor.RemoveCountryMessage.{AllOtherCountryMessage, OtherCountryMessage, NationsWithDefiniteArticlesMessage}
 @import models.sponsor.RemoveCountryMessage
 @this(
     layout: templates.Layout,
@@ -24,7 +24,7 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode, sponsorName: String, country: String = "Ethopia", removeCountryMessage: RemoveCountryMessage = RemoveCountryMessage.PluralCountryNameMessage)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, sponsorName: String, country: String = "Ethopia", removeCountryMessage: RemoveCountryMessage = RemoveCountryMessage.NationsWithDefiniteArticlesMessage)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, titleMessage(removeCountryMessage, country) )) {
 
@@ -42,25 +42,25 @@
         )
 
         @govukButton(
-            ButtonViewModel(messages("site.saveContinue"))
+            ButtonViewModel(messages("site.saveContinue")).withId("submit")
         )
     }
 }
 
 @titleMessage(removeCountryMessage: RemoveCountryMessage, country: String): String = @{
     removeCountryMessage match {
-        case PluralCountryNameMessage => messages("removeTaxResidentCountry.plural.countries.title", country)
+        case NationsWithDefiniteArticlesMessage => messages("removeTaxResidentCountry.definite.articles.countries.title", country)
         case OtherCountryMessage =>  messages("removeTaxResidentCountry.other.countries.title")
-        case AllCountryMessage  =>   messages("removeTaxResidentCountry.all.countries.title", country)
+        case AllOtherCountryMessage  =>   messages("removeTaxResidentCountry.all.countries.title", country)
     }
 
 }
 
 @headerMessage(removeCountryMessage: RemoveCountryMessage, country: String, sponsorName: String): String = @{
     removeCountryMessage match {
-        case PluralCountryNameMessage => messages("removeTaxResidentCountry.plural.countries.heading", country, sponsorName)
+        case NationsWithDefiniteArticlesMessage => messages("removeTaxResidentCountry.definite.articles.countries.heading", country, sponsorName)
         case OtherCountryMessage =>  messages("removeTaxResidentCountry.other.countries.heading", sponsorName)
-        case AllCountryMessage  =>   messages("removeTaxResidentCountry.all.countries.heading", country, sponsorName)
+        case AllOtherCountryMessage  =>   messages("removeTaxResidentCountry.all.countries.heading", country, sponsorName)
     }
 
 }

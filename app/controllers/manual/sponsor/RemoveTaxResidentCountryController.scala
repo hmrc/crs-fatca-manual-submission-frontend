@@ -16,19 +16,19 @@
 
 package controllers.manual.sponsor
 
+import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.manual.sponsor.RemoveTaxResidentCountryFormProvider
-
-import javax.inject.Inject
+import models.sponsor.RemoveCountryMessage
 import models.{Mode, ReportId, UserAnswers}
 import navigation.ManualSubmissionNavigator
 import pages.manual.sponsor.{RemoveTaxResidentCountryPage, SponsorNamePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Result}
-import connectors.DatabaseConnector
+import play.api.mvc.*
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.sponsor.RemoveTaxResidentCountryView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class RemoveTaxResidentCountryController @Inject() (
@@ -61,7 +61,7 @@ class RemoveTaxResidentCountryController @Inject() (
               case Some(value) => form.fill(value)
             }
 
-            Ok(view(preparedForm, mode, sponsorName, country = "Ethopia"))
+            Ok(view(preparedForm, mode, sponsorName, country = "Ethopia", RemoveCountryMessage.NationsWithDefiniteArticlesMessage))
         }
 
   }
@@ -87,8 +87,7 @@ class RemoveTaxResidentCountryController @Inject() (
         }
   }
 
-  private def redirectWithFlash(value: Boolean, mode: Mode, useranswers: UserAnswers, country: String = "")(implicit reportId: ReportId): Result = {
+  private def redirectWithFlash(value: Boolean, mode: Mode, useranswers: UserAnswers, country: String = "")(implicit reportId: ReportId): Result =
     if value then Redirect(navigator.nextPage(RemoveTaxResidentCountryPage(), mode, useranswers)).flashing("country-removed" -> country)
     else Redirect(navigator.nextPage(RemoveTaxResidentCountryPage(), mode, useranswers))
-  }
 }
