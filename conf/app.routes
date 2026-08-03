@@ -177,3 +177,8 @@ POST       /manual/sponsor/tax-resident-countries                        control
 GET        /manual/sponsor/change-tax-resident-countries                  controllers.manual.sponsor.TaxResidentCountriesController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/sponsor/change-tax-resident-countries                  controllers.manual.sponsor.TaxResidentCountriesController.onSubmit(mode: Mode = CheckMode)
 
+
+GET        /manual/sponsor/remove-tax-resident-country                      controllers.manual.sponsor.RemoveTaxResidentCountryController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/sponsor/remove-tax-resident-country                       controllers.manual.sponsor.RemoveTaxResidentCountryController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/sponsor/change-remove-tax-resident-country                 controllers.manual.sponsor.RemoveTaxResidentCountryController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/sponsor/change-remove-tax-resident-country                 controllers.manual.sponsor.RemoveTaxResidentCountryController.onSubmit(mode: Mode = CheckMode)
