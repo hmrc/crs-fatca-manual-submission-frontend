@@ -67,18 +67,20 @@ class WhatWasTheAccountBalanceFormProvider @Inject() extends Mappings with Trans
   private val loneCharConstraint = Constraint("constraint.lone.chars") {
     value =>
       val strippedValue = stripSpaces(value.toString)
-      if (strippedValue == "-" || strippedValue == ".") {
+      if (!strippedValue.exists(_.isDigit)) {
         Invalid(ValidationError("whatWasTheAccountBalance.error.required.amount"))
-      } else { Valid }
+      } else {
+        Valid
+      }
   }
 
   private val fatcaAmountConstraint: Constraint[String] = Constraint("contraint.amount") {
-    normalisedValue =>
-      if (!fatcaAmountFormatRegex.matches(normalisedValue)) {
+    value =>
+      if (!fatcaAmountFormatRegex.matches(value) || value.count(_ == '.') > 1) {
         Invalid(ValidationError("whatWasTheAccountBalance.error.invalid.FATCA"))
-      } else if (!minusPositionRegex.matches(normalisedValue)) {
+      } else if (!minusPositionRegex.matches(value)) {
         Invalid(ValidationError("whatWasTheAccountBalance.error.minus.FATCA"))
-      } else if (!decimalFormatRegex.matches(normalisedValue)) {
+      } else if (!decimalFormatRegex.matches(value)) {
         Invalid(ValidationError("whatWasTheAccountBalance.error.decimalPlaces"))
       } else {
         Valid
@@ -87,7 +89,7 @@ class WhatWasTheAccountBalanceFormProvider @Inject() extends Mappings with Trans
 
   private val crsAmountConstraint: Constraint[String] = Constraint("Amount") {
     value =>
-      if (!crsAmountFormatRegex.matches(value)) {
+      if (!crsAmountFormatRegex.matches(value) || value.count(_ == '.') > 1) {
         Invalid(ValidationError("whatWasTheAccountBalance.error.invalid.CRS"))
       } else if (!decimalFormatRegex.matches(value)) {
         Invalid(ValidationError("whatWasTheAccountBalance.error.decimalPlaces"))

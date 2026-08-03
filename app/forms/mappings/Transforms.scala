@@ -19,11 +19,18 @@ package forms.mappings
 trait Transforms {
 
   protected def normaliseDecimalAmount(amount: String): String = {
-    val num = stripSpaces(amount)
-    if (num.startsWith(".")) { "0" + num }
-    else if (num.startsWith("-.")) { "-0" + num.drop(1) }
-    else if (num.endsWith(".")) { num.dropRight(1) }
-    else { num }
+    val value = stripSpaces(amount)
+    if (value == "-.") {
+      "-0."
+    } else if (value.startsWith(".")) {
+      "0" + value
+    } else if (value.startsWith("-.")) {
+      "-0." + value.drop(2)
+    } else if (value.endsWith(".") && value.length > 1 && value.init.forall(_.isDigit)) {
+      value.dropRight(1)
+    } else {
+      value
+    }
   }
 
   protected def stripSpaces(string: String): String =

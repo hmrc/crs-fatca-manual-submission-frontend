@@ -110,12 +110,22 @@ class WhatWasTheAccountBalanceFormProviderSpec extends FieldBehaviours {
 
       "must not bind a sole minus sign (-)" in {
         val result = form.bind(Map("currency" -> currency.code, fieldName -> " - "))
-        result.errors must contain(FormError(fieldName, "whatWasTheAccountBalance.error.required.amount"))
+        result.errors must contain(FormError(fieldName, requiredAmountKey))
       }
 
       "must not bind a sole full stop (.)" in {
         val result = form.bind(Map("currency" -> currency.code, fieldName -> " . "))
-        result.errors must contain(FormError(fieldName, "whatWasTheAccountBalance.error.required.amount"))
+        result.errors must contain(FormError(fieldName, requiredAmountKey))
+      }
+
+      "must not bind a value without numbers" in {
+        val result = form.bind(Map("currency" -> currency.code, fieldName -> " -.. "))
+        result.errors must contain(FormError(fieldName, requiredAmountKey))
+      }
+
+      "must not bind a value with more than one decimal point" in {
+        val result = form.bind(Map("currency" -> currency.code, fieldName -> " 1.2.3 "))
+        result.errors must contain(FormError(fieldName, "whatWasTheAccountBalance.error.invalid.FATCA"))
       }
 
       "must strip whitespace" in {
