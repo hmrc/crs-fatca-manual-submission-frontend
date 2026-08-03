@@ -91,10 +91,10 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             controllers.manual.sponsor.routes.SponsorResidentForTaxController.onPageLoad(NormalMode)
         }
 
-        "must go to underconstruction Page when sponsor tax resident country codes are are present" in {
+        "must go to Tax Resident Countries Page when sponsor tax resident country codes are already present" in {
           val userData = UserAnswers("id").withPage(SponsorResidentForTaxPage(), SponsorResidentTaxCountryCodes(Seq("GB")))
           navigator.nextPage(UkAddressPage(), NormalMode, userData) mustBe
-            controllers.routes.UnderConstructionController.onPageLoad()
+            controllers.manual.sponsor.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
         }
       }
 
@@ -253,12 +253,12 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             controllers.manual.sponsor.routes.SponsorResidentForTaxController.onPageLoad(NormalMode)
         }
 
-        "must go to UnderConstruction page after user hits submit when there are tax resident country codes" in {
+        "must go to TaxResidentCountries page after user hits submit when there are tax resident country codes" in {
           val ua = UserAnswers("id")
             .withPage(SponsorResidentForTaxPage(), SponsorResidentTaxCountryCodes(Seq("GB")))
 
           navigator.nextPage(AddressNonUkPage(), NormalMode, ua) mustBe
-            controllers.routes.UnderConstructionController.onPageLoad()
+            controllers.manual.sponsor.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
         }
       }
 
@@ -284,7 +284,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
 
         }
 
-        "must go to UnderConstruction page after user hits submit when there are tax tax resident country codes" in {
+        "must go to TaxResidentCountries page after user hits submit when there are tax tax resident country codes" in {
           Seq(true, false).foreach {
             isThisAddressForSponsor =>
               val ua = UserAnswers("id")
@@ -292,7 +292,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
                 .withPage(WhatIsAddressForSponsorPage(), address)
                 .withPage(SponsorResidentForTaxPage(), SponsorResidentTaxCountryCodes(Seq("GB")))
               navigator.nextPage(WhatIsAddressForSponsorPage(), NormalMode, ua) mustBe
-                controllers.routes.UnderConstructionController.onPageLoad()
+                controllers.manual.sponsor.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
 
           }
 
@@ -320,7 +320,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
 
         }
 
-        "must go to UnderConstruction page after user hits submit when there are tax tax resident country codes" in {
+        "must go to TaxResidentCountries page after user hits submit when there are tax tax resident country codes" in {
           Seq(true, false).foreach {
             isThisAddressForSponsor =>
               val ua = UserAnswers("id")
@@ -328,7 +328,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
                 .withPage(WhatIsAddressForSponsorPage(), address)
                 .withPage(SponsorResidentForTaxPage(), SponsorResidentTaxCountryCodes(Seq("GB")))
               navigator.nextPage(WhatIsAddressForSponsorPage(), NormalMode, ua) mustBe
-                controllers.routes.UnderConstructionController.onPageLoad()
+                controllers.manual.sponsor.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
 
           }
 

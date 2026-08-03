@@ -171,3 +171,9 @@ GET        /manual/sponsor/resident-for-tax                        controllers.m
 POST       /manual/sponsor/resident-for-tax                        controllers.manual.sponsor.SponsorResidentForTaxController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/sponsor/change-resident-for-tax                  controllers.manual.sponsor.SponsorResidentForTaxController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/sponsor/change-resident-for-tax                  controllers.manual.sponsor.SponsorResidentForTaxController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/sponsor/tax-resident-countries                        controllers.manual.sponsor.TaxResidentCountriesController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/sponsor/tax-resident-countries                        controllers.manual.sponsor.TaxResidentCountriesController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/sponsor/change-tax-resident-countries                  controllers.manual.sponsor.TaxResidentCountriesController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/sponsor/change-tax-resident-countries                  controllers.manual.sponsor.TaxResidentCountriesController.onSubmit(mode: Mode = CheckMode)
+

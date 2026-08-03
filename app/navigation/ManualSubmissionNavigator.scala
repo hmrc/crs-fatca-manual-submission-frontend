@@ -75,7 +75,7 @@ class ManualSubmissionNavigator @Inject() () {
 
   private def handleNavigationToSponsorResidentTaxView(ua: UserAnswers, mode: Mode)(implicit reportId: ReportId): Call =
     ua.get(SponsorResidentForTaxPage()) match {
-      case Some(value) if value.resCountryCodes.nonEmpty => routes.UnderConstructionController.onPageLoad()
+      case Some(value) if value.resCountryCodes.nonEmpty => controllers.manual.sponsor.routes.TaxResidentCountriesController.onPageLoad(mode)
       case _                                             => controllers.manual.sponsor.routes.SponsorResidentForTaxController.onPageLoad(mode)
     }
 

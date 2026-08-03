@@ -1,0 +1,87 @@
+@*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import viewmodels.manual.sponsor.TaxResidentCountryRow
+
+@this(
+    layout: templates.Layout,
+    formHelper: FormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    govukRadios: GovukRadios,
+    heading: components.Heading,
+    govukButton: GovukButton
+)
+
+@(form: Form[_], mode: Mode, countries: Seq[String])(implicit request: Request[_], messages: Messages)
+
+@layout(pageTitle = title(form, messages("taxResidentCountries.title",countryCountText(countries.size)))) {
+
+    @formHelper(action = controllers.manual.sponsor.routes.TaxResidentCountriesController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+
+        @heading(messages("taxResidentCountries.heading",countryCountText(countries.size), "TestSponsor"))
+
+        @if(countries.nonEmpty) {
+            <dl class="govuk-summary-list hmrc-list-with-actions hmrc-list-with-actions--short">
+                @for(row <- TaxResidentCountryRow.rows(countries)) {
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key govuk-!-font-weight-regular hmrc-summary-list__key">
+                            @row.country
+                        </dt>
+                        <dd class="govuk-summary-list__actions hmrc-summary-list__actions">
+                            <ul class="govuk-summary-list__actions-list">
+                                <li class="govuk-summary-list__actions-list-item">
+                                    <a class="govuk-link" href="@row.changeUrl">
+                                        <span aria-hidden="true">Change</span>
+                                        <span class="govuk-visually-hidden">Change @row.country</span>
+                                    </a>
+                                </li>
+                                <li class="govuk-summary-list__actions-list-item">
+                                    <a class="govuk-link" href="@row.removeUrl">
+                                        <span aria-hidden="true">Remove</span>
+                                        <span class="govuk-visually-hidden">Remove @row.country from the list</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </dd>
+                    </div>
+                }
+            </dl>
+        }
+
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummaryViewModel(form))
+        }
+
+        @govukRadios(
+            RadiosViewModel.yesNo(
+                field = form("value"),
+                legend = LegendViewModel(messages("taxResidentCountries.sub.heading")).withCssClass("govuk-fieldset__legend--m")
+            )
+        )
+
+        @govukButton(
+            ButtonViewModel(messages("site.continue"))
+        )
+    }
+}
+
+@countryCountText(count: Int) = @{
+    count match {
+        case 0 => "not added any countries"
+        case 1 => "added 1 country"
+        case n => s"added $n countries"
+    }
+}
