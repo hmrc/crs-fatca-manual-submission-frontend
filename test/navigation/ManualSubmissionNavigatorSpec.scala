@@ -19,8 +19,9 @@ package navigation
 import base.SpecBase
 import controllers.manual.reportdetails.routes.{ReportDetailsCheckAnswersController, ReportingYearController, TypeOfReportController}
 import models.*
+import models.CrsOrFatca.{Crs, Fatca}
 import models.SubmissionsConstants.FATCA
-import models.response.{AddressLookup, Country}
+import models.response.{Address, AddressLookup, Country}
 import models.viewModels.AccountId
 import pages.*
 import pages.manual.account.{AccountClosedPage, HaveNumberPage, IdentifierPage, NumberTypePage, WhatWasTheAccountBalancePage}
@@ -221,14 +222,42 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
 
       }
 
-      "AccountClosed" - {
+      "AccountClosedPage" - {
 
-        "must go to UnderConstruction Page" in {
-          val userData = UserAnswers("id").withPage(AccountClosedPage(accountId), true)
-          navigator.nextPage(AccountClosedPage(accountId), NormalMode, userData) mustBe
+        "must go to UnderConstruction when AccountClosed is false and regime is Crs" in {
+          val userAnswers = UserAnswers("id")
+            .withPage(AccountClosedPage(accountId), false)
+            .withPage(CrsOrFatcaPage, Crs)
+
+          navigator.nextPage(AccountClosedPage(accountId), NormalMode, userAnswers) mustBe
             controllers.routes.UnderConstructionController.onPageLoad()
         }
+
+        "must go to WhatWasTheAccountBalance page when AccountClosed is false and regime is Fatca" in {
+          val userAnswers = UserAnswers("id")
+            .withPage(AccountClosedPage(accountId), false)
+            .withPage(CrsOrFatcaPage, Fatca)
+
+          navigator.nextPage(AccountClosedPage(accountId), NormalMode, userAnswers) mustBe
+            controllers.manual.account.routes.WhatWasTheAccountBalanceController.onPageLoad(NormalMode)
+        }
+
+        "must go to WhatWasTheAccountBalance page when AccountClosed is true" in {
+          val userAnswers = UserAnswers("id")
+            .withPage(AccountClosedPage(accountId), true)
+
+          navigator.nextPage(AccountClosedPage(accountId), NormalMode, userAnswers) mustBe
+            controllers.manual.account.routes.WhatWasTheAccountBalanceController.onPageLoad(NormalMode)
+        }
+
+        "must go to JourneyRecoveryController when AccountClosed is not answered" in {
+          val userAnswers = UserAnswers("id")
+
+          navigator.nextPage(AccountClosedPage(accountId), NormalMode, userAnswers) mustBe
+            controllers.routes.JourneyRecoveryController.onPageLoad()
+        }
       }
+
 
       "AddressNonUkPage" - {
         "must go to UNDERCONSTRUCTION page after user hits submit" in {

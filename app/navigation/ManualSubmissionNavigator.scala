@@ -20,9 +20,10 @@ import controllers.manual.account
 import controllers.manual.reportdetails.routes.*
 import controllers.routes
 import models.*
+import models.CrsOrFatca.{Crs, Fatca}
 import models.viewModels.AccountId
 import pages.*
-import pages.manual.account.{AccountClosedPage, HaveNumberPage, IdentifierPage, NumberTypePage, WhatWasTheAccountBalancePage}
+import pages.manual.account.*
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.*
@@ -52,7 +53,7 @@ class ManualSubmissionNavigator @Inject() () {
     case (HaveNumberPage(accountId), mode, ua)       => haveNumberNavigation(accountId, mode, ua)
     case (NumberTypePage(_), mode, ua)               => routes.UnderConstructionController.onPageLoad()
     case (IdentifierPage(_), mode, ua)               => controllers.manual.account.routes.AccountClosedController.onPageLoad(mode)
-    case (AccountClosedPage(_), mode, ua)      => routes.UnderConstructionController.onPageLoad()
+    case (AccountClosedPage(accountId), mode, ua)    => accountClosedNavigation(accountId, mode, ua)
     case (WhatWasTheAccountBalancePage(_), mode, ua) => routes.UnderConstructionController.onPageLoad()
   }
 
@@ -86,6 +87,14 @@ class ManualSubmissionNavigator @Inject() () {
       case Some(true)  => controllers.manual.sponsor.routes.SponsorNameController.onPageLoad(mode)
       case Some(false) => routes.UnderConstructionController.onPageLoad()
       case None        => routes.JourneyRecoveryController.onPageLoad()
+    }
+
+  private def accountClosedNavigation(accountId: AccountId, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
+    (userAnswers.get(AccountClosedPage(accountId)), userAnswers.get(CrsOrFatcaPage)) match {
+      case (Some(false), Some(Crs))   => routes.UnderConstructionController.onPageLoad()
+      case (Some(false), Some(Fatca)) => controllers.manual.account.routes.WhatWasTheAccountBalanceController.onPageLoad(mode)
+      case (Some(true), _)            => controllers.manual.account.routes.WhatWasTheAccountBalanceController.onPageLoad(mode)
+      case _                          => routes.JourneyRecoveryController.onPageLoad()
     }
 
   private def haveNumberNavigation(accountId: AccountId, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
