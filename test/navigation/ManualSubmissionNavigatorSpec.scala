@@ -19,10 +19,12 @@ package navigation
 import base.SpecBase
 import controllers.manual.reportdetails.routes.{ReportDetailsCheckAnswersController, ReportingYearController, TypeOfReportController}
 import models.*
-import models.SubmissionsConstants.FATCA
+import models.CrsOrFatca.{Crs, Fatca}
+import models.SubmissionsConstants.{CRS, FATCA}
 import models.response.{Address, AddressLookup, Country}
 import models.viewModels.AccountId
 import pages.*
+import pages.manual.account.{AccountClosedPage, HaveNumberPage, IdentifierPage, NumberTypePage, WhatWasTheAccountBalancePage}
 import pages.manual.account.*
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
@@ -221,11 +223,42 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
 
       }
 
-      "AccountClosed" - {
-        "must go to UnderConstruction Page" in {
-          val userData = UserAnswers("id").withPage(AccountClosedPage(accountId), true)
-          navigator.nextPage(AccountClosedPage(accountId), NormalMode, userData) mustBe
-            controllers.routes.UnderConstructionController.onPageLoad()
+      "AccountClosedPage" - {
+
+        "must go to WhatWasTheAccountCurrency when AccountClosed is false and regime is Crs" in {
+          implicit val reportId: ReportId = ReportId(CRS, 2024, None, "TestFIID")
+
+          val userAnswers = UserAnswers("id")
+            .withPage(AccountClosedPage(accountId), false)
+
+          navigator.nextPage(AccountClosedPage(accountId), NormalMode, userAnswers) mustBe
+            controllers.manual.account.routes.WhatWasTheAccountCurrencyController.onPageLoad(NormalMode)
+        }
+
+        "must go to WhatWasTheAccountBalance page when AccountClosed is false and regime is Fatca" in {
+          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+
+          val userAnswers = UserAnswers("id")
+            .withPage(AccountClosedPage(accountId), false)
+            .withPage(CrsOrFatcaPage, Fatca)
+
+          navigator.nextPage(AccountClosedPage(accountId), NormalMode, userAnswers) mustBe
+            controllers.manual.account.routes.WhatWasTheAccountBalanceController.onPageLoad(NormalMode)
+        }
+
+        "must go to WhatWasTheAccountBalance page when AccountClosed is true" in {
+          val userAnswers = UserAnswers("id")
+            .withPage(AccountClosedPage(accountId), true)
+
+          navigator.nextPage(AccountClosedPage(accountId), NormalMode, userAnswers) mustBe
+            controllers.manual.account.routes.WhatWasTheAccountBalanceController.onPageLoad(NormalMode)
+        }
+
+        "must go to JourneyRecoveryController when AccountClosed is not answered" in {
+          val userAnswers = UserAnswers("id")
+
+          navigator.nextPage(AccountClosedPage(accountId), NormalMode, userAnswers) mustBe
+            controllers.routes.JourneyRecoveryController.onPageLoad()
         }
       }
 
@@ -233,6 +266,14 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         "must go to UNDERCONSTRUCTION page after user hits submit" in {
           val ua = UserAnswers("id")
           navigator.nextPage(AddressNonUkPage(), NormalMode, ua) mustBe
+            controllers.routes.UnderConstructionController.onPageLoad()
+        }
+      }
+
+      "WhatWasTheAccountBalancePage" - {
+        "must go to UNDERCONSTRUCTION page when submitted" in {
+          val ua = UserAnswers("id")
+          navigator.nextPage(WhatWasTheAccountBalancePage(accountId), NormalMode, ua) mustBe
             controllers.routes.UnderConstructionController.onPageLoad()
         }
       }
@@ -265,13 +306,6 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         }
       }
 
-      "WhatWasTheAccountBalancePage" - {
-        "must go to UNDERCONSTRUCTION page when submitted" in {
-          val ua = UserAnswers("id")
-          navigator.nextPage(WhatWasTheAccountBalancePage(accountId), NormalMode, ua) mustBe
-            controllers.routes.UnderConstructionController.onPageLoad()
-        }
-      }
       "WhatWasTheAccountCurrencyPage" - {
         "must go to UNDERCONSTRUCTION page when submitted" in {
           val ua = UserAnswers("id")

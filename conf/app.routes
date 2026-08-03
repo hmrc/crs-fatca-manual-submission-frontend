@@ -167,12 +167,12 @@ POST       /manual/sponsor/address-uk                          controllers.manua
 GET        /manual/sponsor/change-address-uk                   controllers.manual.sponsor.UkAddressController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/sponsor/change-address-uk                  controllers.manual.sponsor.UkAddressController.onSubmit(mode: Mode = CheckMode)
 
-GET        /manual/account/balance                        controllers.manual.account.WhatWasTheAccountBalanceController.onPageLoad(mode: Mode = NormalMode)
-POST       /manual/account/balance                        controllers.manual.account.WhatWasTheAccountBalanceController.onSubmit(mode: Mode = NormalMode)
-GET        /manual/account/change-balance                  controllers.manual.account.WhatWasTheAccountBalanceController.onPageLoad(mode: Mode = CheckMode)
-POST       /manual/account/change-balance                  controllers.manual.account.WhatWasTheAccountBalanceController.onSubmit(mode: Mode = CheckMode)
-
 GET        /manual/account/currency                         controllers.manual.account.WhatWasTheAccountCurrencyController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/account/currency                         controllers.manual.account.WhatWasTheAccountCurrencyController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/account/change-currency                  controllers.manual.account.WhatWasTheAccountCurrencyController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/account/change-currency                  controllers.manual.account.WhatWasTheAccountCurrencyController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/account/balance                        controllers.manual.account.WhatWasTheAccountBalanceController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account/balance                        controllers.manual.account.WhatWasTheAccountBalanceController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account/change-balance                  controllers.manual.account.WhatWasTheAccountBalanceController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account/change-balance                  controllers.manual.account.WhatWasTheAccountBalanceController.onSubmit(mode: Mode = CheckMode)

@@ -69,6 +69,11 @@ class WhatWasTheAccountBalanceFormProviderSpec extends FieldBehaviours {
         val result = form.bind(Map("currency" -> currency.code, fieldName -> ""))
         result.errors must contain(FormError(fieldName, requiredAmountKey))
       }
+
+      "must not bind a sole minus sign" in {
+        val result = form.bind(Map("currency" -> currency.code, fieldName -> "-"))
+        result.errors must contain(FormError(fieldName, "whatWasTheAccountBalance.error.invalid.FATCA"))
+      }
     }
 
     "when regime is CRS" - {
@@ -104,6 +109,26 @@ class WhatWasTheAccountBalanceFormProviderSpec extends FieldBehaviours {
         val result = form.bind(Map("currency" -> currency.code, fieldName -> ""))
         result.errors must contain(FormError(fieldName, requiredAmountKey))
       }
+    }
+
+    "must strip whitespace" in {
+      val form = new WhatWasTheAccountBalanceFormProvider()(FATCA)
+
+      val result = form.bind(Map("currency" -> currency.code, fieldName -> " 123.45 "))
+      result.value.value.amount mustBe "123.45"
+    }
+
+    "must normalise leading decimal as 0 (e.g .5 = 0.5)" in {
+      val form = new WhatWasTheAccountBalanceFormProvider()(FATCA)
+
+      val result = form.bind(Map("currency" -> currency.code, fieldName -> " .5 "))
+      result.value.value.amount mustBe "0.5"
+    }
+    "must normalise leading negative decimal as -0 (e.g -.5 = -0.5)" in {
+      val form = new WhatWasTheAccountBalanceFormProvider()(FATCA)
+
+      val result = form.bind(Map("currency" -> currency.code, fieldName -> " -.5 "))
+      result.value.value.amount mustBe "-0.5"
     }
   }
 
