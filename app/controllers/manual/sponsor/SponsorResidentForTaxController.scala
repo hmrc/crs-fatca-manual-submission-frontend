@@ -20,7 +20,7 @@ import connectors.DatabaseConnector
 import controllers.*
 import controllers.actions.*
 import forms.SponsorResidentForTaxFormProvider
-import models.{Countries, Mode, ReportId, SponsorResidentTaxCountryCodes}
+import models.{Countries, Mode, ReportId}
 import navigation.ManualSubmissionNavigator
 import pages.SponsorResidentForTaxPage
 import pages.manual.sponsor.SponsorNamePage
