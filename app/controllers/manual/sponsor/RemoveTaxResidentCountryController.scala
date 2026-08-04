@@ -56,7 +56,7 @@ class RemoveTaxResidentCountryController @Inject() (
         .get(SponsorNamePage())
         .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())) {
           sponsorName =>
-            val country = Countries.all.find(_.code == "ET").get
+            val country     = Countries.all.find(_.code == "ET").get
             val messageType = RemoveCountryMessage.getRemoveCountryMessage("ET")
             val preparedForm = request.userAnswers.get(RemoveTaxResidentCountryPage()) match {
               case None        => form
@@ -76,7 +76,7 @@ class RemoveTaxResidentCountryController @Inject() (
         .get(SponsorNamePage())
         .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))) {
           sponsorName =>
-            val country = Countries.all.find(_.code == "ET").get
+            val country     = Countries.all.find(_.code == "ET").get
             val messageType = RemoveCountryMessage.getRemoveCountryMessage("ET")
             form
               .bindFromRequest()
@@ -85,7 +85,7 @@ class RemoveTaxResidentCountryController @Inject() (
                 value =>
                   for {
                     updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(RemoveTaxResidentCountryPage(), value))
-                    _ <- repository.set(updatedAnswers)
+                    _              <- repository.set(updatedAnswers)
                   } yield redirectWithFlash(value, mode, updatedAnswers, country.description)
               )
         }

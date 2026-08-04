@@ -19,35 +19,35 @@ package models.sponsor
 val otherCountryCodes = Seq("XX")
 
 val definiteArticleCountryCodes = Seq("CC",
-                             "CF",
-                             "DO",
-                             "MH",
-                             "AE",
-                             "GB",
-                             "UM",
-                             "US",
-                             "VI",
-                             "AX",
-                             "CG",
-                             "CG",
-                             "CK",
-                             "FK",
-                             "FO",
-                             "GS",
-                             "HM",
-                             "IO",
-                             "KY",
-                             "MP",
-                             "NL",
-                             "PH",
-                             "PN",
-                             "PS",
-                             "SB",
-                             "TC",
-                             "TF",
-                             "VG",
-                             "WF",
-                             "IM"
+                                      "CF",
+                                      "DO",
+                                      "MH",
+                                      "AE",
+                                      "GB",
+                                      "UM",
+                                      "US",
+                                      "VI",
+                                      "AX",
+                                      "CG",
+                                      "CG",
+                                      "CK",
+                                      "FK",
+                                      "FO",
+                                      "GS",
+                                      "HM",
+                                      "IO",
+                                      "KY",
+                                      "MP",
+                                      "NL",
+                                      "PH",
+                                      "PN",
+                                      "PS",
+                                      "SB",
+                                      "TC",
+                                      "TF",
+                                      "VG",
+                                      "WF",
+                                      "IM"
 )
 
 enum RemoveCountryMessage:
@@ -56,8 +56,8 @@ enum RemoveCountryMessage:
 object RemoveCountryMessage {
 
   def getRemoveCountryMessage(code: String): RemoveCountryMessage = code match
-    case c if otherCountryCodes.contains(c)  => OtherCountryMessage
+    case c if otherCountryCodes.contains(c)           => OtherCountryMessage
     case c if definiteArticleCountryCodes.contains(c) => NationsWithDefiniteArticlesMessage
-    case _                                   => AllOtherCountryMessage
+    case _                                            => AllOtherCountryMessage
 
 }
