@@ -52,7 +52,7 @@ class AddressNonUkViewSpec extends SpecBase {
     )
 
   private val sponsorName = "Test Sponsor"
-  private val countries   = Countries.all
+  private val countries   = Countries.nonUkTerritories
 
   "AddressNonUkView" - {
 
@@ -152,7 +152,7 @@ class AddressNonUkViewSpec extends SpecBase {
 
       "must display all countries and the placeholder option" in {
         doc.select("#country option").size() mustBe
-          Countries.all.size + 1
+          Countries.nonUkTerritories.size + 1
       }
 
       "must use the country code as the option value" in {
