@@ -26,14 +26,14 @@ import viewmodels.implicits._
 
 object SponsorResidentForTaxSummary {
 
-  def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
-    answers.get(SponsorResidentForTaxPage()).map {
+  def row(answers: UserAnswers, id: Int)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
+    answers.get(SponsorResidentForTaxPage(id)).map {
       answer =>
         SummaryListRowViewModel(
           key = "sponsorResidentForTax.checkYourAnswersLabel",
           value = ValueViewModel(HtmlFormat.escape("answer").toString),
           actions = Seq(
-            ActionItemViewModel("site.change", controllers.manual.sponsor.routes.SponsorResidentForTaxController.onPageLoad(CheckMode).url)
+            ActionItemViewModel("site.change", controllers.manual.sponsor.routes.SponsorResidentForTaxController.onPageLoad(CheckMode, id).url)
               .withVisuallyHiddenText(messages("sponsorResidentForTax.change.hidden"))
           )
         )

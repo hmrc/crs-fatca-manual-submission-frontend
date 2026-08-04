@@ -51,7 +51,7 @@ class SponsorResidentForTaxController @Inject() (
   val form                        = formProvider()
   private val journeyRecoveryCall = routes.JourneyRecoveryController.onPageLoad()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
+  def onPageLoad(mode: Mode, id: Int): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
@@ -60,13 +60,16 @@ class SponsorResidentForTaxController @Inject() (
         .get(SponsorNamePage())
         .fold(Redirect(journeyRecoveryCall)) {
           sponsorName =>
-            // Todo prefill will be implemented in https://jira.tools.tax.service.gov.uk/browse/DAC6-4406 when currentCountryPage is present
-            val preparedForm = form
-            Ok(view(preparedForm, mode, sponsorName, Countries.all))
+            val preparedForm = request.userAnswers.get(SponsorResidentForTaxPage(id)) match {
+              case None        => form
+              case Some(value) => form.fill(value)
+            }
+
+            Ok(view(preparedForm, mode, sponsorName, Countries.all, id))
         }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
+  def onSubmit(mode: Mode, id: Int): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
       request.userAnswers
@@ -76,15 +79,12 @@ class SponsorResidentForTaxController @Inject() (
             form
               .bindFromRequest()
               .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, sponsorName, Countries.all))),
+                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, sponsorName, Countries.all, id))),
                 value =>
-                  val sponsorResidentTaxCountryCodes = request.userAnswers.get(SponsorResidentForTaxPage()).getOrElse(SponsorResidentTaxCountryCodes(Seq()))
-                  val updatedSponsorResidentTaxCountryCodes =
-                    sponsorResidentTaxCountryCodes.copy(resCountryCodes = sponsorResidentTaxCountryCodes.resCountryCodes :+ value)
                   for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(SponsorResidentForTaxPage(), updatedSponsorResidentTaxCountryCodes))
+                    updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(SponsorResidentForTaxPage(id), value))
                     _              <- repository.set(updatedAnswers)
-                  } yield Redirect(navigator.nextPage(SponsorResidentForTaxPage(), mode, updatedAnswers))
+                  } yield Redirect(navigator.nextPage(SponsorResidentForTaxPage(id), mode, updatedAnswers))
               )
 
         }

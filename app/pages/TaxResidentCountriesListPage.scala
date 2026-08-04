@@ -16,9 +16,10 @@
 
 package pages
 
+import models.manual.sponsor.TaxResidentCountry
 import models.{ReportId, SponsorResidentTaxCountryCodes}
 import play.api.libs.json.JsPath
 
-final case class SponsorResidentForTaxPage(index: Int)(implicit reportId: ReportId) extends QuestionPage[String]:
+final case class TaxResidentCountriesListPage()(implicit reportId: ReportId) extends QuestionPage[Seq[TaxResidentCountry]]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "tax-resident-countries" \ index \ "country"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "tax-resident-countries"
