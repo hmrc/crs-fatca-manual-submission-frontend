@@ -18,7 +18,7 @@ package models.sponsor
 
 val otherCountryCodes = Seq("XX")
 
-val pluralCountryCodes = Seq("CC",
+val definiteArticleCountryCodes = Seq("CC",
                              "CF",
                              "DO",
                              "MH",
@@ -57,7 +57,7 @@ object RemoveCountryMessage {
 
   def getRemoveCountryMessage(code: String): RemoveCountryMessage = code match
     case c if otherCountryCodes.contains(c)  => OtherCountryMessage
-    case c if pluralCountryCodes.contains(c) => NationsWithDefiniteArticlesMessage
+    case c if definiteArticleCountryCodes.contains(c) => NationsWithDefiniteArticlesMessage
     case _                                   => AllOtherCountryMessage
 
 }
