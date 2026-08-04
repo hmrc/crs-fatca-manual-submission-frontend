@@ -20,7 +20,7 @@ import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.manual.sponsor.RemoveTaxResidentCountryFormProvider
 import models.sponsor.RemoveCountryMessage
-import models.{Mode, ReportId, UserAnswers}
+import models.{Countries, Mode, ReportId, UserAnswers}
 import navigation.ManualSubmissionNavigator
 import pages.manual.sponsor.{RemoveTaxResidentCountryPage, SponsorNamePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -56,12 +56,14 @@ class RemoveTaxResidentCountryController @Inject() (
         .get(SponsorNamePage())
         .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())) {
           sponsorName =>
+            val country = Countries.all.find(_.code == "ET").get
+            val messageType = RemoveCountryMessage.getRemoveCountryMessage("ET")
             val preparedForm = request.userAnswers.get(RemoveTaxResidentCountryPage()) match {
               case None        => form
               case Some(value) => form.fill(value)
             }
 
-            Ok(view(preparedForm, mode, sponsorName, country = "Ethopia", RemoveCountryMessage.NationsWithDefiniteArticlesMessage))
+            Ok(view(preparedForm, mode, sponsorName, country.description, messageType))
         }
 
   }
@@ -74,20 +76,22 @@ class RemoveTaxResidentCountryController @Inject() (
         .get(SponsorNamePage())
         .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))) {
           sponsorName =>
+            val country = Countries.all.find(_.code == "ET").get
+            val messageType = RemoveCountryMessage.getRemoveCountryMessage("ET")
             form
               .bindFromRequest()
               .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, sponsorName, country = "Ethopia"))),
+                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, sponsorName, country.description, messageType))),
                 value =>
                   for {
                     updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(RemoveTaxResidentCountryPage(), value))
-                    _              <- repository.set(updatedAnswers)
-                  } yield redirectWithFlash(value, mode, updatedAnswers)
+                    _ <- repository.set(updatedAnswers)
+                  } yield redirectWithFlash(value, mode, updatedAnswers, country.description)
               )
         }
   }
 
-  private def redirectWithFlash(value: Boolean, mode: Mode, useranswers: UserAnswers, country: String = "")(implicit reportId: ReportId): Result =
+  private def redirectWithFlash(value: Boolean, mode: Mode, useranswers: UserAnswers, country: String)(implicit reportId: ReportId): Result =
     if value then Redirect(navigator.nextPage(RemoveTaxResidentCountryPage(), mode, useranswers)).flashing("country-removed" -> country)
     else Redirect(navigator.nextPage(RemoveTaxResidentCountryPage(), mode, useranswers))
 }
