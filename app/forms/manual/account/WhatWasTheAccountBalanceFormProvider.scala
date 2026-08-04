@@ -26,16 +26,19 @@ import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 import javax.inject.Inject
 
 class WhatWasTheAccountBalanceFormProvider @Inject() extends Mappings with Transforms {
+//
+//  private val crsAmountFormatRegex   = "^[0-9]*(\\.[0-9]*)?$".r
+//  private val fatcaAmountFormatRegex = "^-?[0-9]*(\\.[0-9]*)?$".r
+//  private val minusPositionRegex     = "^-?[^-]*$".r
+//  private val decimalFormatRegex     = "^-?([0-9]+(\\.[0-9]{1,2})?|\\.[0-9]{1,2}|[0-9]+\\.)$".r
+//
+  private val requiredAmountError = "whatWasTheAccountBalance.error.required.amount"
+//  private val crsInvalidAmountError    = "whatWasTheAccountBalance.error.invalid.CRS"
+//  private val fatcaInvalidAmountError  = "whatWasTheAccountBalance.error.invalid.FATCA"
+//  private val decimalPlacesAmountError = "whatWasTheAccountBalance.error.decimalPlaces"
+//  private val minusAmountError         = "whatWasTheAccountBalance.error.minus.FATCA"
 
-  private val crsAmountFormatRegex   = "^[0-9.]+$".r
-  private val fatcaAmountFormatRegex = "^[-0-9.]+$".r
-  private val minusPositionRegex     = "^-?[^-]*$".r
-  private val decimalFormatRegex     = "^-?[0-9]+(\\.[0-9]{1,2})?$".r
-
-  def apply(regime: RegimeType): Form[AccountBalance] = {
-
-    val isFATCA: Boolean = regime == FATCA
-
+  def apply(regime: RegimeType): Form[AccountBalance] =
     Form(
       mapping(
         "currency" -> text("whatWasTheAccountBalance.error.required.currency")
@@ -44,16 +47,11 @@ class WhatWasTheAccountBalanceFormProvider @Inject() extends Mappings with Trans
             code => Currencies.all(regime).find(_.code == code).get,
             currency => currency.code
           ),
-        "amount" -> text("whatWasTheAccountBalance.error.required.amount")
-          .verifying(loneCharConstraint)
-          .transform(normaliseDecimalAmount, identity)
-          .verifying(if (isFATCA) fatcaAmountConstraint else crsAmountConstraint)
+        "amount" -> currencyAmount(regime, requiredAmountError)
       )(AccountBalance.apply)(
         ab => Some((ab.currency, ab.amount))
       )
     )
-
-  }
 
   private def currencyConstraint(regime: RegimeType): Constraint[String] = Constraint("constraint.currency") {
     code =>
@@ -61,40 +59,6 @@ class WhatWasTheAccountBalanceFormProvider @Inject() extends Mappings with Trans
         Valid
       } else {
         Invalid(ValidationError("whatWasTheAccountBalance.error.required.currency"))
-      }
-  }
-
-  private val loneCharConstraint = Constraint("constraint.lone.chars") {
-    value =>
-      val strippedValue = stripSpaces(value.toString)
-      if (!strippedValue.exists(_.isDigit)) {
-        Invalid(ValidationError("whatWasTheAccountBalance.error.required.amount"))
-      } else {
-        Valid
-      }
-  }
-
-  private val fatcaAmountConstraint: Constraint[String] = Constraint("contraint.amount") {
-    value =>
-      if (!fatcaAmountFormatRegex.matches(value) || value.count(_ == '.') > 1) {
-        Invalid(ValidationError("whatWasTheAccountBalance.error.invalid.FATCA"))
-      } else if (!minusPositionRegex.matches(value)) {
-        Invalid(ValidationError("whatWasTheAccountBalance.error.minus.FATCA"))
-      } else if (!decimalFormatRegex.matches(value)) {
-        Invalid(ValidationError("whatWasTheAccountBalance.error.decimalPlaces"))
-      } else {
-        Valid
-      }
-  }
-
-  private val crsAmountConstraint: Constraint[String] = Constraint("Amount") {
-    value =>
-      if (!crsAmountFormatRegex.matches(value) || value.count(_ == '.') > 1) {
-        Invalid(ValidationError("whatWasTheAccountBalance.error.invalid.CRS"))
-      } else if (!decimalFormatRegex.matches(value)) {
-        Invalid(ValidationError("whatWasTheAccountBalance.error.decimalPlaces"))
-      } else {
-        Valid
       }
   }
 
