@@ -429,6 +429,12 @@ ukAddress.jersey = Jersey
 ukAddress.guernsey = Guernsey
 ukAddress.isleOfMan = Isle of Man
 
+accountClosed.title = Is the account closed?
+accountClosed.heading = Is the account closed?
+accountClosed.checkYourAnswersLabel = accountClosed
+accountClosed.error.required = Select yes if the account is closed
+accountClosed.change.hidden = AccountClosed
+
 removeTaxResidentCountry.definite.articles.countries.title = Are you sure you want to remove the {0} as a tax resident country for the sponsor?
 removeTaxResidentCountry.other.countries.title = Are you sure you want to remove ‘Other country’ as a tax resident country for the sponsor?
 removeTaxResidentCountry.all.countries.title = Are you sure you want to remove {0} as a tax resident country for the sponsor?
