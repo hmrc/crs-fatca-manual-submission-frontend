@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
-package pages
+package viewmodels.govuk
 
-import models.manual.sponsor.TaxResidentCountry
-import models.ReportId
-import play.api.libs.json.JsPath
+import play.twirl.api.Html
 
-final case class TaxResidentCountriesListPage()(implicit reportId: ReportId) extends QuestionPage[Seq[TaxResidentCountry]]:
+object ThreeQuartersMainContent {
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "tax-resident-countries"
+  def apply(content: Html): Html =
+    Html(
+      s"""
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-three-quarters">
+          ${content.body}
+        </div>
+      </div>
+      """
+    )
+}

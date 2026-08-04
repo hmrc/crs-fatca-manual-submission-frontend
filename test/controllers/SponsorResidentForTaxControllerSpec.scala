@@ -20,7 +20,7 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import forms.SponsorResidentForTaxFormProvider
 import models.SubmissionsConstants.CRS
-import models.{Countries, NormalMode, ReportId, SponsorResidentTaxCountryCodes}
+import models.{Countries, NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when

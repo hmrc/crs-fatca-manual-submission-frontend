@@ -27,11 +27,11 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.sponsor.TaxResidentCountriesPage
+import pages.manual.sponsor.{SponsorNamePage, TaxResidentCountriesPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import views.html.manual.sponsor.TaxResidentCountriesView
 
 import scala.concurrent.Future
@@ -44,10 +44,14 @@ class TaxResidentCountriesControllerSpec extends SpecBase with MockitoSugar {
   val form         = formProvider()
 
   lazy val taxResidentCountriesRoute = controllers.manual.sponsor.routes.TaxResidentCountriesController.onPageLoad(NormalMode).url
+  val sponsorName                    = "TestSponsor"
 
   "TaxResidentCountries Controller" - {
 
-    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
+    val reportId = ReportId(CRS, 2025, None, "TestfiID")
+    val ua = emptyUserAnswers
+      .withPage(ReportIdPage, reportId)
+      .withPage(SponsorNamePage()(reportId), sponsorName)
 
     "must return OK and the correct view for a GET" in {
 
@@ -61,15 +65,13 @@ class TaxResidentCountriesControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[TaxResidentCountriesView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, Seq.empty)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, sponsorName, Seq.empty)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
-
-      val userAnswers = ua.set(TaxResidentCountriesPage(), true).success.value
+      val userAnswers = ua.set(TaxResidentCountriesPage()(reportId), true).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
@@ -81,7 +83,7 @@ class TaxResidentCountriesControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode, Seq.empty)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode, sponsorName, Seq.empty)(request, messages(application)).toString
       }
     }
 
@@ -127,7 +129,7 @@ class TaxResidentCountriesControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, Seq.empty)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, sponsorName, Seq.empty)(request, messages(application)).toString
       }
     }
 
