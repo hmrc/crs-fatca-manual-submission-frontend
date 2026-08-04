@@ -26,7 +26,7 @@ import pages.manual.sponsor.TaxResidentCountriesPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import connectors.DatabaseConnector
-import pages.SponsorResidentForTaxPage
+import pages.{SponsorResidentForTaxPage, TaxResidentCountriesListPage}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.sponsor.TaxResidentCountriesView
 
@@ -55,9 +55,9 @@ class TaxResidentCountriesController @Inject() (
       implicit val reportId: ReportId = request.reportId
 
       val taxResidentCountries = request.userAnswers
-        .get(SponsorResidentForTaxPage())
-        .map(_.resCountryCodes)
+        .get(TaxResidentCountriesListPage())
         .getOrElse(Seq.empty)
+        .map(_.country)
 
       val preparedForm = request.userAnswers.get(TaxResidentCountriesPage()) match {
         case None        => form
@@ -73,9 +73,9 @@ class TaxResidentCountriesController @Inject() (
       implicit val reportId: ReportId = request.reportId
 
       val taxResidentCountries = request.userAnswers
-        .get(SponsorResidentForTaxPage())
-        .map(_.resCountryCodes)
+        .get(TaxResidentCountriesListPage())
         .getOrElse(Seq.empty)
+        .map(_.country)
 
       form
         .bindFromRequest()

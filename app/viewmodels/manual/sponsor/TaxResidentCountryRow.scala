@@ -32,7 +32,7 @@ object TaxResidentCountryRow {
       case (country, index) =>
         TaxResidentCountryRow(
           country,
-          s"${routes.SponsorResidentForTaxController.onPageLoad(CheckMode).url}?id=${index + 1}",
+          routes.SponsorResidentForTaxController.onPageLoad(CheckMode, index).url,
           controllers.routes.UnderConstructionController.onPageLoad().url
         )
     }
