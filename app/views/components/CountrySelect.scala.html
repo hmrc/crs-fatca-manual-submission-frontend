@@ -27,7 +27,9 @@
 @(
         field: Field,
         label: String,
-        countries: Seq[Country]
+        countries: Seq[Country],
+        labelClasses: String = ""
+
 )(
         implicit messages: Messages
 )
@@ -69,7 +71,8 @@
   name = field.name,
   items = countryItems,
   label = Label(
-   content = Text(label)
+   content = Text(label),
+   classes = labelClasses
   ),
   errorMessage = field.error.map { error =>
    ErrorMessage(

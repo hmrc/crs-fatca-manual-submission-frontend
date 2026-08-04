@@ -289,11 +289,11 @@ trait Formatters extends Transforms {
 
   private[mappings] def amountFormatter(
     regime: RegimeType,
-    requiredKey: String
+    requiredKey: String,
+    invalidErrorKey: String,
+    minusAmountErrorKey: String,
+    decimalPlacesErrorKey: String
   ): Formatter[String] = new Formatter[String] {
-
-    private val minusAmountErrorKey   = "whatWasTheAccountBalance.error.minus.FATCA"
-    private val decimalPlacesErrorKey = "whatWasTheAccountBalance.error.decimalPlaces"
 
     private val minusPositionRegex       = "^-?[^-]*$".r
     private val moreThanTwoDecimalsRegex = "^-?[0-9]*\\.[0-9]{3,}$".r
@@ -302,15 +302,14 @@ trait Formatters extends Transforms {
       case SubmissionsConstants.FATCA => "^-?[0-9]*(\\.[0-9]*)?$".r
       case _                          => "^[0-9]*(\\.[0-9]*)?$".r
     }
-    private val invalidErrorKey = s"whatWasTheAccountBalance.error.invalid.${regime.value}"
 
-    private def cleanInput(s: String): String =
-      s.replaceAll("[\\s,]+", "") // remove spaces and commas
+    private def stripSpacesAndCommas(s: String): String =
+      s.replaceAll("[\\s,]+", "")
 
     override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], String] =
       data.get(key) match {
-        case Some(rawValue) if cleanInput(rawValue).nonEmpty && cleanInput(rawValue).exists(_.isDigit) =>
-          val cleaned = cleanInput(rawValue)
+        case Some(rawValue) if stripSpacesAndCommas(rawValue).nonEmpty && stripSpacesAndCommas(rawValue).exists(_.isDigit) =>
+          val cleaned = stripSpacesAndCommas(rawValue)
 
           if (!minusPositionRegex.pattern.matcher(cleaned).matches()) {
             Left(Seq(FormError(key, minusAmountErrorKey)))

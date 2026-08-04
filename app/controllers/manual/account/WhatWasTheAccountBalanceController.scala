@@ -52,9 +52,7 @@ class WhatWasTheAccountBalanceController @Inject() (
       val preparedForm = request.userAnswers.get(WhatWasTheAccountBalancePage(request.accountId)) match {
         case None => form
         case Some(value) =>
-          println(Console.BLUE + s">>> DEBUG AccountBalance in UserAnswers: ${value.amount}" + Console.RESET)
           val filled = form.fill(value)
-          println(Console.BLUE + s">>> DEBUG Form field amount value: ${filled("amount").value}" + Console.RESET)
           filled
       }
       Ok(view(preparedForm, mode, regime))

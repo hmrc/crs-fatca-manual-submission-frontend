@@ -17,7 +17,7 @@
 package forms.manual.account
 
 import forms.mappings.{Mappings, Transforms}
-import models.SubmissionsConstants.{FATCA, RegimeType}
+import models.SubmissionsConstants.RegimeType
 import models.{AccountBalance, Currencies, Currency}
 import play.api.data.Form
 import play.api.data.Forms.*
@@ -26,19 +26,14 @@ import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 import javax.inject.Inject
 
 class WhatWasTheAccountBalanceFormProvider @Inject() extends Mappings with Transforms {
-//
-//  private val crsAmountFormatRegex   = "^[0-9]*(\\.[0-9]*)?$".r
-//  private val fatcaAmountFormatRegex = "^-?[0-9]*(\\.[0-9]*)?$".r
-//  private val minusPositionRegex     = "^-?[^-]*$".r
-//  private val decimalFormatRegex     = "^-?([0-9]+(\\.[0-9]{1,2})?|\\.[0-9]{1,2}|[0-9]+\\.)$".r
-//
-  private val requiredAmountError = "whatWasTheAccountBalance.error.required.amount"
-//  private val crsInvalidAmountError    = "whatWasTheAccountBalance.error.invalid.CRS"
-//  private val fatcaInvalidAmountError  = "whatWasTheAccountBalance.error.invalid.FATCA"
-//  private val decimalPlacesAmountError = "whatWasTheAccountBalance.error.decimalPlaces"
-//  private val minusAmountError         = "whatWasTheAccountBalance.error.minus.FATCA"
 
-  def apply(regime: RegimeType): Form[AccountBalance] =
+  def apply(regime: RegimeType): Form[AccountBalance] = {
+
+    val requiredAmountError   = "whatWasTheAccountBalance.error.required.amount"
+    val invalidErrorKey       = s"whatWasTheAccountBalance.error.invalid.${regime.value}"
+    val minusAmountErrorKey   = "whatWasTheAccountBalance.error.minus.FATCA"
+    val decimalPlacesErrorKey = "whatWasTheAccountBalance.error.decimalPlaces"
+
     Form(
       mapping(
         "currency" -> text("whatWasTheAccountBalance.error.required.currency")
@@ -47,11 +42,12 @@ class WhatWasTheAccountBalanceFormProvider @Inject() extends Mappings with Trans
             code => Currencies.all(regime).find(_.code == code).get,
             currency => currency.code
           ),
-        "amount" -> currencyAmount(regime, requiredAmountError)
+        "amount" -> currencyAmount(regime, requiredAmountError, invalidErrorKey, minusAmountErrorKey, decimalPlacesErrorKey)
       )(AccountBalance.apply)(
         ab => Some((ab.currency, ab.amount))
       )
     )
+  }
 
   private def currencyConstraint(regime: RegimeType): Constraint[String] = Constraint("constraint.currency") {
     code =>
