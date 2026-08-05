@@ -303,14 +303,14 @@ trait Formatters extends Transforms {
       case _                          => "^[0-9]*(\\.[0-9]*)?$".r
     }
 
-    private def stripSpacesAndCommas(s: String): String =
-      s.replaceAll("[\\s,]+", "")
+    private def stripSpaces(s: String): String =
+      s.replaceAll("[\\s]+", "")
 
     override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], String] =
       data.get(key) match {
 
-        case Some(rawValue) if stripSpacesAndCommas(rawValue).matches(".*[^-.].*") =>
-          val cleaned = stripSpacesAndCommas(rawValue)
+        case Some(rawValue) if stripSpaces(rawValue).matches(".*[^-.].*") =>
+          val cleaned = stripSpaces(rawValue)
 
           if (regime == FATCA && !minusPositionRegex.pattern.matcher(cleaned).matches()) {
             Left(Seq(FormError(key, minusAmountErrorKey)))

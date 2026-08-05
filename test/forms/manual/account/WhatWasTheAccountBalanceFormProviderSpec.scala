@@ -53,6 +53,11 @@ class WhatWasTheAccountBalanceFormProviderSpec extends FieldBehaviours {
         result.value.value.amount mustBe "-123.45"
       }
 
+      "must fail when amount contains commas" in {
+        val result = form.bind(Map("currency" -> currency.code, fieldName -> "123,345"))
+        result.errors must contain(FormError(fieldName, fatcaInvalidFormatErrorKey))
+      }
+
       "must fail when amount contains invalid characters" in {
         val result = form.bind(Map("currency" -> currency.code, fieldName -> "123abc"))
         result.errors must contain(FormError(fieldName, fatcaInvalidFormatErrorKey))
