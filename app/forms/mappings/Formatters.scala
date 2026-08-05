@@ -16,7 +16,7 @@
 
 package forms.mappings
 
-import models.SubmissionsConstants.RegimeType
+import models.SubmissionsConstants.{FATCA, RegimeType}
 import models.{Enumerable, ErrorValidation, SubmissionsConstants}
 import play.api.data.FormError
 import play.api.data.format.Formatter
@@ -308,10 +308,11 @@ trait Formatters extends Transforms {
 
     override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], String] =
       data.get(key) match {
-        case Some(rawValue) if stripSpacesAndCommas(rawValue).nonEmpty && stripSpacesAndCommas(rawValue).exists(_.isDigit) =>
+
+        case Some(rawValue) if stripSpacesAndCommas(rawValue).matches(".*[^-.].*") =>
           val cleaned = stripSpacesAndCommas(rawValue)
 
-          if (!minusPositionRegex.pattern.matcher(cleaned).matches()) {
+          if (regime == FATCA && !minusPositionRegex.pattern.matcher(cleaned).matches()) {
             Left(Seq(FormError(key, minusAmountErrorKey)))
           } else if (!formatRegex.pattern.matcher(cleaned).matches()) {
             Left(Seq(FormError(key, invalidErrorKey)))

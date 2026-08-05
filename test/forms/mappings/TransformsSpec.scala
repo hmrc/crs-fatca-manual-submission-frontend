@@ -45,17 +45,20 @@ class TransformsSpec extends SpecBase with Transforms {
       formatAmount("5.00") mustBe "5"
       formatAmount("-5.00") mustBe "-5"
     }
-    "format numbers of value 1000+ with commas (e.g 2000 = 2,000)" in {
-      formatAmount("1000") mustBe "1,000"
-      formatAmount("-1000.00") mustBe "-1,000"
-      formatAmount("-1234567") mustBe "-1,234,567"
-      formatAmount("-1234567.89") mustBe "-1,234,567.89"
-    }
-    "re-format misplaced commas (e.g 20,00 = 2,000)" in {
-      formatAmount("10,00") mustBe "1,000"
-      formatAmount("-100,0.0,0") mustBe "-1,000"
-      formatAmount("-12,34567") mustBe "-1,234,567"
+
+    "remove commas (e.g 20,00 = 2000)" in {
+      formatAmount("10,00") mustBe "1000"
+      formatAmount("-100,0.0,0") mustBe "-1000"
+      formatAmount("-12,34567") mustBe "-1234567"
     }
 
+  }
+  "formatLargeNumber must" - {
+    "format numbers of value 1000+ with commas (e.g 2000 = 2,000)" in {
+      formatLargeNumber("1000") mustBe "1,000"
+      formatLargeNumber("-1000") mustBe "-1,000"
+      formatLargeNumber("-1234567") mustBe "-1,234,567"
+      formatLargeNumber("-1234567.89") mustBe "-1,234,567.89"
+    }
   }
 }

@@ -26,7 +26,9 @@ trait Transforms {
       val tail = validPostCode.substring(validPostCode.length - 3)
       val head = validPostCode.substring(0, validPostCode.length - 3)
       s"$head $tail".toUpperCase
-    } else { validPostCode.toUpperCase }
+    } else {
+      validPostCode.toUpperCase
+    }
 
   protected def minimiseSpace(value: String): String =
     value.replaceAll(" {2,}", " ")
@@ -63,17 +65,11 @@ trait Transforms {
     }
 
   private def formatInteger(numStr: String): String =
-    formatLargeNumber(removeLeadingZeros(numStr))
-
-  private def formatLargeNumber(numStr: String): String = {
-    val (sign, rest)  = if (numStr.startsWith("-")) ("-", numStr.substring(1)) else ("", numStr)
-    val formattedRest = rest.reverse.grouped(3).mkString(",").reverse
-    s"$sign$formattedRest"
-  }
+    removeLeadingZeros(numStr)
 
   private def formatDecimal(numStr: String): String = {
     val parts             = numStr.split("\\.", 2)
-    val intPart           = formatLargeNumber(removeLeadingZeros(parts(0)))
+    val intPart           = removeLeadingZeros(parts(0))
     val decimalPart       = if (parts.length > 1) parts(1) else ""
     val paddedDecimalPart = decimalPart.take(2).padTo(2, '0')
     formatWholeDecimal(intPart, paddedDecimalPart)
@@ -88,4 +84,23 @@ trait Transforms {
     } else {
       s"$intPart.$deciPart"
     }
+
+  def formatLargeNumber(numStr: String): String = {
+    val sign = if (numStr.startsWith("-")) "-" else ""
+    val abs  = if (numStr.startsWith("-")) numStr.replace("-", "") else numStr
+
+    def addCommas(str: String) = str.reverse.grouped(3).mkString(",").reverse
+
+    if (abs.contains(".")) {
+      val splitAbs = abs.split("\\.", 2)
+      val int      = addCommas(splitAbs(0))
+      val deci     = splitAbs(1)
+
+      s"$sign$int.$deci"
+    } else {
+      val formattedInt = addCommas(abs)
+      s"$sign$formattedInt"
+    }
+  }
+
 }
