@@ -17,7 +17,7 @@
 package viewmodels.checkAnswers
 
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.UkAddressPage
+import pages.manual.sponsor.UkAddressPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
