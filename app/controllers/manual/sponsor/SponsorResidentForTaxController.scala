@@ -23,7 +23,6 @@ import forms.SponsorResidentForTaxFormProvider
 import models.{Countries, Mode, ReportId}
 import navigation.ManualSubmissionNavigator
 import pages.SponsorResidentForTaxPage
-import pages.manual.sponsor.SponsorNamePage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -37,10 +36,7 @@ class SponsorResidentForTaxController @Inject() (
   override val messagesApi: MessagesApi,
   repository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
-  identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  reportIdAction: ReportIdRequiredAction,
+  actions: Actions,
   formProvider: SponsorResidentForTaxFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: SponsorResidentForTaxView
@@ -48,45 +44,33 @@ class SponsorResidentForTaxController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  val form                        = formProvider()
-  private val journeyRecoveryCall = routes.JourneyRecoveryController.onPageLoad()
+  val form = formProvider()
 
-  def onPageLoad(mode: Mode, id: Int): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
+  def onPageLoad(mode: Mode, id: Int): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequired() {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
 
-      request.userAnswers
-        .get(SponsorNamePage())
-        .fold(Redirect(journeyRecoveryCall)) {
-          sponsorName =>
-            val preparedForm = request.userAnswers.get(SponsorResidentForTaxPage(id)) match {
-              case None        => form
-              case Some(value) => form.fill(value)
-            }
+      val preparedForm = request.userAnswers.get(SponsorResidentForTaxPage(id)) match {
+        case None        => form
+        case Some(value) => form.fill(value)
+      }
 
-            Ok(view(preparedForm, mode, sponsorName, Countries.all, id))
-        }
+      Ok(view(preparedForm, mode, request.sponsorName, Countries.all, id))
   }
 
-  def onSubmit(mode: Mode, id: Int): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
+  def onSubmit(mode: Mode, id: Int): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequired().async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
-      request.userAnswers
-        .get(SponsorNamePage())
-        .fold(Future.successful(Redirect(journeyRecoveryCall))) {
-          sponsorName =>
-            form
-              .bindFromRequest()
-              .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, sponsorName, Countries.all, id))),
-                value =>
-                  for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(SponsorResidentForTaxPage(id), value))
-                    _              <- repository.set(updatedAnswers)
-                  } yield Redirect(navigator.nextPage(SponsorResidentForTaxPage(id), mode, updatedAnswers))
-              )
-
-        }
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, request.sponsorName, Countries.all, id))),
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(SponsorResidentForTaxPage(id), value))
+              _              <- repository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(SponsorResidentForTaxPage(id), mode, updatedAnswers))
+        )
   }
 }
