@@ -177,3 +177,7 @@ POST       /manual/sponsor/tax-resident-countries                        control
 GET        /manual/sponsor/change-tax-resident-countries                  controllers.manual.sponsor.TaxResidentCountriesController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/sponsor/change-tax-resident-countries                  controllers.manual.sponsor.TaxResidentCountriesController.onSubmit(mode: Mode = CheckMode)
 
+GET        /manual/account/balance                        controllers.manual.account.WhatWasTheAccountBalanceController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account/balance                        controllers.manual.account.WhatWasTheAccountBalanceController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account/change-balance                  controllers.manual.account.WhatWasTheAccountBalanceController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account/change-balance                  controllers.manual.account.WhatWasTheAccountBalanceController.onSubmit(mode: Mode = CheckMode)
