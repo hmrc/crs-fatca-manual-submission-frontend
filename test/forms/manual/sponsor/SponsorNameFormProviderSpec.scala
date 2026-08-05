@@ -20,7 +20,7 @@ import forms.behaviours.StringFieldBehaviours
 import play.api.data.FormError
 import utils.RegexConstants
 
-class SponsorNameFormProviderSpec extends StringFieldBehaviours with RegexConstants {
+class SponsorNameFormProviderSpec extends StringFieldBehaviours {
 
   val requiredKey   = "sponsorName.error.required"
   val lengthKey     = "sponsorName.error.length"
@@ -54,7 +54,7 @@ class SponsorNameFormProviderSpec extends StringFieldBehaviours with RegexConsta
       form,
       fieldName,
       allowedChars = allowedSeq,
-      invalidErr = FormError(fieldName, invalidKey, Seq(DEFAULT_STRING_FIELD_VALID))
+      invalidErr = FormError(fieldName, invalidKey, Seq(RegexConstants.DEFAULT_STRING_FIELD_VALID))
     )
 
     behave like mandatoryField(
@@ -65,7 +65,7 @@ class SponsorNameFormProviderSpec extends StringFieldBehaviours with RegexConsta
 
     "has double dash throw error" in {
       val result = form.bind(Map(fieldName -> "test--test")).apply(fieldName)
-      result.errors must contain only FormError(fieldName, doubleDashKey, Seq(DOUBLE_DASH_INVALID))
+      result.errors must contain only FormError(fieldName, doubleDashKey, Seq(RegexConstants.DOUBLE_DASH_INVALID))
     }
 
     "has multiple error - maxchar + double dash" in {

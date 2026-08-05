@@ -18,11 +18,11 @@ package forms.manual.sponsor
 
 import forms.mappings.Mappings
 import play.api.data.Form
-import utils.RegexConstants
+import utils.RegexConstants.{POSTCODE_FORMAT, POSTCODE_VALID}
 
 import javax.inject.Inject
 
-class UKPostcodeFormProvider @Inject() extends Mappings with RegexConstants {
+class UKPostcodeFormProvider @Inject() extends Mappings {
 
   def apply(): Form[String] =
     Form(

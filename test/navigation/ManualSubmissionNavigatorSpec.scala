@@ -265,6 +265,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           navigator.nextPage(AccountClosedPage(accountId), NormalMode, userAnswers) mustBe
             controllers.routes.JourneyRecoveryController.onPageLoad()
         }
+
       }
 
       "AddressNonUkPage" - {

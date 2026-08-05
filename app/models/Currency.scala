@@ -22,7 +22,7 @@ case class Currency(code: String, displayName: String, alias: Option[String] = N
 
 object Currency {
 
-  val GBP = Currency("GBP", "British Pound Sterling (GBP)") // will there be a default?
+  val GBP = Currency("GBP", "British Pound Sterling (GBP)")
 
   implicit val format: OFormat[Currency] = Json.format[Currency]
 }

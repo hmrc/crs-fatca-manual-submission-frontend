@@ -16,12 +16,12 @@
 
 package forms.mappings
 
-import models.Enumerable
 import org.scalatest.OptionValues
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import play.api.data.{Form, FormError}
-import utils.RegexConstants
+import models.Enumerable
+import utils.RegexConstants.{POSTCODE_FORMAT, POSTCODE_VALID}
 
 object MappingsSpec {
 
@@ -42,9 +42,9 @@ object MappingsSpec {
   }
 }
 
-class MappingsSpec extends AnyFreeSpec with Matchers with OptionValues with Mappings with RegexConstants {
+class MappingsSpec extends AnyFreeSpec with Matchers with OptionValues with Mappings {
 
-  import MappingsSpec.*
+  import MappingsSpec._
 
   "text" - {
 

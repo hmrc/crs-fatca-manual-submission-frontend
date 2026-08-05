@@ -24,7 +24,7 @@ import play.api.data.Forms.single
 
 import javax.inject.Inject
 
-class SponsorNameFormProvider @Inject() extends Mappings with RegexConstants {
+class SponsorNameFormProvider @Inject() extends Mappings {
 
   def apply(): Form[String] =
     Form(
@@ -34,8 +34,8 @@ class SponsorNameFormProvider @Inject() extends Mappings with RegexConstants {
           200,
           "sponsorName.error.length",
           Seq(
-            ErrorValidation(DEFAULT_STRING_FIELD_VALID, "sponsorName.error.invalid"),
-            ErrorValidation(DOUBLE_DASH_INVALID, "sponsorName.error.doubedash")
+            ErrorValidation(RegexConstants.DEFAULT_STRING_FIELD_VALID, "sponsorName.error.invalid"),
+            ErrorValidation(RegexConstants.DOUBLE_DASH_INVALID, "sponsorName.error.doubedash")
           )
         )
       )

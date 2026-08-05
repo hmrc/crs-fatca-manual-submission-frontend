@@ -22,11 +22,10 @@ import models.{AccountBalance, Currencies, Currency}
 import play.api.data.Form
 import play.api.data.Forms.*
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
-import utils.RegexConstants
 
 import javax.inject.Inject
 
-class WhatWasTheAccountBalanceFormProvider @Inject() extends Mappings with Transforms with RegexConstants {
+class WhatWasTheAccountBalanceFormProvider @Inject() extends Mappings with Transforms {
 
   def apply(regime: RegimeType): Form[AccountBalance] = {
 

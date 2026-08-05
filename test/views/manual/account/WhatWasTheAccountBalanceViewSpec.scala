@@ -18,9 +18,8 @@ package views.manual.account
 
 import base.SpecBase
 import forms.manual.account.WhatWasTheAccountBalanceFormProvider
-import forms.manual.sponsor.HaveSponsorFormProvider
 import models.NormalMode
-import models.SubmissionsConstants.{CRS, FATCA}
+import models.SubmissionsConstants.CRS
 import org.jsoup.Jsoup
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
