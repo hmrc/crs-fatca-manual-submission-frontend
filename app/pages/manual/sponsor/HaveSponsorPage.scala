@@ -17,7 +17,7 @@
 package pages.manual.sponsor
 
 import models.{ReportId, UserAnswers}
-import pages.QuestionPage
+import pages.{QuestionPage, TaxResidentCountriesListPage}
 import play.api.libs.json.JsPath
 
 import scala.util.{Success, Try}
@@ -39,6 +39,13 @@ final case class HaveSponsorPage()(implicit reportId: ReportId) extends Question
   private val cleanUpPages: Seq[QuestionPage[_]] = List(
     SponsorNamePage(),
     WhatIsAddressForSponsorPage(),
-    IsThisAddressForSponsorPage()
+    IsThisAddressForSponsorPage(),
+    WhatIsGIINForSponsorPage(),
+    IsSponsorBasedInUKPage(),
+    UKPostcodePage(),
+    AddressLookupPage(),
+    AddressNonUkPage(),
+    TaxResidentCountriesListPage(),
+    TaxResidentCountriesPage()
   )
 }
