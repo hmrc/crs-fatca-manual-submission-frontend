@@ -230,30 +230,30 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
 
       "AccountClosedPage" - {
 
-        "must go to UnderConstruction when AccountClosed is false and regime is Crs" in {
+        "must go to UnderConstruction when AccountClosed is true and regime is Crs" in {
           implicit val reportId: ReportId = ReportId(CRS, 2024, None, "TestFIID")
 
           val userAnswers = UserAnswers("id")
-            .withPage(AccountClosedPage(accountId), false)
+            .withPage(AccountClosedPage(accountId), true)
 
           navigator.nextPage(AccountClosedPage(accountId), NormalMode, userAnswers) mustBe
             controllers.routes.UnderConstructionController.onPageLoad()
         }
 
-        "must go to WhatWasTheAccountBalance page when AccountClosed is false and regime is Fatca" in {
+        "must go to WhatWasTheAccountBalance page when AccountClosed is true and regime is Fatca" in {
           implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
 
           val userAnswers = UserAnswers("id")
-            .withPage(AccountClosedPage(accountId), false)
+            .withPage(AccountClosedPage(accountId), true)
             .withPage(CrsOrFatcaPage, Fatca)
 
           navigator.nextPage(AccountClosedPage(accountId), NormalMode, userAnswers) mustBe
             controllers.manual.account.routes.WhatWasTheAccountBalanceController.onPageLoad(NormalMode)
         }
 
-        "must go to WhatWasTheAccountBalance page when AccountClosed is true" in {
+        "must go to WhatWasTheAccountBalance page when AccountClosed is false" in {
           val userAnswers = UserAnswers("id")
-            .withPage(AccountClosedPage(accountId), true)
+            .withPage(AccountClosedPage(accountId), false)
 
           navigator.nextPage(AccountClosedPage(accountId), NormalMode, userAnswers) mustBe
             controllers.manual.account.routes.WhatWasTheAccountBalanceController.onPageLoad(NormalMode)
