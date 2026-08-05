@@ -21,7 +21,7 @@ import controllers.actions.*
 import forms.manual.sponsor.UKPostcodeFormProvider
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.sponsor.{AddressLookupPage, SponsorNamePage, UKPostcodePage}
+import pages.manual.sponsor.{AddressLookupPage, UKPostcodePage}
 import play.api.data.{Form, FormError}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -35,10 +35,7 @@ class UKPostcodeController @Inject() (
   override val messagesApi: MessagesApi,
   repository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
-  identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  reportIdAction: ReportIdRequiredAction,
+  actions: Actions,
   formProvider: UKPostcodeFormProvider,
   addressLookupConnector: AddressLookupConnector,
   val controllerComponents: MessagesControllerComponents,
@@ -49,49 +46,39 @@ class UKPostcodeController @Inject() (
 
   val form: Form[String] = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequired() {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
 
-      request.userAnswers
-        .get(SponsorNamePage())
-        .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())) {
-          name =>
-            val preparedForm = request.userAnswers.get(UKPostcodePage()) match {
-              case None        => form
-              case Some(value) => form.fill(value)
-            }
+      val preparedForm = request.userAnswers.get(UKPostcodePage()) match {
+        case None        => form
+        case Some(value) => form.fill(value)
+      }
 
-            Ok(view(preparedForm, mode, name))
-        }
+      Ok(view(preparedForm, mode, request.sponsorName))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequired().async {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
-      request.userAnswers
-        .get(SponsorNamePage())
-        .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))) {
-          sponsorName =>
-            val formReturned = form.bindFromRequest()
-            formReturned
-              .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, sponsorName))),
-                postcode =>
-                  addressLookupConnector.findByPostCode(postcode.toUpperCase).flatMap {
-                    case Nil =>
-                      val formError = formReturned.withError(FormError("value", List("uKPostcode.error.notfound")))
-                      Future.successful(BadRequest(view(formError, mode, sponsorName)))
-                    case address =>
-                      for {
-                        uaWithUKPostcode    <- Future.fromTry(request.userAnswers.setWithReportId(UKPostcodePage(), postcode))
-                        uaWithAddressLookup <- Future.fromTry(uaWithUKPostcode.setWithReportId(AddressLookupPage(), address))
-                        _                   <- repository.set(uaWithAddressLookup)
-                      } yield Redirect(navigator.nextPage(UKPostcodePage(), mode, uaWithAddressLookup))
-                  }
-              )
-        }
+      val formReturned                = form.bindFromRequest()
+      formReturned
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, request.sponsorName))),
+          postcode =>
+            addressLookupConnector.findByPostCode(postcode.toUpperCase).flatMap {
+              case Nil =>
+                val formError = formReturned.withError(FormError("value", List("uKPostcode.error.notfound")))
+                Future.successful(BadRequest(view(formError, mode, request.sponsorName)))
+              case address =>
+                for {
+                  uaWithUKPostcode    <- Future.fromTry(request.userAnswers.setWithReportId(UKPostcodePage(), postcode))
+                  uaWithAddressLookup <- Future.fromTry(uaWithUKPostcode.setWithReportId(AddressLookupPage(), address))
+                  _                   <- repository.set(uaWithAddressLookup)
+                } yield Redirect(navigator.nextPage(UKPostcodePage(), mode, uaWithAddressLookup))
+            }
+        )
   }
 }

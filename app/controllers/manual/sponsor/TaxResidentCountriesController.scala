@@ -16,30 +16,26 @@
 
 package controllers.manual.sponsor
 
+import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.manual.sponsor.TaxResidentCountriesFormProvider
-
-import javax.inject.Inject
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.sponsor.{SponsorNamePage, TaxResidentCountriesPage}
+import pages.TaxResidentCountriesListPage
+import pages.manual.sponsor.TaxResidentCountriesPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import connectors.DatabaseConnector
-import pages.TaxResidentCountriesListPage
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.sponsor.TaxResidentCountriesView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class TaxResidentCountriesController @Inject() (
   override val messagesApi: MessagesApi,
   repository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
-  identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  reportIdAction: ReportIdRequiredAction,
+  actions: Actions,
   formProvider: TaxResidentCountriesFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: TaxResidentCountriesView
@@ -49,7 +45,7 @@ class TaxResidentCountriesController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequired() {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
@@ -59,20 +55,15 @@ class TaxResidentCountriesController @Inject() (
         .getOrElse(Seq.empty)
         .map(_.country)
 
-      request.userAnswers
-        .get(SponsorNamePage())
-        .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())) {
-          sponsorName =>
-            val preparedForm = request.userAnswers.get(TaxResidentCountriesPage()) match {
-              case None        => form
-              case Some(value) => form.fill(value)
-            }
+      val preparedForm = request.userAnswers.get(TaxResidentCountriesPage()) match {
+        case None        => form
+        case Some(value) => form.fill(value)
+      }
 
-            Ok(view(preparedForm, mode, sponsorName, taxResidentCountries))
-        }
+      Ok(view(preparedForm, mode, request.sponsorName, taxResidentCountries))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequired().async {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
@@ -82,20 +73,15 @@ class TaxResidentCountriesController @Inject() (
         .getOrElse(Seq.empty)
         .map(_.country)
 
-      request.userAnswers
-        .get(SponsorNamePage())
-        .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))) {
-          sponsorName =>
-            form
-              .bindFromRequest()
-              .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, sponsorName, taxResidentCountries))),
-                value =>
-                  for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(TaxResidentCountriesPage(), value))
-                    _              <- repository.set(updatedAnswers)
-                  } yield Redirect(navigator.nextPage(TaxResidentCountriesPage(), mode, updatedAnswers))
-              )
-        }
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, request.sponsorName, taxResidentCountries))),
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(TaxResidentCountriesPage(), value))
+              _              <- repository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(TaxResidentCountriesPage(), mode, updatedAnswers))
+        )
   }
 }

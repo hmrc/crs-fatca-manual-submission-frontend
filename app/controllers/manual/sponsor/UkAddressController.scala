@@ -22,7 +22,6 @@ import forms.UkAddressFormProvider
 import models.{Countries, Mode, ReportId}
 import navigation.ManualSubmissionNavigator
 import pages.UkAddressPage
-import pages.manual.sponsor.SponsorNamePage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -35,10 +34,7 @@ class UkAddressController @Inject() (
   override val messagesApi: MessagesApi,
   repository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
-  identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  reportIdAction: ReportIdRequiredAction,
+  actions: Actions,
   formProvider: UkAddressFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: UkAddressView
@@ -48,39 +44,29 @@ class UkAddressController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequired() {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
-      request.userAnswers
-        .get(SponsorNamePage())
-        .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)) {
-          sponsorName =>
-            val preparedForm = request.userAnswers.get(UkAddressPage()) match {
-              case None        => form
-              case Some(value) => form.fill(value)
-            }
-            Ok(view(preparedForm, mode, sponsorName, Countries.ukTerritories))
-        }
+      val preparedForm = request.userAnswers.get(UkAddressPage()) match {
+        case None        => form
+        case Some(value) => form.fill(value)
+      }
+      Ok(view(preparedForm, mode, request.sponsorName, Countries.ukTerritories))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequired().async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
-      request.userAnswers
-        .get(SponsorNamePage())
-        .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))) {
-          sponsorName =>
-            form
-              .bindFromRequest()
-              .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, sponsorName, Countries.ukTerritories))),
-                value =>
-                  for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(UkAddressPage(), value))
-                    _              <- repository.set(updatedAnswers)
-                  } yield Redirect(navigator.nextPage(UkAddressPage(), mode, updatedAnswers))
-              )
-        }
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, request.sponsorName, Countries.ukTerritories))),
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(UkAddressPage(), value))
+              _              <- repository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(UkAddressPage(), mode, updatedAnswers))
+        )
 
   }
 }

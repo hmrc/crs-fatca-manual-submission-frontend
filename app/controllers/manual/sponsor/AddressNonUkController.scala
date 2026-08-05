@@ -21,7 +21,7 @@ import controllers.actions.*
 import forms.manual.sponsor.AddressNonUkFormProvider
 import models.{Countries, Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.sponsor.{AddressNonUkPage, SponsorNamePage}
+import pages.manual.sponsor.AddressNonUkPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -34,10 +34,7 @@ class AddressNonUkController @Inject() (
   override val messagesApi: MessagesApi,
   repository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
-  identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  reportIdAction: ReportIdRequiredAction,
+  actions: Actions,
   formProvider: AddressNonUkFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: AddressNonUkView
@@ -47,7 +44,7 @@ class AddressNonUkController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequired() {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
 
@@ -56,20 +53,17 @@ class AddressNonUkController @Inject() (
         case Some(value) => form.fill(value)
       }
 
-      val sponsorName = request.userAnswers.get(SponsorNamePage()).get
-
-      Ok(view(preparedForm, mode, sponsorName, Countries.nonUkTerritories))
+      Ok(view(preparedForm, mode, request.sponsorName, Countries.nonUkTerritories))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequired().async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
-      val sponsorName                 = request.userAnswers.get(SponsorNamePage()).get
 
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, sponsorName, Countries.nonUkTerritories))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, request.sponsorName, Countries.nonUkTerritories))),
           value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(AddressNonUkPage(), value))
