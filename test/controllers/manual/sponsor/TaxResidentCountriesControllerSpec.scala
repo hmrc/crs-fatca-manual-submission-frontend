@@ -30,6 +30,7 @@ import pages.ReportIdPage
 import pages.manual.sponsor.{SponsorNamePage, TaxResidentCountriesPage}
 import play.api.inject.bind
 import play.api.mvc.Call
+import play.api.mvc.ControllerHelpers.request2flash
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import views.html.manual.sponsor.TaxResidentCountriesView
@@ -58,7 +59,7 @@ class TaxResidentCountriesControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
 
       running(application) {
-        val request = FakeRequest(GET, taxResidentCountriesRoute)
+        val request = FakeRequest(GET, taxResidentCountriesRoute).withFlash("country-removed" -> "Malawi")
 
         val result = route(application, request).value
 
@@ -76,7 +77,7 @@ class TaxResidentCountriesControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, taxResidentCountriesRoute)
+        val request = FakeRequest(GET, taxResidentCountriesRoute).withFlash("country-removed" -> "Malawi")
 
         val view = application.injector.instanceOf[TaxResidentCountriesView]
 
