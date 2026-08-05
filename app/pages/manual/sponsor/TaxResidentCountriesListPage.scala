@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package pages
+package pages.manual.sponsor
 
-import models.manual.sponsor.TaxResidentCountry
 import models.ReportId
+import models.manual.sponsor.TaxResidentCountry
+import pages.QuestionPage
 import play.api.libs.json.JsPath
 
 final case class TaxResidentCountriesListPage()(implicit reportId: ReportId) extends QuestionPage[Seq[TaxResidentCountry]]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "tax-resident-countries"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "sponsor" \ "tax-resident-countries"

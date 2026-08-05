@@ -21,8 +21,7 @@ import controllers.actions.*
 import forms.manual.sponsor.TaxResidentCountriesFormProvider
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.TaxResidentCountriesListPage
-import pages.manual.sponsor.TaxResidentCountriesPage
+import pages.manual.sponsor.{TaxResidentCountriesListPage, TaxResidentCountriesPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController

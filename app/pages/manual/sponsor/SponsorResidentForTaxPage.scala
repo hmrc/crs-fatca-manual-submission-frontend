@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package pages
+package pages.manual.sponsor
 
 import models.{ReportId, UserAnswers}
-import pages.manual.sponsor.TaxResidentCountriesPage
+import pages.QuestionPage
 import play.api.libs.json.JsPath
 
 import scala.util.{Success, Try}
 
 final case class SponsorResidentForTaxPage(index: Int)(implicit reportId: ReportId) extends QuestionPage[String]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "tax-resident-countries" \ index \ "country"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "sponsor" \ "tax-resident-countries" \ index \ "country"
 
   override def cleanupWithReportId(
     value: Option[String],

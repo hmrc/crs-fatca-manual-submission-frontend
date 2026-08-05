@@ -17,7 +17,7 @@
 package pages.manual.sponsor
 
 import models.{ReportId, UserAnswers}
-import pages.{QuestionPage, TaxResidentCountriesListPage}
+import pages.QuestionPage
 import play.api.libs.json.JsPath
 
 import scala.util.{Success, Try}
