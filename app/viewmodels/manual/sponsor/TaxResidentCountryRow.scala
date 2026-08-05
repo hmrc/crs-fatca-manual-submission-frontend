@@ -33,7 +33,7 @@ object TaxResidentCountryRow {
         TaxResidentCountryRow(
           country,
           routes.SponsorResidentForTaxController.onPageLoad(CheckMode, index).url,
-          controllers.routes.UnderConstructionController.onPageLoad().url
+          routes.RemoveTaxResidentCountryController.onPageLoad(CheckMode, index).url
         )
     }
 }

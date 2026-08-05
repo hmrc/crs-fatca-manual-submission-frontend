@@ -446,6 +446,7 @@ taxResidentCountries.sub.heading = Do you need to add another country?
 taxResidentCountries.checkYourAnswersLabel = taxResidentCountries
 taxResidentCountries.error.required = Select yes if you need to add another country
 taxResidentCountries.change.hidden = TaxResidentCountries
+taxResidentCountries.country.removed = {} removed.
 
 removeTaxResidentCountry.plural.countries.title = Are you sure you want to remove the {0} as a tax resident country for the sponsor?
 removeTaxResidentCountry.definite.articles.countries.title = Are you sure you want to remove the {0} as a tax resident country for the sponsor?

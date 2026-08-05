@@ -72,6 +72,7 @@ class ManualSubmissionNavigator @Inject() () {
     case (UkAddressPage(), mode, ua)               => handleNavigationToSponsorResidentTaxView(ua, mode)
     case (SponsorResidentForTaxPage(_), mode, ua)  => controllers.manual.sponsor.routes.TaxResidentCountriesController.onPageLoad(mode)
     case (TaxResidentCountriesPage(), mode, ua)    => handleTaxResidentCountriesOptionNavigation(ua, mode)
+    case (RemoveTaxResidentCountryPage(), mode, _) => controllers.manual.sponsor.routes.TaxResidentCountriesController.onPageLoad(mode)
   }
 
   private def handleTaxResidentCountriesOptionNavigation(ua: UserAnswers, mode: Mode)(implicit reportId: ReportId): Call = {

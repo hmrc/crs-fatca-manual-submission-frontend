@@ -16,6 +16,7 @@
 
 @import viewmodels.manual.sponsor.TaxResidentCountryRow
 @import viewmodels.govuk._
+@import  views.components._
 
 @this(
     layout: templates.Layout,
@@ -23,16 +24,20 @@
     govukErrorSummary: GovukErrorSummary,
     govukRadios: GovukRadios,
     heading: components.Heading,
-    govukButton: GovukButton
+    govukButton: GovukButton,
+    notificationBanner: views.html.components.SuccessNotificationBanner
 )
 
-@(form: Form[_], mode: Mode, sponsorName: String, countries: Seq[String])(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, sponsorName: String, countries: Seq[String])(implicit request: Request[_], messages: Messages, flash: Flash)
 
 @layout(pageTitle = title(form, messages("taxResidentCountries.title",countryCountText(countries.size))),
 mainContentLayout = Some(ThreeQuartersMainContent.apply _)
 ) {
 
     @formHelper(action = controllers.manual.sponsor.routes.TaxResidentCountriesController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+        @flash.get("country-removed").map { country =>
+            @notificationBanner(messages("taxResidentCountries.country.removed", country))
+        }
 
         @heading(messages("taxResidentCountries.heading",countryCountText(countries.size), sponsorName))
 
@@ -82,6 +87,7 @@ mainContentLayout = Some(ThreeQuartersMainContent.apply _)
     }
 }
 
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.notificationbanner.NotificationBanner
 @countryCountText(count: Int) = @{
     count match {
         case 0 => "not added any countries"

@@ -19,10 +19,11 @@ package controllers.manual.sponsor
 import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.manual.sponsor.RemoveTaxResidentCountryFormProvider
+import models.manual.sponsor.TaxResidentCountry
 import models.sponsor.RemoveCountryMessage
-import models.{Countries, Mode, ReportId, UserAnswers}
+import models.{Countries, Mode, ReportId, SponsorResidentTaxCountryCodes, UserAnswers}
 import navigation.ManualSubmissionNavigator
-import pages.manual.sponsor.{RemoveTaxResidentCountryPage, SponsorNamePage}
+import pages.manual.sponsor.{RemoveTaxResidentCountryPage, SponsorNamePage, SponsorResidentForTaxPage, TaxResidentCountriesListPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.*
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -38,7 +39,7 @@ class RemoveTaxResidentCountryController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
-  reportIdAction: ReportIdRequiredAction,
+  actions: Actions,
   formProvider: RemoveTaxResidentCountryFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: RemoveTaxResidentCountryView
@@ -48,46 +49,52 @@ class RemoveTaxResidentCountryController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
+  def onPageLoad(mode: Mode, id: Int): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequired() {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
-      request.userAnswers
-        .get(SponsorNamePage())
-        .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())) {
-          sponsorName =>
-            val country     = Countries.all.find(_.code == "ET").get
-            val messageType = RemoveCountryMessage.getRemoveCountryMessage("ET")
-            val preparedForm = request.userAnswers.get(RemoveTaxResidentCountryPage()) match {
-              case None        => form
-              case Some(value) => form.fill(value)
-            }
 
-            Ok(view(preparedForm, mode, sponsorName, country.description, messageType))
-        }
+      request.userAnswers.get(SponsorResidentForTaxPage(id)) match {
+        case None => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+        case Some(value) =>
+          Countries.all
+            .find(_.code == value)
+            .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())) {
+              country =>
+                val messageType = RemoveCountryMessage.getRemoveCountryMessage(value)
+                Ok(view(form, mode, id, request.sponsorName, country.description, messageType))
+            }
+      }
 
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
+  def onSubmit(mode: Mode, id: Int): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequired().async {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
       request.userAnswers
-        .get(SponsorNamePage())
+        .get(SponsorResidentForTaxPage(id))
         .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))) {
-          sponsorName =>
-            val country     = Countries.all.find(_.code == "ET").get
-            val messageType = RemoveCountryMessage.getRemoveCountryMessage("ET")
-            form
-              .bindFromRequest()
-              .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, sponsorName, country.description, messageType))),
-                value =>
-                  for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(RemoveTaxResidentCountryPage(), value))
-                    _              <- repository.set(updatedAnswers)
-                  } yield redirectWithFlash(value, mode, updatedAnswers, country.description)
-              )
+          code =>
+            Countries.all
+              .find(_.code == code)
+              .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))) {
+                country =>
+                  val messageType = RemoveCountryMessage.getRemoveCountryMessage(code)
+                  form
+                    .bindFromRequest()
+                    .fold(
+                      formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, id, request.sponsorName, country.description, messageType))),
+                      value =>
+                        val taxResidentCountries: Seq[TaxResidentCountry] = request.userAnswers.get(TaxResidentCountriesListPage()).getOrElse(Seq())
+                        val updatedTaxResidentCountries                   = if (value) taxResidentCountries.patch(id, Nil, 1) else taxResidentCountries
+                        for {
+                          updatedAnswers <- Future.fromTry(request.userAnswers.set(TaxResidentCountriesListPage(), updatedTaxResidentCountries))
+                          _              <- repository.set(updatedAnswers)
+                        } yield redirectWithFlash(value, mode, updatedAnswers, country.description)
+                    )
+              }
+
         }
   }
 

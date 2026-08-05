@@ -54,6 +54,8 @@ class TaxResidentCountriesController @Inject() (
         .getOrElse(Seq.empty)
         .map(_.country)
 
+      println(taxResidentCountries)
+
       val preparedForm = request.userAnswers.get(TaxResidentCountriesPage()) match {
         case None        => form
         case Some(value) => form.fill(value)
