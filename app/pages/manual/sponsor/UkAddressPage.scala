@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package pages
+package pages.manual.sponsor
 
 import models.{ReportId, UkAddress}
+import pages.QuestionPage
 import play.api.libs.json.JsPath
 
 final case class UkAddressPage()(implicit reportId: ReportId) extends QuestionPage[UkAddress]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "ukAddressForSponsor"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "sponsor" \ "ukAddressForSponsor"
