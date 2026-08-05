@@ -397,6 +397,24 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             controllers.manual.sponsor.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
         }
       }
+
+      "TaxResidentCountriesPage" - {
+        "must go to SponsorResidentForTax page when user selected as yes" in {
+          val ua = UserAnswers("id")
+            .withPage(TaxResidentCountriesPage(), true)
+
+          navigator.nextPage(TaxResidentCountriesPage(), NormalMode, ua) mustBe
+            controllers.manual.sponsor.routes.SponsorResidentForTaxController.onPageLoad(NormalMode, 0)
+        }
+
+        "must go to UnderConstruction page when user selected as no" in {
+          val ua = UserAnswers("id")
+            .withPage(TaxResidentCountriesPage(), false)
+
+          navigator.nextPage(TaxResidentCountriesPage(), NormalMode, ua) mustBe
+            controllers.routes.UnderConstructionController.onPageLoad()
+        }
+      }
     }
   }
 }
