@@ -19,6 +19,7 @@ package controllers.actions
 import controllers.routes
 import models.requests.{ReportIdRequest, SponsorNameRequest}
 import pages.manual.sponsor.SponsorNamePage
+import play.api.Logging
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{ActionRefiner, Result}
 
@@ -27,7 +28,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class SponsorNameRequiredActionImpl @Inject() (implicit
   val executionContext: ExecutionContext
-) extends SponsorNameRequiredAction {
+) extends SponsorNameRequiredAction
+    with Logging {
 
   override protected def refine[A](request: ReportIdRequest[A]): Future[Either[Result, SponsorNameRequest[A]]] =
     Future.successful {
@@ -36,6 +38,7 @@ class SponsorNameRequiredActionImpl @Inject() (implicit
           Right(toSponsorNameRequest(request, name))
 
         case None =>
+          logger.error("Unable to find SponsorName in User Answer")
           Left(Redirect(routes.JourneyRecoveryController.onPageLoad()))
       }
     }
