@@ -444,5 +444,5 @@ taxResidentCountries.title = You have {0} where the sponsor is resident for tax
 taxResidentCountries.heading = You have {0} where {1} is resident for tax
 taxResidentCountries.sub.heading = Do you need to add another country?
 taxResidentCountries.checkYourAnswersLabel = taxResidentCountries
-taxResidentCountries.error.required = Select yes if taxResidentCountries
+taxResidentCountries.error.required = Select yes if you need to add another country
 taxResidentCountries.change.hidden = TaxResidentCountries
