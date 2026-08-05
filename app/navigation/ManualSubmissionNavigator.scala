@@ -20,9 +20,10 @@ import controllers.manual.account
 import controllers.manual.reportdetails.routes.*
 import controllers.routes
 import models.*
+import models.SubmissionsConstants.{CRS, FATCA}
 import models.viewModels.AccountId
 import pages.*
-import pages.manual.account.{AccountClosedPage, HaveNumberPage, IdentifierPage, NumberTypePage}
+import pages.manual.account.*
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.*
@@ -49,10 +50,11 @@ class ManualSubmissionNavigator @Inject() () {
     }
 
   private def accountNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
-    case (HaveNumberPage(accountId), mode, ua) => haveNumberNavigation(accountId, mode, ua)
-    case (NumberTypePage(_), mode, ua)         => routes.UnderConstructionController.onPageLoad()
-    case (IdentifierPage(_), mode, ua)         => controllers.manual.account.routes.AccountClosedController.onPageLoad(mode)
-    case (AccountClosedPage(_), mode, ua)      => routes.UnderConstructionController.onPageLoad()
+    case (HaveNumberPage(accountId), mode, ua)       => haveNumberNavigation(accountId, mode, ua)
+    case (NumberTypePage(_), mode, ua)               => routes.UnderConstructionController.onPageLoad()
+    case (IdentifierPage(_), mode, ua)               => controllers.manual.account.routes.AccountClosedController.onPageLoad(mode)
+    case (AccountClosedPage(accountId), mode, ua)    => accountClosedNavigation(accountId, mode, ua)
+    case (WhatWasTheAccountBalancePage(_), mode, ua) => routes.UnderConstructionController.onPageLoad()
   }
 
   private def fillerNavigation: PartialFunction[(Page, Mode, UserAnswers), Call] = {
@@ -92,6 +94,14 @@ class ManualSubmissionNavigator @Inject() () {
       case Some(true)  => controllers.manual.sponsor.routes.SponsorNameController.onPageLoad(mode)
       case Some(false) => routes.UnderConstructionController.onPageLoad()
       case None        => routes.JourneyRecoveryController.onPageLoad()
+    }
+
+  private def accountClosedNavigation(accountId: AccountId, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
+    (userAnswers.get(AccountClosedPage(accountId)), reportId.regime) match {
+      case (Some(false), CRS)   => routes.UnderConstructionController.onPageLoad()
+      case (Some(false), FATCA) => controllers.manual.account.routes.WhatWasTheAccountBalanceController.onPageLoad(mode)
+      case (Some(true), _)      => controllers.manual.account.routes.WhatWasTheAccountBalanceController.onPageLoad(mode)
+      case _                    => routes.JourneyRecoveryController.onPageLoad()
     }
 
   private def haveNumberNavigation(accountId: AccountId, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
