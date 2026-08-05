@@ -28,7 +28,8 @@ class Actions @Inject() (
   reportIdAction: ReportIdRequiredAction,
   accountIdCreationAction: AccountIdCreationAction,
   accountIdRequiredAction: AccountIdRequiredAction,
-  sponsorNameRequiredAction: SponsorNameRequiredAction
+  sponsorNameRequiredAction: SponsorNameRequiredAction,
+  taxResidentCountryIdCheckAction: TaxResidentCountryIdCheckAction
 ) {
 
   def withReportIdRequiredAndAccountIdCreation(): ActionBuilder[AccountIdRequest, AnyContent] =
@@ -39,6 +40,9 @@ class Actions @Inject() (
 
   def withReportIdRequiredAndSponsorNameRequired(): ActionBuilder[SponsorNameRequest, AnyContent] =
     withReportIdRequired() andThen sponsorNameRequiredAction
+
+  def withReportIdRequiredAndSponsorNameRequiredAndIdCheck(): ActionBuilder[SponsorNameRequest, AnyContent] =
+    withReportIdRequiredAndSponsorNameRequired() andThen taxResidentCountryIdCheckAction
 
   def withReportIdRequired(): ActionBuilder[ReportIdRequest, AnyContent] =
     identityAndRequireData andThen reportIdAction

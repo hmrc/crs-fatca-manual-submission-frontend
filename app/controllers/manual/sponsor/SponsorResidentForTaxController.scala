@@ -46,7 +46,7 @@ class SponsorResidentForTaxController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode, id: Int): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequired() {
+  def onPageLoad(mode: Mode, id: Int): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequiredAndIdCheck() {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
@@ -59,7 +59,7 @@ class SponsorResidentForTaxController @Inject() (
       Ok(view(preparedForm, mode, request.sponsorName, Countries.all, id))
   }
 
-  def onSubmit(mode: Mode, id: Int): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequired().async {
+  def onSubmit(mode: Mode, id: Int): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequiredAndIdCheck().async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
       form
