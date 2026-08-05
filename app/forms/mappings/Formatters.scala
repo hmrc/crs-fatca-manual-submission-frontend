@@ -16,10 +16,12 @@
 
 package forms.mappings
 
-import models.{Enumerable, ErrorValidation}
+import models.SubmissionsConstants.{FATCA, RegimeType}
+import models.{Enumerable, ErrorValidation, SubmissionsConstants}
 import play.api.data.FormError
 import play.api.data.format.Formatter
 
+import scala.util.Left
 import scala.util.control.Exception.nonFatalCatch
 
 trait Formatters extends Transforms {
@@ -284,4 +286,48 @@ trait Formatters extends Transforms {
         Map(key -> value)
 
     }
+
+  private[mappings] def amountFormatter(
+    regime: RegimeType,
+    requiredKey: String,
+    invalidErrorKey: String,
+    minusAmountErrorKey: String,
+    decimalPlacesErrorKey: String
+  ): Formatter[String] = new Formatter[String] {
+
+    private val minusPositionRegex       = "^-?[^-]*$".r
+    private val moreThanTwoDecimalsRegex = "^-?[0-9]*\\.[0-9]{3,}$".r
+
+    private val formatRegex = regime match {
+      case SubmissionsConstants.FATCA => "^-?[0-9]*(\\.[0-9]*)?$".r
+      case _                          => "^[0-9]*(\\.[0-9]*)?$".r
+    }
+
+    private def stripSpaces(s: String): String =
+      s.replaceAll("[\\s]+", "")
+
+    override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], String] =
+      data.get(key) match {
+
+        case Some(rawValue) if stripSpaces(rawValue).matches(".*[^-.].*") =>
+          val cleaned = stripSpaces(rawValue)
+
+          if (regime == FATCA && !minusPositionRegex.pattern.matcher(cleaned).matches()) {
+            Left(Seq(FormError(key, minusAmountErrorKey)))
+          } else if (!formatRegex.pattern.matcher(cleaned).matches()) {
+            Left(Seq(FormError(key, invalidErrorKey)))
+          } else if (moreThanTwoDecimalsRegex.pattern.matcher(cleaned).matches()) {
+            Left(Seq(FormError(key, decimalPlacesErrorKey)))
+          } else {
+            Right(formatAmount(rawValue))
+          }
+
+        case _ =>
+          Left(Seq(FormError(key, requiredKey)))
+      }
+
+    override def unbind(key: String, value: String): Map[String, String] =
+      Map(key -> formatAmount(value))
+  }
+
 }

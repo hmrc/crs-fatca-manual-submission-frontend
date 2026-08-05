@@ -17,7 +17,7 @@
 package forms.manual.account
 
 import forms.mappings.{Mappings, Transforms}
-import models.SubmissionsConstants.{FATCA, RegimeType}
+import models.SubmissionsConstants.RegimeType
 import models.{AccountBalance, Currencies, Currency}
 import play.api.data.Form
 import play.api.data.Forms.*
@@ -28,14 +28,12 @@ import javax.inject.Inject
 
 class WhatWasTheAccountBalanceFormProvider @Inject() extends Mappings with Transforms with RegexConstants {
 
-  private val crsAmountFormatRegex   = "^[0-9.]+$".r
-  private val fatcaAmountFormatRegex = "^[-0-9.]+$".r
-  private val minusPositionRegex     = "^-?[^-]*$".r
-  private val decimalFormatRegex     = "^-?[0-9]+(\\.[0-9]{1,2})?$".r
-
   def apply(regime: RegimeType): Form[AccountBalance] = {
 
-    val isFATCA: Boolean = regime == FATCA
+    val requiredAmountError   = "whatWasTheAccountBalance.error.required.amount"
+    val invalidErrorKey       = s"whatWasTheAccountBalance.error.invalid.${regime.value}"
+    val minusAmountErrorKey   = "whatWasTheAccountBalance.error.minus.FATCA"
+    val decimalPlacesErrorKey = "whatWasTheAccountBalance.error.decimalPlaces"
 
     Form(
       mapping(
@@ -45,14 +43,11 @@ class WhatWasTheAccountBalanceFormProvider @Inject() extends Mappings with Trans
             code => Currencies.all(regime).find(_.code == code).get,
             currency => currency.code
           ),
-        "amount" -> text("whatWasTheAccountBalance.error.required.amount")
-          .transform(normaliseDecimalAmount, identity)
-          .verifying(if (isFATCA) fatcaAmountConstraint else crsAmountConstraint)
+        "amount" -> currencyAmount(regime, requiredAmountError, invalidErrorKey, minusAmountErrorKey, decimalPlacesErrorKey)
       )(AccountBalance.apply)(
         ab => Some((ab.currency, ab.amount))
       )
     )
-
   }
 
   private def currencyConstraint(regime: RegimeType): Constraint[String] = Constraint("constraint.currency") {
@@ -61,32 +56,6 @@ class WhatWasTheAccountBalanceFormProvider @Inject() extends Mappings with Trans
         Valid
       } else {
         Invalid(ValidationError("whatWasTheAccountBalance.error.required.currency"))
-      }
-  }
-
-  private val fatcaAmountConstraint: Constraint[String] = Constraint("contraint.amount") {
-    value =>
-      if (value == "-") {
-        Invalid(ValidationError("whatWasTheAccountBalance.error.invalid.FATCA"))
-      } else if (!fatcaAmountFormatRegex.matches(value)) {
-        Invalid(ValidationError("whatWasTheAccountBalance.error.invalid.FATCA"))
-      } else if (!minusPositionRegex.matches(value)) {
-        Invalid(ValidationError("whatWasTheAccountBalance.error.minus.FATCA"))
-      } else if (!decimalFormatRegex.matches(value)) {
-        Invalid(ValidationError("whatWasTheAccountBalance.error.decimalPlaces"))
-      } else {
-        Valid
-      }
-  }
-
-  private val crsAmountConstraint: Constraint[String] = Constraint("Amount") {
-    value =>
-      if (!crsAmountFormatRegex.matches(value)) {
-        Invalid(ValidationError("whatWasTheAccountBalance.error.invalid.CRS"))
-      } else if (!decimalFormatRegex.matches(value)) {
-        Invalid(ValidationError("whatWasTheAccountBalance.error.decimalPlaces"))
-      } else {
-        Valid
       }
   }
 

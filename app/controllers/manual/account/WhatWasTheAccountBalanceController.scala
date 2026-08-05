@@ -50,10 +50,11 @@ class WhatWasTheAccountBalanceController @Inject() (
       implicit val reportId: ReportId = request.reportId
 
       val preparedForm = request.userAnswers.get(WhatWasTheAccountBalancePage(request.accountId)) match {
-        case None        => form
-        case Some(value) => form.fill(value)
+        case None => form
+        case Some(value) =>
+          val filled = form.fill(value)
+          filled
       }
-
       Ok(view(preparedForm, mode, regime))
   }
 

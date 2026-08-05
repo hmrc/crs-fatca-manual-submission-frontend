@@ -16,11 +16,13 @@
 
 package forms.mappings
 
+import models.SubmissionsConstants.RegimeType
 import models.{Enumerable, ErrorValidation}
 import play.api.data.Forms.{of, optional}
+import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 import play.api.data.{FieldMapping, Mapping}
 import play.api.i18n.Messages
-import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
+
 import java.time.LocalDate
 
 trait Mappings extends Formatters with Constraints {
@@ -134,6 +136,22 @@ trait Mappings extends Formatters with Constraints {
   protected def defaultStringFieldFormat(requiredKey: String, maxLength: Int, lengthKey: String, validations: Seq[ErrorValidation]): FieldMapping[String] =
     of(
       stringValidations(requiredKey = requiredKey, maxLength = maxLength, lengthKey = lengthKey, validations = validations)
+    )
+
+  protected def currencyAmount(regime: RegimeType,
+                               requiredKey: String,
+                               invalidErrorKey: String,
+                               minusAmountErrorKey: String,
+                               decimalPlacesErrorKey: String
+  ): FieldMapping[String] =
+    of(
+      amountFormatter(
+        regime = regime,
+        requiredKey = requiredKey,
+        invalidErrorKey = invalidErrorKey,
+        minusAmountErrorKey = minusAmountErrorKey,
+        decimalPlacesErrorKey = decimalPlacesErrorKey
+      )
     )
 
 }

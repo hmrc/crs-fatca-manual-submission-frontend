@@ -429,6 +429,21 @@ ukAddress.jersey = Jersey
 ukAddress.guernsey = Guernsey
 ukAddress.isleOfMan = Isle of Man
 
+accountClosed.title = Is the account closed?
+accountClosed.heading = Is the account closed?
+accountClosed.checkYourAnswersLabel = accountClosed
+accountClosed.error.required = Select yes if the account is closed
+accountClosed.change.hidden = AccountClosed
+
+sponsorResidentForTax.title = Where is the sponsor resident for tax?
+sponsorResidentForTax.heading = Where is {0} resident for tax?
+sponsorResidentForTax.paragraph = If they are resident for tax in more than one country, then you can add other countries on the next page.
+sponsorResidentForTax.country.error.required = 	Select where the sponsor is resident for tax
+sponsorResidentForTax.title = Where is the sponsor resident for tax?
+sponsorResidentForTax.heading = Where is {0} resident for tax?
+sponsorResidentForTax.paragraph = If they are resident for tax in more than one country, then you can add other countries on the next page.
+sponsorResidentForTax.country.error.required = 	Select where the sponsor is resident for tax
+
 whatWasTheAccountBalance.title = What was the account balance?
 whatWasTheAccountBalance.heading = What was the account balance?
 whatWasTheAccountBalance.label.currency = Currency
@@ -450,9 +465,3 @@ whatWasTheAccountCurrency.checkYourAnswersLabel = What was the account currency?
 whatWasTheAccountCurrency.error.required = Select an option for the currency
 whatWasTheAccountCurrency.change.hidden = WhatWasTheAccountCurrency
 currency.select = Select currency
-
-accountClosed.title = Is the account closed?
-accountClosed.heading = Is the account closed?
-accountClosed.checkYourAnswersLabel = accountClosed
-accountClosed.error.required = Select yes if the account is closed
-accountClosed.change.hidden = AccountClosed

@@ -69,11 +69,18 @@ class ManualSubmissionNavigator @Inject() () {
     case (WhatIsGIINForSponsorPage(), mode, _)     => controllers.manual.sponsor.routes.IsSponsorBasedInUKController.onPageLoad(mode)
     case (IsSponsorBasedInUKPage(), mode, ua)      => handleSponsorBasedUKNavigation(ua, mode)
     case (UKPostcodePage(), mode, ua)              => handleUKPostcodeNavigation(ua, mode)
-    case (AddressNonUkPage(), _, _)                => routes.UnderConstructionController.onPageLoad()
-    case (WhatIsAddressForSponsorPage(), mode, ua) => handleWhatIsAddressForSponsorNavigation(ua)
+    case (AddressNonUkPage(), mode, ua)            => handleNavigationToSponsorResidentTaxView(ua, mode)
+    case (WhatIsAddressForSponsorPage(), mode, ua) => handleWhatIsAddressForSponsorNavigation(ua, mode)
     case (IsThisAddressForSponsorPage(), mode, ua) => handleIsThisAddressForSponsorNavigation(ua, mode)
-    case (UkAddressPage(), _, _)                   => routes.UnderConstructionController.onPageLoad()
+    case (UkAddressPage(), mode, ua)               => handleNavigationToSponsorResidentTaxView(ua, mode)
+    case (SponsorResidentForTaxPage(), mode, ua)   => routes.UnderConstructionController.onPageLoad()
   }
+
+  private def handleNavigationToSponsorResidentTaxView(ua: UserAnswers, mode: Mode)(implicit reportId: ReportId): Call =
+    ua.get(SponsorResidentForTaxPage()) match {
+      case Some(value) if value.resCountryCodes.nonEmpty => routes.UnderConstructionController.onPageLoad()
+      case _                                             => controllers.manual.sponsor.routes.SponsorResidentForTaxController.onPageLoad(mode)
+    }
 
   private def navigation(implicit reportId: ReportId) =
     accountNavigation orElse sponsorNavigation orElse fillerNavigation
@@ -120,15 +127,15 @@ class ManualSubmissionNavigator @Inject() () {
       case None                                  => routes.JourneyRecoveryController.onPageLoad()
     }
 
-  private def handleWhatIsAddressForSponsorNavigation(userAnswers: UserAnswers)(implicit reportId: ReportId) =
+  private def handleWhatIsAddressForSponsorNavigation(userAnswers: UserAnswers, mode: Mode)(implicit reportId: ReportId) =
     userAnswers.get(WhatIsAddressForSponsorPage()) match {
-      case Some(value) => routes.UnderConstructionController.onPageLoad()
+      case Some(value) => handleNavigationToSponsorResidentTaxView(userAnswers, mode)
       case None        => routes.JourneyRecoveryController.onPageLoad()
     }
 
   private def handleIsThisAddressForSponsorNavigation(userAnswers: UserAnswers, mode: Mode)(implicit reportId: ReportId) =
     (userAnswers.get(IsThisAddressForSponsorPage()), userAnswers.get(WhatIsAddressForSponsorPage())) match {
-      case (Some(true), Some(address)) => routes.UnderConstructionController.onPageLoad()
+      case (Some(true), Some(address)) => handleNavigationToSponsorResidentTaxView(userAnswers, mode)
       case (Some(false), Some(_))      => controllers.manual.sponsor.routes.UkAddressController.onPageLoad(mode)
       case (_, _)                      => routes.JourneyRecoveryController.onPageLoad()
     }
