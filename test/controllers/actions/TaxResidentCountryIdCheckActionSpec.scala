@@ -18,8 +18,8 @@ package controllers.actions
 
 import base.SpecBase
 import models.SubmissionsConstants.FATCA
-import models.manual.sponsor.TaxResidentCountry
 import models.requests.SponsorNameRequest
+import models.response.Country
 import models.{ReportId, UserAnswers}
 import pages.ReportIdPage
 import pages.manual.sponsor.{SponsorNamePage, TaxResidentCountriesListPage}
@@ -63,7 +63,7 @@ class TaxResidentCountryIdCheckActionSpec extends SpecBase {
         emptyUserAnswers
           .withPage(ReportIdPage, reportId)
           .withPage(SponsorNamePage()(reportId), sponsorName)
-          .withPage(TaxResidentCountriesListPage()(reportId), Seq(TaxResidentCountry("UK")))
+          .withPage(TaxResidentCountriesListPage()(reportId), Seq(Country.GB))
 
       val action = new Harness
 

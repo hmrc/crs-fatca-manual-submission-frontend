@@ -52,7 +52,7 @@ class TaxResidentCountriesController @Inject() (
       val taxResidentCountries = request.userAnswers
         .get(TaxResidentCountriesListPage())
         .getOrElse(Seq.empty)
-        .map(_.country)
+        .map(_.description)
 
       val preparedForm = request.userAnswers.get(TaxResidentCountriesPage()) match {
         case None        => form
@@ -70,7 +70,7 @@ class TaxResidentCountriesController @Inject() (
       val taxResidentCountries = request.userAnswers
         .get(TaxResidentCountriesListPage())
         .getOrElse(Seq.empty)
-        .map(_.country)
+        .map(_.description)
 
       form
         .bindFromRequest()

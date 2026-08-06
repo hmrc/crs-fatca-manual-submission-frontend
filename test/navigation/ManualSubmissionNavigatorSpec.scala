@@ -21,7 +21,6 @@ import controllers.manual.reportdetails.routes.{ReportDetailsCheckAnswersControl
 import models.*
 import models.CrsOrFatca.Fatca
 import models.SubmissionsConstants.{CRS, FATCA}
-import models.manual.sponsor.TaxResidentCountry
 import models.response.{Address, AddressLookup, Country}
 import models.viewModels.AccountId
 import pages.*
@@ -94,7 +93,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         }
 
         "must go to Tax Resident Countries Page when sponsor tax resident country codes are already present" in {
-          val userData = UserAnswers("id").withPage(SponsorResidentForTaxPage(0), "GB")
+          val userData = UserAnswers("id").withPage(SponsorResidentForTaxPage(0), Country.GB)
           navigator.nextPage(UkAddressPage(), NormalMode, userData) mustBe
             controllers.manual.sponsor.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
         }
@@ -285,7 +284,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
 
         "must go to TaxResidentCountries page after user hits submit when there are tax resident country codes" in {
           val ua = UserAnswers("id")
-            .withPage(SponsorResidentForTaxPage(0), "GB")
+            .withPage(SponsorResidentForTaxPage(0), Country.GB)
 
           navigator.nextPage(AddressNonUkPage(), NormalMode, ua) mustBe
             controllers.manual.sponsor.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
@@ -327,7 +326,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               val ua = UserAnswers("id")
                 .withPage(IsThisAddressForSponsorPage(), isThisAddressForSponsor)
                 .withPage(WhatIsAddressForSponsorPage(), address)
-                .withPage(TaxResidentCountriesListPage(), Seq(TaxResidentCountry("GB")))
+                .withPage(TaxResidentCountriesListPage(), Seq(Country.GB))
               navigator.nextPage(WhatIsAddressForSponsorPage(), NormalMode, ua) mustBe
                 controllers.manual.sponsor.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
 
@@ -362,7 +361,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               val ua = UserAnswers("id")
                 .withPage(IsThisAddressForSponsorPage(), isThisAddressForSponsor)
                 .withPage(WhatIsAddressForSponsorPage(), address)
-                .withPage(TaxResidentCountriesListPage(), Seq(TaxResidentCountry("GB")))
+                .withPage(TaxResidentCountriesListPage(), Seq(Country.GB))
               navigator.nextPage(WhatIsAddressForSponsorPage(), NormalMode, ua) mustBe
                 controllers.manual.sponsor.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
 
@@ -391,7 +390,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
       "SponsorResidentForTaxPage" - {
         "must go to Tax Resident Country page" in {
           val ua = UserAnswers("id")
-            .withPage(SponsorResidentForTaxPage(0), "GB")
+            .withPage(SponsorResidentForTaxPage(0), Country.GB)
 
           navigator.nextPage(SponsorResidentForTaxPage(0), NormalMode, ua) mustBe
             controllers.manual.sponsor.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
