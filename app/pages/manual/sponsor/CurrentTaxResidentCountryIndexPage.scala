@@ -20,6 +20,6 @@ import models.ReportId
 import pages.QuestionPage
 import play.api.libs.json.JsPath
 
-final case class WhatIsGIINForSponsorPage()(implicit reportId: ReportId) extends QuestionPage[String]:
+final case class CurrentTaxResidentCountryIndexPage()(implicit reportId: ReportId) extends QuestionPage[Int]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "sponsor" \ "whatIsGIINForSponsor"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "sponsor" \ "currentTaxResidentCountryId"

@@ -20,13 +20,14 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import forms.SponsorResidentForTaxFormProvider
 import models.SubmissionsConstants.CRS
-import models.{Countries, NormalMode, ReportId, SponsorResidentTaxCountryCodes}
+import models.response.Country
+import models.{Countries, NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.manual.sponsor.SponsorNamePage
-import pages.{ReportIdPage, SponsorResidentForTaxPage}
+import pages.manual.sponsor.{SponsorNamePage, SponsorResidentForTaxPage}
+import pages.ReportIdPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -129,7 +130,6 @@ class SponsorResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
     "must redirect to Journey Recovery for a GET if sponsor name is not present" in {
       val userAnswers = ua
         .withPage(ReportIdPage, reportId)
-        .withPage(SponsorResidentForTaxPage(), SponsorResidentTaxCountryCodes(Seq("GB")))
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
         .build()
@@ -163,7 +163,7 @@ class SponsorResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
     "must redirect to Journey Recovery for a POST if sponsor name is not found" in {
       val userAnswers = ua
         .withPage(ReportIdPage, reportId)
-        .withPage(SponsorResidentForTaxPage(), SponsorResidentTaxCountryCodes(Seq("GB")))
+        .withPage(SponsorResidentForTaxPage(0), Country.GB)
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
         .build()

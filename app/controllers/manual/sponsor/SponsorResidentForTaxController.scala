@@ -20,15 +20,14 @@ import connectors.DatabaseConnector
 import controllers.*
 import controllers.actions.*
 import forms.SponsorResidentForTaxFormProvider
-import models.{Countries, Mode, ReportId, SponsorResidentTaxCountryCodes}
+import models.{Countries, Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.SponsorResidentForTaxPage
-import pages.manual.sponsor.SponsorNamePage
+import pages.manual.sponsor.{CurrentTaxResidentCountryIndexPage, SponsorResidentForTaxPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.Results.Redirect
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.sponsor.SponsorResidentForTaxView
-import play.api.mvc.Results.Redirect
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,10 +36,7 @@ class SponsorResidentForTaxController @Inject() (
   override val messagesApi: MessagesApi,
   repository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
-  identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  reportIdAction: ReportIdRequiredAction,
+  actions: Actions,
   formProvider: SponsorResidentForTaxFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: SponsorResidentForTaxView
@@ -48,45 +44,35 @@ class SponsorResidentForTaxController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  val form                        = formProvider()
-  private val journeyRecoveryCall = routes.JourneyRecoveryController.onPageLoad()
+  val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequiredAndIdCreation() {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
 
-      request.userAnswers
-        .get(SponsorNamePage())
-        .fold(Redirect(journeyRecoveryCall)) {
-          sponsorName =>
-            // Todo prefill will be implemented in https://jira.tools.tax.service.gov.uk/browse/DAC6-4406 when currentCountryPage is present
-            val preparedForm = form
-            Ok(view(preparedForm, mode, sponsorName, Countries.all))
-        }
+      val preparedForm = request.userAnswers.get(SponsorResidentForTaxPage(request.currentId)) match {
+        case None        => form
+        case Some(value) => form.fill(value.code)
+      }
+
+      Ok(view(preparedForm, mode, request.sponsorName, Countries.all))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequiredAndIdCreation().async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
-      request.userAnswers
-        .get(SponsorNamePage())
-        .fold(Future.successful(Redirect(journeyRecoveryCall))) {
-          sponsorName =>
-            form
-              .bindFromRequest()
-              .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, sponsorName, Countries.all))),
-                value =>
-                  val sponsorResidentTaxCountryCodes = request.userAnswers.get(SponsorResidentForTaxPage()).getOrElse(SponsorResidentTaxCountryCodes(Seq()))
-                  val updatedSponsorResidentTaxCountryCodes =
-                    sponsorResidentTaxCountryCodes.copy(resCountryCodes = sponsorResidentTaxCountryCodes.resCountryCodes :+ value)
-                  for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(SponsorResidentForTaxPage(), updatedSponsorResidentTaxCountryCodes))
-                    _              <- repository.set(updatedAnswers)
-                  } yield Redirect(navigator.nextPage(SponsorResidentForTaxPage(), mode, updatedAnswers))
-              )
-
-        }
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, request.sponsorName, Countries.all))),
+          value =>
+            for {
+              selectedCountry <- Future.successful(Countries.all.find(_.code == value).get)
+              updatedAnswers  <- Future.fromTry(request.userAnswers.setWithReportId(SponsorResidentForTaxPage(request.currentId), selectedCountry))
+              updatedAnswersWithCurrentAccountId <- Future.fromTry(updatedAnswers.setWithReportId(CurrentTaxResidentCountryIndexPage(), request.currentId))
+              _                                  <- repository.set(updatedAnswersWithCurrentAccountId)
+            } yield Redirect(navigator.nextPage(SponsorResidentForTaxPage(request.currentId), mode, updatedAnswers))
+        )
   }
 }

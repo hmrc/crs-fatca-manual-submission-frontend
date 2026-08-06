@@ -172,10 +172,13 @@ POST       /manual/sponsor/resident-for-tax                        controllers.m
 GET        /manual/sponsor/change-resident-for-tax                  controllers.manual.sponsor.SponsorResidentForTaxController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/sponsor/change-resident-for-tax                  controllers.manual.sponsor.SponsorResidentForTaxController.onSubmit(mode: Mode = CheckMode)
 
-GET        /manual/sponsor/resident-for-tax                        controllers.manual.sponsor.SponsorResidentForTaxController.onPageLoad(mode: Mode = NormalMode)
-POST       /manual/sponsor/resident-for-tax                        controllers.manual.sponsor.SponsorResidentForTaxController.onSubmit(mode: Mode = NormalMode)
-GET        /manual/sponsor/change-resident-for-tax                  controllers.manual.sponsor.SponsorResidentForTaxController.onPageLoad(mode: Mode = CheckMode)
-POST       /manual/sponsor/change-resident-for-tax                  controllers.manual.sponsor.SponsorResidentForTaxController.onSubmit(mode: Mode = CheckMode)
+GET       /manual/sponsor/tax-resident-countries/:id/change                 controllers.manual.sponsor.CurrentTaxResidentIdController.onChangeRedirect(id: Int)
+GET       /manual/sponsor/tax-resident-countries/:id/remove                 controllers.manual.sponsor.CurrentTaxResidentIdController.onRemoveRedirect(id: Int)
+
+GET        /manual/sponsor/tax-resident-countries                        controllers.manual.sponsor.TaxResidentCountriesController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/sponsor/tax-resident-countries                        controllers.manual.sponsor.TaxResidentCountriesController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/sponsor/change-tax-resident-countries                  controllers.manual.sponsor.TaxResidentCountriesController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/sponsor/change-tax-resident-countries                  controllers.manual.sponsor.TaxResidentCountriesController.onSubmit(mode: Mode = CheckMode)
 
 GET        /manual/account/balance                        controllers.manual.account.WhatWasTheAccountBalanceController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/account/balance                        controllers.manual.account.WhatWasTheAccountBalanceController.onSubmit(mode: Mode = NormalMode)

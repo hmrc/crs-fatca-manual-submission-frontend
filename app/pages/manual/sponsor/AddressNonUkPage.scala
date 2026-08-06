@@ -22,4 +22,4 @@ import play.api.libs.json.JsPath
 
 final case class AddressNonUkPage()(implicit reportId: ReportId) extends QuestionPage[AddressNonUk]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "addressNonUk"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "sponsor" \ "addressNonUk"
