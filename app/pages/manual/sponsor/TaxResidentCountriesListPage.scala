@@ -23,4 +23,4 @@ import play.api.libs.json.JsPath
 
 final case class TaxResidentCountriesListPage()(implicit reportId: ReportId) extends QuestionPage[Seq[Country]]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "sponsor" \ "tax-resident-countries"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "sponsor" \ "taxResidentCountries"

@@ -17,25 +17,25 @@
 package viewmodels.checkAnswers
 
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.sponsor.SponsorResidentForTaxPage
+import pages.manual.sponsor.{CurrentTaxResidentCountryIndexPage, SponsorResidentForTaxPage}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
-import viewmodels.govuk.summarylist._
-import viewmodels.implicits._
+import viewmodels.govuk.summarylist.*
+import viewmodels.implicits.*
 
 object SponsorResidentForTaxSummary {
 
   def row(answers: UserAnswers, id: Int)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
-    answers.get(SponsorResidentForTaxPage(id)).map {
-      answer =>
-        SummaryListRowViewModel(
-          key = "sponsorResidentForTax.checkYourAnswersLabel",
-          value = ValueViewModel(HtmlFormat.escape("answer").toString),
-          actions = Seq(
-            ActionItemViewModel("site.change", controllers.manual.sponsor.routes.SponsorResidentForTaxController.onPageLoad(CheckMode, id).url)
-              .withVisuallyHiddenText(messages("sponsorResidentForTax.change.hidden"))
-          )
-        )
-    }
+    for {
+      currentId <- answers.get(CurrentTaxResidentCountryIndexPage())
+      answer    <- answers.get(SponsorResidentForTaxPage(currentId))
+    } yield SummaryListRowViewModel(
+      key = "sponsorResidentForTax.checkYourAnswersLabel",
+      value = ValueViewModel(HtmlFormat.escape("answer").toString),
+      actions = Seq(
+        ActionItemViewModel("site.change", controllers.manual.sponsor.routes.SponsorResidentForTaxController.onPageLoad(CheckMode).url)
+          .withVisuallyHiddenText(messages("sponsorResidentForTax.change.hidden"))
+      )
+    )
 }

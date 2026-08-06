@@ -167,21 +167,23 @@ POST       /manual/sponsor/address-uk                          controllers.manua
 GET        /manual/sponsor/change-address-uk                   controllers.manual.sponsor.UkAddressController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/sponsor/change-address-uk                  controllers.manual.sponsor.UkAddressController.onSubmit(mode: Mode = CheckMode)
 
-GET        /manual/account/balance                        controllers.manual.account.WhatWasTheAccountBalanceController.onPageLoad(mode: Mode = NormalMode)
-POST       /manual/account/balance                        controllers.manual.account.WhatWasTheAccountBalanceController.onSubmit(mode: Mode = NormalMode)
-GET        /manual/account/change-balance                  controllers.manual.account.WhatWasTheAccountBalanceController.onPageLoad(mode: Mode = CheckMode)
-POST       /manual/account/change-balance                  controllers.manual.account.WhatWasTheAccountBalanceController.onSubmit(mode: Mode = CheckMode)
+GET        /manual/sponsor/resident-for-tax                        controllers.manual.sponsor.SponsorResidentForTaxController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/sponsor/resident-for-tax                        controllers.manual.sponsor.SponsorResidentForTaxController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/sponsor/change-resident-for-tax                  controllers.manual.sponsor.SponsorResidentForTaxController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/sponsor/change-resident-for-tax                  controllers.manual.sponsor.SponsorResidentForTaxController.onSubmit(mode: Mode = CheckMode)
 
-GET        /manual/sponsor/resident-for-tax                        controllers.manual.sponsor.SponsorResidentForTaxController.onPageLoad(mode: Mode = NormalMode, id: Int)
-POST       /manual/sponsor/resident-for-tax                        controllers.manual.sponsor.SponsorResidentForTaxController.onSubmit(mode: Mode = NormalMode, id: Int)
-GET        /manual/sponsor/change-resident-for-tax                  controllers.manual.sponsor.SponsorResidentForTaxController.onPageLoad(mode: Mode = CheckMode, id: Int)
-POST       /manual/sponsor/change-resident-for-tax                  controllers.manual.sponsor.SponsorResidentForTaxController.onSubmit(mode: Mode = CheckMode, id: Int)
+GET       /manual/sponsor/tax-resident-countries/:id/change                 controllers.manual.sponsor.CurrentTaxResidentIdController.onChangeRedirect(id: Int)
+GET       /manual/sponsor/tax-resident-countries/:id/remove                 controllers.manual.sponsor.CurrentTaxResidentIdController.onRemoveRedirect(id: Int)
 
 GET        /manual/sponsor/tax-resident-countries                        controllers.manual.sponsor.TaxResidentCountriesController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/sponsor/tax-resident-countries                        controllers.manual.sponsor.TaxResidentCountriesController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/sponsor/change-tax-resident-countries                  controllers.manual.sponsor.TaxResidentCountriesController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/sponsor/change-tax-resident-countries                  controllers.manual.sponsor.TaxResidentCountriesController.onSubmit(mode: Mode = CheckMode)
 
+GET        /manual/account/balance                        controllers.manual.account.WhatWasTheAccountBalanceController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account/balance                        controllers.manual.account.WhatWasTheAccountBalanceController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account/change-balance                  controllers.manual.account.WhatWasTheAccountBalanceController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account/change-balance                  controllers.manual.account.WhatWasTheAccountBalanceController.onSubmit(mode: Mode = CheckMode)
 
 GET        /manual/sponsor/remove-tax-resident-country                      controllers.manual.sponsor.RemoveTaxResidentCountryController.onPageLoad(mode: Mode = NormalMode, id: Int)
 POST       /manual/sponsor/remove-tax-resident-country                       controllers.manual.sponsor.RemoveTaxResidentCountryController.onSubmit(mode: Mode = NormalMode, id: Int)

@@ -16,7 +16,7 @@
 
 package controllers.actions
 
-import models.requests.{AccountIdRequest, ReportIdRequest, SponsorNameRequest}
+import models.requests.{AccountIdRequest, ReportIdRequest, SponsorNameRequest, SponsorTaxResidentIdRequest}
 import play.api.mvc.{ActionBuilder, AnyContent}
 
 import javax.inject.Inject
@@ -29,7 +29,7 @@ class Actions @Inject() (
   accountIdCreationAction: AccountIdCreationAction,
   accountIdRequiredAction: AccountIdRequiredAction,
   sponsorNameRequiredAction: SponsorNameRequiredAction,
-  taxResidentCountryIdCheckAction: TaxResidentCountryIdCheckAction
+  taxResidentCountryIdCreationAction: TaxResidentCountryIdCreationAction
 ) {
 
   def withReportIdRequiredAndAccountIdCreation(): ActionBuilder[AccountIdRequest, AnyContent] =
@@ -41,8 +41,8 @@ class Actions @Inject() (
   def withReportIdRequiredAndSponsorNameRequired(): ActionBuilder[SponsorNameRequest, AnyContent] =
     withReportIdRequired() andThen sponsorNameRequiredAction
 
-  def withReportIdRequiredAndSponsorNameRequiredAndIdCheck(): ActionBuilder[SponsorNameRequest, AnyContent] =
-    withReportIdRequiredAndSponsorNameRequired() andThen taxResidentCountryIdCheckAction
+  def withReportIdRequiredAndSponsorNameRequiredAndIdCreation(): ActionBuilder[SponsorTaxResidentIdRequest, AnyContent] =
+    withReportIdRequiredAndSponsorNameRequired() andThen taxResidentCountryIdCreationAction
 
   def withReportIdRequired(): ActionBuilder[ReportIdRequest, AnyContent] =
     identityAndRequireData andThen reportIdAction

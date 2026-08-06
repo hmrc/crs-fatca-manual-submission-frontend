@@ -17,7 +17,6 @@
 package viewmodels.manual.sponsor
 
 import controllers.manual.sponsor.routes
-import models.CheckMode
 
 case class TaxResidentCountryRow(
   country: String,
@@ -32,8 +31,8 @@ object TaxResidentCountryRow {
       case (country, index) =>
         TaxResidentCountryRow(
           country,
-          routes.SponsorResidentForTaxController.onPageLoad(CheckMode, index).url,
-          routes.RemoveTaxResidentCountryController.onPageLoad(CheckMode, index).url
+          routes.CurrentTaxResidentIdController.onChangeRedirect(index).url,
+          routes.CurrentTaxResidentIdController.onRemoveRedirect(index).url
         )
     }
 }

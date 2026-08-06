@@ -22,7 +22,7 @@ import controllers.actions.*
 import forms.SponsorResidentForTaxFormProvider
 import models.{Countries, Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.sponsor.SponsorResidentForTaxPage
+import pages.manual.sponsor.{CurrentTaxResidentCountryIndexPage, SponsorResidentForTaxPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -46,32 +46,33 @@ class SponsorResidentForTaxController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode, id: Int): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequiredAndIdCheck() {
+  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequiredAndIdCreation() {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
 
-      val preparedForm = request.userAnswers.get(SponsorResidentForTaxPage(id)) match {
+      val preparedForm = request.userAnswers.get(SponsorResidentForTaxPage(request.currentId)) match {
         case None        => form
         case Some(value) => form.fill(value.code)
       }
 
-      Ok(view(preparedForm, mode, request.sponsorName, Countries.all, id))
+      Ok(view(preparedForm, mode, request.sponsorName, Countries.all))
   }
 
-  def onSubmit(mode: Mode, id: Int): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequiredAndIdCheck().async {
+  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequiredAndIdCreation().async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, request.sponsorName, Countries.all, id))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, request.sponsorName, Countries.all))),
           value =>
             for {
               selectedCountry <- Future.successful(Countries.all.find(_.code == value).get)
-              updatedAnswers  <- Future.fromTry(request.userAnswers.setWithReportId(SponsorResidentForTaxPage(id), selectedCountry))
-              _               <- repository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(SponsorResidentForTaxPage(id), mode, updatedAnswers))
+              updatedAnswers  <- Future.fromTry(request.userAnswers.setWithReportId(SponsorResidentForTaxPage(request.currentId), selectedCountry))
+              updatedAnswersWithCurrentAccountId <- Future.fromTry(updatedAnswers.setWithReportId(CurrentTaxResidentCountryIndexPage(), request.currentId))
+              _                                  <- repository.set(updatedAnswersWithCurrentAccountId)
+            } yield Redirect(navigator.nextPage(SponsorResidentForTaxPage(request.currentId), mode, updatedAnswers))
         )
   }
 }
