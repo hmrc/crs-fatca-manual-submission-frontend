@@ -46,3 +46,12 @@ case class AccountIdRequest[A](request: Request[A], userId: String, userAnswers:
 
 case class SponsorNameRequest[A](request: Request[A], userId: String, userAnswers: UserAnswers, fatcaId: String, reportId: ReportId, sponsorName: String)
     extends WrappedRequest[A](request)
+
+case class SponsorTaxResidentIdRequest[A](request: Request[A],
+                                          userId: String,
+                                          userAnswers: UserAnswers,
+                                          fatcaId: String,
+                                          reportId: ReportId,
+                                          sponsorName: String,
+                                          currentId: Int
+) extends WrappedRequest[A](request)

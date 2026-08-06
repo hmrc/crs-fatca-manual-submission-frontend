@@ -45,8 +45,7 @@ class SponsorResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
   val formProvider = new SponsorResidentForTaxFormProvider()
   val form         = formProvider()
 
-  private val id                      = 0
-  lazy val sponsorResidentForTaxRoute = controllers.manual.sponsor.routes.SponsorResidentForTaxController.onPageLoad(NormalMode, id).url
+  lazy val sponsorResidentForTaxRoute = controllers.manual.sponsor.routes.SponsorResidentForTaxController.onPageLoad(NormalMode).url
 
   "SponsorResidentForTax Controller" - {
 
@@ -64,7 +63,7 @@ class SponsorResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[SponsorResidentForTaxView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, sponsorName, Countries.all, id)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, sponsorName, Countries.all)(request, messages(application)).toString
       }
     }
 
@@ -110,7 +109,7 @@ class SponsorResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, sponsorName, Countries.all, id)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, sponsorName, Countries.all)(request, messages(application)).toString
       }
     }
 
@@ -136,7 +135,7 @@ class SponsorResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
         .build()
 
       running(application) {
-        val request = FakeRequest(GET, controllers.manual.sponsor.routes.SponsorResidentForTaxController.onPageLoad(NormalMode, id).url)
+        val request = FakeRequest(GET, controllers.manual.sponsor.routes.SponsorResidentForTaxController.onPageLoad(NormalMode).url)
 
         val result = route(application, request).value
 

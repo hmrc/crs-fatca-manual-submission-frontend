@@ -27,7 +27,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.sponsor.{SponsorNamePage, TaxResidentCountriesPage}
+import pages.manual.sponsor.{DoYouWantToAddTaxResidentCountryPage, SponsorNamePage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -71,7 +71,7 @@ class TaxResidentCountriesControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = ua.set(TaxResidentCountriesPage()(reportId), true).success.value
+      val userAnswers = ua.set(DoYouWantToAddTaxResidentCountryPage()(reportId), true).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 

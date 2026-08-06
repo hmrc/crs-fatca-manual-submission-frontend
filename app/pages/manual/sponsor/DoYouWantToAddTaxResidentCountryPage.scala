@@ -16,10 +16,21 @@
 
 package pages.manual.sponsor
 
-import models.ReportId
+import models.{ReportId, UserAnswers}
 import pages.QuestionPage
 import play.api.libs.json.JsPath
 
-final case class TaxResidentCountriesPage()(implicit reportId: ReportId) extends QuestionPage[Boolean]:
+import scala.util.{Success, Try}
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "sponsor" \ "taxResidentCountries"
+final case class DoYouWantToAddTaxResidentCountryPage()(implicit reportId: ReportId) extends QuestionPage[Boolean]:
+
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "sponsor" \ "addTaxResidentCountry"
+
+  override def cleanupWithReportId(
+    value: Option[Boolean],
+    userData: UserAnswers
+  )(implicit reportId: ReportId): Try[UserAnswers] =
+    value match {
+      case Some(true) => userData.remove(CurrentTaxResidentCountryIndexPage())
+      case _          => Success(userData)
+    }

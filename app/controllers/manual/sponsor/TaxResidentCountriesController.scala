@@ -21,7 +21,7 @@ import controllers.actions.*
 import forms.manual.sponsor.TaxResidentCountriesFormProvider
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.sponsor.{TaxResidentCountriesListPage, TaxResidentCountriesPage}
+import pages.manual.sponsor.{DoYouWantToAddTaxResidentCountryPage, TaxResidentCountriesListPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -54,7 +54,7 @@ class TaxResidentCountriesController @Inject() (
         .getOrElse(Seq.empty)
         .map(_.description)
 
-      val preparedForm = request.userAnswers.get(TaxResidentCountriesPage()) match {
+      val preparedForm = request.userAnswers.get(DoYouWantToAddTaxResidentCountryPage()) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
@@ -78,9 +78,9 @@ class TaxResidentCountriesController @Inject() (
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, request.sponsorName, taxResidentCountries))),
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(TaxResidentCountriesPage(), value))
+              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(DoYouWantToAddTaxResidentCountryPage(), value))
               _              <- repository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(TaxResidentCountriesPage(), mode, updatedAnswers))
+            } yield Redirect(navigator.nextPage(DoYouWantToAddTaxResidentCountryPage(), mode, updatedAnswers))
         )
   }
 }

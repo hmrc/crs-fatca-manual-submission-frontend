@@ -18,7 +18,7 @@ package viewmodels.checkAnswers.manual.sponsor
 
 import controllers.manual.sponsor.routes
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.sponsor.TaxResidentCountriesPage
+import pages.manual.sponsor.DoYouWantToAddTaxResidentCountryPage
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
@@ -27,7 +27,7 @@ import viewmodels.implicits._
 object TaxResidentCountriesSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
-    answers.get(TaxResidentCountriesPage()).map {
+    answers.get(DoYouWantToAddTaxResidentCountryPage()).map {
       answer =>
 
         val value = if (answer) "site.yes" else "site.no"
