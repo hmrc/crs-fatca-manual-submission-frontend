@@ -17,7 +17,7 @@
 package views.manual.sponsor
 
 import base.SpecBase
-import forms.manual.sponsor.{RemoveTaxResidentCountryFormProvider, SponsorNameFormProvider}
+import forms.manual.sponsor.RemoveTaxResidentCountryFormProvider
 import models.NormalMode
 import models.sponsor.RemoveCountryMessage.{AllOtherCountryMessage, NationsWithDefiniteArticlesMessage, OtherCountryMessage}
 import org.jsoup.Jsoup
@@ -25,7 +25,7 @@ import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
-import views.html.manual.sponsor.{RemoveTaxResidentCountryView, UKPostcodeView}
+import views.html.manual.sponsor.RemoveTaxResidentCountryView
 
 class RemoveTaxResidentCountryViewSpec extends SpecBase {
 
@@ -45,7 +45,7 @@ class RemoveTaxResidentCountryViewSpec extends SpecBase {
     "must display title and Heading" - {
       "definite article countries" in {
         val country                             = "United Kingdom"
-        val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode,0, sponsorName, country, NationsWithDefiniteArticlesMessage)
+        val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, 0, sponsorName, country, NationsWithDefiniteArticlesMessage)
         lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
         doc.title() must include(s"Are you sure you want to remove the United Kingdom as a tax resident country for the sponsor?")
