@@ -20,6 +20,7 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import forms.SponsorResidentForTaxFormProvider
 import models.SubmissionsConstants.CRS
+import models.response.Country
 import models.{Countries, NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
@@ -163,7 +164,7 @@ class SponsorResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
     "must redirect to Journey Recovery for a POST if sponsor name is not found" in {
       val userAnswers = ua
         .withPage(ReportIdPage, reportId)
-        .withPage(SponsorResidentForTaxPage(0), "GB")
+        .withPage(SponsorResidentForTaxPage(0), Country.GB)
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
         .build()

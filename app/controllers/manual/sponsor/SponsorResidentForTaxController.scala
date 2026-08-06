@@ -24,10 +24,10 @@ import models.{Countries, Mode, ReportId}
 import navigation.ManualSubmissionNavigator
 import pages.manual.sponsor.SponsorResidentForTaxPage
 import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.Results.Redirect
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.sponsor.SponsorResidentForTaxView
-import play.api.mvc.Results.Redirect
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -53,7 +53,7 @@ class SponsorResidentForTaxController @Inject() (
 
       val preparedForm = request.userAnswers.get(SponsorResidentForTaxPage(id)) match {
         case None        => form
-        case Some(value) => form.fill(value)
+        case Some(value) => form.fill(value.code)
       }
 
       Ok(view(preparedForm, mode, request.sponsorName, Countries.all, id))
@@ -68,8 +68,9 @@ class SponsorResidentForTaxController @Inject() (
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, request.sponsorName, Countries.all, id))),
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(SponsorResidentForTaxPage(id), value))
-              _              <- repository.set(updatedAnswers)
+              selectedCountry <- Future.successful(Countries.all.find(_.code == value).get)
+              updatedAnswers  <- Future.fromTry(request.userAnswers.setWithReportId(SponsorResidentForTaxPage(id), selectedCountry))
+              _               <- repository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(SponsorResidentForTaxPage(id), mode, updatedAnswers))
         )
   }
