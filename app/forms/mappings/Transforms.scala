@@ -26,7 +26,9 @@ trait Transforms {
       val tail = validPostCode.substring(validPostCode.length - 3)
       val head = validPostCode.substring(0, validPostCode.length - 3)
       s"$head $tail".toUpperCase
-    } else { validPostCode.toUpperCase }
+    } else {
+      validPostCode.toUpperCase
+    }
 
   protected def minimiseSpace(value: String): String =
     value.replaceAll(" {2,}", " ")
@@ -36,5 +38,69 @@ trait Transforms {
 
   protected def postCodeDataTransform(value: Option[String]): Option[String] =
     value.map(postCodeTransform).filter(_.nonEmpty)
+
+  protected def formatAmount(value: String): String = {
+    val strippedValue = value.replaceAll("[\\s,]+", "")
+
+    if (strippedValue.contains('.')) {
+      formatDecimal(tidyLeadingDecimal(strippedValue))
+    } else {
+      formatInteger(strippedValue)
+    }
+  }
+
+  private def tidyLeadingDecimal(numStr: String): String = numStr match {
+    case x if x.startsWith(".")  => "0" + x
+    case x if x.startsWith("-.") => "-0" + x.substring(1)
+    case x                       => x
+  }
+
+  private def removeLeadingZeros(numStr: String): String =
+    if (numStr.startsWith("-")) {
+      val abs = numStr.substring(1).replaceAll("^0+", "")
+      if (abs.isEmpty) "-0" else "-" + abs
+    } else {
+      val abs = numStr.replaceAll("^0+", "")
+      if (abs.isEmpty) "0" else abs
+    }
+
+  private def formatInteger(numStr: String): String =
+    removeLeadingZeros(numStr)
+
+  private def formatDecimal(numStr: String): String = {
+    val parts             = numStr.split("\\.", 2)
+    val intPart           = removeLeadingZeros(parts(0))
+    val decimalPart       = if (parts.length > 1) parts(1) else ""
+    val paddedDecimalPart = decimalPart.take(2).padTo(2, '0')
+    formatWholeDecimal(intPart, paddedDecimalPart)
+  }
+
+  private def formatWholeDecimal(intPart: String, deciPart: String): String =
+    if (deciPart == "00") {
+      intPart match {
+        case "-0"  => "0"
+        case other => other
+      }
+    } else {
+      s"$intPart.$deciPart"
+    }
+
+  def formatLargeNumber(numStr: String): String = {
+    val sign = if (numStr.startsWith("-")) "-" else ""
+    val abs  = if (numStr.startsWith("-")) numStr.replace("-", "") else numStr
+
+    def addCommas(str: String) = str.reverse.grouped(3).mkString(",").reverse
+
+    if (abs.contains(".")) {
+      val splitAbs = abs.split("\\.", 2)
+      val int      = addCommas(splitAbs(0))
+      val deci     = splitAbs(1)
+
+      s"$sign$int.$deci"
+    } else {
+      val formattedInt = addCommas(abs)
+      s"$sign$formattedInt"
+    }
+  }
 
 }
