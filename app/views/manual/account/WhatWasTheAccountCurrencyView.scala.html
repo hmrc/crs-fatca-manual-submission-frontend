@@ -18,7 +18,6 @@
 @import views.html.components._
 @import models.SubmissionsConstants.RegimeType
 
-
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
@@ -31,32 +30,20 @@
 
 @(form: Form[_], mode: Mode, regimeType: RegimeType)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("whatWasTheAccountBalance.title"))) {
+@layout(pageTitle = title(form, messages("whatWasTheAccountCurrency.title"))) {
 
-    @formHelper(action = controllers.manual.account.routes.WhatWasTheAccountBalanceController.onSubmit(mode)) {
+    @formHelper(action = controllers.manual.account.routes.WhatWasTheAccountCurrencyController.onSubmit(mode)) {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
-        @heading(messages("whatWasTheAccountBalance.heading"))
-
         @currencySelect(
             field = form("currency"),
-            label = Label(content = Text("Currency")),
+            label = Label(content = Text(messages("whatWasTheAccountCurrency.heading")),
+                                classes = "govuk-label--l",
+                                isPageHeading = true),
             regime = regimeType
-        )
-
-        @govukInput(
-            InputViewModel(
-                field = form("amount"),
-                label = LabelViewModel(messages("whatWasTheAccountBalance.label.amount"))
-            )
-            .withWidth(Fixed10)
-            .withHint(HintViewModel(HtmlContent(messages("whatWasTheAccountBalance.amount.hint"))))
-            .withInputType("text")
-            .withAttribute("autocomplete" -> "off")
-            .withAttribute("spellcheck" -> "false")
         )
 
         @govukButton(

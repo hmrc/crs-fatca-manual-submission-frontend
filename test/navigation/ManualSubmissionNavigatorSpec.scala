@@ -19,7 +19,7 @@ package navigation
 import base.SpecBase
 import controllers.manual.reportdetails.routes.{ReportDetailsCheckAnswersController, ReportingYearController, TypeOfReportController}
 import models.*
-import models.CrsOrFatca.{Crs, Fatca}
+import models.CrsOrFatca.Fatca
 import models.SubmissionsConstants.{CRS, FATCA}
 import models.response.{Address, AddressLookup, Country}
 import models.viewModels.AccountId
@@ -230,14 +230,14 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
 
       "AccountClosedPage" - {
 
-        "must go to UnderConstruction when AccountClosed is true and regime is Crs" in {
+        "must go to WhatWasTheAccountCurrency when AccountClosed is true and regime is Crs" in {
           implicit val reportId: ReportId = ReportId(CRS, 2024, None, "TestFIID")
 
           val userAnswers = UserAnswers("id")
             .withPage(AccountClosedPage(accountId), true)
 
           navigator.nextPage(AccountClosedPage(accountId), NormalMode, userAnswers) mustBe
-            controllers.routes.UnderConstructionController.onPageLoad()
+            controllers.manual.account.routes.WhatWasTheAccountCurrencyController.onPageLoad(NormalMode)
         }
 
         "must go to WhatWasTheAccountBalance page when AccountClosed is true and regime is Fatca" in {
@@ -386,7 +386,6 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         }
 
       }
-
       "SponsorResidentForTaxPage" - {
         "must go to underConstruction page" in {
           val ua = UserAnswers("id")
@@ -396,6 +395,14 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             controllers.routes.UnderConstructionController.onPageLoad()
         }
       }
+      "WhatWasTheAccountCurrencyPage" - {
+        "must go to UNDERCONSTRUCTION page when submitted" in {
+          val ua = UserAnswers("id")
+          navigator.nextPage(WhatWasTheAccountCurrencyPage(accountId), NormalMode, ua) mustBe
+            controllers.routes.UnderConstructionController.onPageLoad()
+        }
+      }
+
     }
   }
 }
