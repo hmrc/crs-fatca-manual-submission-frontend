@@ -19,7 +19,7 @@ package controllers.manual.sponsor
 import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.manual.sponsor.RemoveTaxResidentCountryFormProvider
-import models.manual.sponsor.TaxResidentCountry
+import models.response.Country
 import models.sponsor.RemoveCountryMessage
 import models.{Countries, Mode, ReportId, SponsorResidentTaxCountryCodes, UserAnswers}
 import navigation.ManualSubmissionNavigator
@@ -58,10 +58,10 @@ class RemoveTaxResidentCountryController @Inject() (
         case None => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
         case Some(value) =>
           Countries.all
-            .find(_.code == value)
+            .find(_.code == value.code)
             .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())) {
               country =>
-                val messageType = RemoveCountryMessage.getRemoveCountryMessage(value)
+                val messageType = RemoveCountryMessage.getRemoveCountryMessage(value.code)
                 Ok(view(form, mode, id, request.sponsorName, country.description, messageType))
             }
       }
@@ -75,19 +75,19 @@ class RemoveTaxResidentCountryController @Inject() (
       request.userAnswers
         .get(SponsorResidentForTaxPage(id))
         .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))) {
-          code =>
+          country =>
             Countries.all
-              .find(_.code == code)
+              .find(_.code == country.code)
               .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))) {
                 country =>
-                  val messageType = RemoveCountryMessage.getRemoveCountryMessage(code)
+                  val messageType = RemoveCountryMessage.getRemoveCountryMessage(country.code)
                   form
                     .bindFromRequest()
                     .fold(
                       formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, id, request.sponsorName, country.description, messageType))),
                       value =>
-                        val taxResidentCountries: Seq[TaxResidentCountry] = request.userAnswers.get(TaxResidentCountriesListPage()).getOrElse(Seq())
-                        val updatedTaxResidentCountries                   = if (value) taxResidentCountries.patch(id, Nil, 1) else taxResidentCountries
+                        val taxResidentCountries: Seq[Country] = request.userAnswers.get(TaxResidentCountriesListPage()).getOrElse(Seq())
+                        val updatedTaxResidentCountries        = if (value) taxResidentCountries.patch(id, Nil, 1) else taxResidentCountries
                         for {
                           updatedAnswers <- Future.fromTry(request.userAnswers.set(TaxResidentCountriesListPage(), updatedTaxResidentCountries))
                           _              <- repository.set(updatedAnswers)

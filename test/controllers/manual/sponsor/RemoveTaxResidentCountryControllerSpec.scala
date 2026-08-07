@@ -21,7 +21,7 @@ import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.sponsor.RemoveTaxResidentCountryFormProvider
 import models.SubmissionsConstants.CRS
-import models.manual.sponsor.TaxResidentCountry
+import models.response.Country
 import models.sponsor.RemoveCountryMessage
 import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
@@ -46,8 +46,8 @@ class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar 
   val form         = formProvider()
 
   lazy val removeTaxResidentCountryRoute = controllers.manual.sponsor.routes.RemoveTaxResidentCountryController.onPageLoad(NormalMode, id).url
-  val country                            = "Ethiopia"
-  val code                               = "ET"
+  val country                            = "United Kingdom"
+  val GB                                 = Country("GB", "United Kingdom")
   val sponsorName                        = "Some Sponsor Name"
   implicit val reportId: ReportId        = ReportId(CRS, 2025, None, "TestfiID")
   "RemoveTaxResidentCountry Controller" - {
@@ -56,8 +56,8 @@ class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar 
 
     "must return OK and the correct view for a GET" in {
       val useranswers = ua
-        .withPage(TaxResidentCountriesListPage(), Seq(TaxResidentCountry(code)))
-        .withPage(SponsorResidentForTaxPage(0), code)
+        .withPage(TaxResidentCountriesListPage(), Seq(GB))
+        .withPage(SponsorResidentForTaxPage(0), GB)
         .withPage(SponsorNamePage(), sponsorName)
       val application = applicationBuilder(maybeUserAnswers = Some(useranswers)).build()
 
@@ -69,30 +69,7 @@ class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar 
         val view = application.injector.instanceOf[RemoveTaxResidentCountryView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, id, sponsorName, country, RemoveCountryMessage.AllOtherCountryMessage)(
-          request,
-          messages(application)
-        ).toString
-      }
-    }
-
-    "must populate the view correctly on a GET when the question has previously been answered" ignore {
-
-      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
-
-      val userAnswers = ua.set(RemoveTaxResidentCountryPage(), true).success.value
-
-      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
-
-      running(application) {
-        val request = FakeRequest(GET, removeTaxResidentCountryRoute)
-
-        val view = application.injector.instanceOf[RemoveTaxResidentCountryView]
-
-        val result = route(application, request).value
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode, id, sponsorName, country, RemoveCountryMessage.NationsWithDefiniteArticlesMessage)(
+        contentAsString(result) mustEqual view(form, NormalMode, id, sponsorName, country, RemoveCountryMessage.NationsWithDefiniteArticlesMessage)(
           request,
           messages(application)
         ).toString
@@ -101,8 +78,8 @@ class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar 
 
     "must redirect to the next page when valid data is submitted" in {
       val useranswers = ua
-        .withPage(TaxResidentCountriesListPage(), Seq(TaxResidentCountry(code)))
-        .withPage(SponsorResidentForTaxPage(0), code)
+        .withPage(TaxResidentCountriesListPage(), Seq(GB))
+        .withPage(SponsorResidentForTaxPage(0), GB)
         .withPage(SponsorNamePage(), sponsorName)
       val mockSessionRepository = mock[DatabaseConnector]
 
@@ -130,8 +107,8 @@ class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar 
 
     "must return a Bad Request and errors when invalid data is submitted" in {
       val useranswers = ua
-        .withPage(TaxResidentCountriesListPage(), Seq(TaxResidentCountry(code)))
-        .withPage(SponsorResidentForTaxPage(0), code)
+        .withPage(TaxResidentCountriesListPage(), Seq(GB))
+        .withPage(SponsorResidentForTaxPage(0), GB)
         .withPage(SponsorNamePage(), sponsorName)
       val application = applicationBuilder(maybeUserAnswers = Some(useranswers)).build()
 
@@ -147,7 +124,7 @@ class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar 
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, id, sponsorName, country, RemoveCountryMessage.AllOtherCountryMessage)(
+        contentAsString(result) mustEqual view(boundForm, NormalMode, id, sponsorName, country, RemoveCountryMessage.NationsWithDefiniteArticlesMessage)(
           request,
           messages(application)
         ).toString
@@ -156,8 +133,8 @@ class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar 
 
     "must redirect to Journey Recovery for a GET if no sponsor name  is found" in {
       val useranswers = ua
-        .withPage(TaxResidentCountriesListPage(), Seq(TaxResidentCountry(code)))
-        .withPage(SponsorResidentForTaxPage(0), code)
+        .withPage(TaxResidentCountriesListPage(), Seq(GB))
+        .withPage(SponsorResidentForTaxPage(0), GB)
 
       val application = applicationBuilder(maybeUserAnswers = Some(useranswers)).build()
 
@@ -201,10 +178,11 @@ class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar 
     }
 
     "must redirect to Journey Recovery for a GET for invalid country code" in {
-      val countryCode = "ZWD"
+      val countryCode    = "ZWD"
+      val invalidCountry = Country(countryCode, "some-other-planet")
       val useranswers = ua
-        .withPage(TaxResidentCountriesListPage(), Seq(TaxResidentCountry(countryCode)))
-        .withPage(SponsorResidentForTaxPage(0), countryCode)
+        .withPage(TaxResidentCountriesListPage(), Seq(invalidCountry))
+        .withPage(SponsorResidentForTaxPage(0), invalidCountry)
         .withPage(SponsorNamePage(), sponsorName)
       val application = applicationBuilder(maybeUserAnswers = Some(useranswers)).build()
 
@@ -236,8 +214,8 @@ class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar 
 
     "must redirect to Journey Recovery for a POST if no sponsor name is found" in {
       val useranswers = ua
-        .withPage(TaxResidentCountriesListPage(), Seq(TaxResidentCountry(code)))
-        .withPage(SponsorResidentForTaxPage(0), code)
+        .withPage(TaxResidentCountriesListPage(), Seq(GB))
+        .withPage(SponsorResidentForTaxPage(0), GB)
 
       val application = applicationBuilder(maybeUserAnswers = Some(useranswers)).build()
 
@@ -272,8 +250,8 @@ class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar 
 
     "must redirect to Journey Recovery for a POST if invalid index is in url" in {
       val useranswers = ua
-        .withPage(TaxResidentCountriesListPage(), Seq(TaxResidentCountry(code)))
-        .withPage(SponsorResidentForTaxPage(0), code)
+        .withPage(TaxResidentCountriesListPage(), Seq(GB))
+        .withPage(SponsorResidentForTaxPage(0), GB)
         .withPage(SponsorNamePage(), sponsorName)
 
       val application = applicationBuilder(maybeUserAnswers = Some(useranswers)).build()
@@ -291,10 +269,11 @@ class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar 
     }
 
     "must redirect to Journey Recovery for a POST for invalid country code" in {
-      val countryCode = "ZWD"
+      val countryCode    = "ZWD"
+      val invalidCountry = Country(countryCode, "some-other-planet")
       val useranswers = ua
-        .withPage(TaxResidentCountriesListPage(), Seq(TaxResidentCountry(countryCode)))
-        .withPage(SponsorResidentForTaxPage(0), countryCode)
+        .withPage(TaxResidentCountriesListPage(), Seq(invalidCountry))
+        .withPage(SponsorResidentForTaxPage(0), invalidCountry)
         .withPage(SponsorNamePage(), sponsorName)
       val mockSessionRepository = mock[DatabaseConnector]
 
