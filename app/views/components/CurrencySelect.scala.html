@@ -23,7 +23,7 @@
 
 @this(govukSelect: GovukSelect)
 
-@(field: Field, labelText: String, regime: RegimeType, selectId: String = "currency", selectName: String = "currency")(implicit messages: Messages)
+@(field: Field, label: Label, regime: RegimeType, selectId: String = "currency", selectName: String = "currency")(implicit messages: Messages)
 
 @currencyItems = @{
   val defaultOption = SelectItem(
@@ -53,9 +53,7 @@
   id = selectId,
   name = selectName,
   items = currencyItems,
-  label = Label(
-    content = Text(labelText)
-    ),
+  label = label,
   errorMessage = field.error.map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*)))),
   classes = "govuk-!-width-two-thirds"
 ))

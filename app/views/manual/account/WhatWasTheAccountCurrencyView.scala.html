@@ -37,15 +37,14 @@
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
-            
-        @heading(messages("whatWasTheAccountCurrency.heading"))
 
         @currencySelect(
             field = form("currency"),
-            labelText = "Currency",
+            label = Label(content = Text(messages("whatWasTheAccountCurrency.heading")),
+                                classes = "govuk-label--l",
+                                isPageHeading = true),
             regime = regimeType
         )
-
 
         @govukButton(
             ButtonViewModel(messages("site.saveContinue"))
