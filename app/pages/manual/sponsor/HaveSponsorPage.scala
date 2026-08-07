@@ -46,6 +46,7 @@ final case class HaveSponsorPage()(implicit reportId: ReportId) extends Question
     AddressLookupPage(),
     AddressNonUkPage(),
     TaxResidentCountriesListPage(),
+    CurrentTaxResidentCountryIndexPage(),
     DoYouWantToAddTaxResidentCountryPage()
   )
 }
