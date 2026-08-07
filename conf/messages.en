@@ -238,7 +238,7 @@ reportDetailsCheckAnswers.heading = Check your report details for {0}
 
 haveSponsor.title = Does the financial institution have a sponsor?
 haveSponsor.heading = Does {0} have a sponsor?
-haveSponsor.checkYourAnswersLabel = Does {0} have a sponsor?
+haveSponsor.checkYourAnswersLabel = Does the financial institution have a sponsor?
 haveSponsor.error.required = Select yes if the financial institution has a sponsor
 haveSponsor.change.hidden = HaveSponsor
 
@@ -263,7 +263,7 @@ whatIsGIINForSponsor.subheading = What is the GIIN for {0}?
 whatIsGIINForSponsor.para.1 = You must provide a GIIN for {0} for FATCA reporting.
 whatIsGIINForSponsor.para.2 = To receive a GIIN for FATCA, {0} must have registered with the United States of America’s Internal Revenue Service.
 whatIsGIINForSponsor.hint = For example, ‘98O96B.00000.LE.350’.
-whatIsGIINForSponsor.checkYourAnswersLabel = whatIsGIINForSponsor
+whatIsGIINForSponsor.checkYourAnswersLabel = What is the sponsor’s GIIN?
 whatIsGIINForSponsor.change.hidden = WhatIsGIINForSponsor
 
 whatIsGIINForSponsor.error.required = Enter the sponsor’s GIIN
@@ -315,7 +315,7 @@ addressNonUk.addressLine4 = Region (optional)
 addressNonUk.postcode = Postcode (optional)
 addressNonUk.country = Country
 
-addressNonUk.checkYourAnswersLabel = AddressNonUk
+addressNonUk.checkYourAnswersLabel = What is the sponsor’s address?
 addressNonUk.error.addressLine1.required = Enter address line 1
 addressNonUk.error.addressLine3.required = Enter city
 addressNonUk.error.country.required = Select country
@@ -396,7 +396,7 @@ ukAddress.heading =What is the registered address for {0}?
 ukAddress.addressLine1 = Address line 1
 ukAddress.addressLine2 = Address line 2 (Optional)
 ukAddress.city = City
-ukAddress.checkYourAnswersLabel = UkAddress
+ukAddress.checkYourAnswersLabel = What is the sponsor’s address?
 ukAddress.error.addressLine1.required = Enter address line 1
 ukAddress.error.addressLine1.length = Address line 1 must be 200 characters or less
 ukAddress.error.addressLine1.invalid.characters = Address line 1 must only include letters a to z, numbers 0 to 9, apostrophes, commas, ampersands (&), hyphens, full stops and spaces
@@ -467,3 +467,6 @@ whatWasTheAccountBalance.error.invalid.FATCA = Amount must only include numbers 
 whatWasTheAccountBalance.error.minus.FATCA = Amount can only include a minus sign as the first character
 whatWasTheAccountBalance.error.decimalPlaces = Amount cannot have more than 2 decimal places
 currency.select = Select currency
+
+checkAnswers.title = Check your answers for the sponsor for the financial institution
+checkAnswers.heading = Check your answers for the sponsor for {0}

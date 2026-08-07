@@ -38,7 +38,7 @@ object AddressNonUkSummary {
 
         val addressHtml: String =
           formatLine(answer.addressLine1) concat
-            answer.addressLine2.fold("")(formatLine) concat
+            answer.addressLine2.  fold("")(formatLine) concat
             formatLine(answer.addressLine3) concat
             answer.addressLine4.fold("")(formatLine) concat
             answer.postcode.fold("")(formatLine) concat
@@ -52,12 +52,12 @@ object AddressNonUkSummary {
           actions = Seq(
             ActionItemViewModel(
               content = HtmlContent(
-                s"""
+                s"""  
                  |<span aria-hidden="true">${messages("site.change")}</span>
                  |<span class="govuk-visually-hidden">${messages("addressNonUk.change.hidden")}</span>
                  |""".stripMargin
               ),
-              href = controllers.manual.sponsor.routes.AddressNonUkController
+              href = controllers.manual.sponsor.routes.IsSponsorBasedInUKController
                 .onPageLoad(CheckMode)
                 .url
             ).withAttribute(

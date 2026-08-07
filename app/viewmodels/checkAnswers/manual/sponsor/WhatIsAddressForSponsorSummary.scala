@@ -31,17 +31,24 @@ object WhatIsAddressForSponsorSummary {
     answers.get(WhatIsAddressForSponsorPage()).map {
       answer =>
 
-        val value = ValueViewModel(
-          HtmlContent(
-            HtmlFormat.escape(messages(s"whatIsAddressForSponsor.$answer"))
-          )
-        )
+        def formatLine(line: String): String =
+          s"""<div class="govuk-margin-bottom-0">${HtmlFormat.escape(line)}</div>"""
+
+        val addressHtml: String =
+          formatLine(answer.addressLine1) concat
+            answer.addressLine2.fold("")(formatLine) concat
+            formatLine(answer.addressLine3) concat
+            answer.addressLine4.fold("")(formatLine) concat
+            answer.postcode.fold("")(formatLine) concat
+            formatLine(answer.country)
 
         SummaryListRowViewModel(
           key = "whatIsAddressForSponsor.checkYourAnswersLabel",
-          value = value,
+          value = ValueViewModel(
+            HtmlContent(addressHtml)
+          ),
           actions = Seq(
-            ActionItemViewModel("site.change", controllers.manual.sponsor.routes.WhatIsAddressForSponsorController.onPageLoad(CheckMode).url)
+            ActionItemViewModel("site.change", controllers.manual.sponsor.routes.IsSponsorBasedInUKController.onPageLoad(CheckMode).url)
               .withVisuallyHiddenText(messages("whatIsAddressForSponsor.change.hidden"))
           )
         )

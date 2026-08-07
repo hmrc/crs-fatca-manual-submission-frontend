@@ -184,3 +184,5 @@ GET        /manual/account/balance                        controllers.manual.acc
 POST       /manual/account/balance                        controllers.manual.account.WhatWasTheAccountBalanceController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/account/change-balance                  controllers.manual.account.WhatWasTheAccountBalanceController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/account/change-balance                  controllers.manual.account.WhatWasTheAccountBalanceController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/sponsor/check-answers                       controllers.manual.sponsor.CheckAnswersController.onPageLoad()

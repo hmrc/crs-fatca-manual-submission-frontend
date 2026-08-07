@@ -37,7 +37,7 @@ object UkAddressSummary {
           key = "ukAddress.checkYourAnswersLabel",
           value = ValueViewModel(HtmlContent(value)),
           actions = Seq(
-            ActionItemViewModel("site.change", controllers.manual.sponsor.routes.UkAddressController.onPageLoad(CheckMode).url)
+            ActionItemViewModel("site.change", controllers.manual.sponsor.routes.IsSponsorBasedInUKController.onPageLoad(CheckMode).url)
               .withVisuallyHiddenText(messages("ukAddress.change.hidden"))
           )
         )
