@@ -49,12 +49,11 @@ class RemoveTaxResidentCountryController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode, id: Int): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequired() {
+  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequiredAndIdCreation() {
     implicit request =>
-
       implicit val reportId: ReportId = request.reportId
 
-      request.userAnswers.get(SponsorResidentForTaxPage(id)) match {
+      request.userAnswers.get(SponsorResidentForTaxPage(request.currentId)) match {
         case None => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
         case Some(value) =>
           Countries.all
@@ -62,18 +61,18 @@ class RemoveTaxResidentCountryController @Inject() (
             .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())) {
               country =>
                 val messageType = RemoveCountryMessage.getRemoveCountryMessage(value.code)
-                Ok(view(form, mode, id, request.sponsorName, country.description, messageType))
+                Ok(view(form, mode, request.sponsorName, country.description, messageType))
             }
       }
 
   }
 
-  def onSubmit(mode: Mode, id: Int): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequired().async {
+  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequiredAndIdCreation().async {
     implicit request =>
-
+      val id                          = request.currentId
       implicit val reportId: ReportId = request.reportId
       request.userAnswers
-        .get(SponsorResidentForTaxPage(id))
+        .get(SponsorResidentForTaxPage(request.currentId))
         .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))) {
           country =>
             Countries.all
@@ -84,7 +83,7 @@ class RemoveTaxResidentCountryController @Inject() (
                   form
                     .bindFromRequest()
                     .fold(
-                      formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, id, request.sponsorName, country.description, messageType))),
+                      formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, request.sponsorName, country.description, messageType))),
                       value =>
                         val taxResidentCountries: Seq[Country] = request.userAnswers.get(TaxResidentCountriesListPage()).getOrElse(Seq())
                         val updatedTaxResidentCountries        = if (value) taxResidentCountries.patch(id, Nil, 1) else taxResidentCountries

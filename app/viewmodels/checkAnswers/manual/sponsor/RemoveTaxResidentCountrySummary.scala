@@ -26,7 +26,7 @@ import viewmodels.implicits._
 
 object RemoveTaxResidentCountrySummary {
 
-  def row(answers: UserAnswers, id: Int)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
+  def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
     answers.get(RemoveTaxResidentCountryPage()).map {
       answer =>
 
@@ -36,7 +36,7 @@ object RemoveTaxResidentCountrySummary {
           key = "removeTaxResidentCountry.checkYourAnswersLabel",
           value = ValueViewModel(value),
           actions = Seq(
-            ActionItemViewModel("site.change", routes.RemoveTaxResidentCountryController.onPageLoad(CheckMode, id).url)
+            ActionItemViewModel("site.change", routes.RemoveTaxResidentCountryController.onPageLoad(CheckMode).url)
               .withVisuallyHiddenText(messages("removeTaxResidentCountry.change.hidden"))
           )
         )

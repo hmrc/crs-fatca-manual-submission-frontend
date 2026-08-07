@@ -45,7 +45,7 @@ class RemoveTaxResidentCountryViewSpec extends SpecBase {
     "must display title and Heading" - {
       "definite article countries" in {
         val country                             = "United Kingdom"
-        val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, 0, sponsorName, country, NationsWithDefiniteArticlesMessage)
+        val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, sponsorName, country, NationsWithDefiniteArticlesMessage)
         lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
         doc.title() must include(s"Are you sure you want to remove the United Kingdom as a tax resident country for the sponsor?")
@@ -60,7 +60,7 @@ class RemoveTaxResidentCountryViewSpec extends SpecBase {
       }
       "other countries" in {
         val country                             = "Zamunda"
-        val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, 0, sponsorName, country, OtherCountryMessage)
+        val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, sponsorName, country, OtherCountryMessage)
         lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
         doc.title() must include(s"Are you sure you want to remove ‘Other country’ as a tax resident country for the sponsor?")
@@ -69,7 +69,7 @@ class RemoveTaxResidentCountryViewSpec extends SpecBase {
       }
       "all other countries" in {
         val country                             = "Somalia"
-        val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, 0, sponsorName, country, AllOtherCountryMessage)
+        val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, sponsorName, country, AllOtherCountryMessage)
         lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
         doc.title() must include(s"Are you sure you want to remove Somalia as a tax resident country for the sponsor?")

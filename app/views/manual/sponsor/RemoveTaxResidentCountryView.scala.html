@@ -24,11 +24,11 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode, id: Int, sponsorName: String, country: String = "Ethopia", removeCountryMessage: RemoveCountryMessage = RemoveCountryMessage.NationsWithDefiniteArticlesMessage)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, sponsorName: String, country: String = "Ethopia", removeCountryMessage: RemoveCountryMessage = RemoveCountryMessage.NationsWithDefiniteArticlesMessage)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, titleMessage(removeCountryMessage, country) )) {
 
-    @formHelper(action = controllers.manual.sponsor.routes.RemoveTaxResidentCountryController.onSubmit(mode, id), Symbol("autoComplete") -> "off") {
+    @formHelper(action = controllers.manual.sponsor.routes.RemoveTaxResidentCountryController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))

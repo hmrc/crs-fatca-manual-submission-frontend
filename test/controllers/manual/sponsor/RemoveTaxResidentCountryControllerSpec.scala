@@ -29,7 +29,13 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.sponsor.{RemoveTaxResidentCountryPage, SponsorNamePage, SponsorResidentForTaxPage, TaxResidentCountriesListPage}
+import pages.manual.sponsor.{
+  CurrentTaxResidentCountryIndexPage,
+  RemoveTaxResidentCountryPage,
+  SponsorNamePage,
+  SponsorResidentForTaxPage,
+  TaxResidentCountriesListPage
+}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -41,11 +47,10 @@ import scala.concurrent.Future
 class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute  = Call("GET", "/foo")
-  val id           = 0
   val formProvider = new RemoveTaxResidentCountryFormProvider()
   val form         = formProvider()
 
-  lazy val removeTaxResidentCountryRoute = controllers.manual.sponsor.routes.RemoveTaxResidentCountryController.onPageLoad(NormalMode, id).url
+  lazy val removeTaxResidentCountryRoute = controllers.manual.sponsor.routes.RemoveTaxResidentCountryController.onPageLoad(NormalMode).url
   val country                            = "United Kingdom"
   val GB                                 = Country("GB", "United Kingdom")
   val sponsorName                        = "Some Sponsor Name"
@@ -59,6 +64,7 @@ class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar 
         .withPage(TaxResidentCountriesListPage(), Seq(GB))
         .withPage(SponsorResidentForTaxPage(0), GB)
         .withPage(SponsorNamePage(), sponsorName)
+        .withPage(CurrentTaxResidentCountryIndexPage(), 0)
       val application = applicationBuilder(maybeUserAnswers = Some(useranswers)).build()
 
       running(application) {
@@ -69,7 +75,7 @@ class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar 
         val view = application.injector.instanceOf[RemoveTaxResidentCountryView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, id, sponsorName, country, RemoveCountryMessage.NationsWithDefiniteArticlesMessage)(
+        contentAsString(result) mustEqual view(form, NormalMode, sponsorName, country, RemoveCountryMessage.NationsWithDefiniteArticlesMessage)(
           request,
           messages(application)
         ).toString
@@ -81,6 +87,8 @@ class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar 
         .withPage(TaxResidentCountriesListPage(), Seq(GB))
         .withPage(SponsorResidentForTaxPage(0), GB)
         .withPage(SponsorNamePage(), sponsorName)
+        .withPage(CurrentTaxResidentCountryIndexPage(), 0)
+
       val mockSessionRepository = mock[DatabaseConnector]
 
       when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
@@ -110,6 +118,7 @@ class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar 
         .withPage(TaxResidentCountriesListPage(), Seq(GB))
         .withPage(SponsorResidentForTaxPage(0), GB)
         .withPage(SponsorNamePage(), sponsorName)
+        .withPage(CurrentTaxResidentCountryIndexPage(), 0)
       val application = applicationBuilder(maybeUserAnswers = Some(useranswers)).build()
 
       running(application) {
@@ -124,7 +133,7 @@ class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar 
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, id, sponsorName, country, RemoveCountryMessage.NationsWithDefiniteArticlesMessage)(
+        contentAsString(result) mustEqual view(boundForm, NormalMode, sponsorName, country, RemoveCountryMessage.NationsWithDefiniteArticlesMessage)(
           request,
           messages(application)
         ).toString
@@ -239,26 +248,6 @@ class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar 
       running(application) {
         val request =
           FakeRequest(POST, removeTaxResidentCountryRoute)
-            .withFormUrlEncodedBody(("value", "true"))
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-      }
-    }
-
-    "must redirect to Journey Recovery for a POST if invalid index is in url" in {
-      val useranswers = ua
-        .withPage(TaxResidentCountriesListPage(), Seq(GB))
-        .withPage(SponsorResidentForTaxPage(0), GB)
-        .withPage(SponsorNamePage(), sponsorName)
-
-      val application = applicationBuilder(maybeUserAnswers = Some(useranswers)).build()
-
-      running(application) {
-        val request =
-          FakeRequest(POST, controllers.manual.sponsor.routes.RemoveTaxResidentCountryController.onPageLoad(NormalMode, 100).url)
             .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value

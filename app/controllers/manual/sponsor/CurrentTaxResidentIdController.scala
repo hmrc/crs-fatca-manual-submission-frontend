@@ -52,7 +52,7 @@ class CurrentTaxResidentIdController @Inject() (
 
       implicit val reportId: ReportId = request.reportId
 
-      redirectWithValidIndex(id, controllers.routes.UnderConstructionController.onPageLoad())
+      redirectWithValidIndex(id, controllers.manual.sponsor.routes.RemoveTaxResidentCountryController.onPageLoad(CheckMode))
   }
 
   private def redirectWithValidIndex(id: Int, successCall: Call)(implicit request: SponsorNameRequest[AnyContent], reportId: ReportId): Future[Result] = {
