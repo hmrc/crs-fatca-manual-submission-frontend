@@ -14,11 +14,26 @@
  * limitations under the License.
  */
 
-package pages
+package viewmodels.manual.sponsor
 
-import models.{ReportId, UkAddress}
-import play.api.libs.json.JsPath
+import controllers.manual.sponsor.routes
+import models.CheckMode
 
-final case class UkAddressPage()(implicit reportId: ReportId) extends QuestionPage[UkAddress]:
+case class TaxResidentCountryRow(
+  country: String,
+  changeUrl: String,
+  removeUrl: String
+)
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "ukAddressForSponsor"
+object TaxResidentCountryRow {
+
+  def rows(countries: Seq[String]): Seq[TaxResidentCountryRow] =
+    countries.zipWithIndex.map {
+      case (country, index) =>
+        TaxResidentCountryRow(
+          country,
+          routes.SponsorResidentForTaxController.onPageLoad(CheckMode, index).url,
+          routes.RemoveTaxResidentCountryController.onPageLoad(CheckMode, index).url
+        )
+    }
+}

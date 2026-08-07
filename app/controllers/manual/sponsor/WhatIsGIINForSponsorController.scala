@@ -21,7 +21,7 @@ import controllers.actions.*
 import forms.manual.sponsor.WhatIsGIINForSponsorFormProvider
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.sponsor.{SponsorNamePage, WhatIsGIINForSponsorPage}
+import pages.manual.sponsor.WhatIsGIINForSponsorPage
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -35,10 +35,7 @@ class WhatIsGIINForSponsorController @Inject() (
   override val messagesApi: MessagesApi,
   repository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
-  identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  reportIdAction: ReportIdRequiredAction,
+  actions: Actions,
   formProvider: WhatIsGIINForSponsorFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: WhatIsGIINForSponsorView
@@ -48,41 +45,31 @@ class WhatIsGIINForSponsorController @Inject() (
 
   val form: Form[String] = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequired() {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
 
-      request.userAnswers
-        .get(SponsorNamePage())
-        .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)) {
-          sponsorName =>
-            val preparedForm = request.userAnswers.get(WhatIsGIINForSponsorPage()) match {
-              case None        => form
-              case Some(value) => form.fill(value)
-            }
+      val preparedForm = request.userAnswers.get(WhatIsGIINForSponsorPage()) match {
+        case None        => form
+        case Some(value) => form.fill(value)
+      }
 
-            Ok(view(preparedForm, mode, sponsorName))
-        }
+      Ok(view(preparedForm, mode, request.sponsorName))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequired().async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
 
-      request.userAnswers
-        .get(SponsorNamePage())
-        .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))) {
-          sponsorName =>
-            form
-              .bindFromRequest()
-              .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, sponsorName))),
-                value =>
-                  for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(WhatIsGIINForSponsorPage(), value))
-                    _              <- repository.set(updatedAnswers)
-                  } yield Redirect(navigator.nextPage(WhatIsGIINForSponsorPage(), mode, updatedAnswers))
-              )
-        }
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, request.sponsorName))),
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(WhatIsGIINForSponsorPage(), value))
+              _              <- repository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(WhatIsGIINForSponsorPage(), mode, updatedAnswers))
+        )
   }
 }

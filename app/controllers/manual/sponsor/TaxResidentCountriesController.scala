@@ -17,61 +17,70 @@
 package controllers.manual.sponsor
 
 import connectors.DatabaseConnector
-import controllers.*
 import controllers.actions.*
-import forms.SponsorResidentForTaxFormProvider
-import models.{Countries, Mode, ReportId}
+import forms.manual.sponsor.TaxResidentCountriesFormProvider
+import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.sponsor.SponsorResidentForTaxPage
+import pages.manual.sponsor.{TaxResidentCountriesListPage, TaxResidentCountriesPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.Results.Redirect
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.manual.sponsor.SponsorResidentForTaxView
+import views.html.manual.sponsor.TaxResidentCountriesView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class SponsorResidentForTaxController @Inject() (
+class TaxResidentCountriesController @Inject() (
   override val messagesApi: MessagesApi,
   repository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
   actions: Actions,
-  formProvider: SponsorResidentForTaxFormProvider,
+  formProvider: TaxResidentCountriesFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: SponsorResidentForTaxView
+  view: TaxResidentCountriesView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode, id: Int): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequiredAndIdCheck() {
+  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequired() {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
 
-      val preparedForm = request.userAnswers.get(SponsorResidentForTaxPage(id)) match {
+      val taxResidentCountries = request.userAnswers
+        .get(TaxResidentCountriesListPage())
+        .getOrElse(Seq.empty)
+        .map(_.description)
+
+      val preparedForm = request.userAnswers.get(TaxResidentCountriesPage()) match {
         case None        => form
-        case Some(value) => form.fill(value.code)
+        case Some(value) => form.fill(value)
       }
 
-      Ok(view(preparedForm, mode, request.sponsorName, Countries.all, id))
+      Ok(view(preparedForm, mode, request.sponsorName, taxResidentCountries))
   }
 
-  def onSubmit(mode: Mode, id: Int): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequiredAndIdCheck().async {
+  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequired().async {
     implicit request =>
+
       implicit val reportId: ReportId = request.reportId
+
+      val taxResidentCountries = request.userAnswers
+        .get(TaxResidentCountriesListPage())
+        .getOrElse(Seq.empty)
+        .map(_.description)
+
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, request.sponsorName, Countries.all, id))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, request.sponsorName, taxResidentCountries))),
           value =>
             for {
-              selectedCountry <- Future.successful(Countries.all.find(_.code == value).get)
-              updatedAnswers  <- Future.fromTry(request.userAnswers.setWithReportId(SponsorResidentForTaxPage(id), selectedCountry))
-              _               <- repository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(SponsorResidentForTaxPage(id), mode, updatedAnswers))
+              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(TaxResidentCountriesPage(), value))
+              _              <- repository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(TaxResidentCountriesPage(), mode, updatedAnswers))
         )
   }
 }

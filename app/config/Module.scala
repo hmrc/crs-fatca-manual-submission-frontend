@@ -35,6 +35,8 @@ class Module extends AbstractModule {
     bind(classOf[ReportIdRequiredAction]).to(classOf[ReportIdRequiredActionImpl]).asEagerSingleton()
     bind(classOf[AccountIdCreationAction]).to(classOf[AccountIdCreationActionImpl]).asEagerSingleton()
     bind(classOf[AccountIdRequiredAction]).to(classOf[AccountIdRequiredActionImpl]).asEagerSingleton()
+    bind(classOf[SponsorNameRequiredAction]).to(classOf[SponsorNameRequiredActionImpl]).asEagerSingleton()
+    bind(classOf[TaxResidentCountryIdCheckAction]).to(classOf[TaxResidentCountryIdCheckActionImpl]).asEagerSingleton()
     bind(classOf[ElectionIdRequiredAction]).to(classOf[ElectionIdRequiredActionImpl]).asEagerSingleton()
 
     bind(classOf[Clock]).toInstance(Clock.systemDefaultZone.withZone(ZoneOffset.UTC))

@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-package pages.manual.sponsor
+package forms.manual.sponsor
 
-import models.ReportId
-import pages.QuestionPage
-import play.api.libs.json.JsPath
+import javax.inject.Inject
 
-final case class WhatIsGIINForSponsorPage()(implicit reportId: ReportId) extends QuestionPage[String]:
+import forms.mappings.Mappings
+import play.api.data.Form
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "sponsor" \ "whatIsGIINForSponsor"
+class RemoveTaxResidentCountryFormProvider @Inject() extends Mappings {
+
+  def apply(): Form[Boolean] =
+    Form(
+      "value" -> boolean("removeTaxResidentCountry.error.required")
+    )
+}

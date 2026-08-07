@@ -1,0 +1,80 @@
+/*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package views.manual.sponsor
+
+import base.SpecBase
+import forms.manual.sponsor.RemoveTaxResidentCountryFormProvider
+import models.NormalMode
+import models.sponsor.RemoveCountryMessage.{AllOtherCountryMessage, NationsWithDefiniteArticlesMessage, OtherCountryMessage}
+import org.jsoup.Jsoup
+import play.api.i18n.{Lang, Messages}
+import play.api.mvc.{AnyContent, MessagesControllerComponents}
+import play.api.test.FakeRequest
+import play.twirl.api.HtmlFormat
+import views.html.manual.sponsor.RemoveTaxResidentCountryView
+
+class RemoveTaxResidentCountryViewSpec extends SpecBase {
+
+  private val application = applicationBuilder().build()
+
+  private val view: RemoveTaxResidentCountryView                         = application.injector.instanceOf[RemoveTaxResidentCountryView]
+  private val messagesControllerComponents: MessagesControllerComponents = application.injector.instanceOf[MessagesControllerComponents]
+  val formProvider                                                       = new RemoveTaxResidentCountryFormProvider()
+  val form                                                               = formProvider()
+
+  implicit private val request: FakeRequest[AnyContent] = FakeRequest()
+  implicit private val messages: Messages               = messagesControllerComponents.messagesApi.preferred(Seq(Lang("en")))
+
+  "RemoveTaxResidentCountryView" - {
+    val sponsorName = "testName"
+
+    "must display title and Heading" - {
+      "definite article countries" in {
+        val country                             = "United Kingdom"
+        val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, 0, sponsorName, country, NationsWithDefiniteArticlesMessage)
+        lazy val doc                            = Jsoup.parse(renderedHtml.body)
+
+        doc.title() must include(s"Are you sure you want to remove the United Kingdom as a tax resident country for the sponsor?")
+        doc.select("h1").text() must include(s"Are you sure you want to remove the United Kingdom as a tax resident country for testName?")
+
+        doc.select(".govuk-radios__label").text().trim().contains("Yes")
+        doc.select(".govuk-radios__label").text().trim().contains("No")
+        doc.select(".govuk-radios__input").text().trim().contains("true")
+        doc.select(".govuk-radios__input").text().trim().contains("false")
+
+        doc.select("#submit").text() must include("Save and continue")
+      }
+      "other countries" in {
+        val country                             = "Zamunda"
+        val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, 0, sponsorName, country, OtherCountryMessage)
+        lazy val doc                            = Jsoup.parse(renderedHtml.body)
+
+        doc.title() must include(s"Are you sure you want to remove ‘Other country’ as a tax resident country for the sponsor?")
+        doc.select("h1").text() must include(s"Are you sure you want to remove ‘Other country’ as a tax resident country for testName?")
+
+      }
+      "all other countries" in {
+        val country                             = "Somalia"
+        val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, 0, sponsorName, country, AllOtherCountryMessage)
+        lazy val doc                            = Jsoup.parse(renderedHtml.body)
+
+        doc.title() must include(s"Are you sure you want to remove Somalia as a tax resident country for the sponsor?")
+        doc.select("h1").text() must include(s"Are you sure you want to remove Somalia as a tax resident country for testName?")
+      }
+    }
+  }
+}

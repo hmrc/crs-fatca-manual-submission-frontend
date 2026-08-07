@@ -22,4 +22,4 @@ import play.api.libs.json.JsPath
 
 final case class IsSponsorBasedInUKPage()(implicit reportId: ReportId) extends QuestionPage[Boolean]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "isSponsorBasedInUK"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "sponsor" \ "isSponsorBasedInUK"

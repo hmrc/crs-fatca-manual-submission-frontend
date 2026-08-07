@@ -439,6 +439,7 @@ sponsorResidentForTax.title = Where is the sponsor resident for tax?
 sponsorResidentForTax.heading = Where is {0} resident for tax?
 sponsorResidentForTax.paragraph = If they are resident for tax in more than one country, then you can add other countries on the next page.
 sponsorResidentForTax.country.error.required = 	Select where the sponsor is resident for tax
+
 sponsorResidentForTax.title = Where is the sponsor resident for tax?
 sponsorResidentForTax.heading = Where is {0} resident for tax?
 sponsorResidentForTax.paragraph = If they are resident for tax in more than one country, then you can add other countries on the next page.
@@ -459,3 +460,23 @@ whatWasTheAccountBalance.error.invalid.FATCA = Amount must only include numbers 
 whatWasTheAccountBalance.error.minus.FATCA = Amount can only include a minus sign as the first character
 whatWasTheAccountBalance.error.decimalPlaces = Amount cannot have more than 2 decimal places
 currency.select = Select currency
+
+taxResidentCountries.title = You have {0} where the sponsor is resident for tax
+taxResidentCountries.heading = You have {0} where {1} is resident for tax
+taxResidentCountries.sub.heading = Do you need to add another country?
+taxResidentCountries.checkYourAnswersLabel = taxResidentCountries
+taxResidentCountries.error.required = Select yes if you need to add another country
+taxResidentCountries.change.hidden = TaxResidentCountries
+taxResidentCountries.country.removed = {0} removed.
+
+removeTaxResidentCountry.plural.countries.title = Are you sure you want to remove the {0} as a tax resident country for the sponsor?
+removeTaxResidentCountry.definite.articles.countries.title = Are you sure you want to remove the {0} as a tax resident country for the sponsor?
+removeTaxResidentCountry.other.countries.title = Are you sure you want to remove ‘Other country’ as a tax resident country for the sponsor?
+removeTaxResidentCountry.all.countries.title = Are you sure you want to remove {0} as a tax resident country for the sponsor?
+removeTaxResidentCountry.definite.articles.countries.heading = Are you sure you want to remove the {0} as a tax resident country for {1}?
+removeTaxResidentCountry.other.countries.heading = Are you sure you want to remove ‘Other country’ as a tax resident country for {0}?
+removeTaxResidentCountry.all.countries.heading = Are you sure you want to remove {0} as a tax resident country for {1}?
+removeTaxResidentCountry.checkYourAnswersLabel = removeTaxResidentCountry
+removeTaxResidentCountry.error.required = Select yes if you are sure you want to remove this country as a tax resident country for the sponsor
+removeTaxResidentCountry.change.hidden = RemoveTaxResidentCountry
+

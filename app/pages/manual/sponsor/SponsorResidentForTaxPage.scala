@@ -16,36 +16,22 @@
 
 package pages.manual.sponsor
 
+import models.response.Country
 import models.{ReportId, UserAnswers}
 import pages.QuestionPage
 import play.api.libs.json.JsPath
 
 import scala.util.{Success, Try}
 
-final case class HaveSponsorPage()(implicit reportId: ReportId) extends QuestionPage[Boolean] {
+final case class SponsorResidentForTaxPage(index: Int)(implicit reportId: ReportId) extends QuestionPage[Country]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "sponsor" \ "haveSponsor"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "sponsor" \ "tax-resident-countries" \ index
 
   override def cleanupWithReportId(
-    value: Option[Boolean],
+    value: Option[Country],
     userData: UserAnswers
   )(implicit reportId: ReportId): Try[UserAnswers] =
     value match {
-      case Some(false) => cleanUpPages.foldLeft(Try(userData))(removePage())
-
-      case _ => Success(userData)
+      case Some(_) => userData.remove(TaxResidentCountriesPage())
+      case _       => Success(userData)
     }
-
-  private val cleanUpPages: Seq[QuestionPage[_]] = List(
-    SponsorNamePage(),
-    WhatIsAddressForSponsorPage(),
-    IsThisAddressForSponsorPage(),
-    WhatIsGIINForSponsorPage(),
-    IsSponsorBasedInUKPage(),
-    UKPostcodePage(),
-    AddressLookupPage(),
-    AddressNonUkPage(),
-    TaxResidentCountriesListPage(),
-    TaxResidentCountriesPage()
-  )
-}

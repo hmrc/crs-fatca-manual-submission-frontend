@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
-package pages.manual.sponsor
+package viewmodels.govuk
 
-import models.ReportId
-import pages.QuestionPage
-import play.api.libs.json.JsPath
+import play.twirl.api.Html
 
-final case class WhatIsGIINForSponsorPage()(implicit reportId: ReportId) extends QuestionPage[String]:
+object ThreeQuartersMainContent {
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "sponsor" \ "whatIsGIINForSponsor"
+  def apply(content: Html): Html =
+    Html(
+      s"""
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-three-quarters">
+          ${content.body}
+        </div>
+      </div>
+      """
+    )
+}
