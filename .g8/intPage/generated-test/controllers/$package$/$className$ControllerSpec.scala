@@ -1,4 +1,4 @@
-package controllers
+package controllers.$package$
 
 import base.SpecBase
 import forms.$className$FormProvider
@@ -27,7 +27,7 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar {
 
   val validAnswer = $minimum$
 
-  lazy val $className;format="decap"$Route = routes.$className$Controller.onPageLoad(NormalMode).url
+  lazy val $className;format="decap"$Route = controllers.$package$.routes.$className$Controller.onPageLoad(NormalMode).url
 
   "$className$ Controller" - {
     val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS,2025,None,"TestfiID"))

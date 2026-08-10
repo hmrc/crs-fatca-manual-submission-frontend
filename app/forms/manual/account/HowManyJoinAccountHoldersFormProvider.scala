@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-package pages.manual.account
+package forms.manual.account
 
-import models.ReportId
-import models.viewModels.AccountId
-import pages.QuestionPage
-import play.api.libs.json.JsPath
+import forms.mappings.Mappings
+import play.api.data.Form
 
-final case class IsJointAccountPage(accountId: AccountId)(implicit reportId: ReportId) extends QuestionPage[Boolean]:
+import javax.inject.Inject
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "accounts" \ accountId.value \ "isJointAccount"
+class HowManyJoinAccountHoldersFormProvider @Inject() extends Mappings {
+
+  def apply(): Form[Int] =
+    Form(
+      "value" -> int("howManyJoinAccountHolders.error.required", "howManyJoinAccountHolders.error.wholeNumber", "howManyJoinAccountHolders.error.nonNumeric")
+        .verifying(maximumValue(200, "howManyJoinAccountHolders.error.max"))
+        .verifying(minimumValue(1, "howManyJoinAccountHolders.error.min"))
+    )
+}

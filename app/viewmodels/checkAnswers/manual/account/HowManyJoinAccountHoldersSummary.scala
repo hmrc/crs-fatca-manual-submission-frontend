@@ -16,29 +16,25 @@
 
 package viewmodels.checkAnswers.manual.account
 
-import controllers.manual.account.routes
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.account.{CurrentAccountIdPage, IsJointAccountPage}
+import pages.manual.account.{CurrentAccountIdPage, HowManyJoinAccountHoldersPage}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist.*
 import viewmodels.implicits.*
 
-object IsJointAccountSummary {
+object HowManyJoinAccountHoldersSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
     for {
-      currentId      <- answers.get(CurrentAccountIdPage())
-      isJointAccount <- answers.get(IsJointAccountPage(currentId))
-    } yield
-      val value = if (isJointAccount) "site.yes" else "site.no"
-
-      SummaryListRowViewModel(
-        key = "isJointAccount.checkYourAnswersLabel",
-        value = ValueViewModel(value),
-        actions = Seq(
-          ActionItemViewModel("site.change", routes.IsJointAccountController.onPageLoad(CheckMode).url)
-            .withVisuallyHiddenText(messages("isJointAccount.change.hidden"))
-        )
+      accountId <- answers.get(CurrentAccountIdPage())
+      answer    <- answers.get(HowManyJoinAccountHoldersPage(accountId))
+    } yield SummaryListRowViewModel(
+      key = "howManyJoinAccountHolders.checkYourAnswersLabel",
+      value = ValueViewModel(answer.toString),
+      actions = Seq(
+        ActionItemViewModel("site.change", controllers.manual.account.routes.HowManyJoinAccountHoldersController.onPageLoad(CheckMode).url)
+          .withVisuallyHiddenText(messages("howManyJoinAccountHolders.change.hidden"))
       )
+    )
 }

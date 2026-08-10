@@ -3,7 +3,7 @@ package controllers.manual.account
 import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
-import forms.manual.account.IsJointAccountFormProvider
+import forms.manual.account.HowManyJoinAccountHoldersFormProvider
 import models.SubmissionsConstants.CRS
 import models.viewModels.AccountId
 import models.{NormalMode, ReportId}
@@ -12,40 +12,43 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.account.{CurrentAccountIdPage, IsJointAccountPage}
+import pages.manual.account.{CurrentAccountIdPage, HowManyJoinAccountHoldersPage}
 import play.api.data.Form
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import views.html.manual.account.IsJointAccountView
+import views.html.HowManyJoinAccountHoldersView
+import views.html.manual.account.HowManyJoinAccountHoldersView
 
 import scala.concurrent.Future
 
-class IsJointAccountControllerSpec extends SpecBase with MockitoSugar {
+class HowManyJoinAccountHoldersControllerSpec extends SpecBase with MockitoSugar {
+
+  val formProvider = new HowManyJoinAccountHoldersFormProvider()
+  val form: Form[Int] = formProvider()
 
   def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new IsJointAccountFormProvider()
-  val form: Form[Boolean] = formProvider()
-  val accountId : AccountId = AccountId("id")
-  lazy val isJointAccountRoute: String = controllers.manual.account.routes.IsJointAccountController.onPageLoad(NormalMode).url
+  val validAnswer = 1
 
-  "IsJointAccount Controller" - {
-    implicit val reportId: ReportId = ReportId(CRS,2025,None,"TestfiId")
-    val ua = emptyUserAnswers.withPage(ReportIdPage, reportId)
-      .withPage(CurrentAccountIdPage(), accountId)
+  lazy val howManyJoinAccountHoldersRoute: String = controllers.manual.account.routes.HowManyJoinAccountHoldersController.onPageLoad(NormalMode).url
+
+  "HowManyJoinAccountHolders Controller" - {
+    implicit val reportId : ReportId = ReportId(CRS,2025,None,"TestfiID")
+    val ua = emptyUserAnswers.withPage(ReportIdPage,reportId )
+      .withPage(CurrentAccountIdPage(), AccountId("id"))
 
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
 
       running(application) {
-        val request = FakeRequest(GET, isJointAccountRoute)
+        val request = FakeRequest(GET, howManyJoinAccountHoldersRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[IsJointAccountView]
+        val view = application.injector.instanceOf[HowManyJoinAccountHoldersView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
@@ -53,20 +56,21 @@ class IsJointAccountControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
+      implicit val reportId = ReportId(CRS,2025,None,"TestfiID")
 
-      val userAnswers = ua.set(IsJointAccountPage(accountId), true).success.value
+      val userAnswers = ua.set(HowManyJoinAccountHoldersPage(), validAnswer).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, isJointAccountRoute)
+        val request = FakeRequest(GET, howManyJoinAccountHoldersRoute)
 
-        val view = application.injector.instanceOf[IsJointAccountView]
+        val view = application.injector.instanceOf[HowManyJoinAccountHoldersView]
 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode)(request, messages(application)).toString
       }
     }
 
@@ -86,8 +90,8 @@ class IsJointAccountControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, isJointAccountRoute)
-            .withFormUrlEncodedBody(("value", "true"))
+          FakeRequest(POST, howManyJoinAccountHoldersRoute)
+            .withFormUrlEncodedBody(("value", validAnswer.toString))
 
         val result = route(application, request).value
 
@@ -102,12 +106,12 @@ class IsJointAccountControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, isJointAccountRoute)
-            .withFormUrlEncodedBody(("value", ""))
+          FakeRequest(POST, howManyJoinAccountHoldersRoute)
+            .withFormUrlEncodedBody(("value", "invalid value"))
 
-        val boundForm = form.bind(Map("value" -> ""))
+        val boundForm = form.bind(Map("value" -> "invalid value"))
 
-        val view = application.injector.instanceOf[IsJointAccountView]
+        val view = application.injector.instanceOf[HowManyJoinAccountHoldersView]
 
         val result = route(application, request).value
 
@@ -121,7 +125,7 @@ class IsJointAccountControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(maybeUserAnswers = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, isJointAccountRoute)
+        val request = FakeRequest(GET, howManyJoinAccountHoldersRoute)
 
         val result = route(application, request).value
 
@@ -136,12 +140,13 @@ class IsJointAccountControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, isJointAccountRoute)
-            .withFormUrlEncodedBody(("value", "true"))
+          FakeRequest(POST, howManyJoinAccountHoldersRoute)
+            .withFormUrlEncodedBody(("value", validAnswer.toString))
 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
+
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }

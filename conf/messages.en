@@ -489,6 +489,18 @@ isDormantAccount.change.hidden = IsDormantAccount
 
 isJointAccount.title = isJointAccount
 isJointAccount.heading = isJointAccount
+isJointAccount.title = Is this a joint account?
+isJointAccount.heading = Is this a joint account?
 isJointAccount.checkYourAnswersLabel = isJointAccount
-isJointAccount.error.required = Select yes if isJointAccount
+isJointAccount.error.required = Select yes if this is a joint account
 isJointAccount.change.hidden = IsJointAccount
+
+howManyJoinAccountHolders.title = How many joint account holders are there?
+howManyJoinAccountHolders.heading = How many joint account holders are there?
+howManyJoinAccountHolders.checkYourAnswersLabel = HowManyJoinAccountHolders
+howManyJoinAccountHolders.error.nonNumeric = Number of joint account holders must only include numbers 0 to 9
+howManyJoinAccountHolders.error.required = Enter the number of joint account holders
+howManyJoinAccountHolders.error.wholeNumber = Number of joint account holders must only include numbers 0 to 9
+howManyJoinAccountHolders.error.max = Number of joint account holders must be 200 or less
+howManyJoinAccountHolders.error.min = Number of joint account holders must be 1 or more
+howManyJoinAccountHolders.change.hidden = HowManyJoinAccountHolders
