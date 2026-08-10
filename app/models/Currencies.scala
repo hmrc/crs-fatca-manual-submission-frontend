@@ -668,7 +668,7 @@ object Currencies {
     ),
     Currency(
       code = "TOP",
-      displayName = "Tongan Pa'anga (TOP)"
+      displayName = "Tongan Pa’anga (TOP)"
     ),
     Currency(
       code = "TRY",
