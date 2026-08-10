@@ -38,11 +38,13 @@
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
+        @heading(messages("whatWasTheAccountCurrency.heading"))
+
         @currencySelect(
             field = form("currency"),
             label = Label(content = Text(messages("whatWasTheAccountCurrency.heading")),
-                                classes = "govuk-label--l",
-                                isPageHeading = true),
+                                classes = "govuk-visually-hidden",
+                                isPageHeading = false),
             regime = regimeType
         )
 

@@ -48,13 +48,12 @@
   defaultOption +: items
 }
 <div class="govuk-!-width-two-thirds">
-
-@govukSelect(Select(
-  id = selectId,
-  name = selectName,
-  items = currencyItems,
-  label = label,
-  errorMessage = field.error.map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*)))),
-  classes = "govuk-!-width-two-thirds"
-))
+    @govukSelect(Select(
+      id = selectId,
+      name = selectName,
+      items = currencyItems,
+      label = label,
+      errorMessage = field.error.map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*)))),
+      classes = "govuk-!-width-two-thirds"
+    ))
 </div>
