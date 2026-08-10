@@ -486,3 +486,9 @@ isDormantAccount.heading = Is the account dormant?
 isDormantAccount.checkYourAnswersLabel = isDormantAccount
 isDormantAccount.error.required = Select yes if the account is dormant
 isDormantAccount.change.hidden = IsDormantAccount
+
+isJointAccount.title = isJointAccount
+isJointAccount.heading = isJointAccount
+isJointAccount.checkYourAnswersLabel = isJointAccount
+isJointAccount.error.required = Select yes if isJointAccount
+isJointAccount.change.hidden = IsJointAccount
