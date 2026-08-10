@@ -53,6 +53,9 @@ class ManualSubmissionNavigator @Inject() () {
     case (HaveNumberPage(accountId), mode, ua)        => haveNumberNavigation(accountId, mode, ua)
     case (NumberTypePage(_), mode, ua)                => routes.UnderConstructionController.onPageLoad()
     case (IdentifierPage(_), mode, ua)                => controllers.manual.account.routes.AccountClosedController.onPageLoad(mode)
+    case (WasAccountOpenPage(_), mode, ua)            => controllers.manual.account.routes.IsJointAccountController.onPageLoad(mode)
+    case (IsJointAccountPage(accountId), mode, ua)    => jointAccountRouteLogic(accountId, ua)
+    case (HowManyJoinAccountHoldersPage(_), mode, ua) => routes.UnderConstructionController.onPageLoad()
     case (AccountClosedPage(accountId), mode, ua)     => accountClosedNavigation(accountId, mode, ua)
     case (WhatWasTheAccountBalancePage(_), mode, ua)  => accountBalanceRouteLogic()
     case (IsUndocumentedAccountPage(_), mode, ua)     => controllers.manual.account.routes.IsDormantAccountController.onPageLoad(NormalMode)
@@ -69,6 +72,17 @@ class ManualSubmissionNavigator @Inject() () {
     case (WhatTypeOfFilerPage(), _, _)          => controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad()
     case (WhatTypeOfFilerIsSponsorPage(), _, _) => controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad()
   }
+
+  private def jointAccountRouteLogic(accountId: AccountId, useranswers: UserAnswers)(implicit reportId: ReportId) =
+    useranswers
+      .get(IsJointAccountPage(accountId))
+      .map {
+        s =>
+          if (s) controllers.manual.account.routes.HowManyJoinAccountHoldersController.onPageLoad(NormalMode)
+          else
+            routes.UnderConstructionController.onPageLoad()
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
   private def sponsorNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
     case (HaveSponsorPage(), mode, ua)                      => haveSponsorNavigation(mode, ua)

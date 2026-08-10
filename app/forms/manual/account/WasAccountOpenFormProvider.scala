@@ -16,30 +16,16 @@
 
 package forms.manual.account
 
-import forms.behaviours.BooleanFieldBehaviours
-import play.api.data.FormError
+import javax.inject.Inject
 
-class IsJointAccountFormProviderSpec extends BooleanFieldBehaviours {
+import forms.mappings.Mappings
+import play.api.data.Form
+import models.manual.account.WasAccountOpen
 
-  val requiredKey = "isJointAccount.error.required"
-  val invalidKey  = "error.boolean"
+class WasAccountOpenFormProvider @Inject() extends Mappings {
 
-  val form = new IsJointAccountFormProvider()()
-
-  ".value" - {
-
-    val fieldName = "value"
-
-    behave like booleanField(
-      form,
-      fieldName,
-      invalidError = FormError(fieldName, invalidKey)
+  def apply(): Form[WasAccountOpen] =
+    Form(
+      "value" -> enumerable[WasAccountOpen]("wasAccountOpen.error.required")
     )
-
-    behave like mandatoryField(
-      form,
-      fieldName,
-      requiredError = FormError(fieldName, requiredKey)
-    )
-  }
 }

@@ -21,6 +21,7 @@ import controllers.manual.reportdetails.routes.{ReportDetailsCheckAnswersControl
 import models.*
 import models.CrsOrFatca.Fatca
 import models.SubmissionsConstants.{CRS, FATCA}
+import models.manual.account.WasAccountOpen
 import models.response.{Address, AddressLookup, Country}
 import models.viewModels.AccountId
 import pages.*
@@ -442,6 +443,25 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           }
         }
       }
+      "WasAccountOpenPage" - {
+        "must go to IsJointAccountPage after a valid submission" in {
+          val ua = emptyUserAnswers.withPage(WasAccountOpenPage(accountId), WasAccountOpen.Yes)
+          navigator.nextPage(WasAccountOpenPage(accountId), NormalMode, ua) mustBe controllers.manual.account.routes.IsJointAccountController
+            .onPageLoad(NormalMode)
+        }
+      }
+      "IsJointAccountPage" - {
+        "must go to HowManyJointAccountHolderPage if answered yes" in {
+          val ua = emptyUserAnswers.withPage(IsJointAccountPage(accountId), true)
+          navigator.nextPage(IsJointAccountPage(accountId), NormalMode, ua) mustBe controllers.manual.account.routes.HowManyJoinAccountHoldersController
+            .onPageLoad(NormalMode)
+        }
+        "must go to Under construction page if answered no" in {
+          val ua = emptyUserAnswers.withPage(IsJointAccountPage(accountId), false)
+          navigator.nextPage(IsJointAccountPage(accountId), NormalMode, ua) mustBe controllers.routes.UnderConstructionController.onPageLoad()
+        }
+      }
+
     }
   }
 }

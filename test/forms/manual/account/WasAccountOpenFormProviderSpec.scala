@@ -16,24 +16,24 @@
 
 package forms.manual.account
 
-import forms.behaviours.BooleanFieldBehaviours
+import forms.behaviours.OptionFieldBehaviours
+import models.manual.account.WasAccountOpen
 import play.api.data.FormError
 
-class IsJointAccountFormProviderSpec extends BooleanFieldBehaviours {
+class WasAccountOpenFormProviderSpec extends OptionFieldBehaviours {
 
-  val requiredKey = "isJointAccount.error.required"
-  val invalidKey  = "error.boolean"
-
-  val form = new IsJointAccountFormProvider()()
+  val form = new WasAccountOpenFormProvider()()
 
   ".value" - {
 
-    val fieldName = "value"
+    val fieldName   = "value"
+    val requiredKey = "wasAccountOpen.error.required"
 
-    behave like booleanField(
+    behave like optionsField[WasAccountOpen](
       form,
       fieldName,
-      invalidError = FormError(fieldName, invalidKey)
+      validValues = WasAccountOpen.allValues,
+      invalidError = FormError(fieldName, "error.invalid")
     )
 
     behave like mandatoryField(

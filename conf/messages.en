@@ -504,3 +504,11 @@ howManyJoinAccountHolders.error.wholeNumber = Number of joint account holders mu
 howManyJoinAccountHolders.error.max = Number of joint account holders must be 200 or less
 howManyJoinAccountHolders.error.min = Number of joint account holders must be 1 or more
 howManyJoinAccountHolders.change.hidden = HowManyJoinAccountHolders
+
+wasAccountOpen.title = Was the account opened in {0}?
+wasAccountOpen.heading = Was the account opened in {0}?
+wasAccountOpen.yes = Yes
+wasAccountOpen.no = No
+wasAccountOpen.checkYourAnswersLabel = Was the account opened in {0}?
+wasAccountOpen.error.required = Select yes if the account was opened in {0}
+wasAccountOpen.change.hidden = WasAccountOpen
