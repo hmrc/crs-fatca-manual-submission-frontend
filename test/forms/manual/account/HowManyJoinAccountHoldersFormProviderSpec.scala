@@ -1,7 +1,6 @@
 package forms.manual.account
 
 import forms.behaviours.IntFieldBehaviours
-import forms.manual.account.HowManyJoinAccountHoldersFormProvider
 import play.api.data.FormError
 
 class HowManyJoinAccountHoldersFormProviderSpec extends IntFieldBehaviours {
@@ -30,12 +29,18 @@ class HowManyJoinAccountHoldersFormProviderSpec extends IntFieldBehaviours {
       wholeNumberError = FormError(fieldName, "howManyJoinAccountHolders.error.wholeNumber")
     )
 
-    behave like intFieldWithRange(
+    behave like intFieldWithMinimum(
       form,
       fieldName,
       minimum = minimum,
+      expectedError = FormError(fieldName, "howManyJoinAccountHolders.error.min", Seq(minimum))
+    )
+
+    behave like intFieldWithMaximum(
+      form,
+      fieldName,
       maximum = maximum,
-      expectedError = FormError(fieldName, "howManyJoinAccountHolders.error.outOfRange", Seq(minimum, maximum))
+      expectedError = FormError(fieldName, "howManyJoinAccountHolders.error.min", Seq(maximum))
     )
 
     behave like mandatoryField(
