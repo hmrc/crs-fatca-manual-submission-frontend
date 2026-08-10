@@ -1,20 +1,21 @@
 package controllers.$package$
 
 import base.SpecBase
-import forms.$className$FormProvider
+import forms.$package$.$className$FormProvider
 import models.SubmissionsConstants.CRS
 import models.{NormalMode, ReportId}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
-import pages.{ReportIdPage, $className$Page}
+import pages.ReportIdPage
+import pages.$package$.$className$Page
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import connectors.DatabaseConnector
-import views.html.$className$View
+import views.html.$package$.$className$View
 
 import scala.concurrent.Future
 

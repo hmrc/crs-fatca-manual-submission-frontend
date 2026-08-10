@@ -18,26 +18,26 @@ import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import views.html.HowManyJoinAccountHoldersView
 import views.html.manual.account.HowManyJoinAccountHoldersView
 
 import scala.concurrent.Future
 
 class HowManyJoinAccountHoldersControllerSpec extends SpecBase with MockitoSugar {
 
-  val formProvider = new HowManyJoinAccountHoldersFormProvider()
+  val formProvider    = new HowManyJoinAccountHoldersFormProvider()
   val form: Form[Int] = formProvider()
 
   def onwardRoute = Call("GET", "/foo")
 
   val validAnswer = 1
-
+  val currentAccountId =  AccountId("id")
   lazy val howManyJoinAccountHoldersRoute: String = controllers.manual.account.routes.HowManyJoinAccountHoldersController.onPageLoad(NormalMode).url
 
   "HowManyJoinAccountHolders Controller" - {
-    implicit val reportId : ReportId = ReportId(CRS,2025,None,"TestfiID")
-    val ua = emptyUserAnswers.withPage(ReportIdPage,reportId )
-      .withPage(CurrentAccountIdPage(), AccountId("id"))
+    implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
+    val ua = emptyUserAnswers
+      .withPage(ReportIdPage, reportId)
+      .withPage(CurrentAccountIdPage(),currentAccountId)
 
     "must return OK and the correct view for a GET" in {
 
@@ -56,9 +56,8 @@ class HowManyJoinAccountHoldersControllerSpec extends SpecBase with MockitoSugar
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-      implicit val reportId = ReportId(CRS,2025,None,"TestfiID")
 
-      val userAnswers = ua.set(HowManyJoinAccountHoldersPage(), validAnswer).success.value
+      val userAnswers = ua.set(HowManyJoinAccountHoldersPage(currentAccountId), validAnswer).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 

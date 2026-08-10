@@ -29,15 +29,17 @@ import views.html.manual.account.HowManyJoinAccountHoldersView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class HowManyJoinAccountHoldersController @Inject()(
-                                        override val messagesApi: MessagesApi,
-                                        repository: DatabaseConnector,
-                                        navigator: ManualSubmissionNavigator,
-                                        action: Actions,
-                                        formProvider: HowManyJoinAccountHoldersFormProvider,
-                                        val controllerComponents: MessagesControllerComponents,
-                                        view: HowManyJoinAccountHoldersView
-                                      )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+class HowManyJoinAccountHoldersController @Inject() (
+  override val messagesApi: MessagesApi,
+  repository: DatabaseConnector,
+  navigator: ManualSubmissionNavigator,
+  action: Actions,
+  formProvider: HowManyJoinAccountHoldersFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: HowManyJoinAccountHoldersView
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
+    with I18nSupport {
 
   def onPageLoad(mode: Mode): Action[AnyContent] = action.withReportIdRequiredAndAccountIdRequired() {
     implicit request =>
@@ -46,13 +48,12 @@ class HowManyJoinAccountHoldersController @Inject()(
       implicit val reportId: ReportId = request.reportId
 
       val preparedForm = request.userAnswers.get(HowManyJoinAccountHoldersPage(request.accountId)) match {
-        case None => form
+        case None        => form
         case Some(value) => form.fill(value)
       }
 
       Ok(view(preparedForm, mode))
   }
-
 
   def onSubmit(mode: Mode): Action[AnyContent] = action.withReportIdRequiredAndAccountIdRequired().async {
     implicit request =>
@@ -60,15 +61,15 @@ class HowManyJoinAccountHoldersController @Inject()(
 
       implicit val reportId: ReportId = request.reportId
 
-      form.bindFromRequest().fold(
-        formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors, mode))),
-
-        value =>
-          for {
-            updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(HowManyJoinAccountHoldersPage(request.accountId), value))
-            _              <- repository.set(updatedAnswers)
-          } yield Redirect(navigator.nextPage(HowManyJoinAccountHoldersPage(request.accountId), mode, updatedAnswers))
-      )
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(HowManyJoinAccountHoldersPage(request.accountId), value))
+              _              <- repository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(HowManyJoinAccountHoldersPage(request.accountId), mode, updatedAnswers))
+        )
   }
 }

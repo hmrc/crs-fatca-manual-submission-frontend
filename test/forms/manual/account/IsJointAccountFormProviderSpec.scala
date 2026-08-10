@@ -6,7 +6,7 @@ import play.api.data.FormError
 class IsJointAccountFormProviderSpec extends BooleanFieldBehaviours {
 
   val requiredKey = "isJointAccount.error.required"
-  val invalidKey = "error.boolean"
+  val invalidKey  = "error.boolean"
 
   val form = new IsJointAccountFormProvider()()
 

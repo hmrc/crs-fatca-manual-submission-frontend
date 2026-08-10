@@ -26,14 +26,15 @@ class IsJointAccountControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new IsJointAccountFormProvider()
-  val form: Form[Boolean] = formProvider()
-  val accountId : AccountId = AccountId("id")
+  val formProvider                     = new IsJointAccountFormProvider()
+  val form: Form[Boolean]              = formProvider()
+  val accountId: AccountId             = AccountId("id")
   lazy val isJointAccountRoute: String = controllers.manual.account.routes.IsJointAccountController.onPageLoad(NormalMode).url
 
   "IsJointAccount Controller" - {
-    implicit val reportId: ReportId = ReportId(CRS,2025,None,"TestfiId")
-    val ua = emptyUserAnswers.withPage(ReportIdPage, reportId)
+    implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiId")
+    val ua = emptyUserAnswers
+      .withPage(ReportIdPage, reportId)
       .withPage(CurrentAccountIdPage(), accountId)
 
     "must return OK and the correct view for a GET" in {

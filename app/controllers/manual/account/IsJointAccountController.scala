@@ -31,15 +31,17 @@ import views.html.manual.account.IsJointAccountView
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class IsJointAccountController @Inject()(
-                                         override val messagesApi: MessagesApi,
-                                         repository: DatabaseConnector,
-                                         navigator: ManualSubmissionNavigator,
-                                         action: Actions,
-                                         formProvider: IsJointAccountFormProvider,
-                                         val controllerComponents: MessagesControllerComponents,
-                                         view: IsJointAccountView
-                                 )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+class IsJointAccountController @Inject() (
+  override val messagesApi: MessagesApi,
+  repository: DatabaseConnector,
+  navigator: ManualSubmissionNavigator,
+  action: Actions,
+  formProvider: IsJointAccountFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: IsJointAccountView
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
+    with I18nSupport {
 
   val form: Form[Boolean] = formProvider()
 
@@ -49,7 +51,7 @@ class IsJointAccountController @Inject()(
       implicit val reportId: ReportId = request.reportId
 
       val preparedForm = request.userAnswers.get(IsJointAccountPage(request.accountId)) match {
-        case None => form
+        case None        => form
         case Some(value) => form.fill(value)
       }
 
@@ -61,15 +63,15 @@ class IsJointAccountController @Inject()(
 
       implicit val reportId: ReportId = request.reportId
 
-      form.bindFromRequest().fold(
-        formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors, mode))),
-
-        value =>
-          for {
-            updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(IsJointAccountPage(request.accountId), value))
-            _              <- repository.set(updatedAnswers)
-          } yield Redirect(navigator.nextPage(IsJointAccountPage(request.accountId), mode, updatedAnswers))
-      )
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(IsJointAccountPage(request.accountId), value))
+              _              <- repository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(IsJointAccountPage(request.accountId), mode, updatedAnswers))
+        )
   }
 }

@@ -26,15 +26,15 @@ class HowManyJoinAccountHoldersFormProviderSpec extends IntFieldBehaviours {
     behave like intField(
       form,
       fieldName,
-      nonNumericError  = FormError(fieldName, "howManyJoinAccountHolders.error.nonNumeric"),
+      nonNumericError = FormError(fieldName, "howManyJoinAccountHolders.error.nonNumeric"),
       wholeNumberError = FormError(fieldName, "howManyJoinAccountHolders.error.wholeNumber")
     )
 
     behave like intFieldWithRange(
       form,
       fieldName,
-      minimum       = minimum,
-      maximum       = maximum,
+      minimum = minimum,
+      maximum = maximum,
       expectedError = FormError(fieldName, "howManyJoinAccountHolders.error.outOfRange", Seq(minimum, maximum))
     )
 
