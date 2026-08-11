@@ -62,8 +62,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
     }
     "with reportId" - {
       implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
-
-      val accountId = AccountId("TestAccountId")
+      val accountId                   = AccountId("TestAccountId")
 
       "HaveSponsorPage" - {
         "must go to SponsorName Page when answer is Yes" in {
@@ -292,10 +291,18 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
       }
 
       "WhatWasTheAccountBalancePage" - {
-        "must go to UNDERCONSTRUCTION page when submitted" in {
-          val ua = UserAnswers("id")
+        "must go to UNDERCONSTRUCTION page when regime is FATCA after submission" in {
+          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+          val ua                          = UserAnswers("id")
           navigator.nextPage(WhatWasTheAccountBalancePage(accountId), NormalMode, ua) mustBe
             controllers.routes.UnderConstructionController.onPageLoad()
+        }
+
+        "must go to IsUndocumentedAccount page when regime is CRS after submission" in {
+          implicit val reportId: ReportId = ReportId(CRS, 2024, None, "TestFIID")
+          val ua                          = UserAnswers("id")
+          navigator.nextPage(WhatWasTheAccountBalancePage(accountId), NormalMode, ua) mustBe
+            controllers.manual.account.routes.IsUndocumentedAccountController.onPageLoad(NormalMode)
         }
       }
 
@@ -414,13 +421,13 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         }
       }
       "WhatWasTheAccountCurrencyPage" - {
-        "must go to UNDERCONSTRUCTION page when submitted" in {
-          val ua = UserAnswers("id")
+        "must go to IsUndocumentedAccount page after submission" in {
+          implicit val reportId: ReportId = ReportId(CRS, 2024, None, "TestFIID")
+          val ua                          = UserAnswers("id")
           navigator.nextPage(WhatWasTheAccountCurrencyPage(accountId), NormalMode, ua) mustBe
-            controllers.routes.UnderConstructionController.onPageLoad()
+            controllers.manual.account.routes.IsUndocumentedAccountController.onPageLoad(NormalMode)
         }
       }
-
     }
   }
 }

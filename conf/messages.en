@@ -474,3 +474,15 @@ taxResidentCountries.error.required = Select yes if you need to add another coun
 taxResidentCountries.change.hidden = TaxResidentCountries
 taxResidentCountries.p1 = You must add at least one country.
 taxResidentCountries.btn = Add a country
+
+isUndocumentedAccount.title = Is the account undocumented?
+isUndocumentedAccount.heading = Is the account undocumented?
+isUndocumentedAccount.checkYourAnswersLabel = isUndocumentedAccount
+isUndocumentedAccount.error.required = Select yes if the account is undocumented
+isUndocumentedAccount.change.hidden = IsUndocumentedAccount
+
+isDormantAccount.title = Is the account dormant?
+isDormantAccount.heading = Is the account dormant?
+isDormantAccount.checkYourAnswersLabel = isDormantAccount
+isDormantAccount.error.required = Select yes if the account is dormant
+isDormantAccount.change.hidden = IsDormantAccount

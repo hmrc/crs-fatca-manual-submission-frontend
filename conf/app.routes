@@ -189,3 +189,13 @@ GET        /manual/account/currency                         controllers.manual.a
 POST       /manual/account/currency                         controllers.manual.account.WhatWasTheAccountCurrencyController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/account/change-currency                  controllers.manual.account.WhatWasTheAccountCurrencyController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/account/change-currency                  controllers.manual.account.WhatWasTheAccountCurrencyController.onSubmit(mode: Mode = CheckMode)
+
+GET        /isUndocumentedAccount                        controllers.manual.account.IsUndocumentedAccountController.onPageLoad(mode: Mode = NormalMode)
+POST       /isUndocumentedAccount                        controllers.manual.account.IsUndocumentedAccountController.onSubmit(mode: Mode = NormalMode)
+GET        /changeIsUndocumentedAccount                  controllers.manual.account.IsUndocumentedAccountController.onPageLoad(mode: Mode = CheckMode)
+POST       /changeIsUndocumentedAccount                  controllers.manual.account.IsUndocumentedAccountController.onSubmit(mode: Mode = CheckMode)
+
+GET        /isDormantAccount                        controllers.manual.account.IsDormantAccountController.onPageLoad(mode: Mode = NormalMode)
+POST       /isDormantAccount                        controllers.manual.account.IsDormantAccountController.onSubmit(mode: Mode = NormalMode)
+GET        /changeIsDormantAccount                  controllers.manual.account.IsDormantAccountController.onPageLoad(mode: Mode = CheckMode)
+POST       /changeIsDormantAccount                  controllers.manual.account.IsDormantAccountController.onSubmit(mode: Mode = CheckMode)
