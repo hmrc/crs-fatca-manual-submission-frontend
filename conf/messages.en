@@ -470,5 +470,11 @@ whatWasTheAccountBalance.error.minus.FATCA = Amount can only include a minus sig
 whatWasTheAccountBalance.error.decimalPlaces = Amount cannot have more than 2 decimal places
 currency.select = Select currency
 
+whatWasTheAccountCurrency.title = What was the account currency?
+whatWasTheAccountCurrency.heading = What was the account currency?
+whatWasTheAccountCurrency.checkYourAnswersLabel = What was the account currency?
+whatWasTheAccountCurrency.error.required = Select an option for the currency
+whatWasTheAccountCurrency.change.hidden = WhatWasTheAccountCurrency
+
 checkAnswers.title = Check your answers for the sponsor for the financial institution
 checkAnswers.heading = Check your answers for the sponsor for {0}
