@@ -14,6 +14,8 @@
  * limitations under the License.
  *@
 
+@import viewmodels.checkAnswers.manual.sponsor.CheckAnswersSummary
+
 @this(
         layout: templates.Layout,
         govukButton: GovukButton,
@@ -21,11 +23,15 @@
         govukSummaryList: GovukSummaryList
 )
 
-@(list: SummaryList, fiName: String)(implicit request: Request[_], messages: Messages)
+@(summary: CheckAnswersSummary, fiName: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("checkAnswers.title"))) {
 
     @heading(messages("checkAnswers.heading",fiName))
 
-    @govukSummaryList(list)
+    @govukSummaryList(summary.basic)
+
+    @if(summary.taxResidentCountriesSummary.isDefined) {
+        @govukSummaryList(summary.taxResidentCountriesSummary.get)
+    }
 }

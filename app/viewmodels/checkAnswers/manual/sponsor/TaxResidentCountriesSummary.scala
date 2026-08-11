@@ -18,26 +18,40 @@ package viewmodels.checkAnswers.manual.sponsor
 
 import controllers.manual.sponsor.routes
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.sponsor.DoYouWantToAddTaxResidentCountryPage
+import pages.manual.sponsor.{DoYouWantToAddTaxResidentCountryPage, TaxResidentCountriesListPage}
 import play.api.i18n.Messages
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
-import viewmodels.govuk.summarylist._
-import viewmodels.implicits._
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.*
+import viewmodels.govuk.summarylist.*
+import viewmodels.implicits.*
 
 object TaxResidentCountriesSummary {
 
-  def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
-    answers.get(DoYouWantToAddTaxResidentCountryPage()).map {
-      answer =>
+  def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryList] =
+    answers.get(TaxResidentCountriesListPage()).filter(_.nonEmpty).map {
+      countries =>
 
-        val value = if (answer) "site.yes" else "site.no"
+        val countryList = countries.map(_.description).mkString("<br>")
 
-        SummaryListRowViewModel(
-          key = "taxResidentCountries.checkYourAnswersLabel",
-          value = ValueViewModel(value),
-          actions = Seq(
-            ActionItemViewModel("site.change", routes.TaxResidentCountriesController.onPageLoad(CheckMode).url)
-              .withVisuallyHiddenText(messages("taxResidentCountries.change.hidden"))
+        SummaryListViewModel(
+          rows = Seq(
+            SummaryListRowViewModel(
+              key = "taxResidentCountries.checkYourAnswersLabel",
+              value = ValueViewModel(
+                HtmlContent(countryList)
+              )
+            )
+          ),
+          card = CardViewModel(
+            title = CardTitle(
+              content = "taxResidentCountries.checkYourAnswersSummaryHeading"
+            ),
+            actions = Seq(
+              ActionItemViewModel(
+                href = "#",
+                content = "taxResidentCountries.checkYourAnswersLink"
+              )
+            )
           )
         )
     }

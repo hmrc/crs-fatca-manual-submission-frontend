@@ -28,10 +28,10 @@ final case class WhatIsAddressForSponsorPage()(implicit reportId: ReportId) exte
   override def path: JsPath = JsPath \ reportId.mongoKey \ "sponsor" \ "whatIsAddressForSponsor"
 
   override def cleanupWithReportId(
-                                    value: Option[Address],
-                                    userData: UserAnswers
-                                  )(implicit reportId: ReportId): Try[UserAnswers] =
+    value: Option[Address],
+    userData: UserAnswers
+  )(implicit reportId: ReportId): Try[UserAnswers] =
     value match {
       case Some(_) => userData.remove(UkAddressPage())
-      case _ => Success(userData)
+      case _       => Success(userData)
     }

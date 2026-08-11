@@ -35,8 +35,8 @@ class CheckAnswersController @Inject() (
 
   def onPageLoad: Action[AnyContent] = actions.withReportIdRequired() {
     implicit request =>
-      implicit val reportId = request.reportId
-      val summaryList       = CheckAnswersSummary.apply(request.userAnswers)
-      Ok(view(summaryList, "testFiName"))
+      implicit val reportId   = request.reportId
+      val checkAnswersSummary = CheckAnswersSummary.apply(request.userAnswers)
+      Ok(view(checkAnswersSummary, "testFiName"))
   }
 }

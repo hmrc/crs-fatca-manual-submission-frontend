@@ -26,17 +26,17 @@ final case class IsSponsorBasedInUKPage()(implicit reportId: ReportId) extends Q
   override def path: JsPath = JsPath \ reportId.mongoKey \ "sponsor" \ "isSponsorBasedInUK"
 
   override def cleanupWithReportId(
-                                    value: Option[Boolean],
-                                    userData: UserAnswers
-                                  )(implicit reportId: ReportId): Try[UserAnswers] =
+    value: Option[Boolean],
+    userData: UserAnswers
+  )(implicit reportId: ReportId): Try[UserAnswers] =
     value match {
       case Some(false) => cleanUpPages.foldLeft(Try(userData))(removePage())
-      case _ => userData.remove(AddressNonUkPage())
+      case _           => userData.remove(AddressNonUkPage())
     }
 
   private val cleanUpPages: Seq[QuestionPage[_]] = List(
     UKPostcodePage(),
     WhatIsAddressForSponsorPage(),
     IsThisAddressForSponsorPage(),
-    UkAddressPage(),
+    UkAddressPage()
   )

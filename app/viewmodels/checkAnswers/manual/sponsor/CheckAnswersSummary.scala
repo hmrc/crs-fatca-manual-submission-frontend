@@ -22,17 +22,22 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import viewmodels.checkAnswers.{AddressNonUkSummary, UkAddressSummary}
 import viewmodels.govuk.summarylist.*
 
+case class CheckAnswersSummary(basic: SummaryList, taxResidentCountriesSummary: Option[SummaryList])
+
 object CheckAnswersSummary {
 
-  def apply(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): SummaryList =
-    SummaryListViewModel(
-      rows = Seq(
-        HaveSponsorSummary.row(answers),
-        SponsorNameSummary.row(answers),
-        WhatIsGIINForSponsorSummary.row(answers),
-        WhatIsAddressForSponsorSummary.row(answers),
-        UkAddressSummary.row(answers),
-        AddressNonUkSummary.row(answers)
-      ).flatten
+  def apply(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): CheckAnswersSummary =
+    CheckAnswersSummary(
+      basic = SummaryListViewModel(
+        rows = Seq(
+          HaveSponsorSummary.row(answers),
+          SponsorNameSummary.row(answers),
+          WhatIsGIINForSponsorSummary.row(answers),
+          WhatIsAddressForSponsorSummary.row(answers),
+          UkAddressSummary.row(answers),
+          AddressNonUkSummary.row(answers)
+        ).flatten
+      ),
+      taxResidentCountriesSummary = TaxResidentCountriesSummary.row(answers)
     )
 }

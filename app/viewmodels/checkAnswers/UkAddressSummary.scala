@@ -31,11 +31,22 @@ object UkAddressSummary {
     answers.get(UkAddressPage()).map {
       answer =>
 
-        val value = HtmlFormat.escape(answer.addressLine1).toString + "<br/>" + HtmlFormat.escape(answer.addressLine2.getOrElse("")).toString
+        def formatLine(line: String): String =
+          s"""<div class="govuk-margin-bottom-0">${HtmlFormat.escape(line)}</div>"""
+
+        val addressHtml: String =
+          formatLine(answer.addressLine1) concat
+            answer.addressLine2.fold("")(formatLine) concat
+            formatLine(answer.city) concat
+            answer.county.fold("")(formatLine) concat
+            formatLine(answer.postcode) concat
+            formatLine(answer.country)
 
         SummaryListRowViewModel(
           key = "ukAddress.checkYourAnswersLabel",
-          value = ValueViewModel(HtmlContent(value)),
+          value = ValueViewModel(
+            HtmlContent(addressHtml)
+          ),
           actions = Seq(
             ActionItemViewModel("site.change", controllers.manual.sponsor.routes.IsSponsorBasedInUKController.onPageLoad(CheckMode).url)
               .withVisuallyHiddenText(messages("ukAddress.change.hidden"))

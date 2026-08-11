@@ -38,7 +38,7 @@ object AddressNonUkSummary {
 
         val addressHtml: String =
           formatLine(answer.addressLine1) concat
-            answer.addressLine2.  fold("")(formatLine) concat
+            answer.addressLine2.fold("")(formatLine) concat
             formatLine(answer.addressLine3) concat
             answer.addressLine4.fold("")(formatLine) concat
             answer.postcode.fold("")(formatLine) concat

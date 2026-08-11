@@ -443,9 +443,11 @@ sponsorResidentForTax.country.error.required = 	Select where the sponsor is resi
 taxResidentCountries.title = You have {0} where the sponsor is resident for tax
 taxResidentCountries.heading = You have {0} where {1} is resident for tax
 taxResidentCountries.sub.heading = Do you need to add another country?
-taxResidentCountries.checkYourAnswersLabel = taxResidentCountries
 taxResidentCountries.error.required = Select yes if you need to add another country
 taxResidentCountries.change.hidden = TaxResidentCountries
+taxResidentCountries.checkYourAnswersSummaryHeading = Tax resident countries
+taxResidentCountries.checkYourAnswersLink = Add, change or remove
+taxResidentCountries.checkYourAnswersLabel = Where is the sponsor resident for tax?
 
 sponsorResidentForTax.title = Where is the sponsor resident for tax?
 sponsorResidentForTax.heading = Where is {0} resident for tax?

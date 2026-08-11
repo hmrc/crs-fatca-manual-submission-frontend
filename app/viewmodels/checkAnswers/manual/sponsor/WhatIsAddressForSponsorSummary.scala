@@ -39,8 +39,8 @@ object WhatIsAddressForSponsorSummary {
             answer.addressLine2.fold("")(formatLine) concat
             formatLine(answer.addressLine3) concat
             answer.addressLine4.fold("")(formatLine) concat
-            answer.postcode.fold("")(formatLine) concat
-            formatLine(answer.country)
+            answer.postCode.fold("")(formatLine) concat
+            formatLine(answer.country.description)
 
         SummaryListRowViewModel(
           key = "whatIsAddressForSponsor.checkYourAnswersLabel",
