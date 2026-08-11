@@ -461,3 +461,15 @@ whatWasTheAccountCurrency.heading = What was the account currency?
 whatWasTheAccountCurrency.checkYourAnswersLabel = What was the account currency?
 whatWasTheAccountCurrency.error.required = Select an option for the currency
 whatWasTheAccountCurrency.change.hidden = WhatWasTheAccountCurrency
+
+isUndocumentedAccount.title = Is the account undocumented?
+isUndocumentedAccount.heading = Is the account undocumented?
+isUndocumentedAccount.checkYourAnswersLabel = isUndocumentedAccount
+isUndocumentedAccount.error.required = Select yes if the account is undocumented
+isUndocumentedAccount.change.hidden = IsUndocumentedAccount
+
+isDormantAccount.title = Is the account dormant?
+isDormantAccount.heading = Is the account dormant?
+isDormantAccount.checkYourAnswersLabel = isDormantAccount
+isDormantAccount.error.required = Select yes if the account is dormant
+isDormantAccount.change.hidden = IsDormantAccount

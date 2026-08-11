@@ -20,7 +20,7 @@ import controllers.manual.account
 import controllers.manual.reportdetails.routes.*
 import controllers.routes
 import models.*
-import models.SubmissionsConstants.{CRS, FATCA}
+import models.SubmissionsConstants.{CRS, FATCA, RegimeType}
 import models.viewModels.AccountId
 import pages.*
 import pages.manual.account.*
@@ -54,9 +54,14 @@ class ManualSubmissionNavigator @Inject() () {
     case (NumberTypePage(_), mode, ua)                => routes.UnderConstructionController.onPageLoad()
     case (IdentifierPage(_), mode, ua)                => controllers.manual.account.routes.AccountClosedController.onPageLoad(mode)
     case (AccountClosedPage(accountId), mode, ua)     => accountClosedNavigation(accountId, mode, ua)
-    case (WhatWasTheAccountBalancePage(_), mode, ua)  => routes.UnderConstructionController.onPageLoad()
-    case (WhatWasTheAccountCurrencyPage(_), mode, ua) => routes.UnderConstructionController.onPageLoad()
+    case (WhatWasTheAccountBalancePage(_), mode, ua)  => accountBalanceRouteLogic()
+    case (WhatWasTheAccountCurrencyPage(_), mode, ua) => controllers.manual.account.routes.IsUndocumentedAccountController.onPageLoad(NormalMode)
   }
+
+  private def accountBalanceRouteLogic()(implicit reportId: ReportId) =
+    if (reportId.regime == FATCA) { routes.UnderConstructionController.onPageLoad() }
+    else if (reportId.regime == CRS) { controllers.manual.account.routes.IsUndocumentedAccountController.onPageLoad(NormalMode) }
+    else routes.JourneyRecoveryController.onPageLoad()
 
   private def fillerNavigation: PartialFunction[(Page, Mode, UserAnswers), Call] = {
     case (WhatTypeOfFilerPage(), _, _)          => controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad()
