@@ -23,6 +23,7 @@
     govukErrorSummary: GovukErrorSummary,
     govukRadios: GovukRadios,
     heading: components.Heading,
+    paragraph: components.Paragraph,
     govukButton: GovukButton
 )
 
@@ -62,23 +63,28 @@ mainContentLayout = Some(ThreeQuartersMainContent.apply _)
                     </div>
                 }
             </dl>
-        }
+            @if(form.errors.nonEmpty) {
+                @govukErrorSummary(ErrorSummaryViewModel(form))
+            }
 
-        @if(form.errors.nonEmpty) {
-            @govukErrorSummary(ErrorSummaryViewModel(form))
-        }
-
-        @govukRadios(
-            RadiosViewModel.yesNo(
+            @govukRadios(
+                RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = LegendViewModel(messages("taxResidentCountries.sub.heading")).withCssClass("govuk-fieldset__legend--m")
+                legend = LegendViewModel(messages("taxResidentCountries.sub.heading")).withCssClass("govuk-fieldset__legend--m"))
             )
-        )
 
-        @govukButton(
+            @govukButton(
             ButtonViewModel(messages("site.continue"))
             .withAttribute("id" -> "submit")
-        )
+            )
+        } else {
+            @paragraph(messages("taxResidentCountries.p1"))
+            @govukButton(
+            ButtonViewModel(messages("taxResidentCountries.btn"))
+            .asLink(controllers.manual.sponsor.routes.SponsorResidentForTaxController.onPageLoad(mode).url)
+            )
+        }
+
     }
 }
 

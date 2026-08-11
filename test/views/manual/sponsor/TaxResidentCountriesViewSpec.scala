@@ -53,12 +53,12 @@ class TaxResidentCountriesViewSpec extends SpecBase {
         doc.select("h1").text() must include("You have not added any countries where Test Sponsor is resident for tax")
       }
 
-      "must display sub heading" in {
-        doc.select(".govuk-fieldset__legend--m").text() must include("Do you need to add another country?")
+      "must display paragraph" in {
+        doc.select("p").text() must include("You must add at least one country.")
       }
 
       "must display button" in {
-        doc.select("#submit").text() mustBe "Continue"
+        doc.select("a").text() must include("Add a country")
       }
 
     }
