@@ -55,7 +55,7 @@ class ManualSubmissionNavigator @Inject() () {
     case (IdentifierPage(_), mode, ua)                => controllers.manual.account.routes.AccountClosedController.onPageLoad(mode)
     case (AccountClosedPage(accountId), mode, ua)     => accountClosedNavigation(accountId, mode, ua)
     case (WhatWasTheAccountBalancePage(_), mode, ua)  => accountBalanceRouteLogic()
-    case (IsUndocumentedAccountPage(_), mode, ua)  => controllers.manual.account.routes.IsDormantAccountController.onPageLoad(NormalMode)
+    case (IsUndocumentedAccountPage(_), mode, ua)     => controllers.manual.account.routes.IsDormantAccountController.onPageLoad(NormalMode)
     case (WhatWasTheAccountCurrencyPage(_), mode, ua) => controllers.manual.account.routes.IsUndocumentedAccountController.onPageLoad(NormalMode)
   }
 
