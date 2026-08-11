@@ -20,7 +20,7 @@ import controllers.manual.account
 import controllers.manual.reportdetails.routes.*
 import controllers.routes
 import models.*
-import models.SubmissionsConstants.{CRS, FATCA, RegimeType}
+import models.SubmissionsConstants.{CRS, FATCA}
 import models.viewModels.AccountId
 import pages.*
 import pages.manual.account.*
