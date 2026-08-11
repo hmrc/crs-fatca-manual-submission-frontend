@@ -19,6 +19,7 @@
 @this(
         layout: templates.Layout,
         govukButton: GovukButton,
+        formHelper: FormWithCSRF,
         heading: components.Heading,
         govukSummaryList: GovukSummaryList
 )
@@ -27,11 +28,20 @@
 
 @layout(pageTitle = titleNoForm(messages("checkAnswers.title"))) {
 
-    @heading(messages("checkAnswers.heading",fiName))
+    @formHelper(action = controllers.manual.sponsor.routes.CheckAnswersController.onSubmit()){
+        @heading(messages("checkAnswers.heading",fiName))
 
-    @govukSummaryList(summary.basic)
+        @govukSummaryList(summary.basic)
 
-    @if(summary.taxResidentCountriesSummary.isDefined) {
-        @govukSummaryList(summary.taxResidentCountriesSummary.get)
+        @if(summary.taxResidentCountriesSummary.isDefined) {
+            @govukSummaryList(summary.taxResidentCountriesSummary.get)
+        }
+
+        @govukButton(
+        ButtonViewModel(messages("site.continue"))
+        .withAttribute("id" -> "submit")
+        )
     }
+
+
 }

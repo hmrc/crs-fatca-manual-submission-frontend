@@ -72,10 +72,10 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             controllers.manual.sponsor.routes.SponsorNameController.onPageLoad(NormalMode)
         }
 
-        "must go to UnderConstruction Page when when answer is No" in {
+        "must go to CheckAnswers Page when when answer is No" in {
           val userData = UserAnswers("id").withPage(HaveSponsorPage(), false)
           navigator.nextPage(HaveSponsorPage(), NormalMode, userData) mustBe
-            controllers.routes.UnderConstructionController.onPageLoad()
+            controllers.manual.sponsor.routes.CheckAnswersController.onPageLoad()
         }
 
         "must go to JourneyRecovery Page when Normal Mode when answer is missing" in {
@@ -405,12 +405,12 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             controllers.manual.sponsor.routes.SponsorResidentForTaxController.onPageLoad(NormalMode)
         }
 
-        "must go to UnderConstruction page when user selected as no" in {
+        "must go to CheckAnswers page when user selected as no" in {
           val ua = UserAnswers("id")
             .withPage(DoYouWantToAddTaxResidentCountryPage(), false)
 
           navigator.nextPage(DoYouWantToAddTaxResidentCountryPage(), NormalMode, ua) mustBe
-            controllers.routes.UnderConstructionController.onPageLoad()
+            controllers.manual.sponsor.routes.CheckAnswersController.onPageLoad()
         }
       }
       "WhatWasTheAccountCurrencyPage" - {

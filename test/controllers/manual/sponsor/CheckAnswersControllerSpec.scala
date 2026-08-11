@@ -17,10 +17,10 @@
 package controllers.manual.sponsor
 
 import base.SpecBase
-import controllers.routes
 import models.ReportId
 import models.SubmissionsConstants.CRS
 import pages.ReportIdPage
+import pages.manual.FINamePage
 import pages.manual.sponsor.HaveSponsorPage
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
@@ -32,9 +32,11 @@ class CheckAnswersControllerSpec extends SpecBase {
   "CheckAnswers Controller" - {
 
     implicit val reportId = ReportId(CRS, 2025, None, "testFiID")
+    val fiName            = "testFiName"
     val ua = emptyUserAnswers
       .withPage(ReportIdPage, reportId)
       .withPage(HaveSponsorPage(), false)
+      .withPage(FINamePage(), fiName)
 
     "must return OK and the correct view for a GET" in {
 
@@ -48,7 +50,7 @@ class CheckAnswersControllerSpec extends SpecBase {
         val view = application.injector.instanceOf[CheckAnswersView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(CheckAnswersSummary(ua), "testFiName")(request, messages(application)).toString
+        contentAsString(result) mustEqual view(CheckAnswersSummary(ua)(messages(application), reportId), fiName)(request, messages(application)).toString
       }
     }
   }

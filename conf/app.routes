@@ -191,3 +191,4 @@ GET        /manual/account/change-currency                  controllers.manual.a
 POST       /manual/account/change-currency                  controllers.manual.account.WhatWasTheAccountCurrencyController.onSubmit(mode: Mode = CheckMode)
 
 GET        /manual/sponsor/check-answers                       controllers.manual.sponsor.CheckAnswersController.onPageLoad()
+POST        /manual/sponsor/check-answers                       controllers.manual.sponsor.CheckAnswersController.onSubmit()

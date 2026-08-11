@@ -16,9 +16,8 @@
 
 package viewmodels.checkAnswers.manual.sponsor
 
-import controllers.manual.sponsor.routes
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.sponsor.{DoYouWantToAddTaxResidentCountryPage, TaxResidentCountriesListPage}
+import pages.manual.sponsor.TaxResidentCountriesListPage
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.*
@@ -48,7 +47,7 @@ object TaxResidentCountriesSummary {
             ),
             actions = Seq(
               ActionItemViewModel(
-                href = "#",
+                href = controllers.manual.sponsor.routes.TaxResidentCountriesController.onPageLoad(CheckMode).url,
                 content = "taxResidentCountries.checkYourAnswersLink"
               )
             )

@@ -17,6 +17,8 @@
 package controllers.manual.sponsor
 
 import controllers.actions.*
+import pages.manual.FINamePage
+import pages.manual.sponsor.SponsorNamePage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -24,6 +26,7 @@ import viewmodels.checkAnswers.manual.sponsor.CheckAnswersSummary
 import views.html.manual.sponsor.CheckAnswersView
 
 import javax.inject.Inject
+import scala.concurrent.Future
 
 class CheckAnswersController @Inject() (
   override val messagesApi: MessagesApi,
@@ -35,8 +38,17 @@ class CheckAnswersController @Inject() (
 
   def onPageLoad: Action[AnyContent] = actions.withReportIdRequired() {
     implicit request =>
-      implicit val reportId   = request.reportId
-      val checkAnswersSummary = CheckAnswersSummary.apply(request.userAnswers)
-      Ok(view(checkAnswersSummary, "testFiName"))
+      implicit val reportId = request.reportId
+      request.userAnswers
+        .get(FINamePage())
+        .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())) {
+          fiName =>
+            val checkAnswersSummary = CheckAnswersSummary.apply(request.userAnswers)
+            Ok(view(checkAnswersSummary, fiName))
+        }
+  }
+
+  def onSubmit(): Action[AnyContent] = actions.withReportIdRequired().async {
+    implicit request => Future.successful(Redirect(controllers.manual.routes.SendAReportController.onPageLoad().url))
   }
 }
