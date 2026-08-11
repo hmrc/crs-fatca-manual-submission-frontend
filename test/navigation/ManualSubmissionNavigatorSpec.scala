@@ -430,8 +430,15 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         "IsUndocumentedAccountPage" - {
           "must go to IsDormantAccount page after submission" in {
             val ua = UserAnswers("id")
-            navigator.nextPage(WhatWasTheAccountCurrencyPage(accountId), NormalMode, ua) mustBe
+            navigator.nextPage(IsUndocumentedAccountPage(accountId), NormalMode, ua) mustBe
               controllers.manual.account.routes.IsDormantAccountController.onPageLoad(NormalMode)
+          }
+        }
+        "IsDormantAccountPage" - {
+          "must go to under construction page after submission" in {
+            val ua = UserAnswers("id")
+            navigator.nextPage(IsDormantAccountPage(accountId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
           }
         }
       }

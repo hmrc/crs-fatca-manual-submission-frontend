@@ -57,6 +57,7 @@ class ManualSubmissionNavigator @Inject() () {
     case (WhatWasTheAccountBalancePage(_), mode, ua)  => accountBalanceRouteLogic()
     case (IsUndocumentedAccountPage(_), mode, ua)     => controllers.manual.account.routes.IsDormantAccountController.onPageLoad(NormalMode)
     case (WhatWasTheAccountCurrencyPage(_), mode, ua) => controllers.manual.account.routes.IsUndocumentedAccountController.onPageLoad(NormalMode)
+    case (IsDormantAccountPage(_), mode, ua)          => routes.UnderConstructionController.onPageLoad()
   }
 
   private def accountBalanceRouteLogic()(implicit reportId: ReportId) =
