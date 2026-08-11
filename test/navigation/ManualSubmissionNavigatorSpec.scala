@@ -427,6 +427,13 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           navigator.nextPage(WhatWasTheAccountCurrencyPage(accountId), NormalMode, ua) mustBe
             controllers.manual.account.routes.IsUndocumentedAccountController.onPageLoad(NormalMode)
         }
+        "IsUndocumentedAccountPage" - {
+          "must go to IsDormantAccount page after submission" in {
+            val ua = UserAnswers("id")
+            navigator.nextPage(WhatWasTheAccountCurrencyPage(accountId), NormalMode, ua) mustBe
+              controllers.manual.account.routes.IsDormantAccountController.onPageLoad(NormalMode)
+          }
+        }
       }
     }
   }
