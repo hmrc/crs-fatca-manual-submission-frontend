@@ -439,6 +439,32 @@ sponsorResidentForTax.title = Where is the sponsor resident for tax?
 sponsorResidentForTax.heading = Where is {0} resident for tax?
 sponsorResidentForTax.paragraph = If they are resident for tax in more than one country, then you can add other countries on the next page.
 sponsorResidentForTax.country.error.required = 	Select where the sponsor is resident for tax
+sponsorResidentForTax.title = Where is the sponsor resident for tax?
+sponsorResidentForTax.heading = Where is {0} resident for tax?
+sponsorResidentForTax.paragraph = If they are resident for tax in more than one country, then you can add other countries on the next page.
+sponsorResidentForTax.country.error.required = 	Select where the sponsor is resident for tax
+
+whatWasTheAccountBalance.title = What was the account balance?
+whatWasTheAccountBalance.heading = What was the account balance?
+whatWasTheAccountBalance.label.currency = Currency
+whatWasTheAccountBalance.label.amount = Amount
+whatWasTheAccountBalance.amount.hint = For example, 20124 or 112.43.
+whatWasTheAccountBalance.checkYourAnswersLabel = What was the account balance?
+whatWasTheAccountBalance.error.required.currency = Select an option for the currency
+whatWasTheAccountBalance.error.required.amount = Enter an amount
+whatWasTheAccountBalance.error.length = WhatWasTheAccountBalance must be 100 characters or less
+whatWasTheAccountBalance.change.hidden = WhatWasTheAccountBalance
+whatWasTheAccountBalance.error.invalid.CRS = Amount must only include numbers 0 to 9 and a full stop
+whatWasTheAccountBalance.error.invalid.FATCA = Amount must only include numbers 0 to 9, a minus sign and a full stop
+whatWasTheAccountBalance.error.minus.FATCA = Amount can only include a minus sign as the first character
+whatWasTheAccountBalance.error.decimalPlaces = Amount cannot have more than 2 decimal places
+currency.select = Select currency
+
+whatWasTheAccountCurrency.title = What was the account currency?
+whatWasTheAccountCurrency.heading = What was the account currency?
+whatWasTheAccountCurrency.checkYourAnswersLabel = What was the account currency?
+whatWasTheAccountCurrency.error.required = Select an option for the currency
+whatWasTheAccountCurrency.change.hidden = WhatWasTheAccountCurrency
 
 sponsorResidentForTax.title = Where is the sponsor resident for tax?
 sponsorResidentForTax.heading = Where is {0} resident for tax?

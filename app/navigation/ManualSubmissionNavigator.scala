@@ -50,11 +50,12 @@ class ManualSubmissionNavigator @Inject() () {
     }
 
   private def accountNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
-    case (HaveNumberPage(accountId), mode, ua)       => haveNumberNavigation(accountId, mode, ua)
-    case (NumberTypePage(_), mode, ua)               => routes.UnderConstructionController.onPageLoad()
-    case (IdentifierPage(_), mode, ua)               => controllers.manual.account.routes.AccountClosedController.onPageLoad(mode)
-    case (AccountClosedPage(accountId), mode, ua)    => accountClosedNavigation(accountId, mode, ua)
-    case (WhatWasTheAccountBalancePage(_), mode, ua) => routes.UnderConstructionController.onPageLoad()
+    case (HaveNumberPage(accountId), mode, ua)        => haveNumberNavigation(accountId, mode, ua)
+    case (NumberTypePage(_), mode, ua)                => routes.UnderConstructionController.onPageLoad()
+    case (IdentifierPage(_), mode, ua)                => controllers.manual.account.routes.AccountClosedController.onPageLoad(mode)
+    case (AccountClosedPage(accountId), mode, ua)     => accountClosedNavigation(accountId, mode, ua)
+    case (WhatWasTheAccountBalancePage(_), mode, ua)  => routes.UnderConstructionController.onPageLoad()
+    case (WhatWasTheAccountCurrencyPage(_), mode, ua) => routes.UnderConstructionController.onPageLoad()
   }
 
   private def fillerNavigation: PartialFunction[(Page, Mode, UserAnswers), Call] = {
@@ -105,7 +106,7 @@ class ManualSubmissionNavigator @Inject() () {
 
   private def accountClosedNavigation(accountId: AccountId, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
     (userAnswers.get(AccountClosedPage(accountId)), reportId.regime) match {
-      case (Some(true), CRS)   => routes.UnderConstructionController.onPageLoad()
+      case (Some(true), CRS)   => controllers.manual.account.routes.WhatWasTheAccountCurrencyController.onPageLoad(mode)
       case (Some(true), FATCA) => controllers.manual.account.routes.WhatWasTheAccountBalanceController.onPageLoad(mode)
       case (Some(false), _)    => controllers.manual.account.routes.WhatWasTheAccountBalanceController.onPageLoad(mode)
       case _                   => routes.JourneyRecoveryController.onPageLoad()
