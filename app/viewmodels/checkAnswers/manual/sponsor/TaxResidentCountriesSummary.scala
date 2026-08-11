@@ -14,31 +14,30 @@
  * limitations under the License.
  */
 
-package viewmodels.checkAnswers
+package viewmodels.checkAnswers.manual.sponsor
 
+import controllers.manual.sponsor.routes
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.sponsor.UkAddressPage
+import pages.manual.sponsor.DoYouWantToAddTaxResidentCountryPage
 import play.api.i18n.Messages
-import play.twirl.api.HtmlFormat
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
-import viewmodels.govuk.summarylist.*
-import viewmodels.implicits.*
+import viewmodels.govuk.summarylist._
+import viewmodels.implicits._
 
-object UkAddressSummary {
+object TaxResidentCountriesSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
-    answers.get(UkAddressPage()).map {
+    answers.get(DoYouWantToAddTaxResidentCountryPage()).map {
       answer =>
 
-        val value = HtmlFormat.escape(answer.addressLine1).toString + "<br/>" + HtmlFormat.escape(answer.addressLine2.getOrElse("")).toString
+        val value = if (answer) "site.yes" else "site.no"
 
         SummaryListRowViewModel(
-          key = "ukAddress.checkYourAnswersLabel",
-          value = ValueViewModel(HtmlContent(value)),
+          key = "taxResidentCountries.checkYourAnswersLabel",
+          value = ValueViewModel(value),
           actions = Seq(
-            ActionItemViewModel("site.change", controllers.manual.sponsor.routes.UkAddressController.onPageLoad(CheckMode).url)
-              .withVisuallyHiddenText(messages("ukAddress.change.hidden"))
+            ActionItemViewModel("site.change", routes.TaxResidentCountriesController.onPageLoad(CheckMode).url)
+              .withVisuallyHiddenText(messages("taxResidentCountries.change.hidden"))
           )
         )
     }

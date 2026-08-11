@@ -31,8 +31,8 @@ import connectors.DatabaseConnector
 import views.html.UkAddressView
 import models.SubmissionsConstants.CRS
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
-import pages.manual.sponsor.SponsorNamePage
-import pages.{ReportIdPage, UkAddressPage}
+import pages.manual.sponsor.{SponsorNamePage, UkAddressPage}
+import pages.ReportIdPage
 
 import scala.concurrent.Future
 

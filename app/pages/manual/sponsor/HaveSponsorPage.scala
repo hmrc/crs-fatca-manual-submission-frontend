@@ -24,7 +24,7 @@ import scala.util.{Success, Try}
 
 final case class HaveSponsorPage()(implicit reportId: ReportId) extends QuestionPage[Boolean] {
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "haveSponsor"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "sponsor" \ "haveSponsor"
 
   override def cleanupWithReportId(
     value: Option[Boolean],
@@ -39,6 +39,14 @@ final case class HaveSponsorPage()(implicit reportId: ReportId) extends Question
   private val cleanUpPages: Seq[QuestionPage[_]] = List(
     SponsorNamePage(),
     WhatIsAddressForSponsorPage(),
-    IsThisAddressForSponsorPage()
+    IsThisAddressForSponsorPage(),
+    WhatIsGIINForSponsorPage(),
+    IsSponsorBasedInUKPage(),
+    UKPostcodePage(),
+    AddressLookupPage(),
+    AddressNonUkPage(),
+    TaxResidentCountriesListPage(),
+    CurrentTaxResidentCountryIndexPage(),
+    DoYouWantToAddTaxResidentCountryPage()
   )
 }

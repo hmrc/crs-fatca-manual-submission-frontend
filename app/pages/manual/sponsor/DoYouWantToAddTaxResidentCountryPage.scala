@@ -14,11 +14,23 @@
  * limitations under the License.
  */
 
-package pages
+package pages.manual.sponsor
 
-import models.{ReportId, UkAddress}
+import models.{ReportId, UserAnswers}
+import pages.QuestionPage
 import play.api.libs.json.JsPath
 
-final case class UkAddressPage()(implicit reportId: ReportId) extends QuestionPage[UkAddress]:
+import scala.util.{Success, Try}
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "ukAddressForSponsor"
+final case class DoYouWantToAddTaxResidentCountryPage()(implicit reportId: ReportId) extends QuestionPage[Boolean]:
+
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "sponsor" \ "addTaxResidentCountry"
+
+  override def cleanupWithReportId(
+    value: Option[Boolean],
+    userData: UserAnswers
+  )(implicit reportId: ReportId): Try[UserAnswers] =
+    value match {
+      case Some(true) => userData.remove(CurrentTaxResidentCountryIndexPage())
+      case _          => Success(userData)
+    }

@@ -23,4 +23,4 @@ import play.api.libs.json.JsPath
 
 final case class WhatIsAddressForSponsorPage()(implicit reportId: ReportId) extends QuestionPage[Address]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "whatIsAddressForSponsor"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "sponsor" \ "whatIsAddressForSponsor"

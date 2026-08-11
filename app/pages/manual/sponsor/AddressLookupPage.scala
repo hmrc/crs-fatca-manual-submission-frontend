@@ -23,4 +23,4 @@ import play.api.libs.json.JsPath
 
 final case class AddressLookupPage()(implicit reportId: ReportId) extends QuestionPage[Seq[AddressLookup]]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "addressLookup"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "sponsor" \ "addressLookup"

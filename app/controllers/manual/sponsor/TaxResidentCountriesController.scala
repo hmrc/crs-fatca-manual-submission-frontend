@@ -18,26 +18,26 @@ package controllers.manual.sponsor
 
 import connectors.DatabaseConnector
 import controllers.actions.*
-import forms.UkAddressFormProvider
-import models.{Countries, Mode, ReportId}
+import forms.manual.sponsor.TaxResidentCountriesFormProvider
+import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.sponsor.UkAddressPage
+import pages.manual.sponsor.{DoYouWantToAddTaxResidentCountryPage, TaxResidentCountriesListPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.UkAddressView
+import views.html.manual.sponsor.TaxResidentCountriesView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class UkAddressController @Inject() (
+class TaxResidentCountriesController @Inject() (
   override val messagesApi: MessagesApi,
   repository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
   actions: Actions,
-  formProvider: UkAddressFormProvider,
+  formProvider: TaxResidentCountriesFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: UkAddressView
+  view: TaxResidentCountriesView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -46,27 +46,41 @@ class UkAddressController @Inject() (
 
   def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequired() {
     implicit request =>
+
       implicit val reportId: ReportId = request.reportId
-      val preparedForm = request.userAnswers.get(UkAddressPage()) match {
+
+      val taxResidentCountries = request.userAnswers
+        .get(TaxResidentCountriesListPage())
+        .getOrElse(Seq.empty)
+        .map(_.description)
+
+      val preparedForm = request.userAnswers.get(DoYouWantToAddTaxResidentCountryPage()) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
-      Ok(view(preparedForm, mode, request.sponsorName, Countries.ukTerritories))
+
+      Ok(view(preparedForm, mode, request.sponsorName, taxResidentCountries))
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequired().async {
     implicit request =>
+
       implicit val reportId: ReportId = request.reportId
+
+      val taxResidentCountries = request.userAnswers
+        .get(TaxResidentCountriesListPage())
+        .getOrElse(Seq.empty)
+        .map(_.description)
+
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, request.sponsorName, Countries.ukTerritories))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, request.sponsorName, taxResidentCountries))),
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(UkAddressPage(), value))
+              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(DoYouWantToAddTaxResidentCountryPage(), value))
               _              <- repository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(UkAddressPage(), mode, updatedAnswers))
+            } yield Redirect(navigator.nextPage(DoYouWantToAddTaxResidentCountryPage(), mode, updatedAnswers))
         )
-
   }
 }

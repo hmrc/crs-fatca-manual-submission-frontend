@@ -38,7 +38,8 @@
         showBackLink: Boolean = true,
         timeout: Boolean = true,
         showSignOut: Boolean = true,
-        showHmrcBanner: Boolean = false
+        showHmrcBanner: Boolean = false,
+        mainContentLayout: Option[Html => Html] = None
 )(
         contentBlock: Html
 )(
@@ -113,7 +114,8 @@
         pageTitle = Some(pageTitle),
         templateOverrides = TemplateOverrides(
             additionalHeadBlock = Some(head),
-            additionalScriptsBlock = Some(additionalScripts)
+            additionalScriptsBlock = Some(additionalScripts),
+            mainContentLayout = mainContentLayout
         ),
         serviceURLs = ServiceURLs(
             serviceUrl = Some(
