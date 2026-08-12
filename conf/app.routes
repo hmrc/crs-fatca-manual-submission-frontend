@@ -190,5 +190,15 @@ POST       /manual/account/currency                         controllers.manual.a
 GET        /manual/account/change-currency                  controllers.manual.account.WhatWasTheAccountCurrencyController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/account/change-currency                  controllers.manual.account.WhatWasTheAccountCurrencyController.onSubmit(mode: Mode = CheckMode)
 
+GET        /manual/account/undocumented                        controllers.manual.account.IsUndocumentedAccountController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account/undocumented                         controllers.manual.account.IsUndocumentedAccountController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account/change-undocumented                   controllers.manual.account.IsUndocumentedAccountController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account/change-undocumented                  controllers.manual.account.IsUndocumentedAccountController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/account/dormant                         controllers.manual.account.IsDormantAccountController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account/dormant                        controllers.manual.account.IsDormantAccountController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account/change-dormant                  controllers.manual.account.IsDormantAccountController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account/change-dormant                  controllers.manual.account.IsDormantAccountController.onSubmit(mode: Mode = CheckMode)
+
 GET        /manual/sponsor/check-answers                       controllers.manual.sponsor.CheckAnswersController.onPageLoad()
-POST        /manual/sponsor/check-answers                       controllers.manual.sponsor.CheckAnswersController.onSubmit()
+POST       /manual/sponsor/check-answers                       controllers.manual.sponsor.CheckAnswersController.onSubmit()

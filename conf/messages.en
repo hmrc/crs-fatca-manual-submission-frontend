@@ -481,3 +481,15 @@ taxResidentCountries.checkYourAnswersLabel = Where is the sponsor resident for t
 
 checkAnswers.title = Check your answers for the sponsor for the financial institution
 checkAnswers.heading = Check your answers for the sponsor for {0}
+
+isUndocumentedAccount.title = Is the account undocumented?
+isUndocumentedAccount.heading = Is the account undocumented?
+isUndocumentedAccount.checkYourAnswersLabel = isUndocumentedAccount
+isUndocumentedAccount.error.required = Select yes if the account is undocumented
+isUndocumentedAccount.change.hidden = IsUndocumentedAccount
+
+isDormantAccount.title = Is the account dormant?
+isDormantAccount.heading = Is the account dormant?
+isDormantAccount.checkYourAnswersLabel = isDormantAccount
+isDormantAccount.error.required = Select yes if the account is dormant
+isDormantAccount.change.hidden = IsDormantAccount
