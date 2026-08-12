@@ -500,6 +500,4 @@ removeTaxResidentCountry.all.countries.title = Are you sure you want to remove {
 removeTaxResidentCountry.definite.articles.countries.heading = Are you sure you want to remove the {0} as a tax resident country for {1}?
 removeTaxResidentCountry.other.countries.heading = Are you sure you want to remove ‘Other country’ as a tax resident country for {0}?
 removeTaxResidentCountry.all.countries.heading = Are you sure you want to remove {0} as a tax resident country for {1}?
-removeTaxResidentCountry.checkYourAnswersLabel = removeTaxResidentCountry
 removeTaxResidentCountry.error.required = Select yes if you are sure you want to remove this country as a tax resident country for the sponsor
-removeTaxResidentCountry.change.hidden = RemoveTaxResidentCountry
