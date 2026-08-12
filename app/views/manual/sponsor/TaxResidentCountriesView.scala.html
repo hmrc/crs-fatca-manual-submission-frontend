@@ -35,6 +35,10 @@ mainContentLayout = Some(ThreeQuartersMainContent.apply _)
 
     @formHelper(action = controllers.manual.sponsor.routes.TaxResidentCountriesController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummaryViewModel(form))
+        }
+
         @heading(messages("taxResidentCountries.heading",countryCountText(countries.size), sponsorName))
 
         @if(countries.nonEmpty) {
@@ -63,9 +67,6 @@ mainContentLayout = Some(ThreeQuartersMainContent.apply _)
                     </div>
                 }
             </dl>
-            @if(form.errors.nonEmpty) {
-                @govukErrorSummary(ErrorSummaryViewModel(form))
-            }
 
             @govukRadios(
                 RadiosViewModel.yesNo(
