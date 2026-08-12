@@ -441,7 +441,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
       }
 
       "RemoveTaxResidentCountryPage" - {
-        "must go to UNDERCONSTRUCTION page when submitted" in {
+        "must go to Tax Resident countries page when submitted" in {
           val ua = UserAnswers("id")
           navigator.nextPage(RemoveTaxResidentCountryPage(), NormalMode, ua) mustBe
             controllers.manual.sponsor.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
