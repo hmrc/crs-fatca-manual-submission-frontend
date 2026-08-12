@@ -481,6 +481,18 @@ taxResidentCountries.p1 = You must add at least one country.
 taxResidentCountries.btn = Add a country
 taxResidentCountries.country.removed = {0} removed.
 
+isUndocumentedAccount.title = Is the account undocumented?
+isUndocumentedAccount.heading = Is the account undocumented?
+isUndocumentedAccount.checkYourAnswersLabel = isUndocumentedAccount
+isUndocumentedAccount.error.required = Select yes if the account is undocumented
+isUndocumentedAccount.change.hidden = IsUndocumentedAccount
+
+isDormantAccount.title = Is the account dormant?
+isDormantAccount.heading = Is the account dormant?
+isDormantAccount.checkYourAnswersLabel = isDormantAccount
+isDormantAccount.error.required = Select yes if the account is dormant
+isDormantAccount.change.hidden = IsDormantAccount
+
 removeTaxResidentCountry.plural.countries.title = Are you sure you want to remove the {0} as a tax resident country for the sponsor?
 removeTaxResidentCountry.definite.articles.countries.title = Are you sure you want to remove the {0} as a tax resident country for the sponsor?
 removeTaxResidentCountry.other.countries.title = Are you sure you want to remove ‘Other country’ as a tax resident country for the sponsor?
