@@ -440,16 +440,6 @@ sponsorResidentForTax.title = Where is the sponsor resident for tax?
 sponsorResidentForTax.heading = Where is {0} resident for tax?
 sponsorResidentForTax.paragraph = If they are resident for tax in more than one country, then you can add other countries on the next page.
 sponsorResidentForTax.country.error.required = 	Select where the sponsor is resident for tax
-
-taxResidentCountries.title = You have {0} where the sponsor is resident for tax
-taxResidentCountries.heading = You have {0} where {1} is resident for tax
-taxResidentCountries.sub.heading = Do you need to add another country?
-taxResidentCountries.error.required = Select yes if you need to add another country
-taxResidentCountries.change.hidden = TaxResidentCountries
-taxResidentCountries.checkYourAnswersSummaryHeading = Tax resident countries
-taxResidentCountries.checkYourAnswersLink = Add, change or remove
-taxResidentCountries.checkYourAnswersLabel = Where is the sponsor resident for tax?
-
 sponsorResidentForTax.title = Where is the sponsor resident for tax?
 sponsorResidentForTax.heading = Where is {0} resident for tax?
 sponsorResidentForTax.paragraph = If they are resident for tax in more than one country, then you can add other countries on the next page.
@@ -476,6 +466,18 @@ whatWasTheAccountCurrency.heading = What was the account currency?
 whatWasTheAccountCurrency.checkYourAnswersLabel = What was the account currency?
 whatWasTheAccountCurrency.error.required = Select an option for the currency
 whatWasTheAccountCurrency.change.hidden = WhatWasTheAccountCurrency
+
+taxResidentCountries.title = You have {0} where the sponsor is resident for tax
+taxResidentCountries.heading = You have {0} where {1} is resident for tax
+taxResidentCountries.sub.heading = Do you need to add another country?
+taxResidentCountries.error.required = Select yes if you need to add another country
+taxResidentCountries.p1 = You must add at least one country.
+taxResidentCountries.btn = Add a country
+taxResidentCountries.change.hidden = TaxResidentCountries
+taxResidentCountries.checkYourAnswersSummaryHeading = Tax resident countries
+taxResidentCountries.checkYourAnswersLink = Add, change or remove
+taxResidentCountries.checkYourAnswersLabel = Where is the sponsor resident for tax?
+
 
 checkAnswers.title = Check your answers for the sponsor for the financial institution
 checkAnswers.heading = Check your answers for the sponsor for {0}
