@@ -29,13 +29,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.sponsor.{
-  CurrentTaxResidentCountryIndexPage,
-  RemoveTaxResidentCountryPage,
-  SponsorNamePage,
-  SponsorResidentForTaxPage,
-  TaxResidentCountriesListPage
-}
+import pages.manual.sponsor.*
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest

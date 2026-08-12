@@ -19,7 +19,7 @@ package navigation
 import base.SpecBase
 import controllers.manual.reportdetails.routes.{ReportDetailsCheckAnswersController, ReportingYearController, TypeOfReportController}
 import models.*
-import models.CrsOrFatca.{Crs, Fatca}
+import models.CrsOrFatca.Fatca
 import models.SubmissionsConstants.{CRS, FATCA}
 import models.response.{Address, AddressLookup, Country}
 import models.viewModels.AccountId
