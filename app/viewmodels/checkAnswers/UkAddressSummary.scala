@@ -32,7 +32,9 @@ object UkAddressSummary {
       answer =>
 
         def formatLine(line: String): String =
-          s"""<div class="govuk-margin-bottom-0">${HtmlFormat.escape(line)}</div>"""
+          s"""<span class="govuk-margin-bottom-0">${HtmlFormat.escape(line)}</span><br>"""
+
+        def formatLastLine(line: String): String = s"""<span>${HtmlFormat.escape(line)}</span><br>"""
 
         val addressHtml: String =
           formatLine(answer.addressLine1) concat
@@ -40,7 +42,7 @@ object UkAddressSummary {
             formatLine(answer.city) concat
             answer.county.fold("")(formatLine) concat
             formatLine(answer.postcode) concat
-            formatLine(answer.country)
+            formatLastLine(answer.country)
 
         SummaryListRowViewModel(
           key = "ukAddress.checkYourAnswersLabel",

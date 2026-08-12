@@ -51,7 +51,7 @@ object TaxResidentCountriesSummary {
                 content = "taxResidentCountries.checkYourAnswersLink"
               )
             )
-          )
+          ).withCssClass("govuk-!-margin-bottom-6")
         )
     }
 }

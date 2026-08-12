@@ -240,7 +240,7 @@ haveSponsor.title = Does the financial institution have a sponsor?
 haveSponsor.heading = Does {0} have a sponsor?
 haveSponsor.checkYourAnswersLabel = Does the financial institution have a sponsor?
 haveSponsor.error.required = Select yes if the financial institution has a sponsor
-haveSponsor.change.hidden = HaveSponsor
+haveSponsor.change.hidden = Change if the financial institution has a sponsor
 
 sponsorName.title = What is the name of the sponsor?
 sponsorName.heading = What is the name of the sponsor?
@@ -249,7 +249,7 @@ sponsorName.error.required = Enter the name of the sponsor
 sponsorName.error.length = Sponsor name must be 200 characters or less
 sponsorName.error.invalid = Sponsor name must only include letters a to z, numbers 0 to 9, ampersands (&), apostrophes, backslashes, carets (^), grave accents (`), hyphens and spaces
 sponsorName.error.doubedash = Sponsor name must not include a double dash (--)
-sponsorName.change.hidden = SponsorName
+sponsorName.change.hidden = Change the name of the sponsor
 
 isSponsorBasedInUK.title = Is the sponsor based in the UK, Jersey, Guernsey or the Isle of Man?
 isSponsorBasedInUK.heading = Is {0} based in the UK, Jersey, Guernsey or the Isle of Man?
@@ -264,7 +264,7 @@ whatIsGIINForSponsor.para.1 = You must provide a GIIN for {0} for FATCA reportin
 whatIsGIINForSponsor.para.2 = To receive a GIIN for FATCA, {0} must have registered with the United States of America’s Internal Revenue Service.
 whatIsGIINForSponsor.hint = For example, ‘98O96B.00000.LE.350’.
 whatIsGIINForSponsor.checkYourAnswersLabel = What is the sponsor’s GIIN?
-whatIsGIINForSponsor.change.hidden = WhatIsGIINForSponsor
+whatIsGIINForSponsor.change.hidden = Change the sponsor’s GIIN
 
 whatIsGIINForSponsor.error.required = Enter the sponsor’s GIIN
 whatIsGIINForSponsor.error.length = GIIN must include 19 characters
@@ -344,7 +344,7 @@ addressNonUk.addressLine3.change.hidden = City
 addressNonUk.addressLine4.change.hidden = Region
 addressNonUk.postcode.change.hidden = Postcode
 addressNonUk.country.change.hidden = Country
-addressNonUk.change.hidden = Change sponsor address
+addressNonUk.change.hidden = Change the sponsor’s address
 addressNonUk.country.select = Select country
 
 whatIsAddressForSponsor.title = What is the sponsor’s address?
@@ -353,7 +353,7 @@ whatIsAddressForSponsor.para = Select from the list or {0}.
 whatIsAddressForSponsor.para.link = enter the address manually
 whatIsAddressForSponsor.checkYourAnswersLabel = What is the sponsor’s address?
 whatIsAddressForSponsor.error.required = Select the sponsor’s address or enter it manually
-whatIsAddressForSponsor.change.hidden = WhatIsAddressForSponsor
+whatIsAddressForSponsor.change.hidden = Change the sponsor’s address
 
 isThisAddressForSponsor.title = Is this the sponsor’s address?
 isThisAddressForSponsor.heading = Is this the address for {0}?
@@ -397,6 +397,7 @@ ukAddress.addressLine1 = Address line 1
 ukAddress.addressLine2 = Address line 2 (Optional)
 ukAddress.city = City
 ukAddress.checkYourAnswersLabel = What is the sponsor’s address?
+ukAddress.change.hidden = Change the sponsor’s address
 ukAddress.error.addressLine1.required = Enter address line 1
 ukAddress.error.addressLine1.length = Address line 1 must be 200 characters or less
 ukAddress.error.addressLine1.invalid.characters = Address line 1 must only include letters a to z, numbers 0 to 9, apostrophes, commas, ampersands (&), hyphens, full stops and spaces

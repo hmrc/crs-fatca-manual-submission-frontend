@@ -420,7 +420,6 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             controllers.routes.UnderConstructionController.onPageLoad()
         }
       }
-
     }
   }
 }

@@ -34,7 +34,9 @@ object AddressNonUkSummary {
       answer =>
 
         def formatLine(line: String): String =
-          s"""<div class="govuk-margin-bottom-0">${HtmlFormat.escape(line)}</div>"""
+          s"""<span class="govuk-margin-bottom-0">${HtmlFormat.escape(line)}</span><br>"""
+
+        def formatLastLine(line: String): String = s"""<span>${HtmlFormat.escape(line)}</span><br>"""
 
         val addressHtml: String =
           formatLine(answer.addressLine1) concat
@@ -42,7 +44,7 @@ object AddressNonUkSummary {
             formatLine(answer.addressLine3) concat
             answer.addressLine4.fold("")(formatLine) concat
             answer.postcode.fold("")(formatLine) concat
-            formatLine(answer.country)
+            formatLastLine(answer.country)
 
         SummaryListRowViewModel(
           key = "addressNonUk.checkYourAnswersLabel",
@@ -50,19 +52,8 @@ object AddressNonUkSummary {
             HtmlContent(addressHtml)
           ),
           actions = Seq(
-            ActionItemViewModel(
-              content = HtmlContent(
-                s"""  
-                 |<span aria-hidden="true">${messages("site.change")}</span>
-                 |<span class="govuk-visually-hidden">${messages("addressNonUk.change.hidden")}</span>
-                 |""".stripMargin
-              ),
-              href = controllers.manual.sponsor.routes.IsSponsorBasedInUKController
-                .onPageLoad(CheckMode)
-                .url
-            ).withAttribute(
-              "id" -> "addressNonUk"
-            )
+            ActionItemViewModel("site.change", controllers.manual.sponsor.routes.IsSponsorBasedInUKController.onPageLoad(CheckMode).url)
+              .withVisuallyHiddenText(messages("addressNonUk.change.hidden"))
           )
         )
     }

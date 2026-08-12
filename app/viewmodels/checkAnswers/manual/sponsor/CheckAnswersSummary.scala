@@ -37,7 +37,7 @@ object CheckAnswersSummary {
           UkAddressSummary.row(answers),
           AddressNonUkSummary.row(answers)
         ).flatten
-      ),
+      ).withCssClass("govuk-!-margin-bottom-3"),
       taxResidentCountriesSummary = TaxResidentCountriesSummary.row(answers)
     )
 }

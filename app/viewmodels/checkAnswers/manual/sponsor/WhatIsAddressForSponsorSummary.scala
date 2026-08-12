@@ -32,7 +32,10 @@ object WhatIsAddressForSponsorSummary {
       answer =>
 
         def formatLine(line: String): String =
-          s"""<div class="govuk-margin-bottom-0">${HtmlFormat.escape(line)}</div>"""
+          s"""<span class="govuk-margin-bottom-0">${HtmlFormat.escape(line)}</span><br>"""
+
+        def formatLastLine(line: String): String =
+          s"""<span>${HtmlFormat.escape(line)}</span><br>"""
 
         val addressHtml: String =
           formatLine(answer.addressLine1) concat
@@ -40,7 +43,7 @@ object WhatIsAddressForSponsorSummary {
             formatLine(answer.addressLine3) concat
             answer.addressLine4.fold("")(formatLine) concat
             answer.postCode.fold("")(formatLine) concat
-            formatLine(answer.country.description)
+            formatLastLine(answer.country.description)
 
         SummaryListRowViewModel(
           key = "whatIsAddressForSponsor.checkYourAnswersLabel",
