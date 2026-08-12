@@ -25,13 +25,13 @@ import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
-import views.html.manual.account.IsUndocumentedAccountView
+import views.html.manual.account.HowManyJointAccountHoldersView
 
-class IsUndocumentedAccountViewSpec extends SpecBase {
+class HowManyJointAccountHoldersViewSpec extends SpecBase {
 
   private val application = applicationBuilder().build()
 
-  private val view: IsUndocumentedAccountView                            = application.injector.instanceOf[IsUndocumentedAccountView]
+  private val view: HowManyJointAccountHoldersView                       = application.injector.instanceOf[HowManyJointAccountHoldersView]
   private val messagesControllerComponents: MessagesControllerComponents = application.injector.instanceOf[MessagesControllerComponents]
   val formProvider                                                       = new IsUndocumentedAccountFormProvider()
   val form: Form[Boolean]                                                = formProvider()
@@ -39,7 +39,7 @@ class IsUndocumentedAccountViewSpec extends SpecBase {
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
   implicit private val messages: Messages               = messagesControllerComponents.messagesApi.preferred(Seq(Lang("en")))
 
-  "HaveNumberView" - {
+  "How many joint Account view" - {
 
     "should render page components" - {
 
@@ -47,11 +47,11 @@ class IsUndocumentedAccountViewSpec extends SpecBase {
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
       "must display title" in {
-        doc.title() must include("Is the account undocumented?")
+        doc.title() must include("How many joint account holders are there?")
       }
 
       "must display heading" in {
-        doc.select("h1").text() must include("Is the account undocumented?")
+        doc.select("h1").text() must include("How many joint account holders are there?")
       }
 
       "must display button" in {

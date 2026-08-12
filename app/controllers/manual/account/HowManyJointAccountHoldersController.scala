@@ -18,25 +18,26 @@ package controllers.manual.account
 
 import connectors.DatabaseConnector
 import controllers.actions.*
-import forms.manual.account.HowManyJoinAccountHoldersFormProvider
+import forms.manual.account.HowManyJointAccountHoldersFormProvider
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.account.HowManyJoinAccountHoldersPage
+import pages.manual.account.HowManyJointAccountHoldersPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.manual.account.HowManyJoinAccountHoldersView
+import views.html.manual.account.HowManyJointAccountHoldersView
+
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class HowManyJoinAccountHoldersController @Inject() (
+class HowManyJointAccountHoldersController @Inject() (
   override val messagesApi: MessagesApi,
   repository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
   action: Actions,
-  formProvider: HowManyJoinAccountHoldersFormProvider,
+  formProvider: HowManyJointAccountHoldersFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: HowManyJoinAccountHoldersView
+  view: HowManyJointAccountHoldersView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -47,7 +48,7 @@ class HowManyJoinAccountHoldersController @Inject() (
 
       implicit val reportId: ReportId = request.reportId
 
-      val preparedForm = request.userAnswers.get(HowManyJoinAccountHoldersPage(request.accountId)) match {
+      val preparedForm = request.userAnswers.get(HowManyJointAccountHoldersPage(request.accountId)) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
@@ -67,9 +68,9 @@ class HowManyJoinAccountHoldersController @Inject() (
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(HowManyJoinAccountHoldersPage(request.accountId), value))
+              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(HowManyJointAccountHoldersPage(request.accountId), value))
               _              <- repository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(HowManyJoinAccountHoldersPage(request.accountId), mode, updatedAnswers))
+            } yield Redirect(navigator.nextPage(HowManyJointAccountHoldersPage(request.accountId), mode, updatedAnswers))
         )
   }
 }

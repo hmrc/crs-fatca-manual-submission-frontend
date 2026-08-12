@@ -27,12 +27,12 @@ object WasAccountOpen extends Enumerable.Implicits {
 
   case object Yes extends WithName("yes") with WasAccountOpen
   case object No extends WithName("no") with WasAccountOpen
-  case object NotApplicable extends WithName("na") with WasAccountOpen
+  case object NotReported extends WithName("notReported") with WasAccountOpen
 
   val allValues: Seq[WasAccountOpen] = Seq(
     Yes,
     No,
-    NotApplicable
+    NotReported
   )
 
   def options(isBefore2025: Boolean)(implicit messages: Messages): Seq[RadioItem] = {

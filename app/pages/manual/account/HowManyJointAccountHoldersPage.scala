@@ -21,6 +21,6 @@ import models.viewModels.AccountId
 import pages.QuestionPage
 import play.api.libs.json.JsPath
 
-final case class HowManyJoinAccountHoldersPage(accountId: AccountId)(implicit reportId: ReportId) extends QuestionPage[Int]:
+final case class HowManyJointAccountHoldersPage(accountId: AccountId)(implicit reportId: ReportId) extends QuestionPage[Int]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "accounts" \ accountId.value \ "howManyJoinAccountHolders"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "accounts" \ accountId.value \ "howManyJointAccountHolders"

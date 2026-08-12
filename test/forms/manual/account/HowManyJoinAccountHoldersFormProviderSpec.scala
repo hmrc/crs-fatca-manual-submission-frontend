@@ -21,7 +21,7 @@ import play.api.data.FormError
 
 class HowManyJoinAccountHoldersFormProviderSpec extends IntFieldBehaviours {
 
-  val form = new HowManyJoinAccountHoldersFormProvider()()
+  val form = new HowManyJointAccountHoldersFormProvider()()
 
   ".value" - {
 
@@ -41,28 +41,28 @@ class HowManyJoinAccountHoldersFormProviderSpec extends IntFieldBehaviours {
     behave like intField(
       form,
       fieldName,
-      nonNumericError = FormError(fieldName, "howManyJoinAccountHolders.error.nonNumeric"),
-      wholeNumberError = FormError(fieldName, "howManyJoinAccountHolders.error.wholeNumber")
+      nonNumericError = FormError(fieldName, "howManyJointAccountHolders.error.nonNumeric"),
+      wholeNumberError = FormError(fieldName, "howManyJointAccountHolders.error.wholeNumber")
     )
 
     behave like intFieldWithMinimum(
       form,
       fieldName,
       minimum = minimum,
-      expectedError = FormError(fieldName, "howManyJoinAccountHolders.error.min", Seq(minimum))
+      expectedError = FormError(fieldName, "howManyJointAccountHolders.error.min", Seq(minimum))
     )
 
     behave like intFieldWithMaximum(
       form,
       fieldName,
       maximum = maximum,
-      expectedError = FormError(fieldName, "howManyJoinAccountHolders.error.max", Seq(maximum))
+      expectedError = FormError(fieldName, "howManyJointAccountHolders.error.max", Seq(maximum))
     )
 
     behave like mandatoryField(
       form,
       fieldName,
-      requiredError = FormError(fieldName, "howManyJoinAccountHolders.error.required")
+      requiredError = FormError(fieldName, "howManyJointAccountHolders.error.required")
     )
   }
 }

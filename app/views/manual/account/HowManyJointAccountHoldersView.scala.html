@@ -26,9 +26,9 @@
 
 @(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("howManyJoinAccountHolders.title"))) {
+@layout(pageTitle = title(form, messages("howManyJointAccountHolders.title"))) {
 
-    @formHelper(action = controllers.manual.account.routes.HowManyJoinAccountHoldersController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+    @formHelper(action = controllers.manual.account.routes.HowManyJointAccountHoldersController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
@@ -37,14 +37,14 @@
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(messages("howManyJoinAccountHolders.heading")).asPageHeading()
+                label = LabelViewModel(messages("howManyJointAccountHolders.heading")).asPageHeading()
             )
             .asNumeric()
             .withWidth(Fixed2)
         )
 
         @govukButton(
-            ButtonViewModel(messages("site.continue"))
+            ButtonViewModel(messages("site.saveContinue")).withId("submit")
         )
     }
 }

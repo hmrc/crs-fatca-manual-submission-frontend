@@ -21,12 +21,12 @@ import play.api.data.Form
 
 import javax.inject.Inject
 
-class HowManyJoinAccountHoldersFormProvider @Inject() extends Mappings {
+class HowManyJointAccountHoldersFormProvider @Inject() extends Mappings {
 
   def apply(): Form[Int] =
     Form(
-      "value" -> int("howManyJoinAccountHolders.error.required", "howManyJoinAccountHolders.error.wholeNumber", "howManyJoinAccountHolders.error.nonNumeric")
-        .verifying(maximumValue(200, "howManyJoinAccountHolders.error.max"))
-        .verifying(minimumValue(1, "howManyJoinAccountHolders.error.min"))
+      "value" -> int("howManyJointAccountHolders.error.required", "howManyJointAccountHolders.error.wholeNumber", "howManyJointAccountHolders.error.nonNumeric")
+        .verifying(maximumValue(200, "howManyJointAccountHolders.error.max"))
+        .verifying(minimumValue(1, "howManyJointAccountHolders.error.min"))
     )
 }

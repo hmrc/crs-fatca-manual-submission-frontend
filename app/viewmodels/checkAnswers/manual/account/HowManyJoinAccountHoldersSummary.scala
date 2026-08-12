@@ -17,24 +17,24 @@
 package viewmodels.checkAnswers.manual.account
 
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.account.{CurrentAccountIdPage, HowManyJoinAccountHoldersPage}
+import pages.manual.account.{CurrentAccountIdPage, HowManyJointAccountHoldersPage}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist.*
 import viewmodels.implicits.*
 
-object HowManyJoinAccountHoldersSummary {
+object HowManyJointAccountHoldersSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
     for {
       accountId <- answers.get(CurrentAccountIdPage())
-      answer    <- answers.get(HowManyJoinAccountHoldersPage(accountId))
+      answer    <- answers.get(HowManyJointAccountHoldersPage(accountId))
     } yield SummaryListRowViewModel(
-      key = "howManyJoinAccountHolders.checkYourAnswersLabel",
+      key = "howManyJointAccountHolders.checkYourAnswersLabel",
       value = ValueViewModel(answer.toString),
       actions = Seq(
-        ActionItemViewModel("site.change", controllers.manual.account.routes.HowManyJoinAccountHoldersController.onPageLoad(CheckMode).url)
-          .withVisuallyHiddenText(messages("howManyJoinAccountHolders.change.hidden"))
+        ActionItemViewModel("site.change", controllers.manual.account.routes.HowManyJointAccountHoldersController.onPageLoad(CheckMode).url)
+          .withVisuallyHiddenText(messages("howManyJointAccountHolders.change.hidden"))
       )
     )
 }

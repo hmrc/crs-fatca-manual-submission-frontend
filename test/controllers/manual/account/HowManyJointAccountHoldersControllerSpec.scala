@@ -19,7 +19,7 @@ package controllers.manual.account
 import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
-import forms.manual.account.HowManyJoinAccountHoldersFormProvider
+import forms.manual.account.HowManyJointAccountHoldersFormProvider
 import models.SubmissionsConstants.CRS
 import models.viewModels.AccountId
 import models.{NormalMode, ReportId}
@@ -28,28 +28,28 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.account.{CurrentAccountIdPage, HowManyJoinAccountHoldersPage}
+import pages.manual.account.{CurrentAccountIdPage, HowManyJointAccountHoldersPage}
 import play.api.data.Form
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import views.html.manual.account.HowManyJoinAccountHoldersView
+import views.html.manual.account.HowManyJointAccountHoldersView
 
 import scala.concurrent.Future
 
-class HowManyJoinAccountHoldersControllerSpec extends SpecBase with MockitoSugar {
+class HowManyJointAccountHoldersControllerSpec extends SpecBase with MockitoSugar {
 
-  val formProvider    = new HowManyJoinAccountHoldersFormProvider()
+  val formProvider    = new HowManyJointAccountHoldersFormProvider()
   val form: Form[Int] = formProvider()
 
   def onwardRoute = Call("GET", "/foo")
 
-  val validAnswer                                 = 1
-  val currentAccountId                            = AccountId("id")
-  lazy val howManyJoinAccountHoldersRoute: String = controllers.manual.account.routes.HowManyJoinAccountHoldersController.onPageLoad(NormalMode).url
+  val validAnswer                                  = 1
+  val currentAccountId                             = AccountId("id")
+  lazy val howManyJointAccountHoldersRoute: String = controllers.manual.account.routes.HowManyJointAccountHoldersController.onPageLoad(NormalMode).url
 
-  "HowManyJoinAccountHolders Controller" - {
+  "HowManyJointAccountHolders Controller" - {
     implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
     val ua = emptyUserAnswers
       .withPage(ReportIdPage, reportId)
@@ -60,11 +60,11 @@ class HowManyJoinAccountHoldersControllerSpec extends SpecBase with MockitoSugar
       val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
 
       running(application) {
-        val request = FakeRequest(GET, howManyJoinAccountHoldersRoute)
+        val request = FakeRequest(GET, howManyJointAccountHoldersRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[HowManyJoinAccountHoldersView]
+        val view = application.injector.instanceOf[HowManyJointAccountHoldersView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
@@ -73,14 +73,14 @@ class HowManyJoinAccountHoldersControllerSpec extends SpecBase with MockitoSugar
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = ua.set(HowManyJoinAccountHoldersPage(currentAccountId), validAnswer).success.value
+      val userAnswers = ua.set(HowManyJointAccountHoldersPage(currentAccountId), validAnswer).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, howManyJoinAccountHoldersRoute)
+        val request = FakeRequest(GET, howManyJointAccountHoldersRoute)
 
-        val view = application.injector.instanceOf[HowManyJoinAccountHoldersView]
+        val view = application.injector.instanceOf[HowManyJointAccountHoldersView]
 
         val result = route(application, request).value
 
@@ -105,7 +105,7 @@ class HowManyJoinAccountHoldersControllerSpec extends SpecBase with MockitoSugar
 
       running(application) {
         val request =
-          FakeRequest(POST, howManyJoinAccountHoldersRoute)
+          FakeRequest(POST, howManyJointAccountHoldersRoute)
             .withFormUrlEncodedBody(("value", validAnswer.toString))
 
         val result = route(application, request).value
@@ -121,12 +121,12 @@ class HowManyJoinAccountHoldersControllerSpec extends SpecBase with MockitoSugar
 
       running(application) {
         val request =
-          FakeRequest(POST, howManyJoinAccountHoldersRoute)
+          FakeRequest(POST, howManyJointAccountHoldersRoute)
             .withFormUrlEncodedBody(("value", "invalid value"))
 
         val boundForm = form.bind(Map("value" -> "invalid value"))
 
-        val view = application.injector.instanceOf[HowManyJoinAccountHoldersView]
+        val view = application.injector.instanceOf[HowManyJointAccountHoldersView]
 
         val result = route(application, request).value
 
@@ -140,7 +140,7 @@ class HowManyJoinAccountHoldersControllerSpec extends SpecBase with MockitoSugar
       val application = applicationBuilder(maybeUserAnswers = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, howManyJoinAccountHoldersRoute)
+        val request = FakeRequest(GET, howManyJointAccountHoldersRoute)
 
         val result = route(application, request).value
 
@@ -155,7 +155,7 @@ class HowManyJoinAccountHoldersControllerSpec extends SpecBase with MockitoSugar
 
       running(application) {
         val request =
-          FakeRequest(POST, howManyJoinAccountHoldersRoute)
+          FakeRequest(POST, howManyJointAccountHoldersRoute)
             .withFormUrlEncodedBody(("value", validAnswer.toString))
 
         val result = route(application, request).value

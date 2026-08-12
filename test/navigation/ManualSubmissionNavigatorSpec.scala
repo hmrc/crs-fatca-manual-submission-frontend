@@ -38,24 +38,21 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
     "nextPageWithoutReportId" - {
       "CrsOrFatcaPage" - {
         "must go to Reporting Year Page when Normal Mode" in {
-          val userData = UserAnswers("id")
-          navigator.nextPageWithoutReportId(CrsOrFatcaPage, NormalMode, userData) mustBe
+          navigator.nextPageWithoutReportId(CrsOrFatcaPage, NormalMode) mustBe
             ReportingYearController.onPageLoad(NormalMode)
         }
 
       }
       "ReportingYearPage" - {
         "must go to TypeOfReport Page when Normal Mode" in {
-          val userData = UserAnswers("id")
-          navigator.nextPageWithoutReportId(ReportingYearPage, NormalMode, userData) mustBe
+          navigator.nextPageWithoutReportId(ReportingYearPage, NormalMode) mustBe
             TypeOfReportController.onPageLoad(NormalMode)
         }
 
       }
       "TypeOfReportPage" - {
         "must go to ReportDetailsCheckAnswers" in {
-          val ua = UserAnswers("id")
-          navigator.nextPageWithoutReportId(TypeOfReportPage, NormalMode, ua) mustBe
+          navigator.nextPageWithoutReportId(TypeOfReportPage, NormalMode) mustBe
             ReportDetailsCheckAnswersController.onPageLoad()
         }
 
@@ -436,10 +433,10 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           }
         }
         "IsDormantAccountPage" - {
-          "must go to under construction page after submission" in {
+          "must go to under WasYearOpen page after successful submission" in {
             val ua = UserAnswers("id")
             navigator.nextPage(IsDormantAccountPage(accountId), NormalMode, ua) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.account.routes.WasAccountOpenController.onPageLoad(NormalMode)
           }
         }
       }
@@ -453,7 +450,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
       "IsJointAccountPage" - {
         "must go to HowManyJointAccountHolderPage if answered yes" in {
           val ua = emptyUserAnswers.withPage(IsJointAccountPage(accountId), true)
-          navigator.nextPage(IsJointAccountPage(accountId), NormalMode, ua) mustBe controllers.manual.account.routes.HowManyJoinAccountHoldersController
+          navigator.nextPage(IsJointAccountPage(accountId), NormalMode, ua) mustBe controllers.manual.account.routes.HowManyJointAccountHoldersController
             .onPageLoad(NormalMode)
         }
         "must go to Under construction page if answered no" in {

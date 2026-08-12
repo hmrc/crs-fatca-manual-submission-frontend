@@ -17,24 +17,25 @@
 package views.manual.account
 
 import base.SpecBase
-import forms.manual.account.IsUndocumentedAccountFormProvider
+import forms.manual.account.WasAccountOpenFormProvider
 import models.NormalMode
+import models.manual.account.WasAccountOpen
 import org.jsoup.Jsoup
 import play.api.data.Form
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
-import views.html.manual.account.IsUndocumentedAccountView
+import views.html.manual.account.WasAccountOpenView
 
-class IsUndocumentedAccountViewSpec extends SpecBase {
+class WasAccountOpenViewSpec extends SpecBase {
 
   private val application = applicationBuilder().build()
 
-  private val view: IsUndocumentedAccountView                            = application.injector.instanceOf[IsUndocumentedAccountView]
+  private val view: WasAccountOpenView                                   = application.injector.instanceOf[WasAccountOpenView]
   private val messagesControllerComponents: MessagesControllerComponents = application.injector.instanceOf[MessagesControllerComponents]
-  val formProvider                                                       = new IsUndocumentedAccountFormProvider()
-  val form: Form[Boolean]                                                = formProvider()
+  val formProvider                                                       = new WasAccountOpenFormProvider()
+  val form: Form[WasAccountOpen]                                         = formProvider()
 
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
   implicit private val messages: Messages               = messagesControllerComponents.messagesApi.preferred(Seq(Lang("en")))
@@ -43,15 +44,19 @@ class IsUndocumentedAccountViewSpec extends SpecBase {
 
     "should render page components" - {
 
-      val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode)
+      val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, 2020)
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
       "must display title" in {
-        doc.title() must include("Is the account undocumented?")
+        doc.title() must include("Was the account opened in 2020?")
       }
 
       "must display heading" in {
-        doc.select("h1").text() must include("Is the account undocumented?")
+        doc.select("h1").text() must include("Was the account opened in 2020?")
+      }
+
+      "must display not applicable as accounting year was before 2025" in {
+        doc.body().text() must include("Not reported")
       }
 
       "must display button" in {
