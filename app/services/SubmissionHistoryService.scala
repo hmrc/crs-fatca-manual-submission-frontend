@@ -45,7 +45,7 @@ class SubmissionHistoryService @Inject() (readSubmissionConnector: ReadSubmissio
       case (originalRef, groupedCards) =>
         val groupHasAnyVoided = groupedCards.exists(_.isVoided.contains(true))
 
-        val updatedCards = if (groupHasAnyVoided) { // marks voided cards
+        val updatedCards = if (groupHasAnyVoided) {
           groupedCards.map(
             card => card.copy(isVoided = Some(true))
           )
