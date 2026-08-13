@@ -38,23 +38,24 @@ class SubmissionHistoryService @Inject() (readSubmissionConnector: ReadSubmissio
       .map(submissionToCardConverter)
       .sortBy(_.timeSent)
       .reverse
-    
+
     val cardsGroupedByOriginalId = cards.groupBy(_.originalMessageRefId)
 
-    cardsGroupedByOriginalId.map { case (originalRef, groupedCards) =>
-      val groupHasAnyVoided = groupedCards.exists(_.isVoided.contains(true))
+    cardsGroupedByOriginalId.map {
+      case (originalRef, groupedCards) =>
+        val groupHasAnyVoided = groupedCards.exists(_.isVoided.contains(true))
 
-      val updatedCards = if (groupHasAnyVoided) { //marks voided cards
-        groupedCards.map(card => card.copy(isVoided = Some(true)))
-      } else {
-        groupedCards
-      }
+        val updatedCards = if (groupHasAnyVoided) { // marks voided cards
+          groupedCards.map(
+            card => card.copy(isVoided = Some(true))
+          )
+        } else {
+          groupedCards
+        }
 
-      originalRef -> updatedCards
+        originalRef -> updatedCards
     }
   }
-
-
 
   private def submissionToCardConverter(report: SubmittedReport) =
     SubmissionCard(
