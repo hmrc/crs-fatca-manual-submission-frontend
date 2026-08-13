@@ -195,6 +195,49 @@ class SubmissionsHistoryServiceSpec extends SpecBase {
         result("group1")(1).timeSent mustEqual now.minusHours(3)
         result("group2")(0).timeSent mustEqual now.minusHours(1)
       }
+
+      "must mark all cards in the same group as voided if one sub in group has submissionDeleteStatus = Some(true)" in {
+        val report1 = submittedReport.copy(
+          messageRefId = "group1",
+          originalMessageRefId = None,
+          submissionDeleteStatus = None
+        )
+        val report2 = submittedReport.copy(
+          messageRefId = "msg2",
+          originalMessageRefId = Some("group1"),
+          submissionDeleteStatus = Some(true)
+        )
+
+        val result = service.prepareSubmissionHistoryCards(List(report1, report2), 2016)
+
+        result.size mustEqual 1
+        val cardsInGroup = result("group1")
+
+        cardsInGroup.length mustEqual 2
+        cardsInGroup.forall(_.isVoided.contains(true)) mustBe true
+      }
+
+      "wont mark cards as voided if the group has no submissionDeleteStatus = true" in {
+        val report1 = submittedReport.copy(
+          messageRefId = "group1",
+          originalMessageRefId = None,
+          submissionDeleteStatus = None
+        )
+        val report2 = submittedReport.copy(
+          messageRefId = "msg2",
+          originalMessageRefId = Some("group1"),
+          submissionDeleteStatus = None
+        )
+
+        val result = service.prepareSubmissionHistoryCards(List(report1, report2), 2016)
+
+        result.size mustEqual 1
+        val cardsInGroup = result("group1")
+
+        cardsInGroup.length mustEqual 2
+        cardsInGroup.forall(_.isVoided.isEmpty) mustBe true
+      }
+
     }
   }
 

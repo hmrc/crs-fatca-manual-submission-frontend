@@ -30,14 +30,31 @@ class SubmissionHistoryService @Inject() (readSubmissionConnector: ReadSubmissio
     readSubmissionConnector
       .getSubmissionsList(fiId)
 
-  def prepareSubmissionHistoryCards(submissions: List[SubmittedReport], submissionYear: Int): Map[String, List[SubmissionCard]] =
-    submissions
+  def prepareSubmissionHistoryCards(submissions: List[SubmittedReport], submissionYear: Int): Map[String, List[SubmissionCard]] = {
+
+    val cards = submissions
       .filter(_.submissionStatus == PASSED)
       .filter(_.reportingYear.toInt == submissionYear)
       .map(submissionToCardConverter)
       .sortBy(_.timeSent)
       .reverse
-      .groupBy(_.originalMessageRefId)
+    
+    val cardsGroupedByOriginalId = cards.groupBy(_.originalMessageRefId)
+
+    cardsGroupedByOriginalId.map { case (originalRef, groupedCards) =>
+      val groupHasAnyVoided = groupedCards.exists(_.isVoided.contains(true))
+
+      val updatedCards = if (groupHasAnyVoided) { //marks voided cards
+        groupedCards.map(card => card.copy(isVoided = Some(true)))
+      } else {
+        groupedCards
+      }
+
+      originalRef -> updatedCards
+    }
+  }
+
+
 
   private def submissionToCardConverter(report: SubmittedReport) =
     SubmissionCard(
