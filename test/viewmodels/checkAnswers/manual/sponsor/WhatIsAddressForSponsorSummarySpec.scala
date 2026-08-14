@@ -46,8 +46,9 @@ class WhatIsAddressForSponsorSummarySpec extends SpecBase {
             uprn = None,
             addressLine1 = "TestAddress",
             addressLine2 = None,
-            addressLine3 = "address line 3",
+            addressLine3 = Some("address line 3"),
             addressLine4 = None,
+            town = "Town",
             postCode = None,
             country = Country("XX", "Test Country")
           )
@@ -55,7 +56,7 @@ class WhatIsAddressForSponsorSummarySpec extends SpecBase {
         .withPage(FINamePage(), fiName)
 
       val addressText =
-        """<span class="govuk-margin-bottom-0">TestAddress</span><br><span class="govuk-margin-bottom-0">address line 3</span><br><span>Test Country</span><br>"""
+        """<span class="govuk-margin-bottom-0">TestAddress</span><br><span class="govuk-margin-bottom-0">address line 3</span><br><span class="govuk-margin-bottom-0">Town</span><br><span>Test Country</span><br>"""
 
       val summary = WhatIsAddressForSponsorSummary.row(ua)
 

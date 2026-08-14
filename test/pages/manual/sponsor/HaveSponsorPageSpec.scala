@@ -26,7 +26,7 @@ import pages.QuestionPage
 class HaveSponsorPageSpec extends SpecBase {
 
   private val strng                   = "somestring"
-  private val addrss                  = Address(None, strng, None, strng, None, None, GB)
+  private val addrss                  = Address(None, strng, None, Some(strng), None,strng,None, GB)
   private val reportId: ReportId      = ReportId(CRS, 2023, None, "test1")
   private val otherReportId: ReportId = ReportId(FATCA, 2024, None, "test2")
 

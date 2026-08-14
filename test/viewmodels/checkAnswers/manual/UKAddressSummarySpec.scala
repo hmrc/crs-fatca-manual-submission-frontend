@@ -41,12 +41,12 @@ class UKAddressSummarySpec extends SpecBase {
       val ua = emptyUserAnswers
         .withPage(ReportIdPage, reportId)
         .withPage(UkAddressPage(),
-                  UkAddress(addressLine1 = "TestAddress", addressLine2 = None, city = "City", county = None, postcode = "XX11XX", country = "Test Country")
+                  UkAddress(addressLine1 = "TestAddress", addressLine2 = None, city = "City", county = None, postcode = "XX11XX", country = "GB")
         )
         .withPage(FINamePage(), fiName)
 
       val addressText =
-        """<span class="govuk-margin-bottom-0">TestAddress</span><br><span class="govuk-margin-bottom-0">City</span><br><span class="govuk-margin-bottom-0">XX11XX</span><br><span>Test Country</span><br>"""
+        """<span class="govuk-margin-bottom-0">TestAddress</span><br><span class="govuk-margin-bottom-0">City</span><br><span class="govuk-margin-bottom-0">XX11XX</span><br><span>United Kingdom</span><br>"""
 
       val summary = UkAddressSummary.row(ua)
 

@@ -16,7 +16,8 @@
 
 package viewmodels.checkAnswers
 
-import models.{CheckMode, ReportId, UserAnswers}
+import models.ServiceErrors.CountryLookup_Error
+import models.{CheckMode, Countries, ReportId, UserAnswers}
 import pages.manual.sponsor.UkAddressPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
@@ -36,13 +37,18 @@ object UkAddressSummary {
 
         def formatLastLine(line: String): String = s"""<span>${HtmlFormat.escape(line)}</span><br>"""
 
+        def countryDescription(code: String): String = Countries.all
+          .find(_.code == code)
+          .map(_.description)
+          .getOrElse(throw CountryLookup_Error)
+
         val addressHtml: String =
           formatLine(answer.addressLine1) concat
             answer.addressLine2.fold("")(formatLine) concat
             formatLine(answer.city) concat
             answer.county.fold("")(formatLine) concat
             formatLine(answer.postcode) concat
-            formatLastLine(answer.country)
+            formatLastLine(countryDescription(answer.country))
 
         SummaryListRowViewModel(
           key = "ukAddress.checkYourAnswersLabel",

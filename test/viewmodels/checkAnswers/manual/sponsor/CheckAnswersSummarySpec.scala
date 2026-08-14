@@ -54,7 +54,7 @@ class CheckAnswersSummarySpec extends SpecBase {
         .withPage(HaveSponsorPage(), true)
         .withPage(SponsorNamePage(), "Test Sponsor")
         .withPage(WhatIsGIINForSponsorPage(), "alphvA.zDSJH.HV.255")
-        .withPage(UkAddressPage(), UkAddress("address line 1", None, "city", None, "postcode", "country"))
+        .withPage(UkAddressPage(), UkAddress("address line 1", None, "city", None, "postcode", "GB"))
         .withPage(TaxResidentCountriesListPage(), Seq(Country("XX", "Test Country")))
         .withPage(FINamePage(), fiName)
 
