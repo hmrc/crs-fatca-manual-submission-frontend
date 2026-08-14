@@ -21,9 +21,11 @@ import controllers.manual.reportdetails.routes.*
 import controllers.routes
 import models.*
 import models.SubmissionsConstants.{CRS, FATCA}
+import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
 import models.viewModels.AccountId
 import pages.*
 import pages.manual.account.*
+import pages.manual.accountHolders.IndividualOrOrganisationPage
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.*
@@ -70,6 +72,10 @@ class ManualSubmissionNavigator @Inject() () {
     case (WhatTypeOfFilerIsSponsorPage(), _, _) => controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad()
   }
 
+  private def accountHolderNavigation: PartialFunction[(Page, Mode, UserAnswers), Call] = {
+    case (IndividualOrOrganisationPage(), _, _) => routes.UnderConstructionController.onPageLoad()
+  }
+
   private def sponsorNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
     case (HaveSponsorPage(), mode, ua)                      => haveSponsorNavigation(mode, ua)
     case (SponsorNamePage(), mode, _)                       => controllers.manual.sponsor.routes.WhatIsGIINForSponsorController.onPageLoad(mode)
@@ -96,7 +102,7 @@ class ManualSubmissionNavigator @Inject() () {
     else controllers.manual.sponsor.routes.SponsorResidentForTaxController.onPageLoad(mode)
 
   private def navigation(implicit reportId: ReportId) =
-    accountNavigation orElse sponsorNavigation orElse fillerNavigation
+    accountNavigation orElse sponsorNavigation orElse fillerNavigation orElse accountHolderNavigation
 
   def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId): Call =
     navigation

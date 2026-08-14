@@ -486,3 +486,11 @@ isDormantAccount.heading = Is the account dormant?
 isDormantAccount.checkYourAnswersLabel = isDormantAccount
 isDormantAccount.error.required = Select yes if the account is dormant
 isDormantAccount.change.hidden = IsDormantAccount
+
+individualOrOrganisation.title = Is the account holder an individual or organisation?
+individualOrOrganisation.heading = Is the account holder an individual or organisation?
+individualOrOrganisation.individual = Individual
+individualOrOrganisation.organisation = Organisation
+individualOrOrganisation.checkYourAnswersLabel = individualOrOrganisation
+individualOrOrganisation.error.required = Select whether the account holder is an individual or organisation
+individualOrOrganisation.change.hidden = IndividualOrOrganisation
