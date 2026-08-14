@@ -93,7 +93,7 @@
 
                     <div class="govuk-summary-card">
                         <div class="govuk-summary-card__title-wrapper">
-                        @if(cardList.exists(_.fileType.value.contains("FATCA3"))) {
+                        @if(cardList.exists(_.isVoided.value.contains(true))) {
                             <h2 class="govuk-summary-card__title">
                                 @cardList.head.title
                                 <strong class="govuk-tag govuk-tag--grey">@messages("viewSubmissions.voided")</strong>
