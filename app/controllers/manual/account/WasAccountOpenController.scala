@@ -16,21 +16,19 @@
 
 package controllers.manual.account
 
+import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.manual.account.WasAccountOpenFormProvider
-
-import javax.inject.Inject
+import models.manual.account.WasAccountOpen
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
 import pages.manual.account.WasAccountOpenPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import connectors.DatabaseConnector
-import models.manual.account.WasAccountOpen
-import play.api.data.Form
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.account.WasAccountOpenView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class WasAccountOpenController @Inject() (
@@ -45,15 +43,13 @@ class WasAccountOpenController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  val form: Form[WasAccountOpen] = formProvider()
-
   def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdRequired() {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
       val preparedForm = request.userAnswers.get(WasAccountOpenPage(request.accountId)) match {
-        case None        => form
-        case Some(value) => form.fill(value)
+        case None        => formProvider(reportId.reportingYear)
+        case Some(value) => formProvider(reportId.reportingYear).fill(value)
       }
 
       Ok(view(preparedForm, mode, reportId.reportingYear))
@@ -62,7 +58,7 @@ class WasAccountOpenController @Inject() (
   def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdRequired().async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
-      form
+      formProvider(reportId.reportingYear)
         .bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, reportId.reportingYear))),

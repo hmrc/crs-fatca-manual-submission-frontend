@@ -24,8 +24,8 @@ import models.manual.account.WasAccountOpen
 
 class WasAccountOpenFormProvider @Inject() extends Mappings {
 
-  def apply(): Form[WasAccountOpen] =
+  def apply(year: Int): Form[WasAccountOpen] =
     Form(
-      "value" -> enumerable[WasAccountOpen]("wasAccountOpen.error.required")
+      "value" -> enumerable[WasAccountOpen]("wasAccountOpen.error.required", args = Seq(year.toString))
     )
 }

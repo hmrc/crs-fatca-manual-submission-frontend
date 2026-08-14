@@ -35,7 +35,7 @@ class WasAccountOpenViewSpec extends SpecBase {
   private val view: WasAccountOpenView                                   = application.injector.instanceOf[WasAccountOpenView]
   private val messagesControllerComponents: MessagesControllerComponents = application.injector.instanceOf[MessagesControllerComponents]
   val formProvider                                                       = new WasAccountOpenFormProvider()
-  val form: Form[WasAccountOpen]                                         = formProvider()
+  val form: Form[WasAccountOpen]                                         = formProvider(2020)
 
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
   implicit private val messages: Messages               = messagesControllerComponents.messagesApi.preferred(Seq(Lang("en")))

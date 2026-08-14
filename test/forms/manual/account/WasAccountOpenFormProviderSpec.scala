@@ -22,7 +22,7 @@ import play.api.data.FormError
 
 class WasAccountOpenFormProviderSpec extends OptionFieldBehaviours {
 
-  val form = new WasAccountOpenFormProvider()()
+  val form = new WasAccountOpenFormProvider()(2025)
 
   ".value" - {
 
@@ -33,13 +33,13 @@ class WasAccountOpenFormProviderSpec extends OptionFieldBehaviours {
       form,
       fieldName,
       validValues = WasAccountOpen.allValues,
-      invalidError = FormError(fieldName, "error.invalid")
+      invalidError = FormError(fieldName, "error.invalid", Seq(2025.toString))
     )
 
     behave like mandatoryField(
       form,
       fieldName,
-      requiredError = FormError(fieldName, requiredKey)
+      requiredError = FormError(fieldName, requiredKey, Seq(2025.toString))
     )
   }
 }

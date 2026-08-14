@@ -46,7 +46,7 @@ class WasAccountOpenControllerSpec extends SpecBase with MockitoSugar {
   lazy val wasAccountOpenRoute: String = controllers.manual.account.routes.WasAccountOpenController.onPageLoad(NormalMode).url
   val accountId: AccountId             = AccountId("id")
   val formProvider                     = new WasAccountOpenFormProvider()
-  val form: Form[WasAccountOpen]       = formProvider()
+  val form: Form[WasAccountOpen]       = formProvider(2025)
 
   "WasAccountOpen Controller" - {
     implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
