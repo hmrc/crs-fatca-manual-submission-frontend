@@ -34,14 +34,14 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class ManualSubmissionNavigator @Inject() () {
 
-  def nextPageWithoutReportId(page: Page, mode: Mode, userAnswers: UserAnswers): Call = mode match {
+  def nextPageWithoutReportId(page: Page, mode: Mode): Call = mode match {
     case NormalMode =>
-      normalRoutes(page, userAnswers)
+      normalRoutes(page)
     case CheckMode =>
       routes.UnderConstructionController.onPageLoad()
   }
 
-  private def normalRoutes(page: Page, userAnswers: UserAnswers): Call =
+  private def normalRoutes(page: Page): Call =
     page match {
       case CrsOrFatcaPage    => ReportingYearController.onPageLoad(NormalMode)
       case ReportingYearPage => TypeOfReportController.onPageLoad(NormalMode)
@@ -50,14 +50,17 @@ class ManualSubmissionNavigator @Inject() () {
     }
 
   private def accountNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
-    case (HaveNumberPage(accountId), mode, ua)        => haveNumberNavigation(accountId, mode, ua)
-    case (NumberTypePage(_), mode, ua)                => routes.UnderConstructionController.onPageLoad()
-    case (IdentifierPage(_), mode, ua)                => controllers.manual.account.routes.AccountClosedController.onPageLoad(mode)
-    case (AccountClosedPage(accountId), mode, ua)     => accountClosedNavigation(accountId, mode, ua)
-    case (WhatWasTheAccountBalancePage(_), mode, ua)  => accountBalanceRouteLogic()
-    case (IsUndocumentedAccountPage(_), mode, ua)     => controllers.manual.account.routes.IsDormantAccountController.onPageLoad(NormalMode)
-    case (WhatWasTheAccountCurrencyPage(_), mode, ua) => controllers.manual.account.routes.IsUndocumentedAccountController.onPageLoad(NormalMode)
-    case (IsDormantAccountPage(_), mode, ua)          => routes.UnderConstructionController.onPageLoad()
+    case (HaveNumberPage(accountId), mode, ua)         => haveNumberNavigation(accountId, mode, ua)
+    case (NumberTypePage(_), mode, ua)                 => routes.UnderConstructionController.onPageLoad()
+    case (IdentifierPage(_), mode, ua)                 => controllers.manual.account.routes.AccountClosedController.onPageLoad(mode)
+    case (WasAccountOpenPage(_), mode, ua)             => controllers.manual.account.routes.IsJointAccountController.onPageLoad(mode)
+    case (IsJointAccountPage(accountId), mode, ua)     => jointAccountRouteLogic(accountId, ua)
+    case (HowManyJointAccountHoldersPage(_), mode, ua) => routes.UnderConstructionController.onPageLoad()
+    case (AccountClosedPage(accountId), mode, ua)      => accountClosedNavigation(accountId, mode, ua)
+    case (WhatWasTheAccountBalancePage(_), mode, ua)   => accountBalanceRouteLogic()
+    case (IsUndocumentedAccountPage(_), mode, ua)      => controllers.manual.account.routes.IsDormantAccountController.onPageLoad(NormalMode)
+    case (WhatWasTheAccountCurrencyPage(_), mode, ua)  => controllers.manual.account.routes.IsUndocumentedAccountController.onPageLoad(NormalMode)
+    case (IsDormantAccountPage(_), mode, ua)           => controllers.manual.account.routes.WasAccountOpenController.onPageLoad(NormalMode)
   }
 
   private def accountBalanceRouteLogic()(implicit reportId: ReportId) =
@@ -69,6 +72,17 @@ class ManualSubmissionNavigator @Inject() () {
     case (WhatTypeOfFilerPage(), _, _)          => controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad()
     case (WhatTypeOfFilerIsSponsorPage(), _, _) => controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad()
   }
+
+  private def jointAccountRouteLogic(accountId: AccountId, useranswers: UserAnswers)(implicit reportId: ReportId) =
+    useranswers
+      .get(IsJointAccountPage(accountId))
+      .map {
+        isJointAccount =>
+          if (isJointAccount) controllers.manual.account.routes.HowManyJointAccountHoldersController.onPageLoad(NormalMode)
+          else
+            routes.UnderConstructionController.onPageLoad()
+      }
+      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
   private def sponsorNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
     case (HaveSponsorPage(), mode, ua)                      => haveSponsorNavigation(mode, ua)

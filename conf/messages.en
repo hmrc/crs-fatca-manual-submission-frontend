@@ -486,3 +486,30 @@ isDormantAccount.heading = Is the account dormant?
 isDormantAccount.checkYourAnswersLabel = isDormantAccount
 isDormantAccount.error.required = Select yes if the account is dormant
 isDormantAccount.change.hidden = IsDormantAccount
+
+isJointAccount.title = isJointAccount
+isJointAccount.heading = isJointAccount
+isJointAccount.title = Is this a joint account?
+isJointAccount.heading = Is this a joint account?
+isJointAccount.checkYourAnswersLabel = isJointAccount
+isJointAccount.error.required = Select yes if this is a joint account
+isJointAccount.change.hidden = IsJointAccount
+
+howManyJointAccountHolders.title = How many joint account holders are there?
+howManyJointAccountHolders.heading = How many joint account holders are there?
+howManyJointAccountHolders.checkYourAnswersLabel = HowManyJoinAccountHolders
+howManyJointAccountHolders.error.nonNumeric = Number of joint account holders must only include numbers 0 to 9
+howManyJointAccountHolders.error.required = Enter the number of joint account holders
+howManyJointAccountHolders.error.wholeNumber = Number of joint account holders must only include numbers 0 to 9
+howManyJointAccountHolders.error.max = Number of joint account holders must be 200 or less
+howManyJointAccountHolders.error.min = Number of joint account holders must be 1 or more
+howManyJointAccountHolders.change.hidden = HowManyJoinAccountHolders
+
+wasAccountOpen.title = Was the account opened in {0}?
+wasAccountOpen.heading = Was the account opened in {0}?
+wasAccountOpen.yes = Yes
+wasAccountOpen.no = No
+wasAccountOpen.notReported = Not reported
+wasAccountOpen.checkYourAnswersLabel = Was the account opened in {0}?
+wasAccountOpen.error.required = Select yes if the account was opened in {0}
+wasAccountOpen.change.hidden = WasAccountOpen

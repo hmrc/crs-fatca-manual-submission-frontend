@@ -14,17 +14,32 @@
  * limitations under the License.
  */
 
-package navigation
+package forms.manual.account
 
-import models.{Mode, ReportId, UserAnswers}
-import pages.*
-import play.api.mvc.Call
+import forms.behaviours.BooleanFieldBehaviours
+import play.api.data.FormError
 
-class FakeManualSubmissionNavigator(desiredRoute: Call) extends ManualSubmissionNavigator {
+class IsJointAccountFormProviderSpec extends BooleanFieldBehaviours {
 
-  override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId): Call =
-    desiredRoute
+  val requiredKey = "isJointAccount.error.required"
+  val invalidKey  = "error.boolean"
 
-  override def nextPageWithoutReportId(page: Page, mode: Mode): Call =
-    desiredRoute
+  val form = new IsJointAccountFormProvider()()
+
+  ".value" - {
+
+    val fieldName = "value"
+
+    behave like booleanField(
+      form,
+      fieldName,
+      invalidError = FormError(fieldName, invalidKey)
+    )
+
+    behave like mandatoryField(
+      form,
+      fieldName,
+      requiredError = FormError(fieldName, requiredKey)
+    )
+  }
 }
