@@ -209,17 +209,14 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
       }
 
       "NumberTypePage" - {
-
         "must go to UnderConstruction Page when when answer is No" in {
           val userData = UserAnswers("id").withPage(NumberTypePage(accountId), NumberType.Iban)
           navigator.nextPage(NumberTypePage(accountId), NormalMode, userData) mustBe
             controllers.routes.UnderConstructionController.onPageLoad()
         }
-
       }
 
       "IdentifierPage" - {
-
         "must go to AccountClosed Page" in {
           val userData = UserAnswers("id").withPage(IdentifierPage(accountId), "testId")
           navigator.nextPage(IdentifierPage(accountId), NormalMode, userData) mustBe
@@ -480,6 +477,13 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         "must go to Under construction page if answered no" in {
           val ua = emptyUserAnswers.withPage(IsJointAccountPage(accountId), false)
           navigator.nextPage(IsJointAccountPage(accountId), NormalMode, ua) mustBe controllers.routes.UnderConstructionController.onPageLoad()
+        }
+      }
+      "RemoveTaxResidentCountryPage" - {
+        "must go to Tax Resident countries page when submitted" in {
+          val ua = UserAnswers("id")
+          navigator.nextPage(RemoveTaxResidentCountryPage(), NormalMode, ua) mustBe
+            controllers.manual.sponsor.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
         }
       }
 

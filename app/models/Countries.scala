@@ -725,6 +725,10 @@ object Countries {
       description = "Mozambique"
     ),
     Country(
+      code = "XX",
+      description = "Other"
+    ),
+    Country(
       code = "NA",
       description = "Namibia"
     ),

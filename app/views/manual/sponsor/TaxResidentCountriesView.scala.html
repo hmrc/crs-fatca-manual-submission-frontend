@@ -16,6 +16,7 @@
 
 @import viewmodels.manual.sponsor.TaxResidentCountryRow
 @import viewmodels.govuk._
+@import  views.html.components._
 
 @this(
     layout: templates.Layout,
@@ -24,16 +25,25 @@
     govukRadios: GovukRadios,
     heading: components.Heading,
     paragraph: components.Paragraph,
-    govukButton: GovukButton
+    govukButton: GovukButton,
+    notificationBanner: views.html.components.SuccessNotificationBanner
+
 )
 
-@(form: Form[_], mode: Mode, sponsorName: String, countries: Seq[String])(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, sponsorName: String, countries: Seq[String])(implicit request: Request[_], messages: Messages, flash: Flash)
 
 @layout(pageTitle = title(form, messages("taxResidentCountries.title",countryCountText(countries.size))),
 mainContentLayout = Some(ThreeQuartersMainContent.apply _)
 ) {
 
     @formHelper(action = controllers.manual.sponsor.routes.TaxResidentCountriesController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+        @flash.get("country-removed").map { country =>
+            @notificationBanner(messages("taxResidentCountries.country.removed", country))
+        }
+
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummaryViewModel(form))
+        }
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
@@ -52,13 +62,13 @@ mainContentLayout = Some(ThreeQuartersMainContent.apply _)
                             <ul class="govuk-summary-list__actions-list">
                                 <li class="govuk-summary-list__actions-list-item">
                                     <a class="govuk-link" href="@row.changeUrl">
-                                        <span aria-hidden="true">Change</span>
+                                        <span aria-hidden="true" id="Change-country-@{row.country}">Change</span>
                                         <span class="govuk-visually-hidden">Change @row.country to a different country</span>
                                     </a>
                                 </li>
                                 <li class="govuk-summary-list__actions-list-item">
                                     <a class="govuk-link" href="@row.removeUrl">
-                                        <span aria-hidden="true">Remove</span>
+                                        <span aria-hidden="true" id="remove-country-@{row.country}">Remove</span>
                                         <span class="govuk-visually-hidden">Remove @row.country from the list</span>
                                     </a>
                                 </li>
@@ -89,6 +99,7 @@ mainContentLayout = Some(ThreeQuartersMainContent.apply _)
     }
 }
 
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.notificationbanner.NotificationBanner
 @countryCountText(count: Int) = @{
     count match {
         case 0 => "not added any countries"
