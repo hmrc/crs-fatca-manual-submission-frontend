@@ -14,31 +14,27 @@
  * limitations under the License.
  */
 
-package viewmodels.checkAnswers.manual.sponsor
+package viewmodels.checkAnswers.manual.account
 
-import controllers.manual.sponsor.routes
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.sponsor.IsSponsorBasedInUKPage
+import pages.manual.account.{CurrentAccountIdPage, HowManyJointAccountHoldersPage}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist.*
 import viewmodels.implicits.*
 
-object IsSponsorBasedInUKSummary {
+object HowManyJointAccountHoldersSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
-    answers.get(IsSponsorBasedInUKPage()).map {
-      answer =>
-
-        val value = if (answer) "site.yes" else "site.no"
-
-        SummaryListRowViewModel(
-          key = "isSponsorBasedInUK.checkYourAnswersLabel",
-          value = ValueViewModel(value),
-          actions = Seq(
-            ActionItemViewModel("site.change", routes.IsSponsorBasedInUKController.onPageLoad(CheckMode).url)
-              .withVisuallyHiddenText(messages("isSponsorBasedInUK.change.hidden"))
-          )
-        )
-    }
+    for {
+      accountId <- answers.get(CurrentAccountIdPage())
+      answer    <- answers.get(HowManyJointAccountHoldersPage(accountId))
+    } yield SummaryListRowViewModel(
+      key = "howManyJointAccountHolders.checkYourAnswersLabel",
+      value = ValueViewModel(answer.toString),
+      actions = Seq(
+        ActionItemViewModel("site.change", controllers.manual.account.routes.HowManyJointAccountHoldersController.onPageLoad(CheckMode).url)
+          .withVisuallyHiddenText(messages("howManyJointAccountHolders.change.hidden"))
+      )
+    )
 }

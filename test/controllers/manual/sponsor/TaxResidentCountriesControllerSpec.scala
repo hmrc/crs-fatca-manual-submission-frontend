@@ -29,7 +29,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
 import pages.manual.sponsor.{DoYouWantToAddTaxResidentCountryPage, SponsorNamePage}
 import play.api.inject.bind
-import play.api.mvc.Call
+import play.api.mvc.{Call, Flash}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import views.html.manual.sponsor.TaxResidentCountriesView
@@ -65,7 +65,7 @@ class TaxResidentCountriesControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[TaxResidentCountriesView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, sponsorName, Seq.empty)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, sponsorName, Seq.empty)(request, messages(application), Flash()).toString
       }
     }
 
@@ -83,7 +83,7 @@ class TaxResidentCountriesControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode, sponsorName, Seq.empty)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode, sponsorName, Seq.empty)(request, messages(application), Flash()).toString
       }
     }
 
@@ -129,7 +129,7 @@ class TaxResidentCountriesControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, sponsorName, Seq.empty)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, sponsorName, Seq.empty)(request, messages(application), Flash()).toString
       }
     }
 

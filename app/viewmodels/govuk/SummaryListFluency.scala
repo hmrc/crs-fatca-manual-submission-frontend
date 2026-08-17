@@ -27,6 +27,9 @@ trait SummaryListFluency {
 
     def apply(rows: Seq[SummaryListRow]): SummaryList =
       SummaryList(rows = rows)
+
+    def apply(rows: Seq[SummaryListRow], card: Card): SummaryList =
+      SummaryList(rows = rows, card = Some(card))
   }
 
   implicit class FluentSummaryList(list: SummaryList) {
@@ -116,5 +119,17 @@ trait SummaryListFluency {
 
     def withCssClass(className: String): Value =
       value.copy(classes = s"${value.classes} $className")
+  }
+
+  object CardViewModel {
+
+    def apply(title: CardTitle, actions: Seq[ActionItem]): Card =
+      Card(title = Some(title), actions = Some(Actions(items = actions)))
+  }
+
+  implicit class FluentCard(card: Card) {
+
+    def withCssClass(className: String): Card =
+      card.copy(classes = s"${card.classes} $className")
   }
 }

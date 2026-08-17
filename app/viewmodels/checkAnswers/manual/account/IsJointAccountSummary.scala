@@ -14,28 +14,31 @@
  * limitations under the License.
  */
 
-package viewmodels.checkAnswers.manual.sponsor
+package viewmodels.checkAnswers.manual.account
 
+import controllers.manual.account.routes
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.sponsor.UKPostcodePage
+import pages.manual.account.{CurrentAccountIdPage, IsJointAccountPage}
 import play.api.i18n.Messages
-import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist.*
 import viewmodels.implicits.*
 
-object UKPostcodeSummary {
+object IsJointAccountSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
-    answers.get(UKPostcodePage()).map {
-      answer =>
-        SummaryListRowViewModel(
-          key = "uKPostcode.checkYourAnswersLabel",
-          value = ValueViewModel(HtmlFormat.escape(answer).toString),
-          actions = Seq(
-            ActionItemViewModel("site.change", controllers.manual.sponsor.routes.UKPostcodeController.onPageLoad(CheckMode).url)
-              .withVisuallyHiddenText(messages("uKPostcode.change.hidden"))
-          )
+    for {
+      currentId      <- answers.get(CurrentAccountIdPage())
+      isJointAccount <- answers.get(IsJointAccountPage(currentId))
+    } yield
+      val value = if (isJointAccount) "site.yes" else "site.no"
+
+      SummaryListRowViewModel(
+        key = "isJointAccount.checkYourAnswersLabel",
+        value = ValueViewModel(value),
+        actions = Seq(
+          ActionItemViewModel("site.change", routes.IsJointAccountController.onPageLoad(CheckMode).url)
+            .withVisuallyHiddenText(messages("isJointAccount.change.hidden"))
         )
-    }
+      )
 }

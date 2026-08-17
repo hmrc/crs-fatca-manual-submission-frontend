@@ -39,7 +39,7 @@ class IsThisAddressForSponsorViewSpec extends SpecBase {
   implicit private val messages: Messages               = messagesControllerComponents.messagesApi.preferred(Seq(Lang("en")))
 
   private val address: Address =
-    Address(None, "1 Address line 1 Road", None, "Address line 2 Road", Some("Town"), Some("zz11zz"), Country.GB)
+    Address(None, "1 Address line 1 Road", None, Some("Address line 2 Road"), None, "Town", Some("zz11zz"), Country.GB)
 
   "IsThisAddressForSponsorView" - {
 

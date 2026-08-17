@@ -36,15 +36,11 @@ case class AddressLookup(uprn: Long,
   val toAddress: Option[Address] =
     for {
       line1 <- addressLine1
-      line2 = addressLine2
-      line3 = addressLine3
-        .map(
-          l => s"$l $town"
-        )
-        .getOrElse(town)
+      line2        = addressLine2
+      line3        = addressLine3
       line4        = addressLine4
       safePostcode = Option(postcode)
-    } yield Address(Some(uprn), line1, line2, line3, line4, safePostcode, country.getOrElse(Country.GB))
+    } yield Address(Some(uprn), line1, line2, line3, line4, town, safePostcode, country.getOrElse(Country.GB))
 
   lazy val format: String =
     Seq(

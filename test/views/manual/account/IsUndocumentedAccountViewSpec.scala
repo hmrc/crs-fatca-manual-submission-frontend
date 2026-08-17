@@ -17,7 +17,7 @@
 package views.manual.account
 
 import base.SpecBase
-import forms.manual.account.{IsDormantAccountFormProvider, IsUndocumentedAccountFormProvider}
+import forms.manual.account.IsUndocumentedAccountFormProvider
 import models.NormalMode
 import org.jsoup.Jsoup
 import play.api.data.Form
@@ -25,7 +25,7 @@ import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
-import views.html.manual.account.{IsDormantAccountView, IsUndocumentedAccountView}
+import views.html.manual.account.IsUndocumentedAccountView
 
 class IsUndocumentedAccountViewSpec extends SpecBase {
 

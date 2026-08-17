@@ -10,7 +10,7 @@ import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{ReportIdPage}
+import pages.ReportIdPage
 import pages.$package$.$className$Page
 import play.api.inject.bind
 import play.api.mvc.Call
