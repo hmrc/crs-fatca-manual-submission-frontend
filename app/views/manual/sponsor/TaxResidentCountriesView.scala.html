@@ -54,13 +54,13 @@ mainContentLayout = Some(ThreeQuartersMainContent.apply _)
                             <ul class="govuk-summary-list__actions-list">
                                 <li class="govuk-summary-list__actions-list-item">
                                     <a class="govuk-link" href="@row.changeUrl">
-                                        <span aria-hidden="true">Change</span>
+                                        <span aria-hidden="true" id="Change-country-@{row.country}">Change</span>
                                         <span class="govuk-visually-hidden">Change @row.country to a different country</span>
                                     </a>
                                 </li>
                                 <li class="govuk-summary-list__actions-list-item">
                                     <a class="govuk-link" href="@row.removeUrl">
-                                        <span aria-hidden="true">Remove</span>
+                                        <span aria-hidden="true" id="remove-country-@{row.country}">Remove</span>
                                         <span class="govuk-visually-hidden">Remove @row.country from the list</span>
                                     </a>
                                 </li>
