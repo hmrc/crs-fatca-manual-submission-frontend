@@ -1,47 +1,70 @@
-package controllers
+/*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package controllers.manual.account
 
 import base.SpecBase
-import forms.$className$FormProvider
+import connectors.DatabaseConnector
+import controllers.routes
+import forms.manual.account.HowManyJointAccountHoldersFormProvider
 import models.SubmissionsConstants.CRS
+import models.viewModels.AccountId
 import models.{NormalMode, ReportId}
+import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
-import pages.{ReportIdPage, $className$Page}
+import pages.ReportIdPage
+import pages.manual.account.{CurrentAccountIdPage, HowManyJointAccountHoldersPage}
+import play.api.data.Form
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import connectors.DatabaseConnector
-import views.html.$className$View
+import play.api.test.Helpers.*
+import views.html.manual.account.HowManyJointAccountHoldersView
 
 import scala.concurrent.Future
 
-class $className$ControllerSpec extends SpecBase with MockitoSugar {
+class HowManyJointAccountHoldersControllerSpec extends SpecBase with MockitoSugar {
 
-  val formProvider = new $className$FormProvider()
-  val form = formProvider()
+  val formProvider    = new HowManyJointAccountHoldersFormProvider()
+  val form: Form[Int] = formProvider()
 
   def onwardRoute = Call("GET", "/foo")
 
-  val validAnswer = $minimum$
+  val validAnswer                                  = 1
+  val currentAccountId                             = AccountId("id")
+  lazy val howManyJointAccountHoldersRoute: String = controllers.manual.account.routes.HowManyJointAccountHoldersController.onPageLoad(NormalMode).url
 
-  lazy val $className;format="decap"$Route = routes.$className$Controller.onPageLoad(NormalMode).url
-
-  "$className$ Controller" - {
-    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS,2025,None,"TestfiID"))
+  "HowManyJointAccountHolders Controller" - {
+    implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
+    val ua = emptyUserAnswers
+      .withPage(ReportIdPage, reportId)
+      .withPage(CurrentAccountIdPage(), currentAccountId)
 
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
 
       running(application) {
-        val request = FakeRequest(GET, $className;format="decap"$Route)
+        val request = FakeRequest(GET, howManyJointAccountHoldersRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[$className$View]
+        val view = application.injector.instanceOf[HowManyJointAccountHoldersView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
@@ -49,16 +72,15 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-      implicit val reportId = ReportId(CRS,2025,None,"TestfiID")
 
-      val userAnswers = ua.set($className$Page(), validAnswer).success.value
+      val userAnswers = ua.set(HowManyJointAccountHoldersPage(currentAccountId), validAnswer).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, $className;format="decap"$Route)
+        val request = FakeRequest(GET, howManyJointAccountHoldersRoute)
 
-        val view = application.injector.instanceOf[$className$View]
+        val view = application.injector.instanceOf[HowManyJointAccountHoldersView]
 
         val result = route(application, request).value
 
@@ -83,7 +105,7 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, $className;format="decap"$Route)
+          FakeRequest(POST, howManyJointAccountHoldersRoute)
             .withFormUrlEncodedBody(("value", validAnswer.toString))
 
         val result = route(application, request).value
@@ -99,12 +121,12 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, $className;format="decap"$Route)
+          FakeRequest(POST, howManyJointAccountHoldersRoute)
             .withFormUrlEncodedBody(("value", "invalid value"))
 
         val boundForm = form.bind(Map("value" -> "invalid value"))
 
-        val view = application.injector.instanceOf[$className$View]
+        val view = application.injector.instanceOf[HowManyJointAccountHoldersView]
 
         val result = route(application, request).value
 
@@ -118,7 +140,7 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(maybeUserAnswers = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, $className;format="decap"$Route)
+        val request = FakeRequest(GET, howManyJointAccountHoldersRoute)
 
         val result = route(application, request).value
 
@@ -133,7 +155,7 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, $className;format="decap"$Route)
+          FakeRequest(POST, howManyJointAccountHoldersRoute)
             .withFormUrlEncodedBody(("value", validAnswer.toString))
 
         val result = route(application, request).value

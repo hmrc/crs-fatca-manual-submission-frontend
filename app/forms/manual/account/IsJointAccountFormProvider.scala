@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package navigation
+package forms.manual.account
 
-import models.{Mode, ReportId, UserAnswers}
-import pages.*
-import play.api.mvc.Call
+import javax.inject.Inject
 
-class FakeManualSubmissionNavigator(desiredRoute: Call) extends ManualSubmissionNavigator {
+import forms.mappings.Mappings
+import play.api.data.Form
 
-  override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId): Call =
-    desiredRoute
+class IsJointAccountFormProvider @Inject() extends Mappings {
 
-  override def nextPageWithoutReportId(page: Page, mode: Mode): Call =
-    desiredRoute
+  def apply(): Form[Boolean] =
+    Form(
+      "value" -> boolean("isJointAccount.error.required")
+    )
 }

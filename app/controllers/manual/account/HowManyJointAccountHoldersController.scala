@@ -14,42 +14,41 @@
  * limitations under the License.
  */
 
-package controllers.manual.reportdetails
+package controllers.manual.account
 
-import controllers.actions.{DataRequiredAction, FrontendDataRetrievalAction, IdentifierAction}
-import forms.manual.reportdetails.CrsOrFatcaFormProvider
-import models.Mode
+import connectors.DatabaseConnector
+import controllers.actions.*
+import forms.manual.account.HowManyJointAccountHoldersFormProvider
+import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.reportdetails.CrsOrFatcaPage
+import pages.manual.account.HowManyJointAccountHoldersPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.manual.reportdetails.CrsOrFatcaView
+import views.html.manual.account.HowManyJointAccountHoldersView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CrsOrFatcaController @Inject() (
+class HowManyJointAccountHoldersController @Inject() (
   override val messagesApi: MessagesApi,
-  sessionRepository: SessionRepository,
+  repository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
-  identify: IdentifierAction,
-  getData: FrontendDataRetrievalAction,
-  requireData: DataRequiredAction,
-  formProvider: CrsOrFatcaFormProvider,
+  action: Actions,
+  formProvider: HowManyJointAccountHoldersFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: CrsOrFatcaView
+  view: HowManyJointAccountHoldersView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  val form = formProvider()
-
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = action.withReportIdRequiredAndAccountIdRequired() {
     implicit request =>
+      val form = formProvider()
 
-      val preparedForm = request.userAnswers.get(CrsOrFatcaPage) match {
+      implicit val reportId: ReportId = request.reportId
+
+      val preparedForm = request.userAnswers.get(HowManyJointAccountHoldersPage(request.accountId)) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
@@ -57,17 +56,21 @@ class CrsOrFatcaController @Inject() (
       Ok(view(preparedForm, mode))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = action.withReportIdRequiredAndAccountIdRequired().async {
     implicit request =>
+      val form = formProvider()
+
+      implicit val reportId: ReportId = request.reportId
+
       form
         .bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(CrsOrFatcaPage, value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPageWithoutReportId(CrsOrFatcaPage, mode))
+              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(HowManyJointAccountHoldersPage(request.accountId), value))
+              _              <- repository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(HowManyJointAccountHoldersPage(request.accountId), mode, updatedAnswers))
         )
   }
 }

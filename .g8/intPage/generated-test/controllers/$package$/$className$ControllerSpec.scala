@@ -1,36 +1,36 @@
 package controllers.$package$
 
 import base.SpecBase
-import connectors.DatabaseConnector
-import controllers.routes
 import forms.$package$.$className$FormProvider
 import models.SubmissionsConstants.CRS
 import models.{NormalMode, ReportId}
-import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
+import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import pages.ReportIdPage
 import pages.$package$.$className$Page
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import connectors.DatabaseConnector
 import views.html.$package$.$className$View
 
 import scala.concurrent.Future
 
 class $className$ControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
-
   val formProvider = new $className$FormProvider()
   val form = formProvider()
+
+  def onwardRoute = Call("GET", "/foo")
+
+  val validAnswer = $minimum$
 
   lazy val $className;format="decap"$Route = controllers.$package$.routes.$className$Controller.onPageLoad(NormalMode).url
 
   "$className$ Controller" - {
-
     val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS,2025,None,"TestfiID"))
 
     "must return OK and the correct view for a GET" in {
@@ -50,10 +50,9 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-
       implicit val reportId = ReportId(CRS,2025,None,"TestfiID")
 
-      val userAnswers = ua.set($className$Page(), true).success.value
+      val userAnswers = ua.set($className$Page(), validAnswer).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
@@ -65,7 +64,7 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode)(request, messages(application)).toString
       }
     }
 
@@ -86,7 +85,7 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, $className;format="decap"$Route)
-            .withFormUrlEncodedBody(("value", "true"))
+            .withFormUrlEncodedBody(("value", validAnswer.toString))
 
         val result = route(application, request).value
 
@@ -102,9 +101,9 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, $className;format="decap"$Route)
-            .withFormUrlEncodedBody(("value", ""))
+            .withFormUrlEncodedBody(("value", "invalid value"))
 
-        val boundForm = form.bind(Map("value" -> ""))
+        val boundForm = form.bind(Map("value" -> "invalid value"))
 
         val view = application.injector.instanceOf[$className$View]
 
@@ -136,11 +135,12 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, $className;format="decap"$Route)
-            .withFormUrlEncodedBody(("value", "true"))
+            .withFormUrlEncodedBody(("value", validAnswer.toString))
 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
+
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }

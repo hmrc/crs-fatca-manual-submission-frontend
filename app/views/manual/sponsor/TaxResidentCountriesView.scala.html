@@ -41,6 +41,10 @@ mainContentLayout = Some(ThreeQuartersMainContent.apply _)
             @notificationBanner(messages("taxResidentCountries.country.removed", country))
         }
 
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummaryViewModel(form))
+        }
+
         @heading(messages("taxResidentCountries.heading",countryCountText(countries.size), sponsorName))
 
         @if(countries.nonEmpty) {
@@ -69,9 +73,6 @@ mainContentLayout = Some(ThreeQuartersMainContent.apply _)
                     </div>
                 }
             </dl>
-            @if(form.errors.nonEmpty) {
-                @govukErrorSummary(ErrorSummaryViewModel(form))
-            }
 
             @govukRadios(
                 RadiosViewModel.yesNo(
