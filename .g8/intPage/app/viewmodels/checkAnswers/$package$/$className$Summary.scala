@@ -1,4 +1,4 @@
-package viewmodels.checkAnswers
+package viewmodels.checkAnswers.$package$
 
 import controllers.routes
 import models.{CheckMode, ReportId, UserAnswers}
@@ -17,7 +17,7 @@ object $className$Summary  {
           key     = "$className;format="decap"$.checkYourAnswersLabel",
           value   = ValueViewModel(answer.toString),
           actions = Seq(
-            ActionItemViewModel("site.change", routes.$className$Controller.onPageLoad(CheckMode).url)
+            ActionItemViewModel("site.change", controllers.$package$.routes.$className$Controller.onPageLoad(CheckMode).url)
               .withVisuallyHiddenText(messages("$className;format="decap"$.change.hidden"))
           )
         )

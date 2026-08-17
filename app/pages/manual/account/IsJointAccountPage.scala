@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package navigation
+package pages.manual.account
 
-import models.{Mode, ReportId, UserAnswers}
-import pages.*
-import play.api.mvc.Call
+import models.ReportId
+import models.viewModels.AccountId
+import pages.QuestionPage
+import play.api.libs.json.JsPath
 
-class FakeManualSubmissionNavigator(desiredRoute: Call) extends ManualSubmissionNavigator {
+final case class IsJointAccountPage(accountId: AccountId)(implicit reportId: ReportId) extends QuestionPage[Boolean]:
 
-  override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId): Call =
-    desiredRoute
-
-  override def nextPageWithoutReportId(page: Page, mode: Mode): Call =
-    desiredRoute
-}
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "accounts" \ accountId.value \ "isJointAccount"

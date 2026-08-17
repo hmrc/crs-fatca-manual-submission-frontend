@@ -20,8 +20,14 @@ import models.{CrsOrFatca, TypeOfReport}
 import org.scalacheck.{Arbitrary, Gen}
 import models.NumberType
 import models.UkAddress
+import models.manual.account.WasAccountOpen
 
 trait ModelGenerators {
+
+  implicit lazy val arbitraryWasAccountOpen: Arbitrary[WasAccountOpen] =
+    Arbitrary {
+      Gen.oneOf(WasAccountOpen.allValues)
+    }
 
   implicit lazy val arbitraryUkAddress: Arbitrary[UkAddress] =
     Arbitrary {
