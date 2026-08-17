@@ -42,13 +42,7 @@ class AddressNonUkSummarySpec extends SpecBase {
         .withPage(ReportIdPage, reportId)
         .withPage(
           AddressNonUkPage(),
-          AddressNonUk(addressLine1 = "TestAddress",
-                       addressLine2 = None,
-                       addressLine3 = "address line 3",
-                       addressLine4 = None,
-                       postcode = None,
-                       country = "GB"
-          )
+          AddressNonUk(addressLine1 = "TestAddress", addressLine2 = None, addressLine3 = "address line 3", addressLine4 = None, postcode = None, country = "GB")
         )
         .withPage(FINamePage(), fiName)
 

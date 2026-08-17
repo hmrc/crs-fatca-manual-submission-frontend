@@ -307,7 +307,15 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
       }
 
       "WhatIsAddressForSponsorPage" - {
-        val address = Address(uprn = None, addressLine1 = "string", addressLine2 = None, addressLine3 = Some("string"), addressLine4 = None, town = "town", postCode = None, country = Country.GB)
+        val address = Address(uprn = None,
+                              addressLine1 = "string",
+                              addressLine2 = None,
+                              addressLine3 = Some("string"),
+                              addressLine4 = None,
+                              town = "town",
+                              postCode = None,
+                              country = Country.GB
+        )
         "must go to Tax resident page after user hits submit when there are no tax resident country codes" in {
           Seq(true, false).foreach {
             isThisAddressForSponsor =>
@@ -344,7 +352,15 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
       }
 
       "IsThisAddressForSponsorPage" - {
-        val address = Address(uprn = None, addressLine1 = "string", addressLine2 = None, addressLine3 = Some("String"), addressLine4 = None, town = "town", postCode = None, country = Country.GB)
+        val address = Address(uprn = None,
+                              addressLine1 = "string",
+                              addressLine2 = None,
+                              addressLine3 = Some("String"),
+                              addressLine4 = None,
+                              town = "town",
+                              postCode = None,
+                              country = Country.GB
+        )
         "must go to Tax resident page after user hits submit when there are no tax resident country codes and it is the address" in {
 
           val ua = UserAnswers("id")
@@ -377,10 +393,19 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         }
 
         "must go to UkAddress Page when answer is No" in {
-          val address = Address(uprn = None, addressLine1 = "1 Address line 1 Road", addressLine2 = None, addressLine3 = Some("Address line 2 Road"), addressLine4 = None, town = "Town", postCode = Some("zz11zz"), country = Country.GB)
+          val address = Address(
+            uprn = None,
+            addressLine1 = "1 Address line 1 Road",
+            addressLine2 = None,
+            addressLine3 = Some("Address line 2 Road"),
+            addressLine4 = None,
+            town = "Town",
+            postCode = Some("zz11zz"),
+            country = Country.GB
+          )
           val userData = UserAnswers("id")
             .withPage(IsThisAddressForSponsorPage(), false)
-            .withPage(WhatIsAddressForSponsorPage(),address)
+            .withPage(WhatIsAddressForSponsorPage(), address)
           navigator.nextPage(IsThisAddressForSponsorPage(), NormalMode, userData) mustBe
             controllers.manual.sponsor.routes.UkAddressController.onPageLoad(NormalMode)
         }
