@@ -69,10 +69,10 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             controllers.manual.sponsor.routes.SponsorNameController.onPageLoad(NormalMode)
         }
 
-        "must go to UnderConstruction Page when when answer is No" in {
+        "must go to CheckAnswers Page when when answer is No" in {
           val userData = UserAnswers("id").withPage(HaveSponsorPage(), false)
           navigator.nextPage(HaveSponsorPage(), NormalMode, userData) mustBe
-            controllers.routes.UnderConstructionController.onPageLoad()
+            controllers.manual.sponsor.routes.CheckAnswersController.onPageLoad()
         }
 
         "must go to JourneyRecovery Page when Normal Mode when answer is missing" in {
@@ -305,7 +305,15 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
       }
 
       "WhatIsAddressForSponsorPage" - {
-        val address = Address(None, "string", None, "string", None, None, Country.GB)
+        val address = Address(uprn = None,
+                              addressLine1 = "string",
+                              addressLine2 = None,
+                              addressLine3 = Some("string"),
+                              addressLine4 = None,
+                              town = "town",
+                              postCode = None,
+                              country = Country.GB
+        )
         "must go to Tax resident page after user hits submit when there are no tax resident country codes" in {
           Seq(true, false).foreach {
             isThisAddressForSponsor =>
@@ -342,7 +350,15 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
       }
 
       "IsThisAddressForSponsorPage" - {
-        val address = Address(None, "string", None, "string", None, None, Country.GB)
+        val address = Address(uprn = None,
+                              addressLine1 = "string",
+                              addressLine2 = None,
+                              addressLine3 = Some("String"),
+                              addressLine4 = None,
+                              town = "town",
+                              postCode = None,
+                              country = Country.GB
+        )
         "must go to Tax resident page after user hits submit when there are no tax resident country codes and it is the address" in {
 
           val ua = UserAnswers("id")
@@ -375,11 +391,19 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         }
 
         "must go to UkAddress Page when answer is No" in {
+          val address = Address(
+            uprn = None,
+            addressLine1 = "1 Address line 1 Road",
+            addressLine2 = None,
+            addressLine3 = Some("Address line 2 Road"),
+            addressLine4 = None,
+            town = "Town",
+            postCode = Some("zz11zz"),
+            country = Country.GB
+          )
           val userData = UserAnswers("id")
             .withPage(IsThisAddressForSponsorPage(), false)
-            .withPage(WhatIsAddressForSponsorPage(),
-                      Address(None, "1 Address line 1 Road", None, "Address line 2 Road", Some("Town"), Some("zz11zz"), Country.GB)
-            )
+            .withPage(WhatIsAddressForSponsorPage(), address)
           navigator.nextPage(IsThisAddressForSponsorPage(), NormalMode, userData) mustBe
             controllers.manual.sponsor.routes.UkAddressController.onPageLoad(NormalMode)
         }
@@ -410,12 +434,12 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             controllers.manual.sponsor.routes.SponsorResidentForTaxController.onPageLoad(NormalMode)
         }
 
-        "must go to UnderConstruction page when user selected as no" in {
+        "must go to CheckAnswers page when user selected as no" in {
           val ua = UserAnswers("id")
             .withPage(DoYouWantToAddTaxResidentCountryPage(), false)
 
           navigator.nextPage(DoYouWantToAddTaxResidentCountryPage(), NormalMode, ua) mustBe
-            controllers.routes.UnderConstructionController.onPageLoad()
+            controllers.manual.sponsor.routes.CheckAnswersController.onPageLoad()
         }
       }
       "WhatWasTheAccountCurrencyPage" - {

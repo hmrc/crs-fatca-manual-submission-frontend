@@ -16,7 +16,8 @@
 
 package viewmodels.checkAnswers
 
-import models.{CheckMode, ReportId, UserAnswers}
+import models.ServiceErrors.CountryLookup_Error
+import models.{CheckMode, Countries, ReportId, UserAnswers}
 import pages.manual.sponsor.UkAddressPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
@@ -31,13 +32,31 @@ object UkAddressSummary {
     answers.get(UkAddressPage()).map {
       answer =>
 
-        val value = HtmlFormat.escape(answer.addressLine1).toString + "<br/>" + HtmlFormat.escape(answer.addressLine2.getOrElse("")).toString
+        def formatLine(line: String): String =
+          s"""<span class="govuk-margin-bottom-0">${HtmlFormat.escape(line)}</span><br>"""
+
+        def formatLastLine(line: String): String = s"""<span>${HtmlFormat.escape(line)}</span><br>"""
+
+        def countryDescription(code: String): String = Countries.all
+          .find(_.code == code)
+          .map(_.description)
+          .getOrElse(throw CountryLookup_Error)
+
+        val addressHtml: String =
+          formatLine(answer.addressLine1) concat
+            answer.addressLine2.fold("")(formatLine) concat
+            formatLine(answer.city) concat
+            answer.county.fold("")(formatLine) concat
+            formatLine(answer.postcode) concat
+            formatLastLine(countryDescription(answer.country))
 
         SummaryListRowViewModel(
           key = "ukAddress.checkYourAnswersLabel",
-          value = ValueViewModel(HtmlContent(value)),
+          value = ValueViewModel(
+            HtmlContent(addressHtml)
+          ),
           actions = Seq(
-            ActionItemViewModel("site.change", controllers.manual.sponsor.routes.UkAddressController.onPageLoad(CheckMode).url)
+            ActionItemViewModel("site.change", controllers.manual.sponsor.routes.IsSponsorBasedInUKController.onPageLoad(CheckMode).url)
               .withVisuallyHiddenText(messages("ukAddress.change.hidden"))
           )
         )
