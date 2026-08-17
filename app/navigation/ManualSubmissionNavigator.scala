@@ -102,7 +102,7 @@ class ManualSubmissionNavigator @Inject() () {
   private def handleTaxResidentCountriesOptionNavigation(ua: UserAnswers)(implicit reportId: ReportId): Call =
     ua.get(DoYouWantToAddTaxResidentCountryPage()) match {
       case Some(true) => controllers.manual.sponsor.routes.SponsorResidentForTaxController.onPageLoad(NormalMode)
-      case _          => routes.UnderConstructionController.onPageLoad()
+      case _          => controllers.manual.sponsor.routes.CheckAnswersController.onPageLoad()
     }
 
   private def handleNavigationToSponsorResidentTaxView(ua: UserAnswers, mode: Mode)(implicit reportId: ReportId): Call =
@@ -121,7 +121,7 @@ class ManualSubmissionNavigator @Inject() () {
   private def haveSponsorNavigation(mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
     userAnswers.get(HaveSponsorPage()) match {
       case Some(true)  => controllers.manual.sponsor.routes.SponsorNameController.onPageLoad(mode)
-      case Some(false) => routes.UnderConstructionController.onPageLoad()
+      case Some(false) => controllers.manual.sponsor.routes.CheckAnswersController.onPageLoad()
       case None        => routes.JourneyRecoveryController.onPageLoad()
     }
 

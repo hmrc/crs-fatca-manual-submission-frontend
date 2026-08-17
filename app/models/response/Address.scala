@@ -21,8 +21,9 @@ import play.api.libs.json.*
 case class Address(uprn: Option[Long],
                    addressLine1: String,
                    addressLine2: Option[String],
-                   addressLine3: String,
+                   addressLine3: Option[String],
                    addressLine4: Option[String],
+                   town: String,
                    postCode: Option[String],
                    country: Country
 ) {
@@ -30,8 +31,9 @@ case class Address(uprn: Option[Long],
   lazy val formatAsSeq: Seq[String] = Seq(
     Some(addressLine1),
     addressLine2,
-    Some(addressLine3),
+    addressLine3,
     addressLine4,
+    Some(town),
     postCode,
     if (isOtherCountry) Some(country.description) else None
   ).flatten

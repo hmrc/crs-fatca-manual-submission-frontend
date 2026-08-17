@@ -220,3 +220,6 @@ GET         /manual/sponsor/remove-tax-resident-country              controllers
 POST        /manual/sponsor/remove-tax-resident-country              controllers.manual.sponsor.RemoveTaxResidentCountryController.onSubmit(mode: Mode = NormalMode)
 GET         /manual/sponsor/remove-tax-resident-country              controllers.manual.sponsor.RemoveTaxResidentCountryController.onPageLoad(mode: Mode = CheckMode)
 POST        /manual/sponsor/remove-tax-resident-country              controllers.manual.sponsor.RemoveTaxResidentCountryController.onSubmit(mode: Mode = CheckMode)
+
+GET         /manual/sponsor/check-answers                            controllers.manual.sponsor.CheckAnswersController.onPageLoad()
+POST        /manual/sponsor/check-answers                            controllers.manual.sponsor.CheckAnswersController.onSubmit()
