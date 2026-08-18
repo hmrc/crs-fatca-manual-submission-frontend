@@ -87,7 +87,7 @@ class ManualSubmissionNavigator @Inject() () {
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
   private def accountHolderNavigation: PartialFunction[(Page, Mode, UserAnswers), Call] = {
-    case (IndividualOrOrganisationPage(), _, _) => routes.UnderConstructionController.onPageLoad()
+    case (IndividualOrOrganisationPage(_), _, _) => routes.UnderConstructionController.onPageLoad()
   }
 
   private def sponsorNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
