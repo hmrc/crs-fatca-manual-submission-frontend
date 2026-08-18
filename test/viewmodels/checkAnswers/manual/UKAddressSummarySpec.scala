@@ -46,7 +46,7 @@ class UKAddressSummarySpec extends SpecBase {
         .withPage(FINamePage(), fiName)
 
       val addressText =
-        """<span class="govuk-margin-bottom-0">TestAddress</span><br><span class="govuk-margin-bottom-0">City</span><br><span class="govuk-margin-bottom-0">XX11XX</span><br><span>United Kingdom</span><br>"""
+        """<span class="govuk-!-margin-bottom-0">TestAddress</span><br><span class="govuk-!-margin-bottom-0">City</span><br><span class="govuk-!-margin-bottom-0">XX11XX</span><br><span>United Kingdom</span><br>"""
 
       val summary = UkAddressSummary.row(ua)
 
