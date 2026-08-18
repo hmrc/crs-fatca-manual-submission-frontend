@@ -18,9 +18,8 @@ package pages.manual.accountHolders
 
 import models.ReportId
 import models.manual.accountHolders.IndividualOrOrganisation
-import models.manual.filercategory.WhatTypeOfFiler
-import models.viewModels.{AccountHolder, AccountHolderId}
-import pages.{QuestionPage, ReportPage}
+import models.viewModels.AccountHolderId
+import pages.QuestionPage
 import play.api.libs.json.JsPath
 
 final case class IndividualOrOrganisationPage(accountHolderId: AccountHolderId)(implicit reportId: ReportId) extends QuestionPage[IndividualOrOrganisation]:

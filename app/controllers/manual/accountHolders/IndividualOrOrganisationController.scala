@@ -38,6 +38,7 @@ class IndividualOrOrganisationController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   reportIdAction: ReportIdRequiredAction,
+  accountHolderIdCreationAction: AccountHolderIdCreationAction,
   formProvider: IndividualOrOrganisationFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: individualOrOrganisationView
@@ -47,10 +48,10 @@ class IndividualOrOrganisationController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction andThen accountHolderIdCreationAction) {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
-      val preparedForm = request.userAnswers.get(IndividualOrOrganisationPage()) match {
+      val preparedForm = request.userAnswers.get(IndividualOrOrganisationPage(request.accountHolderId)) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
@@ -58,18 +59,19 @@ class IndividualOrOrganisationController @Inject() (
       Ok(view(preparedForm, mode))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
-    implicit request =>
-      implicit val reportId: ReportId = request.reportId
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(IndividualOrOrganisationPage(), value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(IndividualOrOrganisationPage(), mode, updatedAnswers))
-        )
-  }
+  def onSubmit(mode: Mode): Action[AnyContent] =
+    (identify andThen getData andThen requireData andThen reportIdAction andThen accountHolderIdCreationAction).async {
+      implicit request =>
+        implicit val reportId: ReportId = request.reportId
+        form
+          .bindFromRequest()
+          .fold(
+            formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+            value =>
+              for {
+                updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(IndividualOrOrganisationPage(request.accountHolderId), value))
+                _              <- sessionRepository.set(updatedAnswers)
+              } yield Redirect(navigator.nextPage(IndividualOrOrganisationPage(request.accountHolderId), mode, updatedAnswers))
+          )
+    }
 }

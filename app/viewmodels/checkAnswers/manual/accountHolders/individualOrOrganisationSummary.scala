@@ -17,7 +17,7 @@
 package viewmodels.checkAnswers.manual.accountHolders
 
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.accountHolders.IndividualOrOrganisationPage
+import pages.manual.accountHolders.{CurrentAccountHolderIdPage, IndividualOrOrganisationPage}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
@@ -28,22 +28,23 @@ import viewmodels.implicits.*
 object individualOrOrganisationSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
-    answers.get(IndividualOrOrganisationPage()).map {
-      answer =>
+    for {
+      currentAccountHolderId <- answers.get(CurrentAccountHolderIdPage()(reportId))
+      answer                 <- answers.get(IndividualOrOrganisationPage(currentAccountHolderId)(reportId))
+    } yield
 
-        val value = ValueViewModel(
-          HtmlContent(
-            HtmlFormat.escape(messages(s"ndividualOrOrganisation.$answer"))
-          )
+      val value = ValueViewModel(
+        HtmlContent(
+          HtmlFormat.escape(messages(s"ndividualOrOrganisation.$answer"))
         )
+      )
 
-        SummaryListRowViewModel(
-          key = "ndividualOrOrganisation.checkYourAnswersLabel",
-          value = value,
-          actions = Seq(
-            ActionItemViewModel("site.change", controllers.manual.accountHolders.routes.IndividualOrOrganisationController.onPageLoad(CheckMode).url)
-              .withVisuallyHiddenText(messages("ndividualOrOrganisation.change.hidden"))
-          )
+      SummaryListRowViewModel(
+        key = "ndividualOrOrganisation.checkYourAnswersLabel",
+        value = value,
+        actions = Seq(
+          ActionItemViewModel("site.change", controllers.manual.accountHolders.routes.IndividualOrOrganisationController.onPageLoad(CheckMode).url)
+            .withVisuallyHiddenText(messages("ndividualOrOrganisation.change.hidden"))
         )
-    }
+      )
 }

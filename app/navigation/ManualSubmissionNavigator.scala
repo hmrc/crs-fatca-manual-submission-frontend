@@ -21,7 +21,6 @@ import controllers.manual.reportdetails.routes.*
 import controllers.routes
 import models.*
 import models.SubmissionsConstants.{CRS, FATCA}
-import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
 import models.viewModels.AccountId
 import pages.*
 import pages.manual.account.*

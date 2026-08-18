@@ -22,13 +22,14 @@ import controllers.routes
 import forms.manual.accountHolders.IndividualOrOrganisationFormProvider
 import models.SubmissionsConstants.CRS
 import models.manual.accountHolders.IndividualOrOrganisation
+import models.viewModels.AccountHolderId
 import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.accountHolders.IndividualOrOrganisationPage
+import pages.manual.accountHolders.{CurrentAccountHolderIdPage, IndividualOrOrganisationPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -41,13 +42,17 @@ class IndividualOrOrganisationControllerSpec extends SpecBase with MockitoSugar 
 
   def onwardRoute = Call("GET", "/foo")
 
-  lazy val individualOrOrganisationRoute = controllers.manual.accountHolders.routes.IndividualOrOrganisationController.onPageLoad(NormalMode).url
-
   val formProvider = new IndividualOrOrganisationFormProvider()
   val form         = formProvider()
 
-  "ndividualOrOrganisation Controller" - {
-    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
+  lazy val individualOrOrganisationRoute = controllers.manual.accountHolders.routes.IndividualOrOrganisationController.onPageLoad(NormalMode).url
+
+  "IndividualOrOrganisation Controller" - {
+    val accountHolderId: AccountHolderId = AccountHolderId("TestAccountHolderId")
+    val reportId                         = ReportId(CRS, 2025, None, "TestfiID")
+    val ua = emptyUserAnswers
+      .withPage(ReportIdPage, reportId)
+      .withPage(CurrentAccountHolderIdPage()(reportId), accountHolderId)
 
     "must return OK and the correct view for a GET" in {
 
@@ -66,8 +71,7 @@ class IndividualOrOrganisationControllerSpec extends SpecBase with MockitoSugar 
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
-      val userAnswers       = ua.set(IndividualOrOrganisationPage(), IndividualOrOrganisation.values.head).success.value
+      val userAnswers = ua.set(IndividualOrOrganisationPage(accountHolderId)(reportId), IndividualOrOrganisation.values.head).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 

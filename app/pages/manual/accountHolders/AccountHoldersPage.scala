@@ -17,10 +17,10 @@
 package pages.manual.accountHolders
 
 import models.ReportId
-import models.viewModels.AccountHolderId
+import models.viewModels.AccountHolders
 import pages.QuestionPage
 import play.api.libs.json.JsPath
 
-final case class CurrentAccountHolderIdPage()(implicit reportId: ReportId) extends QuestionPage[AccountHolderId]:
+case class AccountHoldersPage()(implicit reportId: ReportId) extends QuestionPage[AccountHolders]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "accountHolder" \ "currentAccountHolderId"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "accountHolder"

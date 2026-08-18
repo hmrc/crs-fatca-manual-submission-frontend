@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package pages.manual.accountHolders
+package models.viewModels
 
-import models.ReportId
-import models.viewModels.AccountHolderId
-import pages.QuestionPage
-import play.api.libs.json.JsPath
+import play.api.libs.json.{Json, OFormat}
 
-final case class CurrentAccountHolderIdPage()(implicit reportId: ReportId) extends QuestionPage[AccountHolderId]:
+case class AccountHolders(accountHolders: Map[String, AccountHolder])
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "accountHolder" \ "currentAccountHolderId"
+object AccountHolders:
+  implicit val format: OFormat[AccountHolders] = Json.format[AccountHolders]

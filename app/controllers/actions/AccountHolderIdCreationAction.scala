@@ -17,10 +17,10 @@
 package controllers.actions
 
 import connectors.DatabaseConnector
-import models.requests.{AccountIdRequest, ReportIdRequest}
-import models.viewModels.AccountId
+import models.requests.{AccountHolderIdRequest, ReportIdRequest}
+import models.viewModels.{AccountHolderId, AccountHolders}
 import models.{ReportId, UserAnswers}
-import pages.manual.account.{AccountsPage, CurrentAccountIdPage}
+import pages.manual.accountHolders.{AccountHoldersPage, CurrentAccountHolderIdPage}
 import play.api.mvc.ActionTransformer
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
@@ -28,13 +28,14 @@ import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class AccountHolderIdCreationActionImpl @Inject() (repository: DatabaseConnector)(implicit val executionContext: ExecutionContext) extends AccountIdCreationAction {
+class AccountHolderIdCreationActionImpl @Inject() (repository: DatabaseConnector)(implicit val executionContext: ExecutionContext)
+    extends AccountHolderIdCreationAction {
 
   override protected def transform[A](request: ReportIdRequest[A]): Future[AccountHolderIdRequest[A]] = {
     given reportId: ReportId = request.reportId
-    request.userAnswers.get(CurrentAccountIdPage()) match {
+    request.userAnswers.get(CurrentAccountHolderIdPage()) match {
       case None =>
-        val accountId: AccountId = createAndSetAccountId(request)
+        val accountHolderId: AccountHolderId = createAndSetAccountHolderId(request)
         Future.successful(
           AccountHolderIdRequest(
             request = request.request,
@@ -42,10 +43,10 @@ class AccountHolderIdCreationActionImpl @Inject() (repository: DatabaseConnector
             userAnswers = request.userAnswers,
             fatcaId = request.fatcaId,
             reportId = request.reportId,
-            accountId = accountId
+            accountHolderId = accountHolderId
           )
         )
-      case Some(accId) =>
+      case Some(accountHolderId) =>
         Future.successful(
           AccountHolderIdRequest(
             request = request.request,
@@ -53,33 +54,33 @@ class AccountHolderIdCreationActionImpl @Inject() (repository: DatabaseConnector
             userAnswers = request.userAnswers,
             fatcaId = request.fatcaId,
             reportId = request.reportId,
-            accountId = accId
+            accountHolderId = accountHolderId
           )
         )
     }
   }
 
-  private def createAndSetAccountId[A](request: ReportIdRequest[A])(implicit reportId: ReportId) = {
+  private def createAndSetAccountHolderId[A](request: ReportIdRequest[A])(implicit reportId: ReportId) = {
     given hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
     val existingIds = request.userAnswers
-      .get(AccountsPage())
+      .get(AccountHoldersPage())
       .map(
-        acc => acc.accounts.keySet
+        acc => acc.accountHolders.keySet
       )
       .getOrElse(Set.empty)
-    val accountId = AccountId.generate(existingIds)
+    val accountHolderId = AccountHolderId.generate(existingIds)
 
     request.userAnswers
-      .get(CurrentAccountIdPage())
+      .get(CurrentAccountHolderIdPage())
       .fold {
         request.userAnswers
-          .set(CurrentAccountIdPage(), accountId)
+          .set(CurrentAccountHolderIdPage(), accountHolderId)
           .foreach(repository.set)
       }(
         _ => ()
       )
-    accountId
+    accountHolderId
   }
 }
 
-trait AccountIdCreationAction extends ActionTransformer[ReportIdRequest, AccountIdRequest]
+trait AccountHolderIdCreationAction extends ActionTransformer[ReportIdRequest, AccountHolderIdRequest]
