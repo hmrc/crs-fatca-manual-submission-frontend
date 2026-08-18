@@ -35,7 +35,7 @@ object AddressNonUkSummary {
       answer =>
 
         def formatLine(line: String): String =
-          s"""<span class="govuk-margin-bottom-0">${HtmlFormat.escape(line)}</span><br>"""
+          s"""<span class="govuk-!-margin-bottom-0">${HtmlFormat.escape(line)}</span><br>"""
 
         def formatLastLine(line: String): String = s"""<span>${HtmlFormat.escape(line)}</span><br>"""
 

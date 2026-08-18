@@ -47,7 +47,7 @@ class AddressNonUkSummarySpec extends SpecBase {
         .withPage(FINamePage(), fiName)
 
       val addressText =
-        """<span class="govuk-margin-bottom-0">TestAddress</span><br><span class="govuk-margin-bottom-0">address line 3</span><br><span>United Kingdom</span><br>"""
+        """<span class="govuk-!-margin-bottom-0">TestAddress</span><br><span class="govuk-!-margin-bottom-0">address line 3</span><br><span>United Kingdom</span><br>"""
 
       val summary = AddressNonUkSummary.row(ua)
 

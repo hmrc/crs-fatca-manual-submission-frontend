@@ -21,9 +21,9 @@ import controllers.actions.*
 import forms.manual.sponsor.RemoveTaxResidentCountryFormProvider
 import models.response.Country
 import models.sponsor.RemoveCountryMessage
-import models.{Countries, Mode, ReportId, SponsorResidentTaxCountryCodes, UserAnswers}
+import models.{Countries, Mode, ReportId, UserAnswers}
 import navigation.ManualSubmissionNavigator
-import pages.manual.sponsor.{RemoveTaxResidentCountryPage, SponsorNamePage, SponsorResidentForTaxPage, TaxResidentCountriesListPage}
+import pages.manual.sponsor.{RemoveTaxResidentCountryPage, SponsorResidentForTaxPage, TaxResidentCountriesListPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.*
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -36,9 +36,6 @@ class RemoveTaxResidentCountryController @Inject() (
   override val messagesApi: MessagesApi,
   repository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
-  identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
   actions: Actions,
   formProvider: RemoveTaxResidentCountryFormProvider,
   val controllerComponents: MessagesControllerComponents,

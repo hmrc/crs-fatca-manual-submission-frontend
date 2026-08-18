@@ -56,7 +56,7 @@ class WhatIsAddressForSponsorSummarySpec extends SpecBase {
         .withPage(FINamePage(), fiName)
 
       val addressText =
-        """<span class="govuk-margin-bottom-0">TestAddress</span><br><span class="govuk-margin-bottom-0">address line 3</span><br><span class="govuk-margin-bottom-0">Town</span><br><span>Test Country</span><br>"""
+        """<span class="govuk-!-margin-bottom-0">TestAddress</span><br><span class="govuk-!-margin-bottom-0">address line 3</span><br><span class="govuk-!-margin-bottom-0">Town</span><br><span>Test Country</span><br>"""
 
       val summary = WhatIsAddressForSponsorSummary.row(ua)
 

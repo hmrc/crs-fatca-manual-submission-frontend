@@ -25,7 +25,7 @@ import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
-import views.html.manual.account.{IsJointAccountView, IsUndocumentedAccountView}
+import views.html.manual.account.IsJointAccountView
 
 class IsJointAccountViewSpec extends SpecBase {
 
