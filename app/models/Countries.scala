@@ -726,7 +726,7 @@ object Countries {
     ),
     Country(
       code = "XX",
-      description = "Other"
+      description = "Other country"
     ),
     Country(
       code = "NA",
