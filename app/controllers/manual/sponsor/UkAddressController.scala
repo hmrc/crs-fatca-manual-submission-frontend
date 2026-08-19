@@ -19,9 +19,11 @@ package controllers.manual.sponsor
 import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.UkAddressFormProvider
-import models.{Countries, Mode, ReportId}
+import models.UkAddress.from
+import models.response.{Address, AddressLookup}
+import models.{Countries, Mode, ReportId, UkAddress, UserAnswers}
 import navigation.ManualSubmissionNavigator
-import pages.manual.sponsor.UkAddressPage
+import pages.manual.sponsor.{AddressLookupPage, UKPostcodePage, UkAddressPage, WhatIsAddressForSponsorPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -47,12 +49,28 @@ class UkAddressController @Inject() (
   def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequired() {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
-      val preparedForm = request.userAnswers.get(UkAddressPage()) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
+      val preparedForm                = resolveAddress(request.userAnswers).fold(form)(form.fill)
       Ok(view(preparedForm, mode, request.sponsorName, Countries.ukTerritories))
   }
+
+  private def resolveAddress(userAnswers: UserAnswers)(implicit reportId: ReportId): Option[UkAddress] =
+    userAnswers
+      .get(UkAddressPage())
+      .orElse(
+        userAnswers.get(WhatIsAddressForSponsorPage()).map(_.ukAddress)
+      )
+      .orElse(
+        userAnswers
+          .get(AddressLookupPage())
+          .collect {
+            case Seq(singleAddress) =>
+              singleAddress.toAddress.map(_.ukAddress)
+          }
+          .flatten
+      )
+      .orElse(
+        userAnswers.get(UKPostcodePage()).map(from)
+      )
 
   def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequired().async {
     implicit request =>

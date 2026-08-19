@@ -16,10 +16,26 @@
 
 package pages.manual.sponsor
 
-import models.ReportId
+import models.{ReportId, UserAnswers}
 import pages.QuestionPage
 import play.api.libs.json.JsPath
+import scala.util.{Success, Try}
 
 final case class UKPostcodePage()(implicit reportId: ReportId) extends QuestionPage[String]:
 
   override def path: JsPath = JsPath \ reportId.mongoKey \ "sponsor" \ "uKPostcode"
+
+  override def cleanupWithReportId(
+    value: Option[String],
+    userData: UserAnswers
+  )(implicit reportId: ReportId): Try[UserAnswers] =
+    value match {
+      case Some(_) => cleanUpPages.foldLeft(Try(userData))(removePage())
+      case _       => Success(userData)
+    }
+
+  private val cleanUpPages: Seq[QuestionPage[_]] = List(
+    WhatIsAddressForSponsorPage(),
+    IsThisAddressForSponsorPage(),
+    UkAddressPage()
+  )
