@@ -535,3 +535,11 @@ removeTaxResidentCountry.definite.articles.countries.heading = Are you sure you 
 removeTaxResidentCountry.other.countries.heading = Are you sure you want to remove ‘Other country’ as a tax resident country for {0}?
 removeTaxResidentCountry.all.countries.heading = Are you sure you want to remove {0} as a tax resident country for {1}?
 removeTaxResidentCountry.error.required = Select yes if you are sure you want to remove this country as a tax resident country for the sponsor
+
+individualOrOrganisation.title = Is the account holder an individual or organisation?
+individualOrOrganisation.heading = Is the account holder an individual or organisation?
+individualOrOrganisation.individual = Individual
+individualOrOrganisation.organisation = Organisation
+individualOrOrganisation.checkYourAnswersLabel = individualOrOrganisation
+individualOrOrganisation.error.required = Select whether the account holder is an individual or organisation
+individualOrOrganisation.change.hidden = IndividualOrOrganisation
