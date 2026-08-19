@@ -35,6 +35,7 @@ final case class UKPostcodePage()(implicit reportId: ReportId) extends QuestionP
     }
 
   private val cleanUpPages: Seq[QuestionPage[_]] = List(
+    AddressLookupPage(),
     WhatIsAddressForSponsorPage(),
     IsThisAddressForSponsorPage(),
     UkAddressPage()
