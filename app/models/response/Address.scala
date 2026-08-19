@@ -16,6 +16,7 @@
 
 package models.response
 
+import models.UkAddress
 import play.api.libs.json.*
 
 case class Address(uprn: Option[Long],
@@ -40,6 +41,9 @@ case class Address(uprn: Option[Long],
 
   val isGB: Boolean           = this.country.code == Address.GBCountryCode
   val isOtherCountry: Boolean = this.country.code != Address.GBCountryCode
+
+  def ukAddress: UkAddress =
+    UkAddress(addressLine1 = addressLine1, addressLine2 = addressLine2, city = town, county = None, postcode = postCode.getOrElse(""), country = country.code)
 }
 
 object Address {

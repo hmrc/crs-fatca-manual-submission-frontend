@@ -30,8 +30,9 @@ import play.api.test.Helpers.*
 import connectors.DatabaseConnector
 import views.html.UkAddressView
 import models.SubmissionsConstants.CRS
+import models.response.AddressLookup
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
-import pages.manual.sponsor.{SponsorNamePage, UkAddressPage}
+import pages.manual.sponsor.{AddressLookupPage, SponsorNamePage, UKPostcodePage, UkAddressPage}
 import pages.ReportIdPage
 
 import scala.concurrent.Future
@@ -90,10 +91,65 @@ class UkAddressControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must populate the view correctly on a GET when the question has previously been answered" in {
+    "must populate the view correctly on a GET when UK Address page has previously been answered" in {
       val validAnswer       = UkAddress("value 1", Some("value 2"), "Some City", Some("Some County"), "AA1 1AA", "GB")
       implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
       val userAnswers       = ua.withPage(UkAddressPage(), validAnswer).withPage(SponsorNamePage(), "Test Sponsor Name")
+
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, ukAddressRoute)
+
+        val view = application.injector.instanceOf[UkAddressView]
+
+        val result = route(application, request).value
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode, sponsorName, countries)(request, messages(application)).toString
+      }
+    }
+
+    "must populate the view correctly on a GET when AddressLookUp page has one address" in {
+      val validAnswer       = UkAddress("value 1", Some("value 2"), "Some City", None, "AA1 1AA", "GB")
+      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
+      val userAnswers = ua
+        .withPage(
+          AddressLookupPage(),
+          Seq(
+            AddressLookup(
+              uprn = 1L,
+              addressLine1 = Some("value 1"),
+              addressLine2 = Some("value 2"),
+              addressLine3 = Some("value 3"),
+              addressLine4 = None,
+              town = "Some City",
+              county = None,
+              postcode = "AA1 1AA",
+              country = None
+            )
+          )
+        )
+        .withPage(SponsorNamePage(), "Test Sponsor Name")
+
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, ukAddressRoute)
+
+        val view = application.injector.instanceOf[UkAddressView]
+
+        val result = route(application, request).value
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode, sponsorName, countries)(request, messages(application)).toString
+      }
+    }
+
+    "must populate the view correctly on a GET when PostCode page has value" in {
+      val validAnswer       = UkAddress("", None, "", None, "AA1 1AA", "")
+      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
+      val userAnswers       = ua.withPage(UKPostcodePage(), "AA1 1AA").withPage(SponsorNamePage(), "Test Sponsor Name")
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 

@@ -23,4 +23,6 @@ case class UkAddress(addressLine1: String, addressLine2: Option[String], city: S
 object UkAddress {
 
   implicit val format: OFormat[UkAddress] = Json.format
+
+  def from(postCode: String) = UkAddress("", None, "", None, postCode, "")
 }
