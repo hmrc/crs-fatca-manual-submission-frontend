@@ -69,7 +69,7 @@ final case class ContactDetails(ContactName: String, EmailAddress: String, Phone
 object ContactDetails:
   given format: OFormat[ContactDetails] = Json.format[ContactDetails]
 
-final case class TINDetails(TINType: String, TIN: String, IssuedBy: String) // not bothering with TINType enums
+final case class TINDetails(TINType: String, TIN: String, IssuedBy: String)
 
 object TINDetails:
   given format: OFormat[TINDetails] = Json.format[TINDetails]
