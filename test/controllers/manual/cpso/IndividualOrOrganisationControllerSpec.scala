@@ -20,7 +20,7 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.cpso.IndividualOrOrganisationFormProvider
-import models.SubmissionsConstants.CRS
+import models.SubmissionsConstants.{CRS, FATCA}
 import models.{NormalMode, ReportId}
 import models.manual.cpso.IndividualOrOrganisation
 import models.viewModels.manual.cpso.CPSOId
@@ -48,7 +48,7 @@ class IndividualOrOrganisationControllerSpec extends SpecBase with MockitoSugar 
   val form         = formProvider()
 
   "IndividualOrOrganisation Controller" - {
-    val reportId = ReportId(CRS, 2025, None, "TestfiID")
+    val reportId = ReportId(FATCA, 2025, None, "TestfiID")
     val ua       = emptyUserAnswers.withPage(ReportIdPage, reportId)
 
     "must return OK and the correct view for a GET" in {
@@ -136,6 +136,22 @@ class IndividualOrOrganisationControllerSpec extends SpecBase with MockitoSugar 
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
       val application = applicationBuilder(maybeUserAnswers = None).build()
+
+      running(application) {
+        val request = FakeRequest(GET, individualOrOrganisationRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Journey Recovery for a GET when Regime is CRS" in {
+      val reportId = ReportId(CRS, 2025, None, "TestfiID")
+      val ua       = emptyUserAnswers.withPage(ReportIdPage, reportId)
+
+      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
 
       running(application) {
         val request = FakeRequest(GET, individualOrOrganisationRoute)

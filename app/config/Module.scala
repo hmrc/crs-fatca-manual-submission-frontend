@@ -40,6 +40,7 @@ class Module extends AbstractModule {
     bind(classOf[SponsorNameRequiredAction]).to(classOf[SponsorNameRequiredActionImpl]).asEagerSingleton()
     bind(classOf[TaxResidentCountryIdCreationAction]).to(classOf[TaxResidentCountryIdCreationActionImpl]).asEagerSingleton()
     bind(classOf[ElectionIdRequiredAction]).to(classOf[ElectionIdRequiredActionImpl]).asEagerSingleton()
+    bind(classOf[CPSOFATCAOnlyFilterAction]).to(classOf[CPSOFATCAOnlyFilterActionImpl]).asEagerSingleton()
 
     bind(classOf[Clock]).toInstance(Clock.systemDefaultZone.withZone(ZoneOffset.UTC))
   }

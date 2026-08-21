@@ -35,6 +35,7 @@ class IndividualOrOrganisationController @Inject() (
   sessionRepository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
   actions: Actions,
+  fatcaOnlyFilterAction: CPSOFATCAOnlyFilterAction,
   formProvider: IndividualOrOrganisationFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: IndividualOrOrganisationView
@@ -44,7 +45,7 @@ class IndividualOrOrganisationController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndCPSOIdCreation() {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (actions.withReportIdRequiredAndCPSOIdCreation() andThen fatcaOnlyFilterAction) {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
       val preparedForm = request.userAnswers.get(IndividualOrOrganisationPage(request.cpsoId)) match {
@@ -55,7 +56,7 @@ class IndividualOrOrganisationController @Inject() (
       Ok(view(preparedForm, mode))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndCPSOIdCreation().async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (actions.withReportIdRequiredAndCPSOIdCreation() andThen fatcaOnlyFilterAction).async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
       form
