@@ -86,7 +86,7 @@ final case class SendAReportSections(
           task(
             "sendAReport.accountsInformation.controllingPersons",
             controllingPersons,
-            href = Some(controllers.manual.cpso.routes.IndividualOrOrganisationController.onPageLoad(NormalMode).url)
+            href = Some(controllers.routes.UnderConstructionController.onPageLoad().url)
           ),
           task("sendAReport.accountsInformation.tbc1", tbc1, href = Some(controllers.routes.UnderConstructionController.onPageLoad().url)),
           task("sendAReport.accountsInformation.tbc2", tbc2, href = Some(controllers.routes.UnderConstructionController.onPageLoad().url))

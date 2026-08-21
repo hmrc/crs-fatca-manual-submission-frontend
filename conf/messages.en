@@ -549,5 +549,5 @@ individualOrOrganisation.heading = Is the substantial owner an individual or org
 individualOrOrganisation.individual = Individual
 individualOrOrganisation.organisation = Organisation
 individualOrOrganisation.checkYourAnswersLabel = Is the substantial owner an individual or organisation?
-individualOrOrganisation.error.required = Select individualOrOrganisation
+individualOrOrganisation.error.required = Select whether the substantial owner is an individual or organisation
 individualOrOrganisation.change.hidden = IndividualOrOrganisation
