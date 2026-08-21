@@ -21,8 +21,14 @@ import org.scalacheck.{Arbitrary, Gen}
 import models.NumberType
 import models.UkAddress
 import models.manual.account.WasAccountOpen
+import models.manual.cpso.IndividualOrOrganisation
 
 trait ModelGenerators {
+
+  implicit lazy val arbitraryIndividualOrOrganisation: Arbitrary[IndividualOrOrganisation] =
+    Arbitrary {
+      Gen.oneOf(IndividualOrOrganisation.values)
+    }
 
   implicit lazy val arbitraryWasAccountOpen: Arbitrary[WasAccountOpen] =
     Arbitrary {
