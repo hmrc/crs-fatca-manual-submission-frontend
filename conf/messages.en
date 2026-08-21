@@ -543,3 +543,11 @@ individualOrOrganisation.organisation = Organisation
 individualOrOrganisation.checkYourAnswersLabel = individualOrOrganisation
 individualOrOrganisation.error.required = Select whether the account holder is an individual or organisation
 individualOrOrganisation.change.hidden = IndividualOrOrganisation
+
+individualOrOrganisation.title = Is the substantial owner an individual or organisation?
+individualOrOrganisation.heading = Is the substantial owner an individual or organisation?
+individualOrOrganisation.individual = Individual
+individualOrOrganisation.organisation = Organisation
+individualOrOrganisation.checkYourAnswersLabel = Is the substantial owner an individual or organisation?
+individualOrOrganisation.error.required = Select individualOrOrganisation
+individualOrOrganisation.change.hidden = IndividualOrOrganisation

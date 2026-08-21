@@ -16,6 +16,7 @@
 
 package models.requests
 
+import models.viewModels.manual.cpso.CPSOId
 import models.viewModels.{AccountHolderId, AccountId}
 import models.{ElectionsId, FiIdentifiers, ReportId, UserAnswers}
 import play.api.mvc.{Request, WrappedRequest}
@@ -42,6 +43,9 @@ case class ElectionIdRequest[A](
 ) extends WrappedRequest[A](request)
 
 case class AccountIdRequest[A](request: Request[A], userId: String, userAnswers: UserAnswers, fatcaId: String, reportId: ReportId, accountId: AccountId)
+    extends WrappedRequest[A](request)
+
+case class CPSOIdRequest[A](request: Request[A], userId: String, userAnswers: UserAnswers, fatcaId: String, reportId: ReportId, cpsoId: CPSOId)
     extends WrappedRequest[A](request)
 
 case class AccountHolderIdRequest[A](request: Request[A],

@@ -16,7 +16,7 @@
 
 package controllers.actions
 
-import models.requests.{AccountIdRequest, ReportIdRequest, SponsorNameRequest, SponsorTaxResidentIdRequest}
+import models.requests.{AccountIdRequest, CPSOIdRequest, ReportIdRequest, SponsorNameRequest, SponsorTaxResidentIdRequest}
 import play.api.mvc.{ActionBuilder, AnyContent}
 
 import javax.inject.Inject
@@ -29,6 +29,7 @@ class Actions @Inject() (
   accountIdCreationAction: AccountIdCreationAction,
   accountIdRequiredAction: AccountIdRequiredAction,
   sponsorNameRequiredAction: SponsorNameRequiredAction,
+  cpsoIdCreationAction: CpsoIdCreationAction,
   taxResidentCountryIdCreationAction: TaxResidentCountryIdCreationAction
 ) {
 
@@ -37,6 +38,9 @@ class Actions @Inject() (
 
   def withReportIdRequiredAndAccountIdRequired(): ActionBuilder[AccountIdRequest, AnyContent] =
     withReportIdRequired() andThen accountIdRequiredAction
+
+  def withReportIdRequiredAndCPSOIdCreation(): ActionBuilder[CPSOIdRequest, AnyContent] =
+    withReportIdRequired() andThen cpsoIdCreationAction
 
   def withReportIdRequiredAndSponsorNameRequired(): ActionBuilder[SponsorNameRequest, AnyContent] =
     withReportIdRequired() andThen sponsorNameRequiredAction
