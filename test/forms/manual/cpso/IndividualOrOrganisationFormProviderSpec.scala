@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package forms.manual.accountHolders
+package forms.manual.cpso
 
 import forms.behaviours.OptionFieldBehaviours
-import models.manual.accountHolders.IndividualOrOrganisation
+import models.manual.cpso.IndividualOrOrganisation
 import play.api.data.FormError
 
 class IndividualOrOrganisationFormProviderSpec extends OptionFieldBehaviours {
