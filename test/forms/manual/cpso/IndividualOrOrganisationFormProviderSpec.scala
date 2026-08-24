@@ -27,7 +27,7 @@ class IndividualOrOrganisationFormProviderSpec extends OptionFieldBehaviours {
   ".value" - {
 
     val fieldName   = "value"
-    val requiredKey = "individualOrOrganisation.error.required"
+    val requiredKey = "cpso.individualOrOrganisation.error.required"
 
     behave like optionsField[IndividualOrOrganisation](
       form,
