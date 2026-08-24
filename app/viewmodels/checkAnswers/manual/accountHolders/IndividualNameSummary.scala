@@ -25,21 +25,21 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist.*
 import viewmodels.implicits.*
 
-object IndividualNameSummary  {
+object IndividualNameSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
     for {
       currentAccountHolderId <- answers.get(CurrentAccountHolderIdPage()(reportId))
       answer                 <- answers.get(IndividualNamePage(currentAccountHolderId)(reportId))
     } yield
-        val value = HtmlFormat.escape(answer.FirstName).toString + "<br/>" + HtmlFormat.escape(answer.LastName).toString
+      val value = HtmlFormat.escape(answer.FirstName).toString + "<br/>" + HtmlFormat.escape(answer.LastName).toString
 
-          SummaryListRowViewModel(
-            key     = "individualName.checkYourAnswersLabel",
-            value   = ValueViewModel(HtmlContent(value)),
-            actions = Seq(
-              ActionItemViewModel("site.change", controllers.manual.accountHolders.routes.IndividualNameController.onPageLoad(CheckMode).url)
-                .withVisuallyHiddenText(messages("individualName.change.hidden"))
-            )
-          )
+      SummaryListRowViewModel(
+        key = "individualName.checkYourAnswersLabel",
+        value = ValueViewModel(HtmlContent(value)),
+        actions = Seq(
+          ActionItemViewModel("site.change", controllers.manual.accountHolders.routes.IndividualNameController.onPageLoad(CheckMode).url)
+            .withVisuallyHiddenText(messages("individualName.change.hidden"))
+        )
+      )
 }

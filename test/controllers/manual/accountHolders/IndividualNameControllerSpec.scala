@@ -44,7 +44,7 @@ class IndividualNameControllerSpec extends SpecBase with MockitoSugar {
   def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new IndividualNameFormProvider()
-  val form = formProvider()
+  val form         = formProvider()
 
   lazy val individualNameRoute = controllers.manual.accountHolders.routes.IndividualNameController.onPageLoad(NormalMode).url
 
@@ -53,13 +53,13 @@ class IndividualNameControllerSpec extends SpecBase with MockitoSugar {
     Json.obj(
       IndividualNamePage.toString -> Json.obj(
         "FirstName" -> "value 1",
-        "LastName" -> "value 2"
+        "LastName"  -> "value 2"
       )
     )
   )
 
   "IndividualName Controller" - {
-    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS,2025,None,"TestfiID"))
+    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
 
     "must return OK and the correct view for a GET" in {
 
@@ -79,9 +79,10 @@ class IndividualNameControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
       val currentAccountHolderId = AccountHolderId("43")
-      val validAnswer = IndividualName("value 1", "value 2")
-      implicit val reportId = ReportId(CRS,2025,None,"TestfiID")
-      val userAnswers = ua.withPage(CurrentAccountHolderIdPage(),currentAccountHolderId)
+      val validAnswer            = IndividualName("value 1", "value 2")
+      implicit val reportId      = ReportId(CRS, 2025, None, "TestfiID")
+      val userAnswers = ua
+        .withPage(CurrentAccountHolderIdPage(), currentAccountHolderId)
         .withPage(IndividualNamePage(currentAccountHolderId), validAnswer)
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()

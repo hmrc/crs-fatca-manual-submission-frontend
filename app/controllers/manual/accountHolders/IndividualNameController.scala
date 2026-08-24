@@ -30,15 +30,17 @@ import views.html.manual.accountHolders.IndividualNameView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class IndividualNameController @Inject()(
-                                      override val messagesApi: MessagesApi,
-                                      repository: DatabaseConnector,
-                                      navigator: ManualSubmissionNavigator,
-                                      actions: Actions,
-                                      formProvider: IndividualNameFormProvider,
-                                      val controllerComponents: MessagesControllerComponents,
-                                      view: IndividualNameView
-                                     )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+class IndividualNameController @Inject() (
+  override val messagesApi: MessagesApi,
+  repository: DatabaseConnector,
+  navigator: ManualSubmissionNavigator,
+  actions: Actions,
+  formProvider: IndividualNameFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: IndividualNameView
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
+    with I18nSupport {
 
   val form = formProvider()
 
@@ -47,7 +49,7 @@ class IndividualNameController @Inject()(
       implicit val reportId: ReportId = request.reportId
 
       val preparedForm = request.userAnswers.get(IndividualNamePage(request.accountHolderId)) match {
-        case None => form
+        case None        => form
         case Some(value) => form.fill(value)
       }
 
@@ -58,15 +60,15 @@ class IndividualNameController @Inject()(
     implicit request =>
       implicit val reportId: ReportId = request.reportId
 
-      form.bindFromRequest().fold(
-        formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors, mode))),
-
-        value =>
-          for {
-            updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(IndividualNamePage(request.accountHolderId), value))
-            _              <- repository.set(updatedAnswers)
-          } yield Redirect(navigator.nextPage(IndividualNamePage(request.accountHolderId), mode, updatedAnswers))
-      )
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(IndividualNamePage(request.accountHolderId), value))
+              _              <- repository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(IndividualNamePage(request.accountHolderId), mode, updatedAnswers))
+        )
   }
 }

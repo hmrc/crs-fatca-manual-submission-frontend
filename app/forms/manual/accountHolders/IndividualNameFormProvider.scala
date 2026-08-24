@@ -26,6 +26,7 @@ import utils.RegexConstants
 import javax.inject.Inject
 
 class IndividualNameFormProvider @Inject() extends Mappings {
+
   def apply(): Form[IndividualName] = Form(
     mapping(
       "FirstName" -> defaultStringFieldFormat(
@@ -46,8 +47,8 @@ class IndividualNameFormProvider @Inject() extends Mappings {
           ErrorValidation(RegexConstants.DOUBLE_DASH_INVALID, "individualName.error.LastName.doubledash")
         )
       )
-    )(IndividualName.apply)(x => Some((x.FirstName, x.LastName)))
+    )(IndividualName.apply)(
+      x => Some((x.FirstName, x.LastName))
+    )
   )
- }
-
-
+}

@@ -89,7 +89,7 @@ class ManualSubmissionNavigator @Inject() () {
   private def accountHolderNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
     case (IndividualOrOrganisationPage(id), mode, ua) =>
       ua.get(IndividualOrOrganisationPage(id)).fold(controllers.routes.JourneyRecoveryController.onPageLoad()) {
-        case Individual => controllers.manual.accountHolders.routes.IndividualNameController.onPageLoad(mode)
+        case Individual   => controllers.manual.accountHolders.routes.IndividualNameController.onPageLoad(mode)
         case Organisation => controllers.routes.UnderConstructionController.onPageLoad()
       }
   }
