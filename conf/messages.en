@@ -543,3 +543,14 @@ individualOrOrganisation.organisation = Organisation
 individualOrOrganisation.checkYourAnswersLabel = individualOrOrganisation
 individualOrOrganisation.error.required = Select whether the account holder is an individual or organisation
 individualOrOrganisation.change.hidden = IndividualOrOrganisation
+
+whatAccountType.title = What type of account is this?
+whatAccountType.heading = What type of account is this?
+whatAccountType.Depository = Depository account
+whatAccountType.Custodial = Custodial account
+whatAccountType.InvestmentEntity = Debt or equity interest in investment entity
+whatAccountType.InsuranceOrAnnuityContract = Cash value insurance contract or annuity contract
+whatAccountType.NotReported = Not reported
+whatAccountType.checkYourAnswersLabel = What type of account is this?
+whatAccountType.error.required = Select whatAccountType
+whatAccountType.change.hidden = WhatAccountType

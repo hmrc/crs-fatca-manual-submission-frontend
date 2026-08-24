@@ -16,13 +16,16 @@
 
 package generators
 
-import models.{CrsOrFatca, TypeOfReport}
+import models.manual.account.{WasAccountOpen, WhatAccountType}
+import models.{CrsOrFatca, NumberType, TypeOfReport, UkAddress}
 import org.scalacheck.{Arbitrary, Gen}
-import models.NumberType
-import models.UkAddress
-import models.manual.account.WasAccountOpen
 
 trait ModelGenerators {
+
+  implicit lazy val arbitraryWhatAccountType: Arbitrary[WhatAccountType] =
+    Arbitrary {
+      Gen.oneOf(WhatAccountType.values)
+    }
 
   implicit lazy val arbitraryWasAccountOpen: Arbitrary[WasAccountOpen] =
     Arbitrary {
