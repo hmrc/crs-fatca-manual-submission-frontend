@@ -24,6 +24,7 @@ import models.SubmissionsConstants.{CRS, FATCA}
 import models.manual.account.WasAccountOpen
 import models.response.{Address, AddressLookup, Country}
 import models.viewModels.AccountId
+import models.viewModels.manual.cpso.CPSOId
 import pages.*
 import pages.manual.account.*
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
@@ -484,6 +485,27 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           val ua = UserAnswers("id")
           navigator.nextPage(RemoveTaxResidentCountryPage(), NormalMode, ua) mustBe
             controllers.manual.sponsor.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
+        }
+      }
+
+      "cpso" - {
+        val currentCPSOId = CPSOId("testid")
+        "IndividualOrOrganisationPage" - {
+          "must go to cpo IndividualName page when submitted" in {
+            val ua = UserAnswers("id")
+              .withPage(pages.manual.cpso.IndividualOrOrganisationPage(currentCPSOId), models.manual.cpso.IndividualOrOrganisation.Individual)
+            navigator.nextPage(pages.manual.cpso.IndividualOrOrganisationPage(currentCPSOId), NormalMode, ua) mustBe
+              controllers.manual.cpso.routes.IndividualNameController.onPageLoad(NormalMode)
+          }
+        }
+
+        "IndividualNamePage" - {
+          "must go to underconstruction page when submitted" in {
+            val ua = UserAnswers("id")
+              .withPage(pages.manual.cpso.IndividualNamePage(currentCPSOId), IndividualName("first-name", "last-name"))
+            navigator.nextPage(pages.manual.cpso.IndividualOrOrganisationPage(currentCPSOId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
         }
       }
 

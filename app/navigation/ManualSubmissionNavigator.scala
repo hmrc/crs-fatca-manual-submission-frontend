@@ -21,6 +21,7 @@ import controllers.manual.reportdetails.routes.*
 import controllers.routes
 import models.*
 import models.SubmissionsConstants.{CRS, FATCA}
+import models.manual.cpso.IndividualOrOrganisation.Individual
 import models.viewModels.AccountId
 import pages.*
 import pages.manual.account.*
@@ -29,6 +30,7 @@ import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFiler
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.*
 import play.api.mvc.Call
+import pages.manual.cpso.IndividualNamePage
 
 import javax.inject.{Inject, Singleton}
 
@@ -89,6 +91,16 @@ class ManualSubmissionNavigator @Inject() () {
     case (IndividualOrOrganisationPage(_), _, _) => routes.UnderConstructionController.onPageLoad()
   }
 
+  private def cpsoNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
+    case (pages.manual.cpso.IndividualOrOrganisationPage(cpsoId), mode, ua) =>
+      ua.get(pages.manual.cpso.IndividualOrOrganisationPage(cpsoId)) match {
+        case Some(Individual) => controllers.manual.cpso.routes.IndividualNameController.onPageLoad(mode)
+        case _                => routes.UnderConstructionController.onPageLoad()
+      }
+    case (IndividualNamePage(cpsoId), mode, ua) =>
+      routes.UnderConstructionController.onPageLoad()
+  }
+
   private def sponsorNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
     case (HaveSponsorPage(), mode, ua)                      => haveSponsorNavigation(mode, ua)
     case (SponsorNamePage(), mode, _)                       => controllers.manual.sponsor.routes.WhatIsGIINForSponsorController.onPageLoad(mode)
@@ -116,7 +128,7 @@ class ManualSubmissionNavigator @Inject() () {
     else controllers.manual.sponsor.routes.SponsorResidentForTaxController.onPageLoad(mode)
 
   private def navigation(implicit reportId: ReportId) =
-    accountNavigation orElse sponsorNavigation orElse fillerNavigation orElse accountHolderNavigation
+    accountNavigation orElse sponsorNavigation orElse fillerNavigation orElse accountHolderNavigation orElse cpsoNavigation
 
   def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId): Call =
     navigation
