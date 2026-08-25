@@ -21,12 +21,11 @@ import models.requests.CPSOIdRequest
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
-import play.api.mvc.{ActionFilter, Call}
+import play.api.mvc.ActionFilter
 
 class CPSOFATCAOnlyFilterActionImpl @Inject() (implicit val executionContext: ExecutionContext)
     extends CPSOFATCAOnlyFilterAction
     with RegimeTypeFiltering[CPSOIdRequest] {
-  override val errorCall: Call    = controllers.routes.JourneyRecoveryController.onPageLoad()
   override val regime: RegimeType = FATCA
 }
 

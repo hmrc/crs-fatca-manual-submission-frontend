@@ -544,13 +544,13 @@ individualOrOrganisation.checkYourAnswersLabel = individualOrOrganisation
 individualOrOrganisation.error.required = Select whether the account holder is an individual or organisation
 individualOrOrganisation.change.hidden = IndividualOrOrganisation
 
-individualOrOrganisation.title = Is the substantial owner an individual or organisation?
-individualOrOrganisation.heading = Is the substantial owner an individual or organisation?
-individualOrOrganisation.individual = Individual
-individualOrOrganisation.organisation = Organisation
-individualOrOrganisation.checkYourAnswersLabel = Is the substantial owner an individual or organisation?
-individualOrOrganisation.error.required = Select whether the substantial owner is an individual or organisation
-individualOrOrganisation.change.hidden = IndividualOrOrganisation
+cpso.individualOrOrganisation.title = Is the substantial owner an individual or organisation?
+cpso.individualOrOrganisation.heading = Is the substantial owner an individual or organisation?
+cpso.individualOrOrganisation.individual = Individual
+cpso.individualOrOrganisation.organisation = Organisation
+cpso.individualOrOrganisation.checkYourAnswersLabel = Is the substantial owner an individual or organisation?
+cpso.individualOrOrganisation.error.required = Select whether the substantial owner is an individual or organisation
+cpso.individualOrOrganisation.change.hidden = IndividualOrOrganisation
 
 individualName.crs.title = What is the name of the controlling person?
 individualName.fatca.title = What is the name of the substantial owner?
@@ -577,3 +577,4 @@ individualName.fatca.error.lastName.invalid.characters = Substantial owner’s l
 individualName.fatca.error.lastName.invalid.characters.combination = Substantial owner’s last name must not include a double dash (--)
 individualName.firstName.change.hidden = First name
 individualName.LastName.change.hidden = Last name
+

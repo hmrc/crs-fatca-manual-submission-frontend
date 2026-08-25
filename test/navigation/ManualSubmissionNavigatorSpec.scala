@@ -22,6 +22,7 @@ import models.*
 import models.CrsOrFatca.Fatca
 import models.SubmissionsConstants.{CRS, FATCA}
 import models.manual.account.WasAccountOpen
+import models.manual.cpso.IndividualOrOrganisation
 import models.response.{Address, AddressLookup, Country}
 import models.viewModels.AccountId
 import models.viewModels.manual.cpso.CPSOId
@@ -508,7 +509,6 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           }
         }
       }
-
     }
   }
 }

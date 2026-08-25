@@ -26,6 +26,6 @@ class IndividualOrOrganisationFormProvider @Inject() extends Mappings {
 
   def apply(): Form[IndividualOrOrganisation] =
     Form(
-      "value" -> enumerable[IndividualOrOrganisation]("individualOrOrganisation.error.required")
+      "value" -> enumerable[IndividualOrOrganisation]("cpso.individualOrOrganisation.error.required")
     )
 }

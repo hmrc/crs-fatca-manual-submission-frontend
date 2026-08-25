@@ -26,7 +26,7 @@ import scala.concurrent.Future
 
 trait RegimeTypeFiltering[R[A] <: HasReportIdRequest[A]] extends ActionFilter[R] with Logging {
 
-  def errorCall: Call
+  private def errorCall: Call = controllers.routes.JourneyRecoveryController.onPageLoad()
 
   def regime: RegimeType
 
