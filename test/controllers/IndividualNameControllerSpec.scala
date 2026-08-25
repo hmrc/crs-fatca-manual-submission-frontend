@@ -133,7 +133,7 @@ class IndividualNameControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(showOnlyOneErrorInForm(boundForm), NormalMode, regime)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, regime)(request, messages(application)).toString
       }
     }
 
@@ -166,10 +166,5 @@ class IndividualNameControllerSpec extends SpecBase with MockitoSugar {
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
-  }
-
-  private def showOnlyOneErrorInForm(formWithErrors: Form[IndividualName]) = {
-    val firstError = formWithErrors.errors.headOption.toSeq
-    formWithErrors.copy(errors = firstError)
   }
 }

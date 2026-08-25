@@ -22,15 +22,13 @@ import forms.IndividualNameFormProvider
 import models.{IndividualName, Mode, ReportId}
 import navigation.ManualSubmissionNavigator
 import pages.manual.cpso.IndividualNamePage
-import play.api.data.Form
-import views.html.manual.cpso.IndividualNameView
 import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import views.html.manual.cpso.IndividualNameView
 
 import javax.inject.Inject
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-
 import scala.concurrent.{ExecutionContext, Future}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 class IndividualNameController @Inject() (
   override val messagesApi: MessagesApi,
@@ -65,17 +63,12 @@ class IndividualNameController @Inject() (
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(showOnlyOneErrorInForm(formWithErrors), mode, regime))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, regime))),
           value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(IndividualNamePage(request.cpsoId), value))
               _              <- repository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(IndividualNamePage(request.cpsoId), mode, updatedAnswers))
         )
-  }
-
-  private def showOnlyOneErrorInForm(formWithErrors: Form[IndividualName]) = {
-    val firstError = formWithErrors.errors.headOption.toSeq
-    formWithErrors.copy(errors = firstError)
   }
 }

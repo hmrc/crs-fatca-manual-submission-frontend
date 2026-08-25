@@ -24,7 +24,7 @@ object RegexConstants:
 
   val nonUkAddressRegex: String =
     """^[A-Za-z0-9 ',.&-]*$"""
-  val invalidCharactersRegex: String = """^[A-Za-z0-9\s,.'-]*$"""
+  val ukAddressRegex: String = """^[A-Za-z0-9\s,.'-]*$"""
 
   val nonUkPostcodeRegex: String =
     """^[A-Za-z0-9 ./-]*$"""

@@ -22,7 +22,7 @@ import play.api.data.Form
 import play.api.data.Forms.*
 import models.UkAddress
 import utils.RegexConstants
-import utils.RegexConstants.{invalidCharactersRegex, DOUBLE_DASH_INVALID, POSTCODE_FORMAT, POSTCODE_VALID}
+import utils.RegexConstants.{ukAddressRegex, DOUBLE_DASH_INVALID, POSTCODE_FORMAT, POSTCODE_VALID}
 
 class UkAddressFormProvider @Inject() extends Mappings {
   private val addressLineLength = 200
@@ -37,7 +37,7 @@ class UkAddressFormProvider @Inject() extends Mappings {
           requiredKey = "ukAddress.error.addressLine1.required",
           invalidKey = "ukAddress.error.addressLine1.invalid.characters",
           lengthKey = "ukAddress.error.addressLine1.length",
-          regex = invalidCharactersRegex,
+          regex = ukAddressRegex,
           maxLength = addressLineLength
         ).verifying(
           "ukAddress.error.addressLine1.invalid.characters.combination",
@@ -48,7 +48,7 @@ class UkAddressFormProvider @Inject() extends Mappings {
           invalidKey = "ukAddress.error.addressLine2.invalid.characters",
           invalidCombinationKey = "ukAddress.error.addressLine2.invalid.characters.combination",
           lengthKey = "ukAddress.error.addressLine2.length",
-          regex = invalidCharactersRegex,
+          regex = ukAddressRegex,
           maxLength = addressLineLength
         ),
       "city" ->
@@ -56,7 +56,7 @@ class UkAddressFormProvider @Inject() extends Mappings {
           requiredKey = "ukAddress.error.city.required",
           invalidKey = "ukAddress.error.city.invalid.characters",
           lengthKey = "ukAddress.error.city.length",
-          regex = invalidCharactersRegex,
+          regex = ukAddressRegex,
           maxLength = addressLineLength
         ).verifying(
           "ukAddress.error.city.invalid.characters.combination",
@@ -67,7 +67,7 @@ class UkAddressFormProvider @Inject() extends Mappings {
           invalidKey = "ukAddress.error.county.invalid.characters",
           invalidCombinationKey = "ukAddress.error.county.invalid.characters.combination",
           lengthKey = "ukAddress.error.county.length",
-          regex = invalidCharactersRegex,
+          regex = ukAddressRegex,
           maxLength = addressLineLength
         ),
       "postCode" -> mandatoryPostcode(
