@@ -16,18 +16,20 @@
 
 package controllers.manual.account
 
-import controllers.actions._
+import connectors.DatabaseConnector
+import controllers.actions.*
 import forms.manual.account.WhatAccountTypeFormProvider
-import javax.inject.Inject
-import models.{Mode, ReportId}
+import models.manual.account.WhatAccountType
+import models.{Mode, NumberType, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.account.WhatAccountTypePage
+import pages.manual.account.{NumberTypePage, WhatAccountTypePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import connectors.DatabaseConnector
+import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.account.WhatAccountTypeView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class WhatAccountTypeController @Inject() (
@@ -47,26 +49,40 @@ class WhatAccountTypeController @Inject() (
   def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdRequired() {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
-      val preparedForm = request.userAnswers.get(WhatAccountTypePage(request.accountId)) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
+      (for {
+        numberType <- request.userAnswers.get(NumberTypePage(request.accountId))
+      } yield {
+        val preparedForm = request.userAnswers.get(WhatAccountTypePage(request.accountId)) match {
+          case None        => form
+          case Some(value) => form.fill(value)
+        }
 
-      Ok(view(preparedForm, mode))
+        val items: Seq[RadioItem] = WhatAccountType.options(numberType, reportId.reportingYear)
+
+        Ok(view(preparedForm, mode, items))
+      }).getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdRequired().async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(WhatAccountTypePage(request.accountId), value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(WhatAccountTypePage(request.accountId), mode, updatedAnswers))
-        )
+
+      (for {
+        numberType <- request.userAnswers.get(NumberTypePage(request.accountId))
+      } yield {
+        val items: Seq[RadioItem] = WhatAccountType.options(numberType, reportId.reportingYear)
+
+        form
+          .bindFromRequest()
+          .fold(
+            formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, items))),
+            value =>
+              for {
+                updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(WhatAccountTypePage(request.accountId), value))
+                _              <- sessionRepository.set(updatedAnswers)
+              } yield Redirect(navigator.nextPage(WhatAccountTypePage(request.accountId), mode, updatedAnswers))
+          )
+      }).getOrElse(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())))
   }
+
 }

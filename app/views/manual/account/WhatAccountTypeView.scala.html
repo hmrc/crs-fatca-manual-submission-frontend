@@ -24,7 +24,7 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, items: Seq[RadioItem])(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("whatAccountType.title"))) {
 
@@ -38,7 +38,7 @@
             RadiosViewModel(
                 field  = form("value"),
                 legend = LegendViewModel(messages("whatAccountType.heading")).asPageHeading(),
-                items  = WhatAccountType.options
+                items  = items
             )
         )
 

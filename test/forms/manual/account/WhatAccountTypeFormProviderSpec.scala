@@ -32,7 +32,7 @@ class WhatAccountTypeFormProviderSpec extends OptionFieldBehaviours {
     behave like optionsField[WhatAccountType](
       form,
       fieldName,
-      validValues = WhatAccountType.values,
+      validValues = WhatAccountType.baseValues,
       invalidError = FormError(fieldName, "error.invalid")
     )
 

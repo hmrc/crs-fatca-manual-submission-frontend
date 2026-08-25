@@ -65,13 +65,13 @@ class WhatAccountTypeControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[WhatAccountTypeView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, Seq.empty)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
       implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
-      val userAnswers       = ua.set(WhatAccountTypePage(accountId), WhatAccountType.values.head).success.value
+      val userAnswers       = ua.set(WhatAccountTypePage(accountId), WhatAccountType.baseValues.head).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
@@ -83,7 +83,7 @@ class WhatAccountTypeControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(WhatAccountType.values.head), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(WhatAccountType.baseValues.head), NormalMode, Seq.empty)(request, messages(application)).toString
       }
     }
 
@@ -104,7 +104,7 @@ class WhatAccountTypeControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, whatAccountTypeRoute)
-            .withFormUrlEncodedBody(("value", WhatAccountType.values.head.toString))
+            .withFormUrlEncodedBody(("value", WhatAccountType.baseValues.head.toString))
 
         val result = route(application, request).value
 
@@ -129,7 +129,7 @@ class WhatAccountTypeControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, Seq.empty)(request, messages(application)).toString
       }
     }
 
@@ -154,7 +154,7 @@ class WhatAccountTypeControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, whatAccountTypeRoute)
-            .withFormUrlEncodedBody(("value", WhatAccountType.values.head.toString))
+            .withFormUrlEncodedBody(("value", WhatAccountType.baseValues.head.toString))
 
         val result = route(application, request).value
 

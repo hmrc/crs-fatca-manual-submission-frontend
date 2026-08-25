@@ -20,6 +20,7 @@ import controllers.manual.account
 import controllers.manual.reportdetails.routes.*
 import controllers.routes
 import models.*
+import models.NumberType.{Iban, Semp}
 import models.SubmissionsConstants.{CRS, FATCA}
 import models.viewModels.AccountId
 import pages.*
@@ -52,7 +53,7 @@ class ManualSubmissionNavigator @Inject() () {
 
   private def accountNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
     case (HaveNumberPage(accountId), mode, ua)         => haveNumberNavigation(accountId, mode, ua)
-    case (NumberTypePage(_), mode, ua)                 => routes.UnderConstructionController.onPageLoad()
+    case (NumberTypePage(accountId), mode, ua)         => NumberTypeNavigation(accountId, mode, ua)
     case (IdentifierPage(_), mode, ua)                 => controllers.manual.account.routes.AccountClosedController.onPageLoad(mode)
     case (WasAccountOpenPage(_), mode, ua)             => controllers.manual.account.routes.IsJointAccountController.onPageLoad(mode)
     case (IsJointAccountPage(accountId), mode, ua)     => jointAccountRouteLogic(accountId, ua)
@@ -63,6 +64,13 @@ class ManualSubmissionNavigator @Inject() () {
     case (WhatWasTheAccountCurrencyPage(_), mode, ua)  => controllers.manual.account.routes.IsUndocumentedAccountController.onPageLoad(NormalMode)
     case (IsDormantAccountPage(_), mode, ua)           => controllers.manual.account.routes.WasAccountOpenController.onPageLoad(NormalMode)
   }
+
+  private def NumberTypeNavigation(accountId: AccountId, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
+    userAnswers.get(NumberTypePage(accountId)) match {
+      case Some(value) if Seq(Semp, Iban).contains(value) => routes.UnderConstructionController.onPageLoad()
+      case Some(_)                                        => account.routes.WhatAccountTypeController.onPageLoad(mode)
+      case None                                           => routes.JourneyRecoveryController.onPageLoad()
+    }
 
   private def accountBalanceRouteLogic()(implicit reportId: ReportId) =
     if (reportId.regime == FATCA) { routes.UnderConstructionController.onPageLoad() }

@@ -24,7 +24,7 @@ trait ModelGenerators {
 
   implicit lazy val arbitraryWhatAccountType: Arbitrary[WhatAccountType] =
     Arbitrary {
-      Gen.oneOf(WhatAccountType.values)
+      Gen.oneOf(WhatAccountType.baseValues)
     }
 
   implicit lazy val arbitraryWasAccountOpen: Arbitrary[WasAccountOpen] =

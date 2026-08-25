@@ -16,10 +16,11 @@
 
 package models.manual.account
 
-import models.{Enumerable, WithName}
+import models.{Enumerable, NumberType, WithName}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
+import utils.ReportingConstants.REPORTING_THRESHOLD_YEAR
 
 sealed trait WhatAccountType
 
@@ -27,30 +28,36 @@ object WhatAccountType extends Enumerable.Implicits {
 
   case object Depository extends WithName("Depository") with WhatAccountType
   case object Custodial extends WithName("Custodial") with WhatAccountType
-  case object InvestmentEntity extends WithName("InvestmentEntity") with WhatAccountType
   case object InsuranceOrAnnuityContract extends WithName("InsuranceOrAnnuityContract") with WhatAccountType
+  case object InvestmentEntity extends WithName("InvestmentEntity") with WhatAccountType
   case object NotReported extends WithName("NotReported") with WhatAccountType
 
-  val values: Seq[WhatAccountType] = Seq(
+  val baseValues: Seq[WhatAccountType] = Seq(
     Depository,
     Custodial,
-    InvestmentEntity,
-    InsuranceOrAnnuityContract,
-    NotReported
+    InvestmentEntity
   )
 
-  def options(implicit messages: Messages): Seq[RadioItem] = values.zipWithIndex.map { // TODO logic here for certain options available
-    case (value, index) =>
-      RadioItem(
-        content = Text(messages(s"whatAccountType.${value.toString}")),
-        value = Some(value.toString),
-        id = Some(s"value_$index")
-      )
+
+  def options(numberType: NumberType, reportingPeriod: Int)(implicit messages: Messages): Seq[RadioItem] = {
+    val values =
+      baseValues
+        .appendedAll(if (numberType == NumberType.Other) Seq(InsuranceOrAnnuityContract) else Seq.empty)
+        .appendedAll(if (reportingPeriod < REPORTING_THRESHOLD_YEAR) Seq(NotReported) else Seq.empty)
+
+    values.zipWithIndex.map {
+      case (value, index) =>
+        RadioItem(
+          content = Text(messages(s"whatAccountType.${value.toString}")),
+          value = Some(value.toString),
+          id = Some(s"value_$index")
+        )
+    }
   }
 
   implicit val enumerable: Enumerable[WhatAccountType] =
     Enumerable(
-      values.map(
+      baseValues.map(
         v => v.toString -> v
       ): _*
     )
