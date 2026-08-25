@@ -17,24 +17,28 @@
 package forms.manual.accountHolders
 
 import forms.behaviours.StringFieldBehaviours
-import forms.manual.accountHolders.IndividualNameFormProvider
 import play.api.data.FormError
+import utils.RegexConstants
 
 class IndividualNameFormProviderSpec extends StringFieldBehaviours {
 
-  val form = new IndividualNameFormProvider()()
+  val form                    = new IndividualNameFormProvider()()
+  val allowedChars            = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789&'\\^` "
+  val allowedSeq: Seq[String] = allowedChars.map(_.toString) :+ "-"
 
   ".FirstName" - {
 
-    val fieldName   = "FirstName"
-    val requiredKey = "individualName.error.FirstName.required"
-    val lengthKey   = "individualName.error.FirstName.length"
-    val maxLength   = 200
+    val fieldName     = "FirstName"
+    val requiredKey   = "individualName.error.FirstName.required"
+    val lengthKey     = "individualName.error.FirstName.length"
+    val invalidKey    = "individualName.error.FirstName.invalid"
+    val doubleDashKey = "individualName.error.FirstName.doubledash"
+    val maxLength     = 200
 
     behave like fieldThatBindsValidData(
       form,
       fieldName,
-      stringsWithMaxLength(maxLength)
+      stringsIncludeSpecificValuesWithMaxLength(maxLength, allowedChars)
     )
 
     behave like fieldWithMaxLength(
@@ -49,19 +53,40 @@ class IndividualNameFormProviderSpec extends StringFieldBehaviours {
       fieldName,
       requiredError = FormError(fieldName, requiredKey)
     )
+
+    behave like fieldWithIncludedChars(
+      form,
+      fieldName,
+      allowedChars = allowedSeq,
+      invalidErr = FormError(fieldName, invalidKey, Seq(RegexConstants.DEFAULT_STRING_FIELD_VALID))
+    )
+
+    "has double dash throw error" in {
+      val result = form.bind(Map(fieldName -> "test--test")).apply(fieldName)
+      result.errors must contain only FormError(fieldName, doubleDashKey, Seq(RegexConstants.DOUBLE_DASH_INVALID))
+    }
+
+    "has multiple error - maxchar + double dash" in {
+      val maxString = (0 to 200).mkString
+
+      val result = form.bind(Map(fieldName -> s"$maxString--")).apply(fieldName)
+      result.errors must contain only FormError(fieldName, lengthKey, Seq(maxLength))
+    }
   }
 
   ".LastName" - {
 
-    val fieldName   = "LastName"
-    val requiredKey = "individualName.error.LastName.required"
-    val lengthKey   = "individualName.error.LastName.length"
-    val maxLength   = 200
+    val fieldName     = "LastName"
+    val requiredKey   = "individualName.error.LastName.required"
+    val lengthKey     = "individualName.error.LastName.length"
+    val invalidKey    = "individualName.error.LastName.invalid"
+    val doubleDashKey = "individualName.error.LastName.doubledash"
+    val maxLength     = 200
 
     behave like fieldThatBindsValidData(
       form,
       fieldName,
-      stringsWithMaxLength(maxLength)
+      stringsIncludeSpecificValuesWithMaxLength(maxLength, allowedChars)
     )
 
     behave like fieldWithMaxLength(
@@ -76,5 +101,24 @@ class IndividualNameFormProviderSpec extends StringFieldBehaviours {
       fieldName,
       requiredError = FormError(fieldName, requiredKey)
     )
+
+    behave like fieldWithIncludedChars(
+      form,
+      fieldName,
+      allowedChars = allowedSeq,
+      invalidErr = FormError(fieldName, invalidKey, Seq(RegexConstants.DEFAULT_STRING_FIELD_VALID))
+    )
+
+    "has double dash throw error" in {
+      val result = form.bind(Map(fieldName -> "test--test")).apply(fieldName)
+      result.errors must contain only FormError(fieldName, doubleDashKey, Seq(RegexConstants.DOUBLE_DASH_INVALID))
+    }
+
+    "has multiple error - maxchar + double dash" in {
+      val maxString = (0 to 200).mkString
+
+      val result = form.bind(Map(fieldName -> s"$maxString--")).apply(fieldName)
+      result.errors must contain only FormError(fieldName, lengthKey, Seq(maxLength))
+    }
   }
 }

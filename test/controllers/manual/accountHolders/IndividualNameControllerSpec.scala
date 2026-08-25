@@ -59,7 +59,11 @@ class IndividualNameControllerSpec extends SpecBase with MockitoSugar {
   )
 
   "IndividualName Controller" - {
-    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
+    val reportId               = ReportId(CRS, 2025, None, "TestfiID")
+    val currentAccountHolderId = AccountHolderId("testid")
+    val ua = emptyUserAnswers
+      .withPage(ReportIdPage, reportId)
+      .withPage(CurrentAccountHolderIdPage()(reportId), currentAccountHolderId)
 
     "must return OK and the correct view for a GET" in {
 
@@ -78,12 +82,10 @@ class IndividualNameControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-      val currentAccountHolderId = AccountHolderId("43")
-      val validAnswer            = IndividualName("value 1", "value 2")
-      implicit val reportId      = ReportId(CRS, 2025, None, "TestfiID")
+      val validAnswer = IndividualName("value 1", "value 2")
       val userAnswers = ua
-        .withPage(CurrentAccountHolderIdPage(), currentAccountHolderId)
-        .withPage(IndividualNamePage(currentAccountHolderId), validAnswer)
+        .withPage(CurrentAccountHolderIdPage()(reportId), currentAccountHolderId)
+        .withPage(IndividualNamePage(currentAccountHolderId)(reportId), validAnswer)
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 

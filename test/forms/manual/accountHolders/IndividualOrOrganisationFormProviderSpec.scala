@@ -17,7 +17,6 @@
 package forms.manual.accountHolders
 
 import forms.behaviours.OptionFieldBehaviours
-import forms.manual.accountHolders.IndividualOrOrganisationFormProvider
 import models.manual.accountHolders.IndividualOrOrganisation
 import play.api.data.FormError
 
