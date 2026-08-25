@@ -14,85 +14,76 @@
  * limitations under the License.
  */
 
-package controllers.manual.account
+package controllers.manual.cpso
 
 import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
-import forms.manual.account.WhatAccountTypeFormProvider
-import models.SubmissionsConstants.CRS
-import models.manual.account.WhatAccountType
-import models.viewModels.AccountId
-import models.{NormalMode, NumberType, ReportId}
-import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
+import forms.manual.cpso.IndividualOrOrganisationFormProvider
+import models.SubmissionsConstants.{CRS, FATCA}
+import models.{NormalMode, ReportId}
+import models.manual.cpso.IndividualOrOrganisation
+import models.viewModels.manual.cpso.CPSOId
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.ReportIdPage
-import pages.manual.account.{CurrentAccountIdPage, NumberTypePage, WhatAccountTypePage}
-import play.api.Application
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
-import views.html.manual.account.WhatAccountTypeView
+import views.html.manual.cpso.IndividualOrOrganisationView
+import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
+import pages.ReportIdPage
+import pages.manual.cpso.{CurrentCPSOIdPage, IndividualOrOrganisationPage}
 
 import scala.concurrent.Future
 
-class WhatAccountTypeControllerSpec extends SpecBase with MockitoSugar {
+class IndividualOrOrganisationControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  private lazy val whatAccountTypeRoute = controllers.manual.account.routes.WhatAccountTypeController.onPageLoad(NormalMode).url
-  private val accountId: AccountId      = AccountId(value = "SomeId")
-  private val numType                   = NumberType.Other
-  private val formProvider              = new WhatAccountTypeFormProvider()
-  private val form                      = formProvider()
+  lazy val individualOrOrganisationRoute = controllers.manual.cpso.routes.IndividualOrOrganisationController.onPageLoad(NormalMode).url
 
-  private def items(app: Application): Seq[RadioItem] =
-    WhatAccountType.options(numType, 2025)(messages(app))
+  val formProvider = new IndividualOrOrganisationFormProvider()
+  val form         = formProvider()
 
-  "WhatAccountType Controller" - {
-    implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
-    val ua = emptyUserAnswers
-      .withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
-      .withPage(CurrentAccountIdPage(), accountId)
-      .withPage(NumberTypePage(accountId), numType)
+  "IndividualOrOrganisation Controller" - {
+    val reportId = ReportId(FATCA, 2025, None, "TestfiID")
+    val ua       = emptyUserAnswers.withPage(ReportIdPage, reportId)
 
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
 
       running(application) {
-        val request = FakeRequest(GET, whatAccountTypeRoute)
+        val request = FakeRequest(GET, individualOrOrganisationRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[WhatAccountTypeView]
+        val view = application.injector.instanceOf[IndividualOrOrganisationView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, items(application))(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-      implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
-      val userAnswers                 = ua.set(WhatAccountTypePage(accountId), WhatAccountType.baseValues.head).success.value
+      val currentId = CPSOId("testid")
+      val userAnswers = ua
+        .withPage(CurrentCPSOIdPage()(reportId), currentId)
+        .withPage(IndividualOrOrganisationPage(currentId)(reportId), IndividualOrOrganisation.values.head)
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, whatAccountTypeRoute)
+        val request = FakeRequest(GET, individualOrOrganisationRoute)
 
-        val view = application.injector.instanceOf[WhatAccountTypeView]
+        val view = application.injector.instanceOf[IndividualOrOrganisationView]
 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(WhatAccountType.baseValues.head), NormalMode, items(application))(request,
-                                                                                                                           messages(application)
-        ).toString
+        contentAsString(result) mustEqual view(form.fill(IndividualOrOrganisation.values.head), NormalMode)(request, messages(application)).toString
       }
     }
 
@@ -112,8 +103,8 @@ class WhatAccountTypeControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, whatAccountTypeRoute)
-            .withFormUrlEncodedBody(("value", WhatAccountType.baseValues.head.toString))
+          FakeRequest(POST, individualOrOrganisationRoute)
+            .withFormUrlEncodedBody(("value", IndividualOrOrganisation.values.head.toString))
 
         val result = route(application, request).value
 
@@ -128,17 +119,17 @@ class WhatAccountTypeControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, whatAccountTypeRoute)
+          FakeRequest(POST, individualOrOrganisationRoute)
             .withFormUrlEncodedBody(("value", "invalid value"))
 
         val boundForm = form.bind(Map("value" -> "invalid value"))
 
-        val view = application.injector.instanceOf[WhatAccountTypeView]
+        val view = application.injector.instanceOf[IndividualOrOrganisationView]
 
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, items(application))(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
       }
     }
 
@@ -147,7 +138,23 @@ class WhatAccountTypeControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(maybeUserAnswers = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, whatAccountTypeRoute)
+        val request = FakeRequest(GET, individualOrOrganisationRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Journey Recovery for a GET when Regime is CRS" in {
+      val reportId = ReportId(CRS, 2025, None, "TestfiID")
+      val ua       = emptyUserAnswers.withPage(ReportIdPage, reportId)
+
+      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, individualOrOrganisationRoute)
 
         val result = route(application, request).value
 
@@ -162,8 +169,8 @@ class WhatAccountTypeControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, whatAccountTypeRoute)
-            .withFormUrlEncodedBody(("value", WhatAccountType.baseValues.head.toString))
+          FakeRequest(POST, individualOrOrganisationRoute)
+            .withFormUrlEncodedBody(("value", IndividualOrOrganisation.values.head.toString))
 
         val result = route(application, request).value
 

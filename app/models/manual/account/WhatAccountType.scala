@@ -38,7 +38,6 @@ object WhatAccountType extends Enumerable.Implicits {
     InvestmentEntity
   )
 
-
   def options(numberType: NumberType, reportingPeriod: Int)(implicit messages: Messages): Seq[RadioItem] = {
     val values =
       baseValues

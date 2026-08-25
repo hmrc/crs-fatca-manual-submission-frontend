@@ -229,6 +229,11 @@ POST        /manual/sponsor/remove-tax-resident-country              controllers
 GET         /manual/sponsor/check-answers                            controllers.manual.sponsor.CheckAnswersController.onPageLoad()
 POST        /manual/sponsor/check-answers                            controllers.manual.sponsor.CheckAnswersController.onSubmit()
 
+GET        /manual/cp-so/individual-or-organisation                       controllers.manual.cpso.IndividualOrOrganisationController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/cp-so/individual-or-organisation                       controllers.manual.cpso.IndividualOrOrganisationController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/cp-so/change-individual-or-organisation                controllers.manual.cpso.IndividualOrOrganisationController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/cp-so/change-individual-or-organisation                controllers.manual.cpso.IndividualOrOrganisationController.onSubmit(mode: Mode = CheckMode)
+
 GET         /manual/account/type                                     controllers.manual.account.WhatAccountTypeController.onPageLoad(mode: Mode = NormalMode)
 POST        /manual/account/type                                     controllers.manual.account.WhatAccountTypeController.onSubmit(mode: Mode = NormalMode)
 GET         /manual/account/change-type                              controllers.manual.account.WhatAccountTypeController.onPageLoad(mode: Mode = CheckMode)

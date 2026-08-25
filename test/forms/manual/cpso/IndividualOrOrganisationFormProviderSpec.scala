@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package forms.manual.accountHolders
+package forms.manual.cpso
 
 import forms.behaviours.OptionFieldBehaviours
-import models.manual.accountHolders.IndividualOrOrganisation
+import models.manual.cpso.IndividualOrOrganisation
 import play.api.data.FormError
 
 class IndividualOrOrganisationFormProviderSpec extends OptionFieldBehaviours {
@@ -27,7 +27,7 @@ class IndividualOrOrganisationFormProviderSpec extends OptionFieldBehaviours {
   ".value" - {
 
     val fieldName   = "value"
-    val requiredKey = "individualOrOrganisation.error.required"
+    val requiredKey = "cpso.individualOrOrganisation.error.required"
 
     behave like optionsField[IndividualOrOrganisation](
       form,

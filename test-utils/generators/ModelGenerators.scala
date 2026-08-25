@@ -17,10 +17,16 @@
 package generators
 
 import models.manual.account.{WasAccountOpen, WhatAccountType}
+import models.manual.cpso.IndividualOrOrganisation
 import models.{CrsOrFatca, NumberType, TypeOfReport, UkAddress}
 import org.scalacheck.{Arbitrary, Gen}
 
 trait ModelGenerators {
+
+  implicit lazy val arbitraryIndividualOrOrganisation: Arbitrary[IndividualOrOrganisation] =
+    Arbitrary {
+      Gen.oneOf(IndividualOrOrganisation.values)
+    }
 
   implicit lazy val arbitraryWhatAccountType: Arbitrary[WhatAccountType] =
     Arbitrary {
