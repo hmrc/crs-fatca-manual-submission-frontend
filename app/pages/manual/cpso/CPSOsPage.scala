@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package models
+package pages.manual.cpso
 
-import play.api.libs.json._
+import models.ReportId
+import models.viewModels.manual.cpso.CPSOs
+import pages.QuestionPage
+import play.api.libs.json.JsPath
 
-case class UkAddress(addressLine1: String, addressLine2: Option[String], city: String, county: Option[String] = None, postcode: String, country: String)
+case class CPSOsPage()(implicit reportId: ReportId) extends QuestionPage[CPSOs]:
 
-object UkAddress {
-
-  implicit val format: OFormat[UkAddress] = Json.format
-
-  def from(postCode: String) = UkAddress("", None, "", None, postCode, "")
-}
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "cp-so"

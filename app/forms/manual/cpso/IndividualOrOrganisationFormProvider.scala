@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package models
+package forms.manual.cpso
 
-import play.api.libs.json._
+import javax.inject.Inject
 
-case class UkAddress(addressLine1: String, addressLine2: Option[String], city: String, county: Option[String] = None, postcode: String, country: String)
+import forms.mappings.Mappings
+import play.api.data.Form
+import models.manual.cpso.IndividualOrOrganisation
 
-object UkAddress {
+class IndividualOrOrganisationFormProvider @Inject() extends Mappings {
 
-  implicit val format: OFormat[UkAddress] = Json.format
-
-  def from(postCode: String) = UkAddress("", None, "", None, postCode, "")
+  def apply(): Form[IndividualOrOrganisation] =
+    Form(
+      "value" -> enumerable[IndividualOrOrganisation]("cpso.individualOrOrganisation.error.required")
+    )
 }

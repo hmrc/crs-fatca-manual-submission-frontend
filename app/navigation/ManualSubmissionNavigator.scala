@@ -95,6 +95,10 @@ class ManualSubmissionNavigator @Inject() () {
     case (IndividualNamePage(_), _, _) => controllers.routes.UnderConstructionController.onPageLoad()
   }
 
+  private def cpsoNavigation: PartialFunction[(Page, Mode, UserAnswers), Call] = {
+    case (pages.manual.cpso.IndividualOrOrganisationPage(_), _, _) => routes.UnderConstructionController.onPageLoad()
+  }
+
   private def sponsorNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
     case (HaveSponsorPage(), mode, ua)                      => haveSponsorNavigation(mode, ua)
     case (SponsorNamePage(), mode, _)                       => controllers.manual.sponsor.routes.WhatIsGIINForSponsorController.onPageLoad(mode)
@@ -122,7 +126,7 @@ class ManualSubmissionNavigator @Inject() () {
     else controllers.manual.sponsor.routes.SponsorResidentForTaxController.onPageLoad(mode)
 
   private def navigation(implicit reportId: ReportId) =
-    accountNavigation orElse sponsorNavigation orElse fillerNavigation orElse accountHolderNavigation
+    accountNavigation orElse sponsorNavigation orElse fillerNavigation orElse accountHolderNavigation orElse cpsoNavigation
 
   def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId): Call =
     navigation
@@ -175,7 +179,7 @@ class ManualSubmissionNavigator @Inject() () {
   private def handleIsThisAddressForSponsorNavigation(userAnswers: UserAnswers, mode: Mode)(implicit reportId: ReportId) =
     (userAnswers.get(IsThisAddressForSponsorPage()), userAnswers.get(WhatIsAddressForSponsorPage())) match {
       case (Some(true), Some(address)) => handleNavigationToSponsorResidentTaxView(userAnswers, mode)
-      case (Some(false), Some(_))      => controllers.manual.sponsor.routes.UkAddressController.onPageLoad(mode)
+      case (Some(false), _)            => controllers.manual.sponsor.routes.UkAddressController.onPageLoad(mode)
       case (_, _)                      => routes.JourneyRecoveryController.onPageLoad()
     }
 

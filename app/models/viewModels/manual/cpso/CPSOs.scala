@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
-package models
+package models.viewModels.manual.cpso
 
-import play.api.libs.json._
+import play.api.libs.json.{Json, OFormat}
 
-case class UkAddress(addressLine1: String, addressLine2: Option[String], city: String, county: Option[String] = None, postcode: String, country: String)
+case class CPSOs(cpsos: Map[String, CPSO])
 
-object UkAddress {
-
-  implicit val format: OFormat[UkAddress] = Json.format
-
-  def from(postCode: String) = UkAddress("", None, "", None, postCode, "")
-}
+object CPSOs:
+  implicit val format: OFormat[CPSOs] = Json.format[CPSOs]

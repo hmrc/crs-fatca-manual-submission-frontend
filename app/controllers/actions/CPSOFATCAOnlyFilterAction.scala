@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-package models
+package controllers.actions
 
-import play.api.libs.json._
+import models.SubmissionsConstants.{FATCA, RegimeType}
+import models.requests.CPSOIdRequest
 
-case class UkAddress(addressLine1: String, addressLine2: Option[String], city: String, county: Option[String] = None, postcode: String, country: String)
+import javax.inject.Inject
+import scala.concurrent.ExecutionContext
+import play.api.mvc.ActionFilter
 
-object UkAddress {
-
-  implicit val format: OFormat[UkAddress] = Json.format
-
-  def from(postCode: String) = UkAddress("", None, "", None, postCode, "")
+class CPSOFATCAOnlyFilterActionImpl @Inject() (implicit val executionContext: ExecutionContext)
+    extends CPSOFATCAOnlyFilterAction
+    with RegimeTypeFiltering[CPSOIdRequest] {
+  override val regime: RegimeType = FATCA
 }
+
+trait CPSOFATCAOnlyFilterAction extends ActionFilter[CPSOIdRequest]

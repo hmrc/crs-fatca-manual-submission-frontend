@@ -544,6 +544,14 @@ individualOrOrganisation.checkYourAnswersLabel = individualOrOrganisation
 individualOrOrganisation.error.required = Select whether the account holder is an individual or organisation
 individualOrOrganisation.change.hidden = IndividualOrOrganisation
 
+cpso.individualOrOrganisation.title = Is the substantial owner an individual or organisation?
+cpso.individualOrOrganisation.heading = Is the substantial owner an individual or organisation?
+cpso.individualOrOrganisation.individual = Individual
+cpso.individualOrOrganisation.organisation = Organisation
+cpso.individualOrOrganisation.checkYourAnswersLabel = Is the substantial owner an individual or organisation?
+cpso.individualOrOrganisation.error.required = Select whether the substantial owner is an individual or organisation
+cpso.individualOrOrganisation.change.hidden = IndividualOrOrganisation
+
 individualName.title = What is the name of the account holder?
 individualName.heading = What is the name of the account holder?
 individualName.FirstName = FirstName

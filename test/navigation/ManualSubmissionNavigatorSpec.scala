@@ -22,10 +22,12 @@ import models.*
 import models.CrsOrFatca.Fatca
 import models.SubmissionsConstants.{CRS, FATCA}
 import models.manual.account.WasAccountOpen
+import models.manual.cpso.IndividualOrOrganisation
 import models.manual.accountHolders.IndividualName
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
 import models.response.{Address, AddressLookup, Country}
 import models.viewModels.{AccountHolderId, AccountId}
+import models.viewModels.manual.cpso.CPSOId
 import pages.*
 import pages.manual.account.*
 import pages.manual.accountHolders.{IndividualNamePage, IndividualOrOrganisationPage}
@@ -487,6 +489,17 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           val ua = UserAnswers("id")
           navigator.nextPage(RemoveTaxResidentCountryPage(), NormalMode, ua) mustBe
             controllers.manual.sponsor.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
+        }
+      }
+      "cpso" - {
+        val currentCPSOId = CPSOId("testid")
+        "IndividualOrOrganisationPage" - {
+          "must go to UnderConstruction page when submitted" in {
+            val ua = UserAnswers("id")
+              .withPage(pages.manual.cpso.IndividualOrOrganisationPage(currentCPSOId), models.manual.cpso.IndividualOrOrganisation.Individual)
+            navigator.nextPage(pages.manual.cpso.IndividualOrOrganisationPage(currentCPSOId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
         }
       }
 
