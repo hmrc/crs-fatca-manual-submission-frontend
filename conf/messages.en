@@ -554,8 +554,8 @@ cpso.individualOrOrganisation.change.hidden = IndividualOrOrganisation
 
 individualName.title = What is the name of the account holder?
 individualName.heading = What is the name of the account holder?
-individualName.FirstName = FirstName
-individualName.LastName = LastName
+individualName.FirstName = First name
+individualName.LastName = Last name
 individualName.checkYourAnswersLabel = What is the name of the account holder?
 individualName.error.FirstName.required = Enter the first name of the account holder
 individualName.error.LastName.required = Enter the last name of the account holder

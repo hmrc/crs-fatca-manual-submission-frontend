@@ -22,6 +22,7 @@
     heading: components.Heading,
     govukErrorSummary: GovukErrorSummary,
     govukInput: GovukInput,
+    govukFieldset: GovukFieldset,
     govukButton: GovukButton
 )
 
@@ -35,31 +36,35 @@
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
-        @heading(messages("individualName.heading"))
-
-        @govukInput(
-            InputViewModel(
-                field = form("FirstName"),
-                label = LabelViewModel(messages("individualName.FirstName"))
-            )
-            .withWidth(TwoThirds)
-            .withAutocomplete("given-name")
-            .withId("manual-ah-first-name")
-        )
-
-        @govukInput(
-            InputViewModel(
-                field = form("LastName"),
-                label = LabelViewModel(messages("individualName.LastName"))
-            )
-            .withWidth(TwoThirds)
-            .withAutocomplete("family-name")
-            .withId("manual-ah-last-name")
-        )
+        @govukFieldset(FieldsetViewModel(
+            legend = LegendViewModel(content = Text(messages("individualName.heading"))).asPageHeading()
+        ).withHtml(inputhtml))
 
         @govukButton(
             ButtonViewModel(messages("site.saveContinue"))
             .withAttribute("id" -> "submit")
         )
     }
+}
+
+@inputhtml = {
+    @govukInput(
+        InputViewModel(
+            field = form("FirstName"),
+            label = LabelViewModel(messages("individualName.FirstName"))
+        )
+        .withWidth(TwoThirds)
+        .withAutocomplete("given-name")
+        .withId("manual-ah-first-name")
+    )
+
+    @govukInput(
+        InputViewModel(
+            field = form("LastName"),
+            label = LabelViewModel(messages("individualName.LastName"))
+        )
+        .withWidth(TwoThirds)
+        .withAutocomplete("family-name")
+        .withId("manual-ah-last-name")
+    )
 }

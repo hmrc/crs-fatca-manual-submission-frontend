@@ -34,7 +34,7 @@ class IndividualNameFormProvider @Inject() extends Mappings {
         200,
         "individualName.error.FirstName.length",
         Seq(
-          ErrorValidation(RegexConstants.DEFAULT_STRING_FIELD_VALID, "individualName.error.FirstName.invalid"),
+          ErrorValidation(RegexConstants.DEFAULT_ALPHA_FIELD_VALID, "individualName.error.FirstName.invalid"),
           ErrorValidation(RegexConstants.DOUBLE_DASH_INVALID, "individualName.error.FirstName.doubledash")
         )
       ),
@@ -43,7 +43,7 @@ class IndividualNameFormProvider @Inject() extends Mappings {
         200,
         "individualName.error.LastName.length",
         Seq(
-          ErrorValidation(RegexConstants.DEFAULT_STRING_FIELD_VALID, "individualName.error.LastName.invalid"),
+          ErrorValidation(RegexConstants.DEFAULT_ALPHA_FIELD_VALID, "individualName.error.LastName.invalid"),
           ErrorValidation(RegexConstants.DOUBLE_DASH_INVALID, "individualName.error.LastName.doubledash")
         )
       )

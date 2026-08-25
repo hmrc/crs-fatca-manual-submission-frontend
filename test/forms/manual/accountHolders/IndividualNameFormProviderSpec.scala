@@ -23,7 +23,7 @@ import utils.RegexConstants
 class IndividualNameFormProviderSpec extends StringFieldBehaviours {
 
   val form                    = new IndividualNameFormProvider()()
-  val allowedChars            = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789&'\\^` "
+  val allowedChars            = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz&'\\^` "
   val allowedSeq: Seq[String] = allowedChars.map(_.toString) :+ "-"
 
   ".FirstName" - {
@@ -58,7 +58,7 @@ class IndividualNameFormProviderSpec extends StringFieldBehaviours {
       form,
       fieldName,
       allowedChars = allowedSeq,
-      invalidErr = FormError(fieldName, invalidKey, Seq(RegexConstants.DEFAULT_STRING_FIELD_VALID))
+      invalidErr = FormError(fieldName, invalidKey, Seq(RegexConstants.DEFAULT_ALPHA_FIELD_VALID))
     )
 
     "has double dash throw error" in {
@@ -67,7 +67,7 @@ class IndividualNameFormProviderSpec extends StringFieldBehaviours {
     }
 
     "has multiple error - maxchar + double dash" in {
-      val maxString = (0 to 200).mkString
+      val maxString = "a".repeat(201)
 
       val result = form.bind(Map(fieldName -> s"$maxString--")).apply(fieldName)
       result.errors must contain only FormError(fieldName, lengthKey, Seq(maxLength))
@@ -106,7 +106,7 @@ class IndividualNameFormProviderSpec extends StringFieldBehaviours {
       form,
       fieldName,
       allowedChars = allowedSeq,
-      invalidErr = FormError(fieldName, invalidKey, Seq(RegexConstants.DEFAULT_STRING_FIELD_VALID))
+      invalidErr = FormError(fieldName, invalidKey, Seq(RegexConstants.DEFAULT_ALPHA_FIELD_VALID))
     )
 
     "has double dash throw error" in {
@@ -115,7 +115,7 @@ class IndividualNameFormProviderSpec extends StringFieldBehaviours {
     }
 
     "has multiple error - maxchar + double dash" in {
-      val maxString = (0 to 200).mkString
+      val maxString = "a".repeat(201)
 
       val result = form.bind(Map(fieldName -> s"$maxString--")).apply(fieldName)
       result.errors must contain only FormError(fieldName, lengthKey, Seq(maxLength))
