@@ -16,7 +16,6 @@
 
 package pages.manual.cpso
 
-import models.SubmissionsConstants.CRS
 import models.viewModels.manual.cpso.CPSOId
 import models.{IndividualName, ReportId}
 import pages.QuestionPage

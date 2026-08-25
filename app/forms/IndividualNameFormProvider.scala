@@ -22,7 +22,7 @@ import forms.mappings.Mappings
 import play.api.data.Form
 import play.api.data.Forms._
 import models.IndividualName
-import utils.RegexConstants.{firstAndLastNameRegex, DOUBLE_DASH_INVALID}
+import utils.RegexConstants.{invalidCharactersRegex, DOUBLE_DASH_INVALID}
 
 class IndividualNameFormProvider @Inject() extends Mappings {
   private val nameLineLength = 200
@@ -33,23 +33,23 @@ class IndividualNameFormProvider @Inject() extends Mappings {
   def apply(regime: String): Form[IndividualName] = Form(
     mapping(
       "firstName" -> validatedText(
-        requiredKey = s"individualName.$regime.error.firstName.required",
-        invalidKey = s"individualName.$regime.error.firstName.invalid.characters",
-        lengthKey = s"individualName.$regime.error.firstName.length",
-        regex = firstAndLastNameRegex,
+        requiredKey = s"cpso.individualName.$regime.error.firstName.required",
+        invalidKey = s"cpso.individualName.$regime.error.firstName.invalid.characters",
+        lengthKey = s"cpso.individualName.$regime.error.firstName.length",
+        regex = invalidCharactersRegex,
         maxLength = nameLineLength
       ).verifying(
-        s"individualName.$regime.error.firstName.invalid.characters.combination",
+        s"cpso.individualName.$regime.error.firstName.invalid.characters.combination",
         doesNotContainDoubleDash
       ),
       "lastName" -> validatedText(
-        requiredKey = s"individualName.$regime.error.lastName.required",
-        invalidKey = s"individualName.$regime.error.lastName.invalid.characters",
-        lengthKey = s"individualName.$regime.error.lastName.length",
-        regex = firstAndLastNameRegex,
+        requiredKey = s"cpso.individualName.$regime.error.lastName.required",
+        invalidKey = s"cpso.individualName.$regime.error.lastName.invalid.characters",
+        lengthKey = s"cpso.individualName.$regime.error.lastName.length",
+        regex = invalidCharactersRegex,
         maxLength = nameLineLength
       ).verifying(
-        s"individualName.$regime.error.lastName.invalid.characters.combination",
+        s"cpso.individualName.$regime.error.lastName.invalid.characters.combination",
         doesNotContainDoubleDash
       )
     )(IndividualName.apply)(

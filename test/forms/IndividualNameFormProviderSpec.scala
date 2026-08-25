@@ -43,7 +43,7 @@ class IndividualNameFormProviderSpec extends StringFieldBehaviours {
         regimes.foreach {
           regime =>
             val result = form(regime).bind(validData.updated("firstName", ""))
-            result.errors("firstName").map(_.message) shouldBe Seq(s"individualName.$regime.error.firstName.required")
+            result.errors("firstName").map(_.message) shouldBe Seq(s"cpso.individualName.$regime.error.firstName.required")
         }
       }
 
@@ -52,7 +52,7 @@ class IndividualNameFormProviderSpec extends StringFieldBehaviours {
         regimes.foreach {
           regime =>
             val result = form(regime).bind(validData.updated("firstName", firstName))
-            result.errors("firstName").map(_.message) shouldBe Seq(s"individualName.$regime.error.firstName.length")
+            result.errors("firstName").map(_.message) shouldBe Seq(s"cpso.individualName.$regime.error.firstName.length")
         }
       }
 
@@ -61,7 +61,7 @@ class IndividualNameFormProviderSpec extends StringFieldBehaviours {
         regimes.foreach {
           regime =>
             val result = form(regime).bind(validData.updated("firstName", firsName))
-            result.errors("firstName").map(_.message) shouldBe Seq(s"individualName.$regime.error.firstName.invalid.characters")
+            result.errors("firstName").map(_.message) shouldBe Seq(s"cpso.individualName.$regime.error.firstName.invalid.characters")
         }
       }
 
@@ -70,7 +70,7 @@ class IndividualNameFormProviderSpec extends StringFieldBehaviours {
         regimes.foreach {
           regime =>
             val result = form(regime).bind(validData.updated("firstName", firstName))
-            result.errors("firstName").map(_.message) shouldBe Seq(s"individualName.$regime.error.firstName.invalid.characters.combination")
+            result.errors("firstName").map(_.message) shouldBe Seq(s"cpso.individualName.$regime.error.firstName.invalid.characters.combination")
         }
       }
     }
@@ -80,7 +80,7 @@ class IndividualNameFormProviderSpec extends StringFieldBehaviours {
         regimes.foreach {
           regime =>
             val result = form(regime).bind(validData.updated("lastName", ""))
-            result.errors("lastName").map(_.message) shouldBe Seq(s"individualName.$regime.error.lastName.required")
+            result.errors("lastName").map(_.message) shouldBe Seq(s"cpso.individualName.$regime.error.lastName.required")
         }
       }
 
@@ -89,7 +89,7 @@ class IndividualNameFormProviderSpec extends StringFieldBehaviours {
         regimes.foreach {
           regime =>
             val result = form(regime).bind(validData.updated("lastName", lastName))
-            result.errors("lastName").map(_.message) shouldBe Seq(s"individualName.$regime.error.lastName.length")
+            result.errors("lastName").map(_.message) shouldBe Seq(s"cpso.individualName.$regime.error.lastName.length")
         }
       }
 
@@ -98,7 +98,7 @@ class IndividualNameFormProviderSpec extends StringFieldBehaviours {
         regimes.foreach {
           regime =>
             val result = form(regime).bind(validData.updated("lastName", lastName))
-            result.errors("lastName").map(_.message) shouldBe Seq(s"individualName.$regime.error.lastName.invalid.characters")
+            result.errors("lastName").map(_.message) shouldBe Seq(s"cpso.individualName.$regime.error.lastName.invalid.characters")
         }
       }
 
@@ -107,7 +107,7 @@ class IndividualNameFormProviderSpec extends StringFieldBehaviours {
         regimes.foreach {
           regime =>
             val result = form(regime).bind(validData.updated("lastName", lastName))
-            result.errors("lastName").map(_.message) shouldBe Seq(s"individualName.$regime.error.lastName.invalid.characters.combination")
+            result.errors("lastName").map(_.message) shouldBe Seq(s"cpso.individualName.$regime.error.lastName.invalid.characters.combination")
         }
       }
     }

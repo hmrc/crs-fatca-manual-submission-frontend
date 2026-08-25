@@ -28,7 +28,7 @@
 
 @(form: Form[_], mode: Mode, regime: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages(s"individualName.${regime}.title"))) {
+@layout(pageTitle = title(form, messages(s"cpso.individualName.${regime}.title"))) {
 
     @formHelper(action = controllers.manual.cpso.routes.IndividualNameController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
@@ -38,13 +38,13 @@
 
         <fieldset class="govuk-fieldset">
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--l wrappable">
-                @heading(messages(s"individualName.${regime}.heading"))
+                @heading(messages(s"cpso.individualName.${regime}.heading"))
             </legend>
 
             @govukInput(
                 InputViewModel(
                     field = form("firstName"),
-                    label = LabelViewModel(messages("individualName.firstName"))
+                    label = LabelViewModel(messages("cpso.individualName.firstName"))
                 )
                 .withWidth(TwoThirds)
                 .withAutocomplete("given-name")
@@ -53,7 +53,7 @@
             @govukInput(
                 InputViewModel(
                     field = form("lastName"),
-                    label = LabelViewModel(messages("individualName.LastName"))
+                    label = LabelViewModel(messages("cpso.individualName.LastName"))
                 )
                 .withWidth(TwoThirds)
                 .withAutocomplete("family-name")
