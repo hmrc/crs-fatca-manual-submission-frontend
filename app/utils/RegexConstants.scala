@@ -28,4 +28,3 @@ object RegexConstants:
 
   val nonUkPostcodeRegex: String =
     """^[A-Za-z0-9 ./-]*$"""
-

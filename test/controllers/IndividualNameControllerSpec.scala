@@ -17,24 +17,23 @@
 package controllers
 
 import base.SpecBase
+import connectors.DatabaseConnector
 import forms.IndividualNameFormProvider
-import models.IndividualName
+import models.SubmissionsConstants.CRS
+import models.viewModels.manual.cpso.CPSOId
+import models.{IndividualName, NormalMode, ReportId}
+import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
+import pages.ReportIdPage
+import pages.manual.cpso.{CurrentCPSOIdPage, IndividualNamePage}
+import play.api.data.Form
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import connectors.DatabaseConnector
 import views.html.manual.cpso.IndividualNameView
-import models.SubmissionsConstants.CRS
-import models.viewModels.manual.cpso.CPSOId
-import models.{NormalMode, ReportId}
-import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
-import pages.ReportIdPage
-import pages.manual.cpso.{CurrentCPSOIdPage, IndividualNamePage}
-import play.api.data.Form
 
 import scala.concurrent.Future
 
@@ -44,7 +43,8 @@ class IndividualNameControllerSpec extends SpecBase with MockitoSugar {
 
   val formProvider = new IndividualNameFormProvider()
   val regime       = "crs"
-  val form         = formProvider(regime)
+  val regimeType   = CRS
+  val form         = formProvider(regimeType)
   val currentId    = CPSOId("testid")
   val reportId     = ReportId(CRS, 2025, None, "TestfiID")
   val ua           = emptyUserAnswers.withPage(ReportIdPage, reportId)

@@ -19,6 +19,7 @@ package views.manual.cpso
 import base.SpecBase
 import forms.IndividualNameFormProvider
 import models.NormalMode
+import models.SubmissionsConstants.{CRS, FATCA}
 import org.jsoup.Jsoup
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
@@ -44,7 +45,7 @@ class IndividualNameViewSpec extends SpecBase {
     "should render page components" - {
       "for crs regime" - {
         val regime                              = "crs"
-        val form                                = formProvider(regime)
+        val form                                = formProvider(CRS)
         val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, regime)
         lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
@@ -80,7 +81,7 @@ class IndividualNameViewSpec extends SpecBase {
 
       "for fatca regime" - {
         val regime                              = "fatca"
-        val form                                = formProvider(regime)
+        val form                                = formProvider(FATCA)
         val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, regime)
         lazy val doc                            = Jsoup.parse(renderedHtml.body)
 

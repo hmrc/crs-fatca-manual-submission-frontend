@@ -18,11 +18,12 @@ package forms
 
 import forms.behaviours.StringFieldBehaviours
 import org.scalatest.matchers.should.Matchers.shouldBe
+import models.SubmissionsConstants.{CRS, FATCA, RegimeType}
 
 class IndividualNameFormProviderSpec extends StringFieldBehaviours {
 
   val form    = new IndividualNameFormProvider()
-  val regimes = List("crs", "fatca")
+  val regimes = List(CRS, FATCA)
 
   private val validData = Map(
     "firstName" -> "some-name",
@@ -43,7 +44,7 @@ class IndividualNameFormProviderSpec extends StringFieldBehaviours {
         regimes.foreach {
           regime =>
             val result = form(regime).bind(validData.updated("firstName", ""))
-            result.errors("firstName").map(_.message) shouldBe Seq(s"cpso.individualName.$regime.error.firstName.required")
+            result.errors("firstName").map(_.message) shouldBe Seq(s"cpso.individualName.${regime.toString.toLowerCase}.error.firstName.required")
         }
       }
 
@@ -52,7 +53,7 @@ class IndividualNameFormProviderSpec extends StringFieldBehaviours {
         regimes.foreach {
           regime =>
             val result = form(regime).bind(validData.updated("firstName", firstName))
-            result.errors("firstName").map(_.message) shouldBe Seq(s"cpso.individualName.$regime.error.firstName.length")
+            result.errors("firstName").map(_.message) shouldBe Seq(s"cpso.individualName.${regime.toString.toLowerCase}.error.firstName.length")
         }
       }
 
@@ -61,7 +62,7 @@ class IndividualNameFormProviderSpec extends StringFieldBehaviours {
         regimes.foreach {
           regime =>
             val result = form(regime).bind(validData.updated("firstName", firsName))
-            result.errors("firstName").map(_.message) shouldBe Seq(s"cpso.individualName.$regime.error.firstName.invalid.characters")
+            result.errors("firstName").map(_.message) shouldBe Seq(s"cpso.individualName.${regime.toString.toLowerCase}.error.firstName.invalid.characters")
         }
       }
 
@@ -70,7 +71,9 @@ class IndividualNameFormProviderSpec extends StringFieldBehaviours {
         regimes.foreach {
           regime =>
             val result = form(regime).bind(validData.updated("firstName", firstName))
-            result.errors("firstName").map(_.message) shouldBe Seq(s"cpso.individualName.$regime.error.firstName.invalid.characters.combination")
+            result.errors("firstName").map(_.message) shouldBe Seq(
+              s"cpso.individualName.${regime.toString.toLowerCase}.error.firstName.invalid.characters.combination"
+            )
         }
       }
     }
@@ -80,7 +83,7 @@ class IndividualNameFormProviderSpec extends StringFieldBehaviours {
         regimes.foreach {
           regime =>
             val result = form(regime).bind(validData.updated("lastName", ""))
-            result.errors("lastName").map(_.message) shouldBe Seq(s"cpso.individualName.$regime.error.lastName.required")
+            result.errors("lastName").map(_.message) shouldBe Seq(s"cpso.individualName.${regime.toString.toLowerCase}.error.lastName.required")
         }
       }
 
@@ -89,7 +92,7 @@ class IndividualNameFormProviderSpec extends StringFieldBehaviours {
         regimes.foreach {
           regime =>
             val result = form(regime).bind(validData.updated("lastName", lastName))
-            result.errors("lastName").map(_.message) shouldBe Seq(s"cpso.individualName.$regime.error.lastName.length")
+            result.errors("lastName").map(_.message) shouldBe Seq(s"cpso.individualName.${regime.toString.toLowerCase}.error.lastName.length")
         }
       }
 
@@ -98,7 +101,7 @@ class IndividualNameFormProviderSpec extends StringFieldBehaviours {
         regimes.foreach {
           regime =>
             val result = form(regime).bind(validData.updated("lastName", lastName))
-            result.errors("lastName").map(_.message) shouldBe Seq(s"cpso.individualName.$regime.error.lastName.invalid.characters")
+            result.errors("lastName").map(_.message) shouldBe Seq(s"cpso.individualName.${regime.toString.toLowerCase}.error.lastName.invalid.characters")
         }
       }
 
@@ -107,7 +110,9 @@ class IndividualNameFormProviderSpec extends StringFieldBehaviours {
         regimes.foreach {
           regime =>
             val result = form(regime).bind(validData.updated("lastName", lastName))
-            result.errors("lastName").map(_.message) shouldBe Seq(s"cpso.individualName.$regime.error.lastName.invalid.characters.combination")
+            result.errors("lastName").map(_.message) shouldBe Seq(
+              s"cpso.individualName.${regime.toString.toLowerCase}.error.lastName.invalid.characters.combination"
+            )
         }
       }
     }

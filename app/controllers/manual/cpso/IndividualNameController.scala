@@ -48,7 +48,7 @@ class IndividualNameController @Inject() (
     implicit request =>
       implicit val reportId: ReportId = request.reportId
       val regime                      = reportId.regime.toString.toLowerCase
-      val form                        = formProvider(regime)
+      val form                        = formProvider(reportId.regime)
       val preparedForm = request.userAnswers.get(IndividualNamePage(request.cpsoId)) match {
         case None        => form
         case Some(value) => form.fill(value)
@@ -61,7 +61,7 @@ class IndividualNameController @Inject() (
     implicit request =>
       implicit val reportId: ReportId = request.reportId
       val regime                      = reportId.regime.toString.toLowerCase
-      val form                        = formProvider(regime)
+      val form                        = formProvider(reportId.regime)
       form
         .bindFromRequest()
         .fold(
