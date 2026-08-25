@@ -43,6 +43,8 @@
                 label = LabelViewModel(messages("individualName.FirstName"))
             )
             .withWidth(TwoThirds)
+            .withAutocomplete("given-name")
+            .withId("manual-ah-first-name")
         )
 
         @govukInput(
@@ -51,10 +53,13 @@
                 label = LabelViewModel(messages("individualName.LastName"))
             )
             .withWidth(TwoThirds)
+            .withAutocomplete("family-name")
+            .withId("manual-ah-last-name")
         )
 
         @govukButton(
             ButtonViewModel(messages("site.saveContinue"))
+            .withAttribute("id" -> "submit")
         )
     }
 }
