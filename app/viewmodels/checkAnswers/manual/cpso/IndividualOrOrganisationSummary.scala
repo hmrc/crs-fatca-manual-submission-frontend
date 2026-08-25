@@ -34,11 +34,11 @@ object IndividualOrOrganisationSummary {
     } yield
       val value = ValueViewModel(
         HtmlContent(
-          HtmlFormat.escape(messages(s"individualOrOrganisation.$answer"))
+          HtmlFormat.escape(messages(s"cpso.individualOrOrganisation.$answer"))
         )
       )
       SummaryListRowViewModel(
-        key = "individualOrOrganisation.checkYourAnswersLabel",
+        key = "cpso.individualOrOrganisation.checkYourAnswersLabel",
         value = value,
         actions = Seq(
           ActionItemViewModel("site.change", controllers.manual.cpso.routes.IndividualOrOrganisationController.onPageLoad(CheckMode).url)

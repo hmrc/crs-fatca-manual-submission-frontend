@@ -89,6 +89,10 @@ class ManualSubmissionNavigator @Inject() () {
     case (IndividualOrOrganisationPage(_), _, _) => routes.UnderConstructionController.onPageLoad()
   }
 
+  private def cpsoNavigation: PartialFunction[(Page, Mode, UserAnswers), Call] = {
+    case (pages.manual.cpso.IndividualOrOrganisationPage(_), _, _) => routes.UnderConstructionController.onPageLoad()
+  }
+
   private def sponsorNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
     case (HaveSponsorPage(), mode, ua)                      => haveSponsorNavigation(mode, ua)
     case (SponsorNamePage(), mode, _)                       => controllers.manual.sponsor.routes.WhatIsGIINForSponsorController.onPageLoad(mode)
@@ -116,7 +120,7 @@ class ManualSubmissionNavigator @Inject() () {
     else controllers.manual.sponsor.routes.SponsorResidentForTaxController.onPageLoad(mode)
 
   private def navigation(implicit reportId: ReportId) =
-    accountNavigation orElse sponsorNavigation orElse fillerNavigation orElse accountHolderNavigation
+    accountNavigation orElse sponsorNavigation orElse fillerNavigation orElse accountHolderNavigation orElse cpsoNavigation
 
   def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId): Call =
     navigation
