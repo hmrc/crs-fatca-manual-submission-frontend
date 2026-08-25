@@ -108,7 +108,7 @@ class IndividualNameControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, individualNameRoute)
-            .withFormUrlEncodedBody(("firstName", "value 1"), ("lastName", "value 2"))
+            .withFormUrlEncodedBody(("firstName", "value"), ("lastName", "value"))
 
         val result = route(application, request).value
 

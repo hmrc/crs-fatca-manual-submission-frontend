@@ -22,7 +22,7 @@ import play.api.data.Form
 import play.api.data.Forms.*
 import models.IndividualName
 import models.SubmissionsConstants.RegimeType
-import utils.RegexConstants.{DEFAULT_STRING_FIELD_VALID, DOUBLE_DASH_INVALID}
+import utils.RegexConstants.{DEFAULT_ALPHA_FIELD_VALID, DOUBLE_DASH_INVALID}
 
 class IndividualNameFormProvider @Inject() extends Mappings {
   private val nameLineLength = 200
@@ -38,7 +38,7 @@ class IndividualNameFormProvider @Inject() extends Mappings {
           requiredKey = s"cpso.individualName.$regime.error.firstName.required",
           invalidKey = s"cpso.individualName.$regime.error.firstName.invalid.characters",
           lengthKey = s"cpso.individualName.$regime.error.firstName.length",
-          regex = DEFAULT_STRING_FIELD_VALID,
+          regex = DEFAULT_ALPHA_FIELD_VALID,
           maxLength = nameLineLength
         ).verifying(
           s"cpso.individualName.$regime.error.firstName.invalid.characters.combination",
@@ -48,7 +48,7 @@ class IndividualNameFormProvider @Inject() extends Mappings {
           requiredKey = s"cpso.individualName.$regime.error.lastName.required",
           invalidKey = s"cpso.individualName.$regime.error.lastName.invalid.characters",
           lengthKey = s"cpso.individualName.$regime.error.lastName.length",
-          regex = DEFAULT_STRING_FIELD_VALID,
+          regex = DEFAULT_ALPHA_FIELD_VALID,
           maxLength = nameLineLength
         ).verifying(
           s"cpso.individualName.$regime.error.lastName.invalid.characters.combination",
