@@ -34,7 +34,7 @@ class IdentifierFormProvider @Inject() extends Mappings {
           200,
           "identifier.error.length",
           Seq(
-            ErrorValidation(RegexConstants.DEFAULT_STRING_FIELD_VALID, "identifier.error.invalid"),
+            ErrorValidation(RegexConstants.DEFAULT_ALPHA_NUMERIC_FIELD_VALID, "identifier.error.invalid"),
             ErrorValidation(RegexConstants.DOUBLE_DASH_INVALID, "identifier.error.doubedash")
           )
         )

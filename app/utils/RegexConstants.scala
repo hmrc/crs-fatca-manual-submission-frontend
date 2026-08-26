@@ -17,10 +17,11 @@
 package utils
 
 object RegexConstants:
-  val DEFAULT_STRING_FIELD_VALID: String = """^[A-Za-z0-9&'\\^` -]+$"""
-  val DOUBLE_DASH_INVALID: String        = "^(?!.*--).+$"
-  val POSTCODE_VALID: String             = """^[A-Za-z0-9 ]*$"""
-  val POSTCODE_FORMAT: String            = """^[A-Za-z]{1,2}\d[A-Za-z0-9]?\s?\d[A-Za-z]{2}$"""
+  val DEFAULT_ALPHA_NUMERIC_FIELD_VALID: String = """^[A-Za-z0-9&'\\^` -]+$"""
+  val DEFAULT_ALPHA_FIELD_VALID: String         = """^[A-Za-z&'\\^` -]+$"""
+  val DOUBLE_DASH_INVALID: String               = "^(?!.*--).+$"
+  val POSTCODE_VALID: String                    = """^[A-Za-z0-9 ]*$"""
+  val POSTCODE_FORMAT: String                   = """^[A-Za-z]{1,2}\d[A-Za-z0-9]?\s?\d[A-Za-z]{2}$"""
 
   val nonUkAddressRegex: String =
     """^[A-Za-z0-9 ',.&-]*$"""

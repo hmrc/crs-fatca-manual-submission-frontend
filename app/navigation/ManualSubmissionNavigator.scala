@@ -21,10 +21,11 @@ import controllers.manual.reportdetails.routes.*
 import controllers.routes
 import models.*
 import models.SubmissionsConstants.{CRS, FATCA}
+import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
 import models.viewModels.AccountId
 import pages.*
 import pages.manual.account.*
-import pages.manual.accountHolders.IndividualOrOrganisationPage
+import pages.manual.accountHolders.{IndividualNamePage, IndividualOrOrganisationPage}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.*
@@ -85,8 +86,13 @@ class ManualSubmissionNavigator @Inject() () {
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
-  private def accountHolderNavigation: PartialFunction[(Page, Mode, UserAnswers), Call] = {
-    case (IndividualOrOrganisationPage(_), _, _) => routes.UnderConstructionController.onPageLoad()
+  private def accountHolderNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
+    case (IndividualOrOrganisationPage(id), mode, ua) =>
+      ua.get(IndividualOrOrganisationPage(id)).fold(controllers.routes.JourneyRecoveryController.onPageLoad()) {
+        case Individual   => controllers.manual.accountHolders.routes.IndividualNameController.onPageLoad(mode)
+        case Organisation => controllers.routes.UnderConstructionController.onPageLoad()
+      }
+    case (IndividualNamePage(_), _, _) => controllers.routes.UnderConstructionController.onPageLoad()
   }
 
   private def cpsoNavigation: PartialFunction[(Page, Mode, UserAnswers), Call] = {
