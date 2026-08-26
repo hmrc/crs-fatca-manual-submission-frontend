@@ -34,7 +34,7 @@ object IndividualNameSummary {
     } yield {
       val value = HtmlFormat.escape(answer.firstName).toString + "<br/>" + HtmlFormat.escape(answer.lastName).toString
       SummaryListRowViewModel(
-        key = "individualName.checkYourAnswersLabel",
+        key = "cpso.individualName.checkYourAnswersLabel",
         value = ValueViewModel(HtmlContent(value)),
         actions = Seq(
           ActionItemViewModel("site.change", controllers.manual.cpso.routes.IndividualNameController.onPageLoad(CheckMode).url)
