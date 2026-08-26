@@ -19,7 +19,8 @@ package controllers.manual.cpso
 import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.IndividualNameFormProvider
-import models.{IndividualName, Mode, ReportId}
+import models.manual.cpso.IndividualName
+import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
 import pages.manual.cpso.IndividualNamePage
 import play.api.i18n.{I18nSupport, MessagesApi}

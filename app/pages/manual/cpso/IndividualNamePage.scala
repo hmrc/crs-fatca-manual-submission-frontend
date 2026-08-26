@@ -17,7 +17,8 @@
 package pages.manual.cpso
 
 import models.viewModels.manual.cpso.CPSOId
-import models.{IndividualName, ReportId}
+import models.ReportId
+import models.manual.cpso.IndividualName
 import pages.QuestionPage
 import play.api.libs.json.JsPath
 

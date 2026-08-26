@@ -20,15 +20,15 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import forms.IndividualNameFormProvider
 import models.SubmissionsConstants.CRS
+import models.manual.cpso.IndividualName
 import models.viewModels.manual.cpso.CPSOId
-import models.{IndividualName, NormalMode, ReportId}
+import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
 import pages.manual.cpso.{CurrentCPSOIdPage, IndividualNamePage}
-import play.api.data.Form
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest

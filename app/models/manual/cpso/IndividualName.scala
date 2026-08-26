@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package models
+package models.manual.cpso
 
-import play.api.libs.json._
+import play.api.libs.json.*
 
 case class IndividualName(firstName: String, lastName: String)
 

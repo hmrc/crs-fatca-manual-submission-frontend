@@ -25,7 +25,6 @@ import models.manual.cpso.IndividualOrOrganisation
 import models.manual.accountHolders.IndividualName
 import org.scalacheck.Arbitrary.*
 
-import models.IndividualName
 import org.scalacheck.Arbitrary.*
 
 trait ModelGenerators {

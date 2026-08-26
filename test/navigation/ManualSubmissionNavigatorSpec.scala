@@ -506,7 +506,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         "IndividualNamePage" - {
           "must go to underconstruction page when submitted" in {
             val ua = UserAnswers("id")
-              .withPage(pages.manual.cpso.IndividualNamePage(currentCPSOId), IndividualName("first-name", "last-name"))
+              .withPage(pages.manual.cpso.IndividualNamePage(currentCPSOId), models.manual.cpso.IndividualName("first-name", "last-name"))
             navigator.nextPage(pages.manual.cpso.IndividualOrOrganisationPage(currentCPSOId), NormalMode, ua) mustBe
               controllers.routes.UnderConstructionController.onPageLoad()
           }

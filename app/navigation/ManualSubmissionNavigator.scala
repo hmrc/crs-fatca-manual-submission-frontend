@@ -93,16 +93,16 @@ class ManualSubmissionNavigator @Inject() () {
         case Individual   => controllers.manual.accountHolders.routes.IndividualNameController.onPageLoad(mode)
         case Organisation => controllers.routes.UnderConstructionController.onPageLoad()
       }
-    case (IndividualNamePage(_), _, _) => controllers.routes.UnderConstructionController.onPageLoad()
+    case (pages.manual.accountHolders.IndividualNamePage(_), _, _) => controllers.routes.UnderConstructionController.onPageLoad()
   }
 
   private def cpsoNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
     case (pages.manual.cpso.IndividualOrOrganisationPage(cpsoId), mode, ua) =>
       ua.get(pages.manual.cpso.IndividualOrOrganisationPage(cpsoId)) match {
-        case Some(Individual) => controllers.manual.cpso.routes.IndividualNameController.onPageLoad(mode)
-        case _                => routes.UnderConstructionController.onPageLoad()
+        case Some(models.manual.cpso.IndividualOrOrganisation.Individual) => controllers.manual.cpso.routes.IndividualNameController.onPageLoad(mode)
+        case _                                                            => routes.UnderConstructionController.onPageLoad()
       }
-    case (IndividualNamePage(cpsoId), mode, ua) =>
+    case (pages.manual.cpso.IndividualNamePage(cpsoId), mode, ua) =>
       routes.UnderConstructionController.onPageLoad()
   }
 

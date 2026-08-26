@@ -20,8 +20,8 @@ import javax.inject.Inject
 import forms.mappings.Mappings
 import play.api.data.Form
 import play.api.data.Forms.*
-import models.IndividualName
 import models.SubmissionsConstants.RegimeType
+import models.manual.cpso.IndividualName
 import utils.RegexConstants.{DEFAULT_ALPHA_FIELD_VALID, DOUBLE_DASH_INVALID}
 
 class IndividualNameFormProvider @Inject() extends Mappings {
