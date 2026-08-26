@@ -38,7 +38,7 @@ object IndividualNameSummary {
         value = ValueViewModel(HtmlContent(value)),
         actions = Seq(
           ActionItemViewModel("site.change", controllers.manual.cpso.routes.IndividualNameController.onPageLoad(CheckMode).url)
-            .withVisuallyHiddenText(messages("individualName.change.hidden"))
+            .withVisuallyHiddenText(messages("cpso.individualName.change.hidden"))
         )
       )
     }
