@@ -30,7 +30,7 @@
 
 @layout(pageTitle = title(form, messages(s"cpso.individualName.${regime}.title"))) {
 
-    @formHelper(action = controllers.manual.cpso.routes.IndividualNameController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+    @formHelper(action = controllers.manual.cpso.routes.IndividualNameController.onSubmit(mode), Symbol("autoComplete") -> "on") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
