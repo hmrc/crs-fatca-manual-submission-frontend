@@ -20,7 +20,7 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.account.WhatAccountTypeFormProvider
-import models.SubmissionsConstants.CRS
+import models.SubmissionsConstants.{CRS, FATCA}
 import models.manual.account.WhatAccountType
 import models.viewModels.AccountId
 import models.{NormalMode, NumberType, ReportId}
@@ -60,6 +60,62 @@ class WhatAccountTypeControllerSpec extends SpecBase with MockitoSugar {
       .withPage(CurrentAccountIdPage(), accountId)
       .withPage(NumberTypePage(accountId), numType)
 
+    "must redirect to JourneyRecovery when regime is FATCA" in {
+      val uaWithFatca = ua.withPage(ReportIdPage, ReportId(FATCA, 2025, None, "TestfiID"))
+      val application =
+        applicationBuilder(
+          maybeUserAnswers = Some(uaWithFatca.withPage(NumberTypePage(accountId), NumberType.Other))
+        )
+          .build()
+
+      running(application) {
+        val request = FakeRequest(GET, whatAccountTypeRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must save Depository and redirect to the next page on a GET when NumberType is Iban" in {
+
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(ua.withPage(NumberTypePage(accountId), NumberType.Iban)))
+          .overrides(
+            bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute))
+          )
+          .build()
+
+      running(application) {
+        val request = FakeRequest(GET, whatAccountTypeRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual onwardRoute.url
+      }
+    }
+
+    "must save Depository and redirect to the next page on a GET when NumberType is Semp" in {
+
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(ua.withPage(NumberTypePage(accountId), NumberType.Semp)))
+          .overrides(
+            bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute))
+          )
+          .build()
+
+      running(application) {
+        val request = FakeRequest(GET, whatAccountTypeRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual onwardRoute.url
+      }
+    }
+
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
@@ -77,8 +133,8 @@ class WhatAccountTypeControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-      implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
-      val userAnswers                 = ua.set(WhatAccountTypePage(accountId), WhatAccountType.baseValues.head).success.value
+      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
+      val userAnswers       = ua.set(WhatAccountTypePage(accountId), WhatAccountType.baseValues.head).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 

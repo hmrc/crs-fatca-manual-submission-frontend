@@ -39,7 +39,7 @@ class WhatAccountTypeViewSpec extends SpecBase {
 
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
   implicit private val messages: Messages               = messagesControllerComponents.messagesApi.preferred(Seq(Lang("en")))
-  
+
   "WhatAccountTypeView" - {
 
     "should render page components" - {
@@ -65,7 +65,6 @@ class WhatAccountTypeViewSpec extends SpecBase {
         elements.get(3).text mustBe messages("whatAccountType.InsuranceOrAnnuityContract")
         elements.get(4).text mustBe messages("whatAccountType.NotReported")
       }
-      
 
       "must display the submit button" in {
         doc.select("#submit").text() mustBe "Save and continue"

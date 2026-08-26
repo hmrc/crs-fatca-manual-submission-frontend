@@ -57,12 +57,14 @@ class ManualSubmissionNavigator @Inject() () {
     case (IdentifierPage(_), mode, ua)                 => controllers.manual.account.routes.AccountClosedController.onPageLoad(mode)
     case (WasAccountOpenPage(_), mode, ua)             => controllers.manual.account.routes.IsJointAccountController.onPageLoad(mode)
     case (IsJointAccountPage(accountId), mode, ua)     => jointAccountRouteLogic(accountId, ua)
-    case (HowManyJointAccountHoldersPage(_), mode, ua) => routes.UnderConstructionController.onPageLoad()
+    case (HowManyJointAccountHoldersPage(_), mode, ua) => controllers.manual.account.routes.WhatAccountTypeController.onPageLoad(mode)
     case (AccountClosedPage(accountId), mode, ua)      => accountClosedNavigation(accountId, mode, ua)
     case (WhatWasTheAccountBalancePage(_), mode, ua)   => accountBalanceRouteLogic()
     case (IsUndocumentedAccountPage(_), mode, ua)      => controllers.manual.account.routes.IsDormantAccountController.onPageLoad(NormalMode)
     case (WhatWasTheAccountCurrencyPage(_), mode, ua)  => controllers.manual.account.routes.IsUndocumentedAccountController.onPageLoad(NormalMode)
     case (IsDormantAccountPage(_), mode, ua)           => controllers.manual.account.routes.WasAccountOpenController.onPageLoad(NormalMode)
+    case (WhatAccountTypePage(_), mode, ua)            => routes.UnderConstructionController.onPageLoad()
+
   }
 
   private def NumberTypeNavigation(accountId: AccountId, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
@@ -89,7 +91,7 @@ class ManualSubmissionNavigator @Inject() () {
         isJointAccount =>
           if (isJointAccount) controllers.manual.account.routes.HowManyJointAccountHoldersController.onPageLoad(NormalMode)
           else
-            routes.UnderConstructionController.onPageLoad()
+            controllers.manual.account.routes.WhatAccountTypeController.onPageLoad(NormalMode)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
