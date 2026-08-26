@@ -18,6 +18,7 @@ package navigation
 
 import base.SpecBase
 import controllers.manual.reportdetails.routes.{ReportDetailsCheckAnswersController, ReportingYearController, TypeOfReportController}
+import controllers.routes
 import models.*
 import models.CrsOrFatca.Fatca
 import models.SubmissionsConstants.{CRS, FATCA}
@@ -491,13 +492,23 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             controllers.manual.sponsor.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
         }
       }
+
       "cpso" - {
         val currentCPSOId = CPSOId("testid")
         "IndividualOrOrganisationPage" - {
-          "must go to UnderConstruction page when submitted" in {
+          "must go to cpo IndividualName page when submitted" in {
             val ua = UserAnswers("id")
               .withPage(pages.manual.cpso.IndividualOrOrganisationPage(currentCPSOId), models.manual.cpso.IndividualOrOrganisation.Individual)
             navigator.nextPage(pages.manual.cpso.IndividualOrOrganisationPage(currentCPSOId), NormalMode, ua) mustBe
+              controllers.manual.cpso.routes.IndividualNameController.onPageLoad(NormalMode)
+          }
+        }
+
+        "IndividualNamePage" - {
+          "must go to underconstruction page when submitted" in {
+            val ua = UserAnswers("id")
+              .withPage(pages.manual.cpso.IndividualNamePage(currentCPSOId), models.manual.cpso.IndividualName("first-name", "last-name"))
+            navigator.nextPage(pages.manual.cpso.IndividualNamePage(currentCPSOId), NormalMode, ua) mustBe
               controllers.routes.UnderConstructionController.onPageLoad()
           }
         }
@@ -518,6 +529,12 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               .withPage(IndividualOrOrganisationPage(currentAccountHolderId)(reportId), Individual)
             navigator.nextPage(IndividualOrOrganisationPage(currentAccountHolderId), NormalMode, ua) mustBe
               controllers.manual.accountHolders.routes.IndividualNameController.onPageLoad(NormalMode)
+          }
+
+          "must go to Journey Recovery if IndividualOrOrganisationPage is absent" in {
+            val ua = UserAnswers("id")
+            navigator.nextPage(IndividualOrOrganisationPage(currentAccountHolderId), NormalMode, ua) mustBe
+              routes.JourneyRecoveryController.onPageLoad()
           }
 
           "must go to JourneyRecovery page when No value is selected" in {

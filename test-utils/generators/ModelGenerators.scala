@@ -25,6 +25,8 @@ import models.manual.cpso.IndividualOrOrganisation
 import models.manual.accountHolders.IndividualName
 import org.scalacheck.Arbitrary.*
 
+import org.scalacheck.Arbitrary.*
+
 trait ModelGenerators {
 
   implicit lazy val arbitraryIndividualName: Arbitrary[IndividualName] =

@@ -30,6 +30,7 @@ import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFiler
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.*
 import play.api.mvc.Call
+import pages.manual.cpso.IndividualNamePage
 
 import javax.inject.{Inject, Singleton}
 
@@ -92,11 +93,18 @@ class ManualSubmissionNavigator @Inject() () {
         case Individual   => controllers.manual.accountHolders.routes.IndividualNameController.onPageLoad(mode)
         case Organisation => controllers.routes.UnderConstructionController.onPageLoad()
       }
-    case (IndividualNamePage(_), _, _) => controllers.routes.UnderConstructionController.onPageLoad()
+    case (pages.manual.accountHolders.IndividualNamePage(_), _, _) => controllers.routes.UnderConstructionController.onPageLoad()
   }
 
-  private def cpsoNavigation: PartialFunction[(Page, Mode, UserAnswers), Call] = {
-    case (pages.manual.cpso.IndividualOrOrganisationPage(_), _, _) => routes.UnderConstructionController.onPageLoad()
+  private def cpsoNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
+    case (pages.manual.cpso.IndividualOrOrganisationPage(cpsoId), mode, ua) =>
+      ua.get(pages.manual.cpso.IndividualOrOrganisationPage(cpsoId)) match {
+        case Some(models.manual.cpso.IndividualOrOrganisation.Individual) => controllers.manual.cpso.routes.IndividualNameController.onPageLoad(mode)
+        case Some(_)                                                      => routes.UnderConstructionController.onPageLoad()
+        case _                                                            => routes.JourneyRecoveryController.onPageLoad()
+      }
+    case (pages.manual.cpso.IndividualNamePage(cpsoId), mode, ua) =>
+      routes.UnderConstructionController.onPageLoad()
   }
 
   private def sponsorNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
