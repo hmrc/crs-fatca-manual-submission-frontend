@@ -552,6 +552,22 @@ cpso.individualOrOrganisation.checkYourAnswersLabel = Is the substantial owner a
 cpso.individualOrOrganisation.error.required = Select whether the substantial owner is an individual or organisation
 cpso.individualOrOrganisation.change.hidden = IndividualOrOrganisation
 
+individualName.title = What is the name of the account holder?
+individualName.heading = What is the name of the account holder?
+individualName.FirstName = First name
+individualName.LastName = Last name
+individualName.checkYourAnswersLabel = What is the name of the account holder?
+individualName.error.FirstName.required = Enter the first name of the account holder
+individualName.error.LastName.required = Enter the last name of the account holder
+individualName.error.FirstName.length = The first name must be 200 characters or less
+individualName.error.LastName.length = The last name must be 200 characters or less
+individualName.error.FirstName.invalid = The first name must only include letters a to z, ampersands (&), apostrophes, backslashes, carets (^), grave accents (`), hyphens and spaces
+individualName.error.LastName.invalid = The last name must only include letters a to z, ampersands (&), apostrophes, backslashes, carets (^), grave accents (`), hyphens and spaces
+individualName.error.FirstName.doubledash = The first name must not include a double dash (--)
+individualName.error.LastName.doubledash = The last name must not include a double dash (--)
+individualName.FirstName.change.hidden = FirstName
+individualName.LastName.change.hidden = LastName
+
 cpso.individualName.crs.title = What is the name of the controlling person?
 cpso.individualName.fatca.title = What is the name of the substantial owner?
 cpso.individualName.crs.heading = What is the name of the controlling person?
@@ -577,4 +593,3 @@ cpso.individualName.fatca.error.lastName.invalid.characters = Substantial ownerâ
 cpso.individualName.fatca.error.lastName.invalid.characters.combination = Substantial ownerâ€™s last name must not include a double dash (--)
 cpso.individualName.firstName.change.hidden = First name
 cpso.individualName.LastName.change.hidden = Last name
-

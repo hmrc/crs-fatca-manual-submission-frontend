@@ -22,6 +22,8 @@ import models.NumberType
 import models.UkAddress
 import models.manual.account.WasAccountOpen
 import models.manual.cpso.IndividualOrOrganisation
+import models.manual.accountHolders.IndividualName
+import org.scalacheck.Arbitrary.*
 
 import models.IndividualName
 import org.scalacheck.Arbitrary.*
@@ -31,9 +33,9 @@ trait ModelGenerators {
   implicit lazy val arbitraryIndividualName: Arbitrary[IndividualName] =
     Arbitrary {
       for {
-        firstName <- arbitrary[String]
+        FirstName <- arbitrary[String]
         LastName  <- arbitrary[String]
-      } yield IndividualName(firstName, LastName)
+      } yield IndividualName(FirstName, LastName)
     }
 
   implicit lazy val arbitraryIndividualOrOrganisation: Arbitrary[IndividualOrOrganisation] =

@@ -234,7 +234,13 @@ POST       /manual/cp-so/individual-or-organisation                       contro
 GET        /manual/cp-so/change-individual-or-organisation                controllers.manual.cpso.IndividualOrOrganisationController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/cp-so/change-individual-or-organisation                controllers.manual.cpso.IndividualOrOrganisationController.onSubmit(mode: Mode = CheckMode)
 
+GET        /manual/account-holder/individual-name                         controllers.manual.accountHolders.IndividualNameController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account-holder/individual-name                         controllers.manual.accountHolders.IndividualNameController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account-holder/change-individual-name                  controllers.manual.accountHolders.IndividualNameController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account-holder/change-individual-name                  controllers.manual.accountHolders.IndividualNameController.onSubmit(mode: Mode = CheckMode)
+
 GET        /manual/cp-so/individual-name                        controllers.manual.cpso.IndividualNameController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/cp-so/individual-name                      controllers.manual.cpso.IndividualNameController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/cp-so/change-individual-name             controllers.manual.cpso.IndividualNameController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/cp-so/change-individual-name                 controllers.manual.cpso.IndividualNameController.onSubmit(mode: Mode = CheckMode)
+

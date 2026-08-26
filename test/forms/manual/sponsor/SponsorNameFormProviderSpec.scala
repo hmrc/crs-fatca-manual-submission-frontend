@@ -54,7 +54,7 @@ class SponsorNameFormProviderSpec extends StringFieldBehaviours {
       form,
       fieldName,
       allowedChars = allowedSeq,
-      invalidErr = FormError(fieldName, invalidKey, Seq(RegexConstants.DEFAULT_STRING_FIELD_VALID))
+      invalidErr = FormError(fieldName, invalidKey, Seq(RegexConstants.DEFAULT_ALPHA_NUMERIC_FIELD_VALID))
     )
 
     behave like mandatoryField(
