@@ -62,6 +62,8 @@ class HavePaymentsController @Inject() (
       val reportingPeriod             = reportId.reportingYear.toString
       val form                        = formProvider(reportId.regime, reportingPeriod)
 
+      //todo
+      //Set PaymentType as CRS502 when Account Number Type is IBAN (OECD601) or SEMP (OECD606) Before redirecting from HavePayments Page  And HavePayment is answered as Yes
       form
         .bindFromRequest()
         .fold(
