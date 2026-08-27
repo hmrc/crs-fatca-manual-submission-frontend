@@ -30,47 +30,47 @@ import views.html.manual.account.HavePaymentsView
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class HavePaymentsController @Inject()(
-                                         override val messagesApi: MessagesApi,
-                                         repository: DatabaseConnector,
-                                         navigator: ManualSubmissionNavigator,
-                                         actions: Actions,
-                                         formProvider: HavePaymentsFormProvider,
-                                         val controllerComponents: MessagesControllerComponents,
-                                         view: HavePaymentsView
-                                 )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
-
-
+class HavePaymentsController @Inject() (
+  override val messagesApi: MessagesApi,
+  repository: DatabaseConnector,
+  navigator: ManualSubmissionNavigator,
+  actions: Actions,
+  formProvider: HavePaymentsFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: HavePaymentsView
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
+    with I18nSupport {
 
   def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdRequired() {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
-      val reportingPeriod = reportId.reportingYear.toString
-      val form = formProvider(reportId.regime, reportingPeriod)
+      val reportingPeriod             = reportId.reportingYear.toString
+      val form                        = formProvider(reportId.regime, reportingPeriod)
 
       val preparedForm = request.userAnswers.get(HavePaymentsPage(request.accountId)) match {
-        case None => form
+        case None        => form
         case Some(value) => form.fill(value)
       }
 
       Ok(view(preparedForm, mode, reportId.regime, reportingPeriod))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (actions.withReportIdRequiredAndAccountIdRequired()).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdRequired().async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
-      val reportingPeriod = reportId.reportingYear.toString
-      val form = formProvider(reportId.regime, reportingPeriod)
+      val reportingPeriod             = reportId.reportingYear.toString
+      val form                        = formProvider(reportId.regime, reportingPeriod)
 
-      form.bindFromRequest().fold(
-        formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors, mode, reportId.regime, reportingPeriod))),
-
-        value =>
-          for {
-            updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(HavePaymentsPage(request.accountId), value))
-            _              <- repository.set(updatedAnswers)
-          } yield Redirect(navigator.nextPage(HavePaymentsPage(request.accountId), mode, updatedAnswers))
-      )
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, reportId.regime, reportingPeriod))),
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(HavePaymentsPage(request.accountId), value))
+              _              <- repository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(HavePaymentsPage(request.accountId), mode, updatedAnswers))
+        )
   }
 }

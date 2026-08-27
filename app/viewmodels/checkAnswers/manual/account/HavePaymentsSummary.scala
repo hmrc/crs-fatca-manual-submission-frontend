@@ -18,27 +18,28 @@ package viewmodels.checkAnswers.manual.account
 
 import controllers.manual.account.routes
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.account.HavePaymentsPage
+import pages.manual.account.{CurrentAccountIdPage, HavePaymentsPage}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
-import viewmodels.govuk.summarylist._
-import viewmodels.implicits._
+import viewmodels.govuk.summarylist.*
+import viewmodels.implicits.*
 
-object HavePaymentsSummary  {
+object HavePaymentsSummary {
 
-//  def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
-//    answers.get(HavePaymentsPage()).map {
-//      answer =>
-//
-//        val value = if (answer) "site.yes" else "site.no"
-//
-//        SummaryListRowViewModel(
-//          key     = "havePayments.checkYourAnswersLabel",
-//          value   = ValueViewModel(value),
-//          actions = Seq(
-//            ActionItemViewModel("site.change", routes.HavePaymentsController.onPageLoad(CheckMode).url)
-//              .withVisuallyHiddenText(messages("havePayments.change.hidden"))
-//          )
-//        )
-//    }
+  def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
+    for {
+      accountId <- answers.get(CurrentAccountIdPage())
+      answer    <- answers.get(HavePaymentsPage(accountId))
+    } yield {
+      val value = if (answer) "site.yes" else "site.no"
+
+      SummaryListRowViewModel(
+        key = "havePayments.checkYourAnswersLabel",
+        value = ValueViewModel(value),
+        actions = Seq(
+          ActionItemViewModel("site.change", routes.HavePaymentsController.onPageLoad(CheckMode).url)
+            .withVisuallyHiddenText(messages("havePayments.change.hidden"))
+        )
+      )
+    }
 }

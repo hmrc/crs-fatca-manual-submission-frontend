@@ -15,50 +15,53 @@
  */
 
 package forms.manual.account
+
 import models.SubmissionsConstants.{CRS, FATCA}
 import forms.behaviours.BooleanFieldBehaviours
 import play.api.data.FormError
 
 class HavePaymentsFormProviderSpec extends BooleanFieldBehaviours {
 
-  val invalidKey = "error.boolean"
-
   "CRS .value" - {
-    val requiredKey = "account.havePayments.crs.error.required"
-    val form = new HavePaymentsFormProvider()(CRS)
+    val reportingPeriod = "2025"
+    val invalidKey      = "error.boolean"
+    val requiredKey     = "account.havePayments.crs.error.required"
+    val form            = new HavePaymentsFormProvider()(CRS, reportingPeriod)
 
     val fieldName = "value"
 
     behave like booleanField(
       form,
       fieldName,
-      invalidError = FormError(fieldName, invalidKey)
+      invalidError = FormError(fieldName, invalidKey, Seq(reportingPeriod))
     )
 
     behave like mandatoryField(
       form,
       fieldName,
-      requiredError = FormError(fieldName, requiredKey)
+      requiredError = FormError(fieldName, requiredKey, Seq(reportingPeriod))
     )
 
   }
 
   "FATCA .value" - {
-    val requiredKey = "account.havePayments.fatca.error.required"
-    val form = new HavePaymentsFormProvider()(FATCA)
+    val reportingPeriod = "2025"
+    val invalidKey      = "error.boolean"
+    val requiredKey     = "account.havePayments.fatca.error.required"
+    val form            = new HavePaymentsFormProvider()(FATCA, reportingPeriod)
 
     val fieldName = "value"
 
     behave like booleanField(
       form,
       fieldName,
-      invalidError = FormError(fieldName, invalidKey)
+      invalidError = FormError(fieldName, invalidKey, Seq(reportingPeriod))
     )
 
     behave like mandatoryField(
       form,
       fieldName,
-      requiredError = FormError(fieldName, requiredKey)
+      requiredError = FormError(fieldName, requiredKey, Seq(reportingPeriod))
     )
 
   }

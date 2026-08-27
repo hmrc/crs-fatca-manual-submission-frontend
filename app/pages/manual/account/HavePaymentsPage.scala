@@ -23,4 +23,4 @@ import play.api.libs.json.JsPath
 
 final case class HavePaymentsPage(accountId: AccountId)(implicit reportId: ReportId) extends QuestionPage[Boolean]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "accounts" \accountId.value \ "havePayments"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "accounts" \ accountId.value \ "havePayments"
