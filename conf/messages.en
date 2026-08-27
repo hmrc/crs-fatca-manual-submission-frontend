@@ -596,11 +596,11 @@ cpso.individualName.LastName.change.hidden = Last name
 
 whatAccountType.title = What type of account is this?
 whatAccountType.heading = What type of account is this?
-whatAccountType.Depository = Depository account
-whatAccountType.Custodial = Custodial account
-whatAccountType.InvestmentEntity = Debt or equity interest in investment entity
-whatAccountType.InsuranceOrAnnuityContract = Cash value insurance contract or annuity contract
-whatAccountType.NotReported = Not reported
+whatAccountType.CRS1101 = Depository account
+whatAccountType.CRS1102 = Custodial account
+whatAccountType.CRS1103 = Cash value insurance contract or annuity contract
+whatAccountType.CRS1104 = Debt or equity interest in investment entity
+whatAccountType.CRS1100 = Not reported
 whatAccountType.checkYourAnswersLabel = What type of account is this?
 whatAccountType.error.required = Select what type of account this is
 whatAccountType.change.hidden = WhatAccountType

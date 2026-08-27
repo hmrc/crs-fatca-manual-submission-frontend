@@ -26,11 +26,11 @@ sealed trait WhatAccountType
 
 object WhatAccountType extends Enumerable.Implicits {
 
-  case object Depository extends WithName("Depository") with WhatAccountType
-  case object Custodial extends WithName("Custodial") with WhatAccountType
-  case object InsuranceOrAnnuityContract extends WithName("InsuranceOrAnnuityContract") with WhatAccountType
-  case object InvestmentEntity extends WithName("InvestmentEntity") with WhatAccountType
-  case object NotReported extends WithName("NotReported") with WhatAccountType
+  case object Depository extends WithName("CRS1101") with WhatAccountType
+  case object Custodial extends WithName("CRS1102") with WhatAccountType
+  case object InsuranceOrAnnuityContract extends WithName("CRS1103") with WhatAccountType
+  case object InvestmentEntity extends WithName("CRS1104") with WhatAccountType
+  case object NotReported extends WithName("CRS1100") with WhatAccountType
 
   val baseValues: Seq[WhatAccountType] = Seq(
     Depository,

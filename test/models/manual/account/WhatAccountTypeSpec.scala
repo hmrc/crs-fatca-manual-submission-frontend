@@ -61,7 +61,7 @@ class WhatAccountTypeSpec extends SpecBase {
     }
   }
 
-  "WhatAccountType.options" - {
+  "options" - {
 
     def optionValues(items: Seq[RadioItem]): Seq[String] =
       items.flatMap(_.value)
@@ -70,27 +70,30 @@ class WhatAccountTypeSpec extends SpecBase {
       val items = WhatAccountType.options(NumberType.Other, REPORTING_THRESHOLD_YEAR)
 
       optionValues(items) mustBe
-        Seq("Depository", "Custodial", "InvestmentEntity", "InsuranceOrAnnuityContract")
+        Seq("CRS1101", "CRS1102", "CRS1104", "CRS1103")
     }
 
     "must add both InsuranceOrAnnuityContract and NotReported to the options when numberType is Other and the reporting period is before the threshold year" in {
       val items = WhatAccountType.options(NumberType.Other, REPORTING_THRESHOLD_YEAR - 1)
 
       optionValues(items) mustBe
-        Seq("Depository", "Custodial", "InvestmentEntity", "InsuranceOrAnnuityContract", "NotReported")
+        Seq("CRS1101", "CRS1102", "CRS1104", "CRS1103", "CRS1100")
+
     }
 
     "must add NotReported to the options when the reporting period is before the threshold year and numberType is not Other" in {
       val items = WhatAccountType.options(NumberType.Iban, REPORTING_THRESHOLD_YEAR - 1)
 
       optionValues(items) mustBe
-        Seq("Depository", "Custodial", "InvestmentEntity", "NotReported")
+        Seq("CRS1101", "CRS1102", "CRS1104", "CRS1100")
+
     }
 
     "must offer only the base options when the reporting period is at or after the threshold year and numberType is not Other" in {
       val items = WhatAccountType.options(NumberType.Iban, REPORTING_THRESHOLD_YEAR)
 
-      optionValues(items) mustBe Seq("Depository", "Custodial", "InvestmentEntity")
+      optionValues(items) mustBe Seq("CRS1101", "CRS1102", "CRS1104")
+
     }
 
     "must build each radio option with the message key, value and index-based id" in {
