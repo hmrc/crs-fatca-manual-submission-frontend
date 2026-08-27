@@ -22,7 +22,8 @@
     govukErrorSummary: GovukErrorSummary,
     govukInput: GovukInput,
     govukButton: GovukButton,
-    heading: views.html.components.Heading
+    heading: views.html.components.Heading,
+    govukFieldset: GovukFieldset,
 
 )
 
@@ -36,32 +37,32 @@
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
-        <fieldset class="govuk-fieldset">
-            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l wrappable">
-                @heading(messages(s"cpso.individualName.${regime}.heading"))
-            </legend>
+        @govukFieldset(FieldsetViewModel(
+            legend = LegendViewModel(content = Text(messages(s"cpso.individualName.${regime}.heading"))).asPageHeading()
+        ).withHtml(inputhtml))
 
-            @govukInput(
-                InputViewModel(
-                    field = form("firstName"),
-                    label = LabelViewModel(messages("cpso.individualName.firstName"))
-                )
-                .withWidth(TwoThirds)
-                .withAutocomplete("given-name")
-            )
-
-            @govukInput(
-                InputViewModel(
-                    field = form("lastName"),
-                    label = LabelViewModel(messages("cpso.individualName.LastName"))
-                )
-                .withWidth(TwoThirds)
-                .withAutocomplete("family-name")
-            )
-        </fieldset>
         @govukButton(
             ButtonViewModel(messages("site.saveContinue"))
             .withId("submit")
         )
     }
+}
+@inputhtml = {
+    @govukInput(
+        InputViewModel(
+            field = form("firstName"),
+            label = LabelViewModel(messages("cpso.individualName.firstName"))
+        )
+        .withWidth(TwoThirds)
+        .withAutocomplete("given-name")
+    )
+
+    @govukInput(
+        InputViewModel(
+            field = form("lastName"),
+            label = LabelViewModel(messages("cpso.individualName.LastName"))
+        )
+        .withWidth(TwoThirds)
+        .withAutocomplete("family-name")
+    )
 }
