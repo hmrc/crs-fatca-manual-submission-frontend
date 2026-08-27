@@ -19,7 +19,6 @@ package controllers.manual.account
 import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.manual.account.WhatAccountTypeFormProvider
-import models.SubmissionsConstants.FATCA
 import models.manual.account.WhatAccountType
 import models.{Mode, NumberType, ReportId}
 import navigation.ManualSubmissionNavigator
@@ -38,6 +37,7 @@ class WhatAccountTypeController @Inject() (
   sessionRepository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
   actions: Actions,
+  accountCRSOnlyFilterAction: AccountCRSOnlyFilterAction,
   formProvider: WhatAccountTypeFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: WhatAccountTypeView
@@ -47,41 +47,38 @@ class WhatAccountTypeController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdRequired().async {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (actions.withReportIdRequiredAndAccountIdRequired() andThen accountCRSOnlyFilterAction).async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
-      if (reportId.regime.equals(FATCA)) {
-        Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
-      } else {
-        request.userAnswers.get(NumberTypePage(request.accountId)) match {
-          case None =>
-            Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
-          case Some(numberType) =>
-            val preparedForm = request.userAnswers.get(WhatAccountTypePage(request.accountId)) match {
-              case None        => form
-              case Some(value) => form.fill(value)
-            }
+      request.userAnswers.get(NumberTypePage(request.accountId)) match {
+        case None =>
+          Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+        case Some(numberType) =>
+          val preparedForm = request.userAnswers.get(WhatAccountTypePage(request.accountId)) match {
+            case None        => form
+            case Some(value) => form.fill(value)
+          }
 
-            numberType match {
-              case NumberType.Iban | NumberType.Semp =>
-                Future
-                  .fromTry(
-                    request.userAnswers.setWithReportId(WhatAccountTypePage(request.accountId), WhatAccountType.Depository)
-                  )
-                  .map {
-                    updatedAnswers =>
-                      Redirect(navigator.nextPage(WhatAccountTypePage(request.accountId), mode, updatedAnswers))
-                  }
+          numberType match {
+            case NumberType.Iban | NumberType.Semp =>
+              Future
+                .fromTry(
+                  request.userAnswers.setWithReportId(WhatAccountTypePage(request.accountId), WhatAccountType.Depository)
+                )
+                .map {
+                  updatedAnswers =>
+                    Redirect(navigator.nextPage(WhatAccountTypePage(request.accountId), mode, updatedAnswers))
+                }
 
-              case _ =>
-                val items: Seq[RadioItem] = WhatAccountType.options(numberType, reportId.reportingYear)
-                Future.successful(Ok(view(preparedForm, mode, items)))
-            }
-        }
+            case _ =>
+              val items: Seq[RadioItem] = WhatAccountType.options(numberType, reportId.reportingYear)
+              Future.successful(Ok(view(preparedForm, mode, items)))
+          }
       }
+
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdRequired().async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (actions.withReportIdRequiredAndAccountIdRequired() andThen accountCRSOnlyFilterAction).async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
 

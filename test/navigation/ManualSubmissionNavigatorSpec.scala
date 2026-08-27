@@ -18,16 +18,20 @@ package navigation
 
 import base.SpecBase
 import controllers.manual.reportdetails.routes.{ReportDetailsCheckAnswersController, ReportingYearController, TypeOfReportController}
+import controllers.routes
 import models.*
 import models.CrsOrFatca.Fatca
 import models.SubmissionsConstants.{CRS, FATCA}
 import models.manual.account.{WasAccountOpen, WhatAccountType}
 import models.manual.cpso.IndividualOrOrganisation
+import models.manual.accountHolders.IndividualName
+import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
 import models.response.{Address, AddressLookup, Country}
-import models.viewModels.AccountId
+import models.viewModels.{AccountHolderId, AccountId}
 import models.viewModels.manual.cpso.CPSOId
 import pages.*
 import pages.manual.account.*
+import pages.manual.accountHolders.{IndividualNamePage, IndividualOrOrganisationPage}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.*
@@ -504,13 +508,62 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             controllers.manual.sponsor.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
         }
       }
+
       "cpso" - {
         val currentCPSOId = CPSOId("testid")
         "IndividualOrOrganisationPage" - {
-          "must go to UnderConstruction page when submitted" in {
+          "must go to cpo IndividualName page when submitted" in {
             val ua = UserAnswers("id")
               .withPage(pages.manual.cpso.IndividualOrOrganisationPage(currentCPSOId), models.manual.cpso.IndividualOrOrganisation.Individual)
             navigator.nextPage(pages.manual.cpso.IndividualOrOrganisationPage(currentCPSOId), NormalMode, ua) mustBe
+              controllers.manual.cpso.routes.IndividualNameController.onPageLoad(NormalMode)
+          }
+        }
+
+        "IndividualNamePage" - {
+          "must go to underconstruction page when submitted" in {
+            val ua = UserAnswers("id")
+              .withPage(pages.manual.cpso.IndividualNamePage(currentCPSOId), models.manual.cpso.IndividualName("first-name", "last-name"))
+            navigator.nextPage(pages.manual.cpso.IndividualNamePage(currentCPSOId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+        }
+      }
+
+      "accountHolderPages" - {
+        val currentAccountHolderId = AccountHolderId("01")
+        "IndividualOrOrganisationPage" - {
+          "must go to UnderConstruction page when organisation is selected" in {
+            val ua = UserAnswers("id")
+              .withPage(IndividualOrOrganisationPage(currentAccountHolderId)(reportId), Organisation)
+            navigator.nextPage(IndividualOrOrganisationPage(currentAccountHolderId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+
+          "must go to IndividualName page when individual is selected" in {
+            val ua = UserAnswers("id")
+              .withPage(IndividualOrOrganisationPage(currentAccountHolderId)(reportId), Individual)
+            navigator.nextPage(IndividualOrOrganisationPage(currentAccountHolderId), NormalMode, ua) mustBe
+              controllers.manual.accountHolders.routes.IndividualNameController.onPageLoad(NormalMode)
+          }
+
+          "must go to Journey Recovery if IndividualOrOrganisationPage is absent" in {
+            val ua = UserAnswers("id")
+            navigator.nextPage(IndividualOrOrganisationPage(currentAccountHolderId), NormalMode, ua) mustBe
+              routes.JourneyRecoveryController.onPageLoad()
+          }
+
+          "must go to JourneyRecovery page when No value is selected" in {
+            val ua = UserAnswers("id")
+            navigator.nextPage(IndividualOrOrganisationPage(currentAccountHolderId), NormalMode, ua) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
+        }
+        "IndividualName" - {
+          "must go to UnderConstruction page" in {
+            val ua = UserAnswers("id")
+              .withPage(IndividualNamePage(currentAccountHolderId)(reportId), IndividualName("firstName", "lastName"))
+            navigator.nextPage(IndividualNamePage(currentAccountHolderId), NormalMode, ua) mustBe
               controllers.routes.UnderConstructionController.onPageLoad()
           }
         }
