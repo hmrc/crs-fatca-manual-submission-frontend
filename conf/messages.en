@@ -562,3 +562,12 @@ whatAccountType.NotReported = Not reported
 whatAccountType.checkYourAnswersLabel = What type of account is this?
 whatAccountType.error.required = Select what type of account this is
 whatAccountType.change.hidden = WhatAccountType
+
+account.havePayments.crs.title = Were any payments made to this account in {0}?
+account.havePayments.fatca.title = Were any payments made to this account, a payee or an owner in {0}?
+account.havePayments.crs.heading = Were any payments made to this account in {0}?
+account.havePayments.fatca.heading = Were any payments made to this account, a payee or an owner in {0}?
+account.havePayments.checkYourAnswersLabel = havePayments
+account.havePayments.crs.error.required = Select yes if there were any payments made to this account in {0}
+account.havePayments.fatca.error.required = Select yes if there were any payments made to this account, a payee or an owner in {0}
+account.havePayments.change.hidden = HavePayments

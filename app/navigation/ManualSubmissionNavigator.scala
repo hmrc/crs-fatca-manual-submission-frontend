@@ -59,11 +59,11 @@ class ManualSubmissionNavigator @Inject() () {
     case (IsJointAccountPage(accountId), mode, ua)     => jointAccountRouteLogic(accountId, ua)
     case (HowManyJointAccountHoldersPage(_), mode, ua) => controllers.manual.account.routes.WhatAccountTypeController.onPageLoad(mode)
     case (AccountClosedPage(accountId), mode, ua)      => accountClosedNavigation(accountId, mode, ua)
-    case (WhatWasTheAccountBalancePage(_), mode, ua)   => accountBalanceRouteLogic()
+    case (WhatWasTheAccountBalancePage(_), mode, ua)   => accountBalanceRouteLogic(mode)
     case (IsUndocumentedAccountPage(_), mode, ua)      => controllers.manual.account.routes.IsDormantAccountController.onPageLoad(NormalMode)
     case (WhatWasTheAccountCurrencyPage(_), mode, ua)  => controllers.manual.account.routes.IsUndocumentedAccountController.onPageLoad(NormalMode)
     case (IsDormantAccountPage(_), mode, ua)           => controllers.manual.account.routes.WasAccountOpenController.onPageLoad(NormalMode)
-    case (WhatAccountTypePage(_), mode, ua)            => routes.UnderConstructionController.onPageLoad()
+    case (WhatAccountTypePage(_), mode, ua)            => controllers.manual.account.routes.HavePaymentsController.onPageLoad(NormalMode)
 
   }
 
@@ -74,9 +74,9 @@ class ManualSubmissionNavigator @Inject() () {
       case None                                           => routes.JourneyRecoveryController.onPageLoad()
     }
 
-  private def accountBalanceRouteLogic()(implicit reportId: ReportId) =
-    if (reportId.regime == FATCA) { routes.UnderConstructionController.onPageLoad() }
-    else if (reportId.regime == CRS) { controllers.manual.account.routes.IsUndocumentedAccountController.onPageLoad(NormalMode) }
+  private def accountBalanceRouteLogic(mode: Mode)(implicit reportId: ReportId) =
+    if (reportId.regime == FATCA) { controllers.manual.account.routes.HavePaymentsController.onPageLoad(mode) }
+    else if (reportId.regime == CRS) { controllers.manual.account.routes.IsUndocumentedAccountController.onPageLoad(mode) }
     else routes.JourneyRecoveryController.onPageLoad()
 
   private def fillerNavigation: PartialFunction[(Page, Mode, UserAnswers), Call] = {

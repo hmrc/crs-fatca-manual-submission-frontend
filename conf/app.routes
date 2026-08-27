@@ -238,3 +238,8 @@ GET         /manual/account/type                                     controllers
 POST        /manual/account/type                                     controllers.manual.account.WhatAccountTypeController.onSubmit(mode: Mode = NormalMode)
 GET         /manual/account/change-type                              controllers.manual.account.WhatAccountTypeController.onPageLoad(mode: Mode = CheckMode)
 POST        /manual/account/change-type                              controllers.manual.account.WhatAccountTypeController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/account/have-payments                         controllers.manual.account.HavePaymentsController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account/have-payments                        controllers.manual.account.HavePaymentsController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account/change-have-payments                 controllers.manual.account.HavePaymentsController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account/change-have-payments                   controllers.manual.account.HavePaymentsController.onSubmit(mode: Mode = CheckMode)

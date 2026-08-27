@@ -288,11 +288,11 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
       }
 
       "WhatWasTheAccountBalancePage" - {
-        "must go to UNDERCONSTRUCTION page when regime is FATCA after submission" in {
+        "must go to accounts have payments page when regime is FATCA after submission" in {
           implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
           val ua                          = UserAnswers("id")
           navigator.nextPage(WhatWasTheAccountBalancePage(accountId), NormalMode, ua) mustBe
-            controllers.routes.UnderConstructionController.onPageLoad()
+            controllers.manual.account.routes.HavePaymentsController.onPageLoad(NormalMode)
         }
 
         "must go to IsUndocumentedAccount page when regime is CRS after submission" in {
@@ -490,9 +490,10 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         }
       }
       "WhatAccountType page" - {
-        "must go to Account Have Payments (UnderConstruction)" in {
+        "must go to Account Have Payments" in {
           val ua = emptyUserAnswers.withPage(WhatAccountTypePage(accountId), WhatAccountType.Custodial)
-          navigator.nextPage(WhatAccountTypePage(accountId), NormalMode, ua) mustBe controllers.routes.UnderConstructionController.onPageLoad()
+          navigator.nextPage(WhatAccountTypePage(accountId), NormalMode, ua) mustBe
+            controllers.manual.account.routes.HavePaymentsController.onPageLoad(NormalMode)
         }
       }
 
