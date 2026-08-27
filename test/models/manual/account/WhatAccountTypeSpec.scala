@@ -18,12 +18,6 @@ package models.manual.account
 
 import base.SpecBase
 import models.NumberType
-import org.scalacheck.Arbitrary.arbitrary
-import org.scalacheck.Gen
-import org.scalatest.OptionValues
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
-import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import play.api.i18n.{DefaultMessagesApi, Lang, Messages, MessagesImpl}
 import play.api.libs.json.*
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text

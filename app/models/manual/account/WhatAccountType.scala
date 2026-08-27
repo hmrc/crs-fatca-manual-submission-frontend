@@ -38,6 +38,14 @@ object WhatAccountType extends Enumerable.Implicits {
     InvestmentEntity
   )
 
+  val allValidValues: Seq[WhatAccountType] = Seq(
+    Depository,
+    Custodial,
+    InvestmentEntity,
+    InsuranceOrAnnuityContract,
+    NotReported
+  )
+
   def options(numberType: NumberType, reportingPeriod: Int)(implicit messages: Messages): Seq[RadioItem] = {
     val values =
       baseValues
@@ -56,7 +64,7 @@ object WhatAccountType extends Enumerable.Implicits {
 
   implicit val enumerable: Enumerable[WhatAccountType] =
     Enumerable(
-      baseValues.map(
+      allValidValues.map(
         v => v.toString -> v
       ): _*
     )
