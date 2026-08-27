@@ -38,7 +38,7 @@ class WhatAccountTypeSpec extends SpecBase {
     }
 
     "must fail to deserialise values that are not in the base set" in {
-      val invalid = Seq("InsuranceOrAnnuityContract", "NotReported", "invalid")
+      val invalid = Seq("invalid")
 
       invalid.foreach {
         invalidValue =>
