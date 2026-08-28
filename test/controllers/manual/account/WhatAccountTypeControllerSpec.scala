@@ -35,6 +35,7 @@ import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
+import repositories.SessionRepository
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import views.html.manual.account.WhatAccountTypeView
 
@@ -79,11 +80,15 @@ class WhatAccountTypeControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must save Depository and redirect to the next page on a GET when NumberType is Iban" in {
+      val mockSessionRepository = mock[DatabaseConnector]
+
+      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
 
       val application =
         applicationBuilder(maybeUserAnswers = Some(ua.withPage(NumberTypePage(accountId), NumberType.Iban)))
           .overrides(
-            bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute))
+            bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
+            bind[DatabaseConnector].toInstance(mockSessionRepository)
           )
           .build()
 
@@ -98,11 +103,15 @@ class WhatAccountTypeControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must save Depository and redirect to the next page on a GET when NumberType is Semp" in {
+      val mockSessionRepository = mock[DatabaseConnector]
+
+      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
 
       val application =
         applicationBuilder(maybeUserAnswers = Some(ua.withPage(NumberTypePage(accountId), NumberType.Semp)))
           .overrides(
-            bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute))
+            bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
+            bind[DatabaseConnector].toInstance(mockSessionRepository)
           )
           .build()
 

@@ -59,11 +59,11 @@ class WhatAccountTypeViewSpec extends SpecBase {
       "must display all account type options" in {
         val elements = doc.select(".govuk-radios__label")
         elements.size() mustBe 5
-        elements.get(0).text mustBe messages("whatAccountType.Depository")
-        elements.get(1).text mustBe messages("whatAccountType.Custodial")
-        elements.get(2).text mustBe messages("whatAccountType.InvestmentEntity")
-        elements.get(3).text mustBe messages("whatAccountType.InsuranceOrAnnuityContract")
-        elements.get(4).text mustBe messages("whatAccountType.NotReported")
+        elements.get(0).text mustBe messages("whatAccountType.CRS1101")
+        elements.get(1).text mustBe messages("whatAccountType.CRS1102")
+        elements.get(2).text mustBe messages("whatAccountType.CRS1104")
+        elements.get(3).text mustBe messages("whatAccountType.CRS1103")
+        elements.get(4).text mustBe messages("whatAccountType.CRS1100")
       }
 
       "must display the submit button" in {
@@ -90,7 +90,7 @@ class WhatAccountTypeViewSpec extends SpecBase {
       val elements = doc.select(".govuk-radios__label")
 
       elements.size() mustBe WhatAccountType.baseValues.size + 1
-      elements.last.text mustBe messages("whatAccountType.NotReported")
+      elements.last.text mustBe messages("whatAccountType.CRS1100")
     }
   }
 }
