@@ -61,14 +61,10 @@ class WhatAccountTypeController @Inject() (
 
           numberType match {
             case NumberType.Iban | NumberType.Semp =>
-              Future
-                .fromTry(
-                  request.userAnswers.setWithReportId(WhatAccountTypePage(request.accountId), WhatAccountType.Depository)
-                )
-                .map {
-                  updatedAnswers =>
-                    Redirect(navigator.nextPage(WhatAccountTypePage(request.accountId), mode, updatedAnswers))
-                }
+              for {
+                updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(WhatAccountTypePage(request.accountId), WhatAccountType.Depository))
+                _              <- sessionRepository.set(updatedAnswers)
+              } yield Redirect(navigator.nextPage(WhatAccountTypePage(request.accountId), mode, updatedAnswers))
 
             case _ =>
               val items: Seq[RadioItem] = WhatAccountType.options(numberType, reportId.reportingYear)
