@@ -66,6 +66,7 @@ class ManualSubmissionNavigator @Inject() () {
     case (WhatWasTheAccountCurrencyPage(_), mode, ua)  => controllers.manual.account.routes.IsUndocumentedAccountController.onPageLoad(NormalMode)
     case (IsDormantAccountPage(_), mode, ua)           => controllers.manual.account.routes.WasAccountOpenController.onPageLoad(NormalMode)
     case (WhatAccountTypePage(_), mode, ua)            => controllers.manual.account.routes.HavePaymentsController.onPageLoad(NormalMode)
+    case (HavePaymentsPage(_), mode, ua)               => havePaymentRouteLogic(mode, ua)
 
   }
 
@@ -80,6 +81,12 @@ class ManualSubmissionNavigator @Inject() () {
     if (reportId.regime == FATCA) { controllers.manual.account.routes.HavePaymentsController.onPageLoad(mode) }
     else if (reportId.regime == CRS) { controllers.manual.account.routes.IsUndocumentedAccountController.onPageLoad(mode) }
     else routes.JourneyRecoveryController.onPageLoad()
+
+  private def havePaymentRouteLogic(mode: Mode, ua: UserAnswers)(implicit reportId: ReportId) = {
+    //todo
+    controllers.manual.account.routes.PaymentTypeController.onPageLoad(NormalMode)
+  }
+
 
   private def fillerNavigation: PartialFunction[(Page, Mode, UserAnswers), Call] = {
     case (WhatTypeOfFilerPage(), _, _)          => controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad()
