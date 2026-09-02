@@ -46,9 +46,9 @@ object WhatAccountType extends Enumerable.Implicits {
     NotReported
   )
 
-  def options(numberType: NumberType, reportingPeriod: Int)(implicit messages: Messages): Seq[RadioItem] = {
+  def options(reportingPeriod: Int, numberType: Option[NumberType] = None)(implicit messages: Messages): Seq[RadioItem] = {
     val withInsurance =
-      if (numberType == NumberType.Other)
+      if (numberType.contains(NumberType.Other))
         baseValues.patch(2, Seq(InsuranceOrAnnuityContract), 0)
       else baseValues
 

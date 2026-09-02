@@ -44,7 +44,7 @@ class WhatAccountTypeViewSpec extends SpecBase {
 
     "should render page components" - {
 
-      val items: Seq[RadioItem]               = WhatAccountType.options(NumberType.Other, 2025)
+      val items: Seq[RadioItem]               = WhatAccountType.options(2025, Some(NumberType.Other))
       val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, items)
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
@@ -72,7 +72,7 @@ class WhatAccountTypeViewSpec extends SpecBase {
     }
 
     "must render only the base options when the number type is not Other and the reporting period is at or after the threshold year" in {
-      val items    = WhatAccountType.options(NumberType.Iban, REPORTING_THRESHOLD_YEAR)
+      val items    = WhatAccountType.options(REPORTING_THRESHOLD_YEAR, Some(NumberType.Iban))
       val html     = view(form, NormalMode, items)(request, messages)
       val doc      = Jsoup.parse(html.body)
       val elements = doc.select(".govuk-radios__label")
@@ -84,7 +84,7 @@ class WhatAccountTypeViewSpec extends SpecBase {
     }
 
     "must add the InsuranceOrAnnuityContract option for a non-Other number type before the threshold year" in {
-      val items    = WhatAccountType.options(NumberType.Iban, REPORTING_THRESHOLD_YEAR - 1)
+      val items    = WhatAccountType.options(REPORTING_THRESHOLD_YEAR - 1, Some(NumberType.Iban))
       val html     = view(form, NormalMode, items)(request, messages)
       val doc      = Jsoup.parse(html.body)
       val elements = doc.select(".govuk-radios__label")
