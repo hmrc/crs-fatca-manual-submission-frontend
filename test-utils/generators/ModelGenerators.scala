@@ -16,18 +16,19 @@
 
 package generators
 
-import models.{CrsOrFatca, TypeOfReport}
-import org.scalacheck.{Arbitrary, Gen}
-import models.NumberType
-import models.UkAddress
-import models.manual.account.WasAccountOpen
-import models.manual.cpso.IndividualOrOrganisation
+import models.manual.account.{PaymentType, WasAccountOpen, WhatAccountType}
 import models.manual.accountHolders.IndividualName
+import models.manual.cpso.IndividualOrOrganisation
+import models.{CrsOrFatca, NumberType, TypeOfReport, UkAddress}
 import org.scalacheck.Arbitrary.*
-
-import org.scalacheck.Arbitrary.*
+import org.scalacheck.{Arbitrary, Gen}
 
 trait ModelGenerators {
+
+  implicit lazy val arbitraryPaymentType: Arbitrary[PaymentType] =
+    Arbitrary {
+      Gen.oneOf(PaymentType.values)
+    }
 
   implicit lazy val arbitraryIndividualName: Arbitrary[IndividualName] =
     Arbitrary {
@@ -40,6 +41,11 @@ trait ModelGenerators {
   implicit lazy val arbitraryIndividualOrOrganisation: Arbitrary[IndividualOrOrganisation] =
     Arbitrary {
       Gen.oneOf(IndividualOrOrganisation.values)
+    }
+
+  implicit lazy val arbitraryWhatAccountType: Arbitrary[WhatAccountType] =
+    Arbitrary {
+      Gen.oneOf(WhatAccountType.baseValues)
     }
 
   implicit lazy val arbitraryWasAccountOpen: Arbitrary[WasAccountOpen] =
