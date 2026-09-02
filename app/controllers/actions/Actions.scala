@@ -40,7 +40,7 @@ class Actions @Inject() (
   sponsorNameRequiredAction: SponsorNameRequiredAction,
   cpsoIdCreationAction: CpsoIdCreationAction,
   taxResidentCountryIdCreationAction: TaxResidentCountryIdCreationAction,
-  accountPaymentIdCreationAction: AccountPaymentIdCreationAction
+  accountPaymentIndexCreationAction: AccountPaymentIndexCreationAction
 ) {
 
   def withReportIdRequiredAndAccountIdCreation(): ActionBuilder[AccountIdRequest, AnyContent] =
@@ -49,8 +49,8 @@ class Actions @Inject() (
   def withReportIdRequiredAndAccountIdRequired(): ActionBuilder[AccountIdRequest, AnyContent] =
     withReportIdRequired() andThen accountIdRequiredAction
 
-  def withReportIdRequiredAndAccountIdRequiredAndAccountPaymentIdCreation(): ActionBuilder[AccountPaymentIdRequest, AnyContent] =
-    withReportIdRequired() andThen accountIdRequiredAction andThen accountPaymentIdCreationAction
+  def withReportIdRequiredAndAccountIdRequiredAndAccountPaymentIndexCreation(): ActionBuilder[AccountPaymentIdRequest, AnyContent] =
+    withReportIdRequired() andThen accountIdRequiredAction andThen accountPaymentIndexCreationAction
 
   def withReportIdRequiredAndAccountHolderIdRequired(): ActionBuilder[AccountHolderIdRequest, AnyContent] =
     withReportIdRequired() andThen accountHolderIdRequiredAction

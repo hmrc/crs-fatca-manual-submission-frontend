@@ -24,7 +24,7 @@ import play.api.mvc.ActionTransformer
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class AccountPaymentIdCreationActionImpl @Inject() (implicit val executionContext: ExecutionContext) extends AccountPaymentIdCreationAction {
+class AccountPaymentIndexCreationActionImpl @Inject() (implicit val executionContext: ExecutionContext) extends AccountPaymentIndexCreationAction {
 
   override protected def transform[A](request: AccountIdRequest[A]): Future[AccountPaymentIdRequest[A]] = {
     given reportId: ReportId = request.reportId
@@ -61,4 +61,4 @@ class AccountPaymentIdCreationActionImpl @Inject() (implicit val executionContex
   }
 }
 
-trait AccountPaymentIdCreationAction extends ActionTransformer[AccountIdRequest, AccountPaymentIdRequest]
+trait AccountPaymentIndexCreationAction extends ActionTransformer[AccountIdRequest, AccountPaymentIdRequest]

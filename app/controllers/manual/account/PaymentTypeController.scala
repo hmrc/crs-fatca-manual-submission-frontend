@@ -49,7 +49,7 @@ class PaymentTypeController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdRequiredAndAccountPaymentIdCreation().async {
+  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdRequiredAndAccountPaymentIndexCreation().async {
     implicit request =>
       implicit val reportId: ReportId         = request.reportId
       implicit val accountId: AccountId       = request.accountId
@@ -81,7 +81,7 @@ class PaymentTypeController @Inject() (
 
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdRequiredAndAccountPaymentIdCreation().async {
+  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdRequiredAndAccountPaymentIndexCreation().async {
     implicit request =>
       implicit val reportId: ReportId         = request.reportId
       implicit val accountId: AccountId       = request.accountId
