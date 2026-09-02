@@ -22,6 +22,7 @@ import controllers.routes
 import models.*
 import models.NumberType.{Iban, Semp}
 import models.SubmissionsConstants.{CRS, FATCA}
+import models.manual.account.WhatAccountType.Depository
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
 import models.viewModels.AccountId
 import pages.*
@@ -66,7 +67,8 @@ class ManualSubmissionNavigator @Inject() () {
     case (WhatWasTheAccountCurrencyPage(_), mode, ua)  => controllers.manual.account.routes.IsUndocumentedAccountController.onPageLoad(NormalMode)
     case (IsDormantAccountPage(_), mode, ua)           => controllers.manual.account.routes.WasAccountOpenController.onPageLoad(NormalMode)
     case (WhatAccountTypePage(_), mode, ua)            => controllers.manual.account.routes.HavePaymentsController.onPageLoad(NormalMode)
-    case (HavePaymentsPage(_), mode, ua)               => havePaymentRouteLogic(mode, ua)
+    case (HavePaymentsPage(accId), mode, ua)           => havePaymentRouteLogic(mode, ua, accId)
+    case (PaymentTypePage(accountId), mode, ua)        => paymentRouteLogic(mode, ua, accountId)
 
   }
 
@@ -82,11 +84,26 @@ class ManualSubmissionNavigator @Inject() () {
     else if (reportId.regime == CRS) { controllers.manual.account.routes.IsUndocumentedAccountController.onPageLoad(mode) }
     else routes.JourneyRecoveryController.onPageLoad()
 
-  private def havePaymentRouteLogic(mode: Mode, ua: UserAnswers)(implicit reportId: ReportId) = {
-    //todo
-    controllers.manual.account.routes.PaymentTypeController.onPageLoad(NormalMode)
+  private def havePaymentRouteLogic(mode: Mode, ua: UserAnswers, accountId: AccountId)(implicit reportId: ReportId) = {
+    val accountType    = ua.get(WhatAccountTypePage(accountId))
+    val hasAnyPayments = ua.get(AccountPaymentListPage(accountId)).getOrElse(Seq.empty).size > 0
+
+    ua.get(HavePaymentsPage(accountId)) match {
+      case Some(havePayment) if !havePayment => routes.UnderConstructionController.onPageLoad()
+      case Some(havePayment) if havePayment && hasAnyPayments =>
+        routes.UnderConstructionController.onPageLoad()
+      case Some(havePayments) if havePayments =>
+        controllers.manual.account.routes.PaymentTypeController.onPageLoad(NormalMode)
+      case _ => controllers.manual.account.routes.PaymentTypeController.onPageLoad(mode)
+    }
+
   }
 
+  private def paymentRouteLogic(mode: Mode, ua: UserAnswers, accountId: AccountId)(implicit reportId: ReportId) =
+    ua.get(AccountPaymentListPage(accountId)) match {
+      case Some(payments) if payments.nonEmpty => routes.UnderConstructionController.onPageLoad()
+      case _                                   => routes.JourneyRecoveryController.onPageLoad()
+    }
 
   private def fillerNavigation: PartialFunction[(Page, Mode, UserAnswers), Call] = {
     case (WhatTypeOfFilerPage(), _, _)          => controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad()

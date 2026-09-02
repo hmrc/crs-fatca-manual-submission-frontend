@@ -18,13 +18,18 @@ package controllers.manual.account
 
 import controllers.actions.*
 import forms.manual.account.HavePaymentsFormProvider
+
 import javax.inject.Inject
-import models.{Mode, ReportId}
+import models.{Mode, ReportId, UserAnswers}
 import navigation.ManualSubmissionNavigator
-import pages.manual.account.HavePaymentsPage
+import pages.manual.account.{AccountPaymentListPage, AccountPaymentPage, CurrentAccountPaymentIndexPage, HavePaymentsPage, NumberTypePage, WhatAccountTypePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import connectors.DatabaseConnector
+import models.NumberType.{Iban, Semp}
+import models.SubmissionsConstants.{CRS, RegimeType}
+import models.manual.account.{AccountPayment, PaymentType}
+import models.viewModels.AccountId
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.account.HavePaymentsView
 
@@ -62,17 +67,34 @@ class HavePaymentsController @Inject() (
       val reportingPeriod             = reportId.reportingYear.toString
       val form                        = formProvider(reportId.regime, reportingPeriod)
 
-      // todo
-      // Set PaymentType as CRS502 when Account Number Type is IBAN (OECD601) or SEMP (OECD606) Before redirecting from HavePayments Page  And HavePayment is answered as Yes
+      val regime = reportId.regime
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, reportId.regime, reportingPeriod))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, regime, reportingPeriod))),
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(HavePaymentsPage(request.accountId), value))
+              ua             <- updateUpdatePaymentToCRSInterest(value, request.userAnswers, request.accountId, regime)
+              updatedAnswers <- Future.fromTry(ua.setWithReportId(HavePaymentsPage(request.accountId), value))
               _              <- repository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(HavePaymentsPage(request.accountId), mode, updatedAnswers))
         )
+  }
+
+  private def updateUpdatePaymentToCRSInterest(havePayments: Boolean, ua: UserAnswers, accountId: AccountId, regime: RegimeType)(implicit
+    reportId: ReportId
+  ): Future[UserAnswers] = {
+    val currentIndex                     = ua.get(AccountPaymentListPage(accountId)).getOrElse(Seq.empty).size
+    val hasNoPayments                    = currentIndex == 0
+    val numberType                       = ua.get(NumberTypePage(accountId))
+    val shouldUpdatePaymentToCRSInterest = havePayments && (regime == CRS) && (numberType.contains(Iban) || numberType.contains(Semp))
+
+    if (shouldUpdatePaymentToCRSInterest && hasNoPayments) {
+      for {
+        userAnswer <- Future.fromTry(ua.setWithReportId(AccountPaymentPage(currentIndex)(accountId = accountId), AccountPayment(PaymentType.CRSInterest)))
+        updatedUAWithCurrentIndex <- Future.fromTry(userAnswer.setWithReportId(CurrentAccountPaymentIndexPage(accountId), currentIndex))
+      } yield updatedUAWithCurrentIndex
+    } else
+      Future.successful(ua)
   }
 }

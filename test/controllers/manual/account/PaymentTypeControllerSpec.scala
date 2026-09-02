@@ -22,7 +22,7 @@ import controllers.routes
 import forms.manual.account.PaymentTypeFormProvider
 import models.SubmissionsConstants.CRS
 import models.{NormalMode, ReportId}
-import models.manual.account.PaymentType
+import models.manual.account.{AccountPayment, PaymentType}
 import models.viewModels.AccountId
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -34,7 +34,8 @@ import play.api.test.Helpers.*
 import views.html.manual.account.PaymentTypeView
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import pages.ReportIdPage
-import pages.manual.account.{CurrentAccountIdPage, PaymentTypePage}
+import pages.manual.account.{AccountPaymentListPage, AccountPaymentPage, CurrentAccountIdPage, CurrentAccountPaymentIndexPage, NumberTypePage}
+import models.NumberType.Iban
 
 import scala.concurrent.Future
 
@@ -44,9 +45,10 @@ class PaymentTypeControllerSpec extends SpecBase with MockitoSugar {
 
   lazy val paymentTypeRoute = controllers.manual.account.routes.PaymentTypeController.onPageLoad(NormalMode).url
 
-  val formProvider = new PaymentTypeFormProvider()
-  val form         = formProvider()
-  val crs  = CRS
+  val formProvider                 = new PaymentTypeFormProvider()
+  val form                         = formProvider()
+  val crs                          = CRS
+  implicit val reportId: ReportId  = ReportId(CRS, 2025, None, "TestfiID")
   private val accountId: AccountId = AccountId(value = "SomeId")
 
   "PaymentType Controller" - {
@@ -54,7 +56,8 @@ class PaymentTypeControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+      val userAnswers = ua.withPage(CurrentAccountIdPage(), accountId)
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, paymentTypeRoute)
@@ -69,10 +72,10 @@ class PaymentTypeControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
-      val userAnswers       = ua
-        .withPage(PaymentTypePage(accountId), PaymentType.crsValues.head)
+      val userAnswers = ua
         .withPage(CurrentAccountIdPage(), accountId)
+        .withPage(CurrentAccountPaymentIndexPage(accountId), 0)
+        .withPage(AccountPaymentPage(0)(accountId = accountId), AccountPayment(PaymentType.values.head))
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
@@ -88,6 +91,30 @@ class PaymentTypeControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
+    "must update payment type to CRS interest when number type is Iban" in {
+      val userAnswers = ua
+        .withPage(CurrentAccountIdPage(), accountId)
+        .withPage(NumberTypePage(accountId), Iban)
+        .withPage(AccountPaymentListPage(accountId), Seq(AccountPayment(PaymentType.CRSDividends)))
+
+      val mockSessionRepository = mock[DatabaseConnector]
+      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(userAnswers))
+          .overrides(bind[DatabaseConnector].toInstance(mockSessionRepository))
+          .build()
+
+      running(application) {
+        val request = FakeRequest(GET, paymentTypeRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.routes.UnderConstructionController.onPageLoad().url
+      }
+    }
+
     "must redirect to the next page when valid data is submitted" in {
 
       val mockSessionRepository = mock[DatabaseConnector]
@@ -95,7 +122,7 @@ class PaymentTypeControllerSpec extends SpecBase with MockitoSugar {
       when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
 
       val application =
-        applicationBuilder(maybeUserAnswers = Some(ua))
+        applicationBuilder(maybeUserAnswers = Some(ua.withPage(CurrentAccountIdPage(), accountId)))
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
             bind[DatabaseConnector].toInstance(mockSessionRepository)
@@ -116,7 +143,7 @@ class PaymentTypeControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(ua.withPage(CurrentAccountIdPage(), accountId))).build()
 
       running(application) {
         val request =

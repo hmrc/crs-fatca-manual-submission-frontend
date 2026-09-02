@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package pages.manual.account
+package models.manual.account
 
-import models.ReportId
-import models.manual.account.PaymentType
-import models.viewModels.AccountId
-import pages.QuestionPage
+import play.api.libs.json.{Json, OFormat}
 
-import play.api.libs.json.JsPath
+case class AccountPayment(paymentType: PaymentType)
 
-final case class PaymentTypePage(accountId: AccountId)(implicit reportId: ReportId) extends QuestionPage[PaymentType]:
+object AccountPayment {
+  implicit val format: OFormat[AccountPayment] = Json.format
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "accounts" \ accountId.value \ "paymentType"
+}

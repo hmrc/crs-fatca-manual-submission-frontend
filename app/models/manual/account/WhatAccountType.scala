@@ -37,6 +37,7 @@ object WhatAccountType extends Enumerable.Implicits {
     Custodial,
     InvestmentEntity
   )
+
   val allValidValues: Seq[WhatAccountType] = Seq(
     Depository,
     Custodial,

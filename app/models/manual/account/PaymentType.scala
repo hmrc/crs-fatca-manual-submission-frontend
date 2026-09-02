@@ -37,31 +37,42 @@ object PaymentType extends Enumerable.Implicits {
   case object FATCAGrossProceedsOrRedemptions extends WithName("FATCA503") with PaymentType
   case object FATCAOther extends WithName("FATCA504") with PaymentType
 
-  val crsValues = Seq(CRSDividends, CRSInterest, CRSGrossProceedsOrRedemptions, CRSOther)
+  val crsValues                      = Seq(CRSDividends, CRSInterest, CRSGrossProceedsOrRedemptions, CRSOther)
   val crsNonCashValueInsuranceValues = Seq(CRSGrossProceedsOrRedemptions, CRSOther)
-  val fataValues = Seq(FATCADividends, FATCAInterest, FATCAGrossProceedsOrRedemptions, FATCAOther)
+  val fataValues                     = Seq(FATCADividends, FATCAInterest, FATCAGrossProceedsOrRedemptions, FATCAOther)
 
   val values: Seq[PaymentType] = Seq(
-    CRSDividends, CRSInterest, CRSGrossProceedsOrRedemptions, CRSOther,
-    FATCADividends, FATCAInterest, FATCAGrossProceedsOrRedemptions, FATCAOther
+    CRSDividends,
+    CRSInterest,
+    CRSGrossProceedsOrRedemptions,
+    CRSOther,
+    FATCADividends,
+    FATCAInterest,
+    FATCAGrossProceedsOrRedemptions,
+    FATCAOther
   )
 
   def values(regimeType: RegimeType, showCrsNonCashValueInsuranceValues: Boolean) = regimeType match {
-    case FATCA => fataValues
-    case CRS  if showCrsNonCashValueInsuranceValues => crsValues
-    case CRS   =>  crsNonCashValueInsuranceValues
-    case _     => Seq()
+    case FATCA                                     => fataValues
+    case CRS if showCrsNonCashValueInsuranceValues => crsValues
+    case CRS                                       => crsNonCashValueInsuranceValues
+    case _                                         => Seq()
   }
 
-  def options(regimeType: RegimeType, showCrsNonCashValueInsuranceValues: Boolean)(implicit messages: Messages): Seq[RadioItem] = values(regimeType, showCrsNonCashValueInsuranceValues).zipWithIndex.map {
-    case (value, index) =>
-      RadioItem(
-        content = Text(messages(s"account.paymentType.${value.toString}")),
-        value   = Some(value.toString),
-        id      = Some(s"value_$index")
-      )
-  }
+  def options(regimeType: RegimeType, showCrsNonCashValueInsuranceValues: Boolean)(implicit messages: Messages): Seq[RadioItem] =
+    values(regimeType, showCrsNonCashValueInsuranceValues).zipWithIndex.map {
+      case (value, index) =>
+        RadioItem(
+          content = Text(messages(s"account.paymentType.${value.toString}")),
+          value = Some(value.toString),
+          id = Some(s"value_$index")
+        )
+    }
 
   implicit val enumerable: Enumerable[PaymentType] =
-    Enumerable(values.map(v => v.toString -> v): _*)
+    Enumerable(
+      values.map(
+        v => v.toString -> v
+      ): _*
+    )
 }

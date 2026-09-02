@@ -32,13 +32,13 @@ class PaymentTypeViewSpec extends SpecBase {
 
   private val application = applicationBuilder().build()
 
-  private val view: PaymentTypeView = application.injector.instanceOf[PaymentTypeView]
+  private val view: PaymentTypeView                                      = application.injector.instanceOf[PaymentTypeView]
   private val messagesControllerComponents: MessagesControllerComponents = application.injector.instanceOf[MessagesControllerComponents]
-  val formProvider = new PaymentTypeFormProvider()
-  val form = formProvider()
+  val formProvider                                                       = new PaymentTypeFormProvider()
+  val form                                                               = formProvider()
 
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
-  implicit private val messages: Messages = messagesControllerComponents.messagesApi.preferred(Seq(Lang("en")))
+  implicit private val messages: Messages               = messagesControllerComponents.messagesApi.preferred(Seq(Lang("en")))
 
   "PaymentTypeView" - {
 
@@ -67,7 +67,7 @@ class PaymentTypeViewSpec extends SpecBase {
 
       "must display CRS payment type options when showDividendsAndInterestRadioFields is false" in {
         val renderedHtml2: HtmlFormat.Appendable = view(form, NormalMode, regimeType, showDividendsAndInterestRadioFields = false)
-        lazy val doc2 = Jsoup.parse(renderedHtml2.body)
+        lazy val doc2                            = Jsoup.parse(renderedHtml2.body)
 
         val elements = doc2.select(".govuk-radios__label")
         elements.size() mustBe PaymentType.crsNonCashValueInsuranceValues.size

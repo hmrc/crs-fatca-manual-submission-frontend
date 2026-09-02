@@ -46,6 +46,16 @@ case class AccountIdRequest[A](request: Request[A], userId: String, userAnswers:
     extends WrappedRequest[A](request)
     with HasReportIdRequest[A]
 
+case class AccountPaymentIdRequest[A](request: Request[A],
+                                      userId: String,
+                                      userAnswers: UserAnswers,
+                                      fatcaId: String,
+                                      reportId: ReportId,
+                                      accountId: AccountId,
+                                      currentIndex: Int
+) extends WrappedRequest[A](request)
+    with HasReportIdRequest[A]
+
 case class CPSOIdRequest[A](request: Request[A], userId: String, userAnswers: UserAnswers, fatcaId: String, reportId: ReportId, cpsoId: CPSOId)
     extends WrappedRequest[A](request)
     with HasReportIdRequest[A]
