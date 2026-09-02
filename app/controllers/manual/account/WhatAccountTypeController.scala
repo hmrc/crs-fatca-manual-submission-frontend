@@ -47,53 +47,47 @@ class WhatAccountTypeController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (actions.withReportIdRequiredAndAccountIdRequired() andThen accountCRSOnlyFilterAction).async {
+  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdRequired().async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
-      request.userAnswers.get(NumberTypePage(request.accountId)) match {
-        case None =>
-          Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
-        case Some(numberType) =>
-          val preparedForm = request.userAnswers.get(WhatAccountTypePage(request.accountId)) match {
-            case None        => form
-            case Some(value) => form.fill(value)
-          }
 
-          numberType match {
-            case NumberType.Iban | NumberType.Semp =>
-              for {
-                updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(WhatAccountTypePage(request.accountId), WhatAccountType.Depository))
-                _              <- sessionRepository.set(updatedAnswers)
-              } yield Redirect(navigator.nextPage(WhatAccountTypePage(request.accountId), mode, updatedAnswers))
-
-            case _ =>
-              val items: Seq[RadioItem] = WhatAccountType.options(numberType, reportId.reportingYear)
-              Future.successful(Ok(view(preparedForm, mode, items)))
-          }
+      val preparedForm = request.userAnswers.get(WhatAccountTypePage(request.accountId)) match {
+        case None        => form
+        case Some(value) => form.fill(value)
       }
 
+      val numberType = request.userAnswers.get(NumberTypePage(request.accountId))
+
+      numberType match {
+        case Some(NumberType.Iban) | Some(NumberType.Semp) =>
+          for {
+            updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(WhatAccountTypePage(request.accountId), WhatAccountType.Depository))
+            _              <- sessionRepository.set(updatedAnswers)
+          } yield Redirect(navigator.nextPage(WhatAccountTypePage(request.accountId), mode, updatedAnswers))
+
+        case maybeNumberType =>
+          val items: Seq[RadioItem] = WhatAccountType.options(reportId.reportingYear, maybeNumberType)
+          Future.successful(Ok(view(preparedForm, mode, items)))
+
+      }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (actions.withReportIdRequiredAndAccountIdRequired() andThen accountCRSOnlyFilterAction).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdRequired().async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
 
-      (for {
-        numberType <- request.userAnswers.get(NumberTypePage(request.accountId))
-      } yield {
-        val items: Seq[RadioItem] = WhatAccountType.options(numberType, reportId.reportingYear)
+      val numberType            = request.userAnswers.get(NumberTypePage(request.accountId))
+      val items: Seq[RadioItem] = WhatAccountType.options(reportId.reportingYear, numberType)
 
-        form
-          .bindFromRequest()
-          .fold(
-            formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, items))),
-            value =>
-              for {
-                updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(WhatAccountTypePage(request.accountId), value))
-                _              <- sessionRepository.set(updatedAnswers)
-              } yield Redirect(navigator.nextPage(WhatAccountTypePage(request.accountId), mode, updatedAnswers))
-          )
-      }).getOrElse(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())))
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, items))),
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(WhatAccountTypePage(request.accountId), value))
+              _              <- sessionRepository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(WhatAccountTypePage(request.accountId), mode, updatedAnswers))
+        )
   }
-
 }

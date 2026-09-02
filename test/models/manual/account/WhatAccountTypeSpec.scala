@@ -67,14 +67,14 @@ class WhatAccountTypeSpec extends SpecBase {
       items.flatMap(_.value)
 
     "must add InsuranceOrAnnuityContract to the options when numberType is Other and the reporting period is at or after the threshold year" in {
-      val items = WhatAccountType.options(NumberType.Other, REPORTING_THRESHOLD_YEAR)
+      val items = WhatAccountType.options(REPORTING_THRESHOLD_YEAR, Some(NumberType.Other))
 
       optionValues(items) mustBe
         Seq("CRS1101", "CRS1102", "CRS1103", "CRS1104")
     }
 
     "must add both InsuranceOrAnnuityContract and NotReported to the options when numberType is Other and the reporting period is before the threshold year" in {
-      val items = WhatAccountType.options(NumberType.Other, REPORTING_THRESHOLD_YEAR - 1)
+      val items = WhatAccountType.options(REPORTING_THRESHOLD_YEAR - 1, Some(NumberType.Other))
 
       optionValues(items) mustBe
         Seq("CRS1101", "CRS1102", "CRS1103", "CRS1104", "CRS1100")
@@ -82,7 +82,7 @@ class WhatAccountTypeSpec extends SpecBase {
     }
 
     "must add NotReported to the options when the reporting period is before the threshold year and numberType is not Other" in {
-      val items = WhatAccountType.options(NumberType.Iban, REPORTING_THRESHOLD_YEAR - 1)
+      val items = WhatAccountType.options(REPORTING_THRESHOLD_YEAR - 1, Some(NumberType.Iban))
 
       optionValues(items) mustBe
         Seq("CRS1101", "CRS1102", "CRS1104", "CRS1100")
@@ -90,14 +90,14 @@ class WhatAccountTypeSpec extends SpecBase {
     }
 
     "must offer only the base options when the reporting period is at or after the threshold year and numberType is not Other" in {
-      val items = WhatAccountType.options(NumberType.Iban, REPORTING_THRESHOLD_YEAR)
+      val items = WhatAccountType.options(REPORTING_THRESHOLD_YEAR, Some(NumberType.Iban))
 
       optionValues(items) mustBe Seq("CRS1101", "CRS1102", "CRS1104")
 
     }
 
     "must build each radio option with the message key, value and index-based id" in {
-      val items = WhatAccountType.options(NumberType.Other, REPORTING_THRESHOLD_YEAR)
+      val items = WhatAccountType.options(REPORTING_THRESHOLD_YEAR, Some(NumberType.Other))
 
       items.zipWithIndex.foreach {
         case (item, index) =>

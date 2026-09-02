@@ -69,9 +69,9 @@ class ManualSubmissionNavigator @Inject() () {
 
   }
 
-  private def NumberTypeNavigation(accountId: AccountId, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) = // THIS IS WRONG CORRECT IT
+  private def NumberTypeNavigation(accountId: AccountId, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
     userAnswers.get(NumberTypePage(accountId)) match {
-      case Some(_) => controllers.manual.account.routes.AccountClosedController.onPageLoad(NormalMode) // Should go to account/number when built
+      case Some(_) => controllers.manual.account.routes.AccountClosedController.onPageLoad(mode)
       case None    => routes.JourneyRecoveryController.onPageLoad()
     }
 

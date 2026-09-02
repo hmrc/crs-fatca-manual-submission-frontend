@@ -52,7 +52,7 @@ class WhatAccountTypeControllerSpec extends SpecBase with MockitoSugar {
   private val form                      = formProvider()
 
   private def items(app: Application): Seq[RadioItem] =
-    WhatAccountType.options(numType, 2025)(messages(app))
+    WhatAccountType.options(2025, Some(numType))(messages(app))
 
   "WhatAccountType Controller" - {
     implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
