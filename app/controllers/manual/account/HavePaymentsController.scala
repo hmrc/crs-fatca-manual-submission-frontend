@@ -66,35 +66,17 @@ class HavePaymentsController @Inject() (
       implicit val reportId: ReportId = request.reportId
       val reportingPeriod             = reportId.reportingYear.toString
       val form                        = formProvider(reportId.regime, reportingPeriod)
+      val regime                      = reportId.regime
 
-      val regime = reportId.regime
       form
         .bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, regime, reportingPeriod))),
           value =>
             for {
-              ua             <- updateUpdatePaymentToCRSInterest(value, request.userAnswers, request.accountId, regime)
-              updatedAnswers <- Future.fromTry(ua.setWithReportId(HavePaymentsPage(request.accountId), value))
-              _              <- repository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(HavePaymentsPage(request.accountId), mode, updatedAnswers))
+              ua <- Future.fromTry(request.userAnswers.setWithReportId(HavePaymentsPage(request.accountId), value))
+              _  <- repository.set(ua)
+            } yield Redirect(navigator.nextPage(HavePaymentsPage(request.accountId), mode, ua))
         )
-  }
-
-  private def updateUpdatePaymentToCRSInterest(havePayments: Boolean, ua: UserAnswers, accountId: AccountId, regime: RegimeType)(implicit
-    reportId: ReportId
-  ): Future[UserAnswers] = {
-    val currentIndex                     = ua.get(AccountPaymentListPage(accountId)).getOrElse(Seq.empty).size
-    val hasNoPayments                    = currentIndex == 0
-    val numberType                       = ua.get(NumberTypePage(accountId))
-    val shouldUpdatePaymentToCRSInterest = havePayments && (regime == CRS) && (numberType.contains(Iban) || numberType.contains(Semp))
-
-    if (shouldUpdatePaymentToCRSInterest && hasNoPayments) {
-      for {
-        userAnswer <- Future.fromTry(ua.setWithReportId(AccountPaymentPage(currentIndex)(accountId = accountId), AccountPayment(PaymentType.CRSInterest)))
-        updatedUAWithCurrentIndex <- Future.fromTry(userAnswer.setWithReportId(CurrentAccountPaymentIndexPage(accountId), currentIndex))
-      } yield updatedUAWithCurrentIndex
-    } else
-      Future.successful(ua)
   }
 }

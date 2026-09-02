@@ -22,7 +22,7 @@ import controllers.routes
 import forms.manual.account.PaymentTypeFormProvider
 import models.SubmissionsConstants.CRS
 import models.{NormalMode, ReportId}
-import models.manual.account.{AccountPayment, PaymentType}
+import models.manual.account.{AccountPayment, PaymentType, WhatAccountType}
 import models.viewModels.AccountId
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -34,8 +34,16 @@ import play.api.test.Helpers.*
 import views.html.manual.account.PaymentTypeView
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import pages.ReportIdPage
-import pages.manual.account.{AccountPaymentListPage, AccountPaymentPage, CurrentAccountIdPage, CurrentAccountPaymentIndexPage, NumberTypePage}
+import pages.manual.account.{
+  AccountPaymentListPage,
+  AccountPaymentPage,
+  CurrentAccountIdPage,
+  CurrentAccountPaymentIndexPage,
+  NumberTypePage,
+  WhatAccountTypePage
+}
 import models.NumberType.Iban
+import models.manual.account.WhatAccountType.Depository
 
 import scala.concurrent.Future
 
@@ -91,10 +99,10 @@ class PaymentTypeControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must update payment type to CRS interest when number type is Iban" in {
+    "must update payment type to CRS interest when account type to Depository CRS1101" in {
       val userAnswers = ua
         .withPage(CurrentAccountIdPage(), accountId)
-        .withPage(NumberTypePage(accountId), Iban)
+        .withPage(WhatAccountTypePage(accountId), Depository)
         .withPage(AccountPaymentListPage(accountId), Seq(AccountPayment(PaymentType.CRSDividends)))
 
       val mockSessionRepository = mock[DatabaseConnector]

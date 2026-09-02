@@ -16,25 +16,23 @@
 
 package controllers.manual.account
 
+import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.manual.account.PaymentTypeFormProvider
-
-import javax.inject.Inject
-import models.{Mode, ReportId, UserAnswers}
-import navigation.ManualSubmissionNavigator
-import pages.manual.account.{AccountPaymentPage, CurrentAccountPaymentIndexPage, NumberTypePage, PaymentTypePage, WhatAccountTypePage}
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import connectors.DatabaseConnector
-import controllers.routes
 import models.NumberType.{Iban, Semp}
 import models.SubmissionsConstants.{CRS, FATCA, RegimeType}
+import models.manual.account.WhatAccountType.{Depository, InsuranceOrAnnuityContract, InvestmentEntity}
 import models.manual.account.{AccountPayment, PaymentType}
-import models.manual.account.WhatAccountType.{InsuranceOrAnnuityContract, InvestmentEntity}
 import models.viewModels.AccountId
+import models.{Mode, ReportId, UserAnswers}
+import navigation.ManualSubmissionNavigator
+import pages.manual.account.{AccountPaymentPage, CurrentAccountPaymentIndexPage, PaymentTypePage, WhatAccountTypePage}
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.account.PaymentTypeView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class PaymentTypeController @Inject() (
@@ -58,8 +56,8 @@ class PaymentTypeController @Inject() (
       val regimeType                          = reportId.regime
       val ua                                  = request.userAnswers
       val showDividendsAndInterestRadioFields = showDividendsAndInterestRadios(accountId, regimeType, request.userAnswers)
-      val numberType                          = ua.get(NumberTypePage(accountId))
-      val shouldUpdatePaymentToCRSInterest    = (regimeType == CRS) && (numberType.contains(Iban) || numberType.contains(Semp))
+      val accountType                         = ua.get(WhatAccountTypePage(accountId))
+      val shouldUpdatePaymentToCRSInterest    = accountType.contains(Depository)
 
       if (shouldUpdatePaymentToCRSInterest) {
         val currentIndex = request.currentIndex

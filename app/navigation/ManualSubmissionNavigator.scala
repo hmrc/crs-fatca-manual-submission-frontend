@@ -85,9 +85,7 @@ class ManualSubmissionNavigator @Inject() () {
     else routes.JourneyRecoveryController.onPageLoad()
 
   private def havePaymentRouteLogic(mode: Mode, ua: UserAnswers, accountId: AccountId)(implicit reportId: ReportId) = {
-    val accountType    = ua.get(WhatAccountTypePage(accountId))
-    val hasAnyPayments = ua.get(AccountPaymentListPage(accountId)).getOrElse(Seq.empty).size > 0
-
+    val hasAnyPayments = ua.get(AccountPaymentListPage(accountId)).getOrElse(Seq.empty).nonEmpty
     ua.get(HavePaymentsPage(accountId)) match {
       case Some(havePayment) if !havePayment => routes.UnderConstructionController.onPageLoad()
       case Some(havePayment) if havePayment && hasAnyPayments =>
