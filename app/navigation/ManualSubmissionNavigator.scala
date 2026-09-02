@@ -20,18 +20,17 @@ import controllers.manual.account
 import controllers.manual.reportdetails.routes.*
 import controllers.routes
 import models.*
-import models.NumberType.{Iban, Semp}
 import models.SubmissionsConstants.{CRS, FATCA}
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
 import models.viewModels.AccountId
 import pages.*
 import pages.manual.account.*
 import pages.manual.accountHolders.{IndividualNamePage, IndividualOrOrganisationPage}
+import pages.manual.cpso.IndividualNamePage
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.*
 import play.api.mvc.Call
-import pages.manual.cpso.IndividualNamePage
 
 import javax.inject.{Inject, Singleton}
 

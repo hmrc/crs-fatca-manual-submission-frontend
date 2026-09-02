@@ -35,13 +35,12 @@ import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import repositories.SessionRepository
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import views.html.manual.account.WhatAccountTypeView
 
 import scala.concurrent.Future
 
-class WhatAccountTypeControllerSpec extends SpecBase with MockitoSugar {
+class AWhatAccountTypeControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 

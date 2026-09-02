@@ -47,7 +47,7 @@ class WhatAccountTypeController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdRequired().async {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (actions.withReportIdRequiredAndAccountIdRequired() andThen accountCRSOnlyFilterAction).async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
 
@@ -72,7 +72,7 @@ class WhatAccountTypeController @Inject() (
       }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdRequired().async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (actions.withReportIdRequiredAndAccountIdRequired() andThen accountCRSOnlyFilterAction).async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
 
