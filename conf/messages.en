@@ -593,3 +593,14 @@ cpso.individualName.fatca.error.lastName.invalid.characters = Substantial ownerâ
 cpso.individualName.fatca.error.lastName.invalid.characters.combination = Substantial ownerâ€™s last name must not include a double dash (--)
 cpso.individualName.firstName.change.hidden = First name
 cpso.individualName.LastName.change.hidden = Last name
+
+whatAccountType.title = What type of account is this?
+whatAccountType.heading = What type of account is this?
+whatAccountType.CRS1101 = Depository account
+whatAccountType.CRS1102 = Custodial account
+whatAccountType.CRS1103 = Cash value insurance contract or annuity contract
+whatAccountType.CRS1104 = Debt or equity interest in investment entity
+whatAccountType.CRS1100 = Not reported
+whatAccountType.checkYourAnswersLabel = What type of account is this?
+whatAccountType.error.required = Select what type of account this is
+whatAccountType.change.hidden = WhatAccountType
