@@ -17,7 +17,7 @@
 package controllers.actions
 
 import models.ReportId
-import models.requests.{AccountIdRequest, AccountPaymentIdRequest}
+import models.requests.{AccountIdRequest, AccountPaymentIndexRequest}
 import pages.manual.account.{AccountPaymentListPage, CurrentAccountPaymentIndexPage}
 import play.api.mvc.ActionTransformer
 
@@ -26,7 +26,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class AccountPaymentIdCreationActionImpl @Inject() (implicit val executionContext: ExecutionContext) extends AccountPaymentIdCreationAction {
 
-  override protected def transform[A](request: AccountIdRequest[A]): Future[AccountPaymentIdRequest[A]] = {
+  override protected def transform[A](request: AccountIdRequest[A]): Future[AccountPaymentIndexRequest[A]] = {
     given reportId: ReportId = request.reportId
     val ua                   = request.userAnswers
 
@@ -34,7 +34,7 @@ class AccountPaymentIdCreationActionImpl @Inject() (implicit val executionContex
       case None =>
         val currentIndex = ua.get(AccountPaymentListPage(request.accountId)).getOrElse(Seq.empty).size
         Future.successful(
-          AccountPaymentIdRequest(
+          AccountPaymentIndexRequest(
             request = request.request,
             userId = request.userId,
             userAnswers = request.userAnswers,
@@ -46,7 +46,7 @@ class AccountPaymentIdCreationActionImpl @Inject() (implicit val executionContex
         )
       case Some(currentId) =>
         Future.successful(
-          AccountPaymentIdRequest(
+          AccountPaymentIndexRequest(
             request = request.request,
             userId = request.userId,
             userAnswers = request.userAnswers,
@@ -61,4 +61,4 @@ class AccountPaymentIdCreationActionImpl @Inject() (implicit val executionContex
   }
 }
 
-trait AccountPaymentIdCreationAction extends ActionTransformer[AccountIdRequest, AccountPaymentIdRequest]
+trait AccountPaymentIdCreationAction extends ActionTransformer[AccountIdRequest, AccountPaymentIndexRequest]

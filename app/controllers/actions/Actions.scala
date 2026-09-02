@@ -19,7 +19,7 @@ package controllers.actions
 import models.requests.{
   AccountHolderIdRequest,
   AccountIdRequest,
-  AccountPaymentIdRequest,
+  AccountPaymentIndexRequest,
   CPSOIdRequest,
   ReportIdRequest,
   SponsorNameRequest,
@@ -40,7 +40,8 @@ class Actions @Inject() (
   sponsorNameRequiredAction: SponsorNameRequiredAction,
   cpsoIdCreationAction: CpsoIdCreationAction,
   taxResidentCountryIdCreationAction: TaxResidentCountryIdCreationAction,
-  accountPaymentIdCreationAction: AccountPaymentIdCreationAction
+  accountPaymentIdCreationAction: AccountPaymentIdCreationAction,
+  accountPaymentIndexRequiredAction: AccountPaymentIndexRequiredAction
 ) {
 
   def withReportIdRequiredAndAccountIdCreation(): ActionBuilder[AccountIdRequest, AnyContent] =
@@ -49,8 +50,11 @@ class Actions @Inject() (
   def withReportIdRequiredAndAccountIdRequired(): ActionBuilder[AccountIdRequest, AnyContent] =
     withReportIdRequired() andThen accountIdRequiredAction
 
-  def withReportIdRequiredAndAccountIdRequiredAndAccountPaymentIdCreation(): ActionBuilder[AccountPaymentIdRequest, AnyContent] =
+  def withReportIdRequiredAndAccountIdRequiredAndAccountPaymentIdCreation(): ActionBuilder[AccountPaymentIndexRequest, AnyContent] =
     withReportIdRequired() andThen accountIdRequiredAction andThen accountPaymentIdCreationAction
+
+  def withReportIdRequiredAndAccountIdRequiredAndAccountPaymentIndexRequired(): ActionBuilder[AccountPaymentIndexRequest, AnyContent] =
+    withReportIdRequired() andThen accountIdRequiredAction andThen accountPaymentIndexRequiredAction
 
   def withReportIdRequiredAndAccountHolderIdRequired(): ActionBuilder[AccountHolderIdRequest, AnyContent] =
     withReportIdRequired() andThen accountHolderIdRequiredAction

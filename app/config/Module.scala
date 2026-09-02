@@ -44,6 +44,7 @@ class Module extends AbstractModule {
     bind(classOf[CPSOFATCAOnlyFilterAction]).to(classOf[CPSOFATCAOnlyFilterActionImpl]).asEagerSingleton()
     bind(classOf[AccountCRSOnlyFilterAction]).to(classOf[AccountCRSOnlyFilterActionImpl]).asEagerSingleton()
     bind(classOf[AccountPaymentIdCreationAction]).to(classOf[AccountPaymentIdCreationActionImpl]).asEagerSingleton()
+    bind(classOf[AccountPaymentIndexRequiredAction]).to(classOf[AccountPaymentIndexRequiredActionImpl]).asEagerSingleton()
 
     bind(classOf[Clock]).toInstance(Clock.systemDefaultZone.withZone(ZoneOffset.UTC))
   }

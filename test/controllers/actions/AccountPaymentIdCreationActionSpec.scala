@@ -19,7 +19,7 @@ package controllers.actions
 import base.SpecBase
 import models.SubmissionsConstants.FATCA
 import models.manual.account.{AccountPayment, PaymentType}
-import models.requests.{AccountIdRequest, AccountPaymentIdRequest}
+import models.requests.{AccountIdRequest, AccountPaymentIndexRequest}
 import models.viewModels.AccountId
 import models.{ReportId, UserAnswers}
 import org.mockito.MockitoSugar
@@ -32,7 +32,7 @@ import scala.concurrent.Future
 class AccountPaymentIdCreationActionSpec extends SpecBase with MockitoSugar {
 
   class Harness extends AccountPaymentIdCreationActionImpl() {
-    def callTransform[A](request: AccountIdRequest[A]): Future[AccountPaymentIdRequest[A]] = transform(request)
+    def callTransform[A](request: AccountIdRequest[A]): Future[AccountPaymentIndexRequest[A]] = transform(request)
   }
 
   private val userId    = "user-id"
