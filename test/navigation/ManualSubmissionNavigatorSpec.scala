@@ -216,10 +216,10 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
       }
 
       "NumberTypePage" - {
-        "must go to UnderConstruction Page when when answer is No" in {
+        "must go to AccountClosed Page" in { // will go to account/number when built
           val userData = UserAnswers("id").withPage(NumberTypePage(accountId), NumberType.Iban)
           navigator.nextPage(NumberTypePage(accountId), NormalMode, userData) mustBe
-            controllers.routes.UnderConstructionController.onPageLoad()
+            controllers.manual.account.routes.AccountClosedController.onPageLoad(NormalMode)
         }
       }
 

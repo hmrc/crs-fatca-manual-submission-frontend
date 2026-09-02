@@ -47,10 +47,14 @@ object WhatAccountType extends Enumerable.Implicits {
   )
 
   def options(numberType: NumberType, reportingPeriod: Int)(implicit messages: Messages): Seq[RadioItem] = {
+    val withInsurance =
+      if (numberType == NumberType.Other)
+        baseValues.patch(2, Seq(InsuranceOrAnnuityContract), 0)
+      else baseValues
+
     val values =
-      baseValues
-        .appendedAll(if (numberType == NumberType.Other) Seq(InsuranceOrAnnuityContract) else Seq.empty)
-        .appendedAll(if (reportingPeriod < REPORTING_THRESHOLD_YEAR) Seq(NotReported) else Seq.empty)
+      if (reportingPeriod < REPORTING_THRESHOLD_YEAR) withInsurance :+ NotReported
+      else withInsurance
 
     values.zipWithIndex.map {
       case (value, index) =>
