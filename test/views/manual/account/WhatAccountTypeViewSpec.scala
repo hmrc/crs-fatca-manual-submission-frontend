@@ -61,8 +61,8 @@ class WhatAccountTypeViewSpec extends SpecBase {
         elements.size() mustBe 5
         elements.get(0).text mustBe messages("whatAccountType.CRS1101")
         elements.get(1).text mustBe messages("whatAccountType.CRS1102")
-        elements.get(2).text mustBe messages("whatAccountType.CRS1104")
-        elements.get(3).text mustBe messages("whatAccountType.CRS1103")
+        elements.get(2).text mustBe messages("whatAccountType.CRS1103")
+        elements.get(3).text mustBe messages("whatAccountType.CRS1104")
         elements.get(4).text mustBe messages("whatAccountType.CRS1100")
       }
 

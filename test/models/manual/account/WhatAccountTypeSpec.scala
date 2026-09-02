@@ -70,14 +70,14 @@ class WhatAccountTypeSpec extends SpecBase {
       val items = WhatAccountType.options(NumberType.Other, REPORTING_THRESHOLD_YEAR)
 
       optionValues(items) mustBe
-        Seq("CRS1101", "CRS1102", "CRS1104", "CRS1103")
+        Seq("CRS1101", "CRS1102", "CRS1103", "CRS1104")
     }
 
     "must add both InsuranceOrAnnuityContract and NotReported to the options when numberType is Other and the reporting period is before the threshold year" in {
       val items = WhatAccountType.options(NumberType.Other, REPORTING_THRESHOLD_YEAR - 1)
 
       optionValues(items) mustBe
-        Seq("CRS1101", "CRS1102", "CRS1104", "CRS1103", "CRS1100")
+        Seq("CRS1101", "CRS1102", "CRS1103", "CRS1104", "CRS1100")
 
     }
 

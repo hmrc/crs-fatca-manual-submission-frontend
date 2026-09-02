@@ -69,11 +69,10 @@ class ManualSubmissionNavigator @Inject() () {
 
   }
 
-  private def NumberTypeNavigation(accountId: AccountId, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
+  private def NumberTypeNavigation(accountId: AccountId, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) = // THIS IS WRONG CORRECT IT
     userAnswers.get(NumberTypePage(accountId)) match {
-      case Some(value) if Seq(Semp, Iban).contains(value) => routes.UnderConstructionController.onPageLoad()
-      case Some(_)                                        => account.routes.WhatAccountTypeController.onPageLoad(mode)
-      case None                                           => routes.JourneyRecoveryController.onPageLoad()
+      case Some(_) => controllers.manual.account.routes.AccountClosedController.onPageLoad(NormalMode) // Should go to account/number when built
+      case None    => routes.JourneyRecoveryController.onPageLoad()
     }
 
   private def accountBalanceRouteLogic()(implicit reportId: ReportId) =
