@@ -60,12 +60,13 @@ class ManualSubmissionNavigator @Inject() () {
     case (IsJointAccountPage(accountId), mode, ua)     => jointAccountRouteLogic(accountId, ua)
     case (HowManyJointAccountHoldersPage(_), mode, ua) => controllers.manual.account.routes.WhatAccountTypeController.onPageLoad(mode)
     case (AccountClosedPage(accountId), mode, ua)      => accountClosedNavigation(accountId, mode, ua)
-    case (WhatWasTheAccountBalancePage(_), mode, ua)   => accountBalanceRouteLogic()
+    case (WhatWasTheAccountBalancePage(_), mode, ua)   => accountBalanceRouteLogic(mode)
     case (IsUndocumentedAccountPage(_), mode, ua)      => controllers.manual.account.routes.IsDormantAccountController.onPageLoad(NormalMode)
     case (WhatWasTheAccountCurrencyPage(_), mode, ua)  => controllers.manual.account.routes.IsUndocumentedAccountController.onPageLoad(NormalMode)
     case (IsDormantAccountPage(_), mode, ua)           => controllers.manual.account.routes.WasAccountOpenController.onPageLoad(NormalMode)
-    case (WhatAccountTypePage(_), mode, ua)            => routes.UnderConstructionController.onPageLoad()
-
+    case (WhatAccountTypePage(_), mode, ua)            => controllers.manual.account.routes.HavePaymentsController.onPageLoad(NormalMode)
+    case (HavePaymentsPage(accId), mode, ua)           => havePaymentRouteLogic(mode, ua, accId)
+    case (PaymentTypePage(accountId), mode, ua)        => paymentTypeRouteLogic(mode, ua, accountId)
   }
 
   private def NumberTypeNavigation(accountId: AccountId, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
@@ -74,10 +75,27 @@ class ManualSubmissionNavigator @Inject() () {
       case None    => routes.JourneyRecoveryController.onPageLoad()
     }
 
-  private def accountBalanceRouteLogic()(implicit reportId: ReportId) =
-    if (reportId.regime == FATCA) { routes.UnderConstructionController.onPageLoad() }
-    else if (reportId.regime == CRS) { controllers.manual.account.routes.IsUndocumentedAccountController.onPageLoad(NormalMode) }
+  private def accountBalanceRouteLogic(mode: Mode)(implicit reportId: ReportId) =
+    if (reportId.regime == FATCA) { controllers.manual.account.routes.HavePaymentsController.onPageLoad(mode) }
+    else if (reportId.regime == CRS) { controllers.manual.account.routes.IsUndocumentedAccountController.onPageLoad(mode) }
     else routes.JourneyRecoveryController.onPageLoad()
+
+  private def havePaymentRouteLogic(mode: Mode, ua: UserAnswers, accountId: AccountId)(implicit reportId: ReportId) = {
+    val hasAnyPayments = ua.get(AccountPaymentListPage(accountId)).getOrElse(Seq.empty).nonEmpty
+    ua.get(HavePaymentsPage(accountId)) match {
+      case Some(havePayment) if !havePayment => routes.UnderConstructionController.onPageLoad()
+      case Some(havePayment) if havePayment && hasAnyPayments =>
+        routes.UnderConstructionController.onPageLoad()
+      case _ =>
+        controllers.manual.account.routes.CheckAccountTypeIsDepositoryController.onChangeRedirect(mode)
+    }
+  }
+
+  private def paymentTypeRouteLogic(mode: Mode, ua: UserAnswers, accountId: AccountId)(implicit reportId: ReportId) =
+    ua.get(AccountPaymentListPage(accountId)) match {
+      case Some(payments) if payments.nonEmpty => routes.UnderConstructionController.onPageLoad()
+      case _                                   => routes.JourneyRecoveryController.onPageLoad()
+    }
 
   private def fillerNavigation: PartialFunction[(Page, Mode, UserAnswers), Call] = {
     case (WhatTypeOfFilerPage(), _, _)          => controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad()
