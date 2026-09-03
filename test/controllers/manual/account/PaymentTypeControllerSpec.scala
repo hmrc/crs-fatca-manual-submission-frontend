@@ -21,29 +21,21 @@ import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.account.PaymentTypeFormProvider
 import models.SubmissionsConstants.CRS
-import models.{NormalMode, ReportId}
+import models.manual.account.WhatAccountType.Depository
 import models.manual.account.{AccountPayment, PaymentType, WhatAccountType}
 import models.viewModels.AccountId
+import models.{NormalMode, ReportId}
+import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
+import pages.ReportIdPage
+import pages.manual.account.*
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import views.html.manual.account.PaymentTypeView
-import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
-import pages.ReportIdPage
-import pages.manual.account.{
-  AccountPaymentListPage,
-  AccountPaymentPage,
-  CurrentAccountIdPage,
-  CurrentAccountPaymentIndexPage,
-  NumberTypePage,
-  WhatAccountTypePage
-}
-import models.NumberType.Iban
-import models.manual.account.WhatAccountType.Depository
 
 import scala.concurrent.Future
 
