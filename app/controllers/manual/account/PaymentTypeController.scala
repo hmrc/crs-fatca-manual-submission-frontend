@@ -107,6 +107,7 @@ class PaymentTypeController @Inject() (
 
   private def showDividendsAndInterestRadios(accountId: AccountId, regimeType: RegimeType, ua: UserAnswers)(implicit reportId: ReportId) = {
     val accountType = ua.get(WhatAccountTypePage(accountId))
+
     if (regimeType == FATCA) false
     else {
       (!accountType.contains(InsuranceOrAnnuityContract) && !accountType.contains(InvestmentEntity))
