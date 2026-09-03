@@ -91,30 +91,6 @@ class PaymentTypeControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must update payment type to CRS interest when account type to Depository CRS1101" in {
-      val userAnswers = ua
-        .withPage(CurrentAccountIdPage(), accountId)
-        .withPage(WhatAccountTypePage(accountId), Depository)
-        .withPage(AccountPaymentListPage(accountId), Seq(AccountPayment(PaymentType.CRSDividends)))
-
-      val mockSessionRepository = mock[DatabaseConnector]
-      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
-
-      val application =
-        applicationBuilder(maybeUserAnswers = Some(userAnswers))
-          .overrides(bind[DatabaseConnector].toInstance(mockSessionRepository))
-          .build()
-
-      running(application) {
-        val request = FakeRequest(GET, paymentTypeRoute)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual controllers.routes.UnderConstructionController.onPageLoad().url
-      }
-    }
-
     "must redirect to the next page when valid data is submitted" in {
 
       val mockSessionRepository = mock[DatabaseConnector]

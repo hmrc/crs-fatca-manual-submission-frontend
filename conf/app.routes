@@ -258,3 +258,6 @@ GET        /manual/account/payments-type                         controllers.man
 POST       /manual/account/payments-type                         controllers.manual.account.PaymentTypeController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/account/change-payments-type            controllers.manual.account.PaymentTypeController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/account/change-payments-type                   controllers.manual.account.PaymentTypeController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/account/check-account-type-if-depository      controllers.manual.account.CheckAccountTypeIsDepositoryController.onChangeRedirect(mode: Mode = NormalMode)
+GET        /manual/account/change-check-account-type-if-depository      controllers.manual.account.CheckAccountTypeIsDepositoryController.onChangeRedirect(mode: Mode = CheckMode)

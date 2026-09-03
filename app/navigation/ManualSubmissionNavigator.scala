@@ -66,7 +66,7 @@ class ManualSubmissionNavigator @Inject() () {
     case (IsDormantAccountPage(_), mode, ua)           => controllers.manual.account.routes.WasAccountOpenController.onPageLoad(NormalMode)
     case (WhatAccountTypePage(_), mode, ua)            => controllers.manual.account.routes.HavePaymentsController.onPageLoad(NormalMode)
     case (HavePaymentsPage(accId), mode, ua)           => havePaymentRouteLogic(mode, ua, accId)
-    case (PaymentTypePage(accountId), mode, ua)        => paymentRouteLogic(mode, ua, accountId)
+    case (PaymentTypePage(accountId), mode, ua)        => paymentTypeRouteLogic(mode, ua, accountId)
   }
 
   private def NumberTypeNavigation(accountId: AccountId, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
@@ -86,14 +86,12 @@ class ManualSubmissionNavigator @Inject() () {
       case Some(havePayment) if !havePayment => routes.UnderConstructionController.onPageLoad()
       case Some(havePayment) if havePayment && hasAnyPayments =>
         routes.UnderConstructionController.onPageLoad()
-      case Some(havePayments) if havePayments =>
-        controllers.manual.account.routes.PaymentTypeController.onPageLoad(NormalMode)
-      case _ => controllers.manual.account.routes.PaymentTypeController.onPageLoad(mode)
+      case _ =>
+        controllers.manual.account.routes.CheckAccountTypeIsDepositoryController.onChangeRedirect(mode)
     }
-
   }
 
-  private def paymentRouteLogic(mode: Mode, ua: UserAnswers, accountId: AccountId)(implicit reportId: ReportId) =
+  private def paymentTypeRouteLogic(mode: Mode, ua: UserAnswers, accountId: AccountId)(implicit reportId: ReportId) =
     ua.get(AccountPaymentListPage(accountId)) match {
       case Some(payments) if payments.nonEmpty => routes.UnderConstructionController.onPageLoad()
       case _                                   => routes.JourneyRecoveryController.onPageLoad()
