@@ -640,3 +640,9 @@ accountPaymentsAmount.error.Amount.required = Enter Amount
 accountPaymentsAmount.error.Currency.length = Currency must be 100 characters or less
 accountPaymentsAmount.error.Amount.length = Amount must be 100 characters or less
 
+
+accountPayments.title = accountPayments
+accountPayments.heading = accountPayments
+accountPayments.checkYourAnswersLabel = accountPayments
+accountPayments.error.required = Select yes if accountPayments
+accountPayments.change.hidden = AccountPayments
