@@ -16,7 +16,6 @@
 
 package models.manual.account
 
-import models.AccountPaymentsAmount
 import play.api.libs.json.{Json, OFormat}
 
 case class AccountPayment(paymentType: PaymentType, accountPaymentsAmount: Option[AccountPaymentsAmount] = None)

@@ -24,14 +24,12 @@ import models.CrsOrFatca.Fatca
 import models.SubmissionsConstants.{CRS, FATCA}
 import models.manual.account.PaymentType.CRSInterest
 import models.manual.account.{AccountPayment, PaymentType, WasAccountOpen, WhatAccountType}
-import models.manual.account.PaymentType.CRSInterest
-import models.manual.account.{AccountPayment, PaymentType, WasAccountOpen, WhatAccountType}
-import models.manual.cpso.IndividualOrOrganisation
 import models.manual.accountHolders.IndividualName
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
+import models.manual.cpso.IndividualOrOrganisation
 import models.response.{Address, AddressLookup, Country}
-import models.viewModels.{AccountHolderId, AccountId}
 import models.viewModels.manual.cpso.CPSOId
+import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
 import pages.manual.account.*
 import pages.manual.accountHolders.{IndividualNamePage, IndividualOrOrganisationPage}
@@ -574,7 +572,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         "HavePaymentPage" - {
           implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
           val accountId                   = AccountId("TestAccountId")
-          "must go to under construction page when have payments is no" in {
+          "must go to /check-answers (under construction) page when answer is No" in {
             val ua = UserAnswers("id")
               .withPage(HavePaymentsPage(accountId), false)
 
@@ -582,7 +580,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               controllers.routes.UnderConstructionController.onPageLoad()
           }
 
-          "must go to under construction page when have payments is yes and there are payments" in {
+          "must go to /payments (under construction) page when have payments is yes and there are payments" in {
             val ua = UserAnswers("id")
               .withPage(HavePaymentsPage(accountId), true)
               .withPage(AccountPaymentListPage(accountId), Seq(AccountPayment(CRSInterest)))
@@ -591,7 +589,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               controllers.routes.UnderConstructionController.onPageLoad()
           }
 
-          "must redirected to check account is depository accountwhen have payments is yes" in {
+          "navigation must be handled by CheckAccountTypeIsDepository when have payments is yes" in {
             Seq(WhatAccountType.Custodial, WhatAccountType.InsuranceOrAnnuityContract, WhatAccountType.InvestmentEntity, WhatAccountType.NotReported)
               .foreach {
                 accountType =>
@@ -608,11 +606,11 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         "PaymentTypePage" - {
           implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
           val accountId                   = AccountId("TestAccountId")
-          "must go to UnderConstruction page" in {
+          "must go to AccountPaymentsAmount page" in {
             val ua = UserAnswers("id")
               .withPage(AccountPaymentListPage(accountId), Seq(AccountPayment(PaymentType.CRSDividends)))
             navigator.nextPage(PaymentTypePage(accountId), NormalMode, ua) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.account.routes.AccountPaymentsAmountController.onPageLoad(NormalMode)
           }
 
           "must go to JourneyRecovery page when AccountPaymentListPage is absent" in {

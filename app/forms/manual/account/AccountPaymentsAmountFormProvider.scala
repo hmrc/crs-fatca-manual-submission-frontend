@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package forms
+package forms.manual.account
 
 import forms.mappings.{Mappings, Transforms}
 import models.SubmissionsConstants.RegimeType
-import models.{AccountBalance, AccountPaymentsAmount, Currencies, Currency}
+import models.manual.account.AccountPaymentsAmount
+import models.{Currencies, Currency}
 import play.api.data.Form
 import play.api.data.Forms.*
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
@@ -28,7 +29,7 @@ import javax.inject.Inject
 class AccountPaymentsAmountFormProvider @Inject() extends Mappings with Transforms {
 
   def apply(regime: RegimeType): Form[AccountPaymentsAmount] = {
-//todo check is keys should be shared
+
     val requiredAmountError   = "whatWasTheAccountBalance.error.required.amount"
     val invalidErrorKey       = s"whatWasTheAccountBalance.error.invalid.${regime.value}"
     val minusAmountErrorKey   = "whatWasTheAccountBalance.error.minus.FATCA"

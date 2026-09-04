@@ -17,6 +17,7 @@
 @import viewmodels.InputWidth._
 @import views.html.components._
 @import models.SubmissionsConstants.RegimeType
+@import models.manual.account.PaymentType
 
 @this(
     layout: templates.Layout,
@@ -29,18 +30,18 @@
     para: Paragraph
 )
 
-@(form: Form[_], mode: Mode, regimeType: RegimeType)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, regimeType: RegimeType, paymentType: PaymentType)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("accountPaymentsAmount.title"))) {
+@layout(pageTitle = title(form, messages("accountPaymentsAmount.title", paymentType))) {
 
-    @formHelper(action = routes.AccountPaymentsAmountController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+    @formHelper(action = controllers.manual.account.routes.AccountPaymentsAmountController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
-        @heading(messages("accountPaymentsAmount.heading"))
-        @para("accountPaymentsAmount.para")
+        @heading(messages("accountPaymentsAmount.heading", paymentType))
+        @para(messages("accountPaymentsAmount.para", paymentType))
 
         @currencySelect(
             field = form("currency"),
