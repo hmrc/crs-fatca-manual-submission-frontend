@@ -604,3 +604,39 @@ whatAccountType.CRS1100 = Not reported
 whatAccountType.checkYourAnswersLabel = What type of account is this?
 whatAccountType.error.required = Select what type of account this is
 whatAccountType.change.hidden = WhatAccountType
+
+account.havePayments.crs.title = Were any payments made to this account in {0}?
+account.havePayments.fatca.title = Were any payments made to this account, a payee or an owner in {0}?
+account.havePayments.crs.heading = Were any payments made to this account in {0}?
+account.havePayments.fatca.heading = Were any payments made to this account, a payee or an owner in {0}?
+account.havePayments.checkYourAnswersLabel = havePayments
+account.havePayments.crs.error.required = Select yes if there were any payments made to this account in {0}
+account.havePayments.fatca.error.required = Select yes if there were any payments made to this account, a payee or an owner in {0}
+account.havePayments.change.hidden = HavePayments
+
+account.paymentType.title = What type of payments were these for this account?
+account.paymentType.heading = What type of payments were these for this account?
+account.paymentType.CRS501 = Dividends
+account.paymentType.FATCA501 = Dividends
+account.paymentType.CRS502 = Interest
+account.paymentType.FATCA502 = Interest
+account.paymentType.CRS503 = Gross proceeds or redemptions
+account.paymentType.FATCA503 = Gross proceeds or redemptions
+account.paymentType.CRS504 = Other
+account.paymentType.FATCA504 = Other
+account.paymentType.checkYourAnswersLabel = paymentType
+account.paymentType.error.required = Select what type of payments these were for this account
+account.paymentType.change.hidden = PaymentType
+
+accountPaymentsAmount.title = What was the total amount of these {0} payments?
+accountPaymentsAmount.heading = What was the total amount of these {0} payments?
+accountPaymentsAmount.para = You should report the total amount of all {0} payments made in the reporting year.
+accountPaymentsAmount.Currency = Currency
+accountPaymentsAmount.label.Amount = Amount
+accountPaymentsAmount.amount.hint = For example, 20124 or -112.43.
+accountPaymentsAmount.checkYourAnswersLabel = AccountPaymentsAmount
+accountPaymentsAmount.error.Currency.required = Enter Currency
+accountPaymentsAmount.error.Amount.required = Enter Amount
+accountPaymentsAmount.error.Currency.length = Currency must be 100 characters or less
+accountPaymentsAmount.error.Amount.length = Amount must be 100 characters or less
+

@@ -22,13 +22,14 @@ import controllers.routes
 import models.*
 import models.CrsOrFatca.Fatca
 import models.SubmissionsConstants.{CRS, FATCA}
-import models.manual.account.{WasAccountOpen, WhatAccountType}
-import models.manual.cpso.IndividualOrOrganisation
+import models.manual.account.PaymentType.CRSInterest
+import models.manual.account.{AccountPayment, PaymentType, WasAccountOpen, WhatAccountType}
 import models.manual.accountHolders.IndividualName
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
+import models.manual.cpso.IndividualOrOrganisation
 import models.response.{Address, AddressLookup, Country}
-import models.viewModels.{AccountHolderId, AccountId}
 import models.viewModels.manual.cpso.CPSOId
+import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
 import pages.manual.account.*
 import pages.manual.accountHolders.{IndividualNamePage, IndividualOrOrganisationPage}
@@ -292,11 +293,11 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
       }
 
       "WhatWasTheAccountBalancePage" - {
-        "must go to UNDERCONSTRUCTION page when regime is FATCA after submission" in {
+        "must go to accounts have payments page when regime is FATCA after submission" in {
           implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
           val ua                          = UserAnswers("id")
           navigator.nextPage(WhatWasTheAccountBalancePage(accountId), NormalMode, ua) mustBe
-            controllers.routes.UnderConstructionController.onPageLoad()
+            controllers.manual.account.routes.HavePaymentsController.onPageLoad(NormalMode)
         }
 
         "must go to IsUndocumentedAccount page when regime is CRS after submission" in {
@@ -494,9 +495,10 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         }
       }
       "WhatAccountType page" - {
-        "must go to Account Have Payments (UnderConstruction)" in {
+        "must go to Account Have Payments" in {
           val ua = emptyUserAnswers.withPage(WhatAccountTypePage(accountId), WhatAccountType.Custodial)
-          navigator.nextPage(WhatAccountTypePage(accountId), NormalMode, ua) mustBe controllers.routes.UnderConstructionController.onPageLoad()
+          navigator.nextPage(WhatAccountTypePage(accountId), NormalMode, ua) mustBe
+            controllers.manual.account.routes.HavePaymentsController.onPageLoad(NormalMode)
         }
       }
 
@@ -564,6 +566,57 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               .withPage(IndividualNamePage(currentAccountHolderId)(reportId), IndividualName("firstName", "lastName"))
             navigator.nextPage(IndividualNamePage(currentAccountHolderId), NormalMode, ua) mustBe
               controllers.routes.UnderConstructionController.onPageLoad()
+          }
+        }
+
+        "HavePaymentPage" - {
+          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+          val accountId                   = AccountId("TestAccountId")
+          "must go to /check-answers (under construction) page when answer is No" in {
+            val ua = UserAnswers("id")
+              .withPage(HavePaymentsPage(accountId), false)
+
+            navigator.nextPage(HavePaymentsPage(accountId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+
+          "must go to /payments (under construction) page when have payments is yes and there are payments" in {
+            val ua = UserAnswers("id")
+              .withPage(HavePaymentsPage(accountId), true)
+              .withPage(AccountPaymentListPage(accountId), Seq(AccountPayment(CRSInterest)))
+
+            navigator.nextPage(HavePaymentsPage(accountId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+
+          "navigation must be handled by CheckAccountTypeIsDepository when have payments is yes" in {
+            Seq(WhatAccountType.Custodial, WhatAccountType.InsuranceOrAnnuityContract, WhatAccountType.InvestmentEntity, WhatAccountType.NotReported)
+              .foreach {
+                accountType =>
+                  val ua = UserAnswers("id")
+                    .withPage(HavePaymentsPage(accountId), true)
+                    .withPage(WhatAccountTypePage(accountId), accountType)
+
+                  navigator.nextPage(HavePaymentsPage(accountId), NormalMode, ua) mustBe
+                    controllers.manual.account.routes.CheckAccountTypeIsDepositoryController.onChangeRedirect(NormalMode)
+              }
+          }
+        }
+
+        "PaymentTypePage" - {
+          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+          val accountId                   = AccountId("TestAccountId")
+          "must go to AccountPaymentsAmount page" in {
+            val ua = UserAnswers("id")
+              .withPage(AccountPaymentListPage(accountId), Seq(AccountPayment(PaymentType.CRSDividends)))
+            navigator.nextPage(PaymentTypePage(accountId), NormalMode, ua) mustBe
+              controllers.manual.account.routes.AccountPaymentsAmountController.onPageLoad(NormalMode)
+          }
+
+          "must go to JourneyRecovery page when AccountPaymentListPage is absent" in {
+            val ua = UserAnswers("id")
+            navigator.nextPage(PaymentTypePage(accountId), NormalMode, ua) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
           }
         }
       }
