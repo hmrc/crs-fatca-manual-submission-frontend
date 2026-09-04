@@ -22,7 +22,7 @@ import controllers.routes
 import models.*
 import models.CrsOrFatca.Fatca
 import models.SubmissionsConstants.{CRS, FATCA}
-import models.manual.account.WasAccountOpen
+import models.manual.account.{WasAccountOpen, WhatAccountType}
 import models.manual.cpso.IndividualOrOrganisation
 import models.manual.accountHolders.IndividualName
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
@@ -215,10 +215,10 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
       }
 
       "NumberTypePage" - {
-        "must go to UnderConstruction Page when when answer is No" in {
+        "must go to AccountClosed Page" in { // will go to account/number when built
           val userData = UserAnswers("id").withPage(NumberTypePage(accountId), NumberType.Iban)
           navigator.nextPage(NumberTypePage(accountId), NormalMode, userData) mustBe
-            controllers.routes.UnderConstructionController.onPageLoad()
+            controllers.manual.account.routes.AccountClosedController.onPageLoad(NormalMode)
         }
       }
 
@@ -480,11 +480,26 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           navigator.nextPage(IsJointAccountPage(accountId), NormalMode, ua) mustBe controllers.manual.account.routes.HowManyJointAccountHoldersController
             .onPageLoad(NormalMode)
         }
-        "must go to Under construction page if answered no" in {
+        "must go to WhatAccountNumber Page if answered no" in {
           val ua = emptyUserAnswers.withPage(IsJointAccountPage(accountId), false)
-          navigator.nextPage(IsJointAccountPage(accountId), NormalMode, ua) mustBe controllers.routes.UnderConstructionController.onPageLoad()
+          navigator.nextPage(IsJointAccountPage(accountId), NormalMode, ua) mustBe controllers.manual.account.routes.WhatAccountTypeController
+            .onPageLoad(NormalMode)
         }
       }
+      "HowManyJointAccountHoldersPage" - {
+        "must go to WhatAccountNumberPage" in {
+          val ua = emptyUserAnswers.withPage(HowManyJointAccountHoldersPage(accountId), 1)
+          navigator.nextPage(HowManyJointAccountHoldersPage(accountId), NormalMode, ua) mustBe controllers.manual.account.routes.WhatAccountTypeController
+            .onPageLoad(NormalMode)
+        }
+      }
+      "WhatAccountType page" - {
+        "must go to Account Have Payments (UnderConstruction)" in {
+          val ua = emptyUserAnswers.withPage(WhatAccountTypePage(accountId), WhatAccountType.Custodial)
+          navigator.nextPage(WhatAccountTypePage(accountId), NormalMode, ua) mustBe controllers.routes.UnderConstructionController.onPageLoad()
+        }
+      }
+
       "RemoveTaxResidentCountryPage" - {
         "must go to Tax Resident countries page when submitted" in {
           val ua = UserAnswers("id")

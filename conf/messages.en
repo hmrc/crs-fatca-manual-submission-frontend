@@ -594,6 +594,17 @@ cpso.individualName.fatca.error.lastName.invalid.characters.combination = Substa
 cpso.individualName.firstName.change.hidden = First name
 cpso.individualName.LastName.change.hidden = Last name
 
+whatAccountType.title = What type of account is this?
+whatAccountType.heading = What type of account is this?
+whatAccountType.CRS1101 = Depository account
+whatAccountType.CRS1102 = Custodial account
+whatAccountType.CRS1103 = Cash value insurance contract or annuity contract
+whatAccountType.CRS1104 = Debt or equity interest in investment entity
+whatAccountType.CRS1100 = Not reported
+whatAccountType.checkYourAnswersLabel = What type of account is this?
+whatAccountType.error.required = Select what type of account this is
+whatAccountType.change.hidden = WhatAccountType
+
 individualHaveDateOfBirth.title=Date of birth for the account holder
 individualHaveDateOfBirth.heading=Date of birth for the account holder
 individualHaveDateOfBirth.crs.paragraph=You must provide the date of birth for {0} for new accounts. For pre-existing accounts, you must provide the date of birth if it’s:

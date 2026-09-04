@@ -26,11 +26,11 @@ import models.viewModels.AccountId
 import pages.*
 import pages.manual.account.*
 import pages.manual.accountHolders.{IndividualNamePage, IndividualOrOrganisationPage}
+import pages.manual.cpso.IndividualNamePage
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.*
 import play.api.mvc.Call
-import pages.manual.cpso.IndividualNamePage
 
 import javax.inject.{Inject, Singleton}
 
@@ -54,17 +54,25 @@ class ManualSubmissionNavigator @Inject() () {
 
   private def accountNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
     case (HaveNumberPage(accountId), mode, ua)         => haveNumberNavigation(accountId, mode, ua)
-    case (NumberTypePage(_), mode, ua)                 => routes.UnderConstructionController.onPageLoad()
+    case (NumberTypePage(accountId), mode, ua)         => NumberTypeNavigation(accountId, mode, ua)
     case (IdentifierPage(_), mode, ua)                 => controllers.manual.account.routes.AccountClosedController.onPageLoad(mode)
     case (WasAccountOpenPage(_), mode, ua)             => controllers.manual.account.routes.IsJointAccountController.onPageLoad(mode)
     case (IsJointAccountPage(accountId), mode, ua)     => jointAccountRouteLogic(accountId, ua)
-    case (HowManyJointAccountHoldersPage(_), mode, ua) => routes.UnderConstructionController.onPageLoad()
+    case (HowManyJointAccountHoldersPage(_), mode, ua) => controllers.manual.account.routes.WhatAccountTypeController.onPageLoad(mode)
     case (AccountClosedPage(accountId), mode, ua)      => accountClosedNavigation(accountId, mode, ua)
     case (WhatWasTheAccountBalancePage(_), mode, ua)   => accountBalanceRouteLogic()
     case (IsUndocumentedAccountPage(_), mode, ua)      => controllers.manual.account.routes.IsDormantAccountController.onPageLoad(NormalMode)
     case (WhatWasTheAccountCurrencyPage(_), mode, ua)  => controllers.manual.account.routes.IsUndocumentedAccountController.onPageLoad(NormalMode)
     case (IsDormantAccountPage(_), mode, ua)           => controllers.manual.account.routes.WasAccountOpenController.onPageLoad(NormalMode)
+    case (WhatAccountTypePage(_), mode, ua)            => routes.UnderConstructionController.onPageLoad()
+
   }
+
+  private def NumberTypeNavigation(accountId: AccountId, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
+    userAnswers.get(NumberTypePage(accountId)) match {
+      case Some(_) => controllers.manual.account.routes.AccountClosedController.onPageLoad(mode)
+      case None    => routes.JourneyRecoveryController.onPageLoad()
+    }
 
   private def accountBalanceRouteLogic()(implicit reportId: ReportId) =
     if (reportId.regime == FATCA) { routes.UnderConstructionController.onPageLoad() }
@@ -83,7 +91,7 @@ class ManualSubmissionNavigator @Inject() () {
         isJointAccount =>
           if (isJointAccount) controllers.manual.account.routes.HowManyJointAccountHoldersController.onPageLoad(NormalMode)
           else
-            routes.UnderConstructionController.onPageLoad()
+            controllers.manual.account.routes.WhatAccountTypeController.onPageLoad(NormalMode)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 

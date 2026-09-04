@@ -244,6 +244,10 @@ POST       /manual/cp-so/individual-name                      controllers.manual
 GET        /manual/cp-so/change-individual-name             controllers.manual.cpso.IndividualNameController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/cp-so/change-individual-name                 controllers.manual.cpso.IndividualNameController.onSubmit(mode: Mode = CheckMode)
 
+GET         /manual/account/type                                     controllers.manual.account.WhatAccountTypeController.onPageLoad(mode: Mode = NormalMode)
+POST        /manual/account/type                                     controllers.manual.account.WhatAccountTypeController.onSubmit(mode: Mode = NormalMode)
+GET         /manual/account/change-type                              controllers.manual.account.WhatAccountTypeController.onPageLoad(mode: Mode = CheckMode)
+POST        /manual/account/change-type                              controllers.manual.account.WhatAccountTypeController.onSubmit(mode: Mode = CheckMode)
 
 GET        /manual/account-holder/individual-have-date-of-birth                          controllers.manual.accountHolders.IndividualHaveDateOfBirthController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/account-holder/individual-have-date-of-birth                          controllers.manual.accountHolders.IndividualHaveDateOfBirthController.onSubmit(mode: Mode = NormalMode)
