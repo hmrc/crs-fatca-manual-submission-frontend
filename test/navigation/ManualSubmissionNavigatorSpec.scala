@@ -31,7 +31,7 @@ import models.viewModels.{AccountHolderId, AccountId}
 import models.viewModels.manual.cpso.CPSOId
 import pages.*
 import pages.manual.account.*
-import pages.manual.accountHolders.{IndividualNamePage, IndividualOrOrganisationPage}
+import pages.manual.accountHolders.{IndividualHaveDateOfBirthPage, IndividualNamePage, IndividualOrOrganisationPage}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.*
@@ -530,40 +530,126 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
       }
 
       "accountHolderPages" - {
+
         val currentAccountHolderId = AccountHolderId("01")
+
         "IndividualOrOrganisationPage" - {
+
           "must go to UnderConstruction page when organisation is selected" in {
             val ua = UserAnswers("id")
-              .withPage(IndividualOrOrganisationPage(currentAccountHolderId)(reportId), Organisation)
-            navigator.nextPage(IndividualOrOrganisationPage(currentAccountHolderId), NormalMode, ua) mustBe
+              .withPage(
+                IndividualOrOrganisationPage(currentAccountHolderId)(reportId),
+                Organisation
+              )
+
+            navigator.nextPage(
+              IndividualOrOrganisationPage(currentAccountHolderId),
+              NormalMode,
+              ua
+            ) mustBe
               controllers.routes.UnderConstructionController.onPageLoad()
           }
 
           "must go to IndividualName page when individual is selected" in {
             val ua = UserAnswers("id")
-              .withPage(IndividualOrOrganisationPage(currentAccountHolderId)(reportId), Individual)
-            navigator.nextPage(IndividualOrOrganisationPage(currentAccountHolderId), NormalMode, ua) mustBe
-              controllers.manual.accountHolders.routes.IndividualNameController.onPageLoad(NormalMode)
+              .withPage(
+                IndividualOrOrganisationPage(currentAccountHolderId)(reportId),
+                Individual
+              )
+
+            navigator.nextPage(
+              IndividualOrOrganisationPage(currentAccountHolderId),
+              NormalMode,
+              ua
+            ) mustBe
+              controllers.manual.accountHolders.routes.IndividualNameController
+                .onPageLoad(NormalMode)
           }
 
-          "must go to Journey Recovery if IndividualOrOrganisationPage is absent" in {
+          "must go to Journey Recovery when the answer is missing" in {
             val ua = UserAnswers("id")
-            navigator.nextPage(IndividualOrOrganisationPage(currentAccountHolderId), NormalMode, ua) mustBe
-              routes.JourneyRecoveryController.onPageLoad()
-          }
 
-          "must go to JourneyRecovery page when No value is selected" in {
-            val ua = UserAnswers("id")
-            navigator.nextPage(IndividualOrOrganisationPage(currentAccountHolderId), NormalMode, ua) mustBe
+            navigator.nextPage(
+              IndividualOrOrganisationPage(currentAccountHolderId),
+              NormalMode,
+              ua
+            ) mustBe
               controllers.routes.JourneyRecoveryController.onPageLoad()
           }
         }
-        "IndividualName" - {
-          "must go to UnderConstruction page" in {
+
+        "IndividualNamePage" - {
+
+          "must go to IndividualHaveDateOfBirth page when the individual name exists" in {
             val ua = UserAnswers("id")
-              .withPage(IndividualNamePage(currentAccountHolderId)(reportId), IndividualName("firstName", "lastName"))
-            navigator.nextPage(IndividualNamePage(currentAccountHolderId), NormalMode, ua) mustBe
+              .withPage(
+                IndividualNamePage(currentAccountHolderId)(reportId),
+                IndividualName("firstName", "lastName")
+              )
+
+            navigator.nextPage(
+              IndividualNamePage(currentAccountHolderId),
+              NormalMode,
+              ua
+            ) mustBe
+              controllers.manual.accountHolders.routes.IndividualHaveDateOfBirthController
+                .onPageLoad(NormalMode)
+          }
+
+          "must go to Journey Recovery when the individual name is missing" in {
+            val ua = UserAnswers("id")
+
+            navigator.nextPage(
+              IndividualNamePage(currentAccountHolderId),
+              NormalMode,
+              ua
+            ) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
+        }
+
+        "IndividualHaveDateOfBirthPage" - {
+
+          "must go to IndividualDateOfBirth page when the answer is yes" in {
+            val ua = UserAnswers("id")
+              .withPage(
+                IndividualHaveDateOfBirthPage(currentAccountHolderId)(reportId),
+                true
+              )
+
+            navigator.nextPage(
+              IndividualHaveDateOfBirthPage(currentAccountHolderId),
+              NormalMode,
+              ua
+            ) mustBe
+              controllers.manual.accountHolders.routes.IndividualDateOfBirthController
+                .onPageLoad(NormalMode)
+          }
+
+          "must go to UnderConstruction page when the answer is no" in {
+            val ua = UserAnswers("id")
+              .withPage(
+                IndividualHaveDateOfBirthPage(currentAccountHolderId)(reportId),
+                false
+              )
+
+            navigator.nextPage(
+              IndividualHaveDateOfBirthPage(currentAccountHolderId),
+              NormalMode,
+              ua
+            ) mustBe
               controllers.routes.UnderConstructionController.onPageLoad()
+          }
+
+          "must go to Journey Recovery when the answer is missing" in {
+            val ua = UserAnswers("id")
+
+            navigator.nextPage(
+              IndividualHaveDateOfBirthPage(currentAccountHolderId),
+              NormalMode,
+              ua
+            ) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
           }
         }
       }

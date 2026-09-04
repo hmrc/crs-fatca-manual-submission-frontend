@@ -1,0 +1,144 @@
+@*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.govukfrontend.views.html.components.{DateInput, Fieldset, Hint, Legend, Text}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits.RichDateInput
+
+@this(
+        layout: templates.Layout,
+        formHelper: FormWithCSRF,
+        govukErrorSummary: GovukErrorSummary,
+        govukDateInput: GovukDateInput,
+        govukButton: GovukButton
+)
+
+@(
+        form: Form[_],
+        mode: Mode,
+        accountHolderName: String
+)(implicit request: Request[_], messages: Messages)
+
+@dateInput = @{
+
+    val baseDateInput = DateInput(
+        hint = Some(
+            Hint(
+                content = Text(messages("individualDateOfBirth.hint"))
+            )
+        ),
+        fieldset = Some(
+            Fieldset(
+                legend = Some(
+                    Legend(
+                        content = Text(
+                            messages(
+                                "individualDateOfBirth.heading",
+                                accountHolderName
+                            )
+                        ),
+                        classes = "govuk-fieldset__legend--l",
+                        isPageHeading = true
+                    )
+                )
+            )
+        )
+    ).withDayMonthYearFormField(form("value"))
+
+    val errorMessage =
+        form.errors.headOption.map(_.message)
+
+    val additionalErrorFields =
+        errorMessage match {
+            case Some("individualDateOfBirth.error.dayMonth.required") =>
+                Set("day", "month")
+
+            case Some("individualDateOfBirth.error.dayYear.required") =>
+                Set("day", "year")
+
+            case Some("individualDateOfBirth.error.monthYear.required") =>
+                Set("month", "year")
+
+            case _ =>
+                Set.empty[String]
+        }
+
+    baseDateInput.copy(
+        items = baseDateInput.items.map { item =>
+
+            val fieldName =
+                if (item.name.endsWith(".day")) {
+                    "day"
+                } else if (item.name.endsWith(".month")) {
+                    "month"
+                } else if (item.name.endsWith(".year")) {
+                    "year"
+                } else {
+                    ""
+                }
+
+            val classes =
+                if (
+                    additionalErrorFields.contains(fieldName) &&
+                            !item.classes.contains("govuk-input--error")
+                ) {
+                    s"${item.classes} govuk-input--error"
+                } else {
+                    item.classes
+                }
+
+            val autocomplete =
+                fieldName match {
+                    case "day"   => Some("bday-day")
+                    case "month" => Some("bday-month")
+                    case "year"  => Some("bday-year")
+                    case _       => item.autocomplete
+                }
+
+            item.copy(
+                classes = classes,
+                autocomplete = autocomplete
+            )
+        }
+    )
+}
+
+@layout(
+    pageTitle = title(
+        form,
+        messages(
+            "individualDateOfBirth.title",
+            accountHolderName
+        )
+    )
+) {
+
+    @formHelper(
+        action = controllers.manual.accountHolders.routes.IndividualDateOfBirthController.onSubmit(mode),
+        Symbol("autoComplete") -> "on"
+    ) {
+
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummaryViewModel(form))
+        }
+
+        @govukDateInput(dateInput)
+
+        @govukButton(
+            ButtonViewModel(messages("site.saveContinue"))
+            .withAttribute("id" -> "submit")
+        )
+    }
+}

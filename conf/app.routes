@@ -248,3 +248,13 @@ GET         /manual/account/type                                     controllers
 POST        /manual/account/type                                     controllers.manual.account.WhatAccountTypeController.onSubmit(mode: Mode = NormalMode)
 GET         /manual/account/change-type                              controllers.manual.account.WhatAccountTypeController.onPageLoad(mode: Mode = CheckMode)
 POST        /manual/account/change-type                              controllers.manual.account.WhatAccountTypeController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/account-holder/individual-have-date-of-birth                          controllers.manual.accountHolders.IndividualHaveDateOfBirthController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account-holder/individual-have-date-of-birth                          controllers.manual.accountHolders.IndividualHaveDateOfBirthController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account-holder/change-individual-have-date-of-birth                   controllers.manual.accountHolders.IndividualHaveDateOfBirthController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account-holder/change-individual-have-date-of-birth                   controllers.manual.accountHolders.IndividualHaveDateOfBirthController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/account-holder/individual-date-of-birth                          controllers.manual.accountHolders.IndividualDateOfBirthController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account-holder/individual-date-of-birth                          controllers.manual.accountHolders.IndividualDateOfBirthController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account-holder/change-individual-date-of-birth                   controllers.manual.accountHolders.IndividualDateOfBirthController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account-holder/change-individual-date-of-birth                   controllers.manual.accountHolders.IndividualDateOfBirthController.onSubmit(mode: Mode = CheckMode)
