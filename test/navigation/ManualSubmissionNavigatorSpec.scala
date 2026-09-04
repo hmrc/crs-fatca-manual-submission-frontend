@@ -22,7 +22,8 @@ import controllers.routes
 import models.*
 import models.CrsOrFatca.Fatca
 import models.SubmissionsConstants.{CRS, FATCA}
-import models.manual.account.{WasAccountOpen, WhatAccountType}
+import models.manual.account.PaymentType.CRSInterest
+import models.manual.account.{AccountPayment, PaymentType, WasAccountOpen, WhatAccountType}
 import models.manual.account.PaymentType.CRSInterest
 import models.manual.account.{AccountPayment, PaymentType, WasAccountOpen, WhatAccountType}
 import models.manual.cpso.IndividualOrOrganisation
@@ -590,7 +591,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               controllers.routes.UnderConstructionController.onPageLoad()
           }
 
-          "must go to payment type page when have payments is yes but account type is not CRS1101 (depository)" in {
+          "must redirected to check account is depository accountwhen have payments is yes" in {
             Seq(WhatAccountType.Custodial, WhatAccountType.InsuranceOrAnnuityContract, WhatAccountType.InvestmentEntity, WhatAccountType.NotReported)
               .foreach {
                 accountType =>
@@ -599,7 +600,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
                     .withPage(WhatAccountTypePage(accountId), accountType)
 
                   navigator.nextPage(HavePaymentsPage(accountId), NormalMode, ua) mustBe
-                    controllers.manual.account.routes.PaymentTypeController.onPageLoad(NormalMode)
+                    controllers.manual.account.routes.CheckAccountTypeIsDepositoryController.onChangeRedirect(NormalMode)
               }
           }
         }
