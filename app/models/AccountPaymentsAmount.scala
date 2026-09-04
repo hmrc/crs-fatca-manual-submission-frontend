@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package models.manual.account
+package models
 
-import models.AccountPaymentsAmount
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json._
 
-case class AccountPayment(paymentType: PaymentType, accountPaymentsAmount: Option[AccountPaymentsAmount] = None)
+case class AccountPaymentsAmount(currency: Currency, amount: String)
 
-object AccountPayment {
-  implicit val format: OFormat[AccountPayment] = Json.format
-
+object AccountPaymentsAmount {
+  implicit val format: OFormat[AccountPaymentsAmount] = Json.format[AccountPaymentsAmount]
 }

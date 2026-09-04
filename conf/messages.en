@@ -627,3 +627,15 @@ account.paymentType.FATCA504 = Other
 account.paymentType.checkYourAnswersLabel = paymentType
 account.paymentType.error.required = Select what type of payments these were for this account
 account.paymentType.change.hidden = PaymentType
+
+accountPaymentsAmount.title = What was the total amount of these [payments type] payments?
+accountPaymentsAmount.heading = What was the total amount of these [payments type] payments?
+accountPaymentsAmount.Currency = Currency
+accountPaymentsAmount.Amount = Amount
+accountPaymentsAmount.checkYourAnswersLabel = AccountPaymentsAmount
+accountPaymentsAmount.error.Currency.required = Enter Currency
+accountPaymentsAmount.error.Amount.required = Enter Amount
+accountPaymentsAmount.error.Currency.length = Currency must be 100 characters or less
+accountPaymentsAmount.error.Amount.length = Amount must be 100 characters or less
+accountPaymentsAmount.Currency.change.hidden = Currency
+accountPaymentsAmount.Amount.change.hidden = Amount
