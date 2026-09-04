@@ -16,23 +16,18 @@
 
 package controllers.manual.account
 
+import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.manual.account.HavePaymentsFormProvider
-
-import javax.inject.Inject
-import models.{Mode, ReportId, UserAnswers}
+import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.account.{AccountPaymentListPage, AccountPaymentPage, CurrentAccountPaymentIndexPage, HavePaymentsPage, NumberTypePage, WhatAccountTypePage}
+import pages.manual.account.HavePaymentsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import connectors.DatabaseConnector
-import models.NumberType.{Iban, Semp}
-import models.SubmissionsConstants.{CRS, RegimeType}
-import models.manual.account.{AccountPayment, PaymentType}
-import models.viewModels.AccountId
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.account.HavePaymentsView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class HavePaymentsController @Inject() (

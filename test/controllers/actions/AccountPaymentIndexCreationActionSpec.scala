@@ -29,9 +29,9 @@ import play.api.test.FakeRequest
 
 import scala.concurrent.Future
 
-class AccountPaymentIdCreationActionSpec extends SpecBase with MockitoSugar {
+class AccountPaymentIndexCreationActionSpec extends SpecBase with MockitoSugar {
 
-  class Harness extends AccountPaymentIdCreationActionImpl() {
+  class Harness extends AccountPaymentIndexCreationActionImpl() {
     def callTransform[A](request: AccountIdRequest[A]): Future[AccountPaymentIndexRequest[A]] = transform(request)
   }
 
