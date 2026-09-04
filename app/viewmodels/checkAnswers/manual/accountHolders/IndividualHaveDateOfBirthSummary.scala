@@ -17,34 +17,27 @@
 package viewmodels.checkAnswers.manual.accountHolders
 
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.accountHolders.{CurrentAccountHolderIdPage, IndividualOrOrganisationPage}
+import pages.manual.accountHolders.{CurrentAccountHolderIdPage, IndividualHaveDateOfBirthPage}
 import play.api.i18n.Messages
-import play.twirl.api.HtmlFormat
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist.*
 import viewmodels.implicits.*
 
-object individualOrOrganisationSummary {
+object IndividualHaveDateOfBirthSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
     for {
       currentAccountHolderId <- answers.get(CurrentAccountHolderIdPage()(reportId))
-      answer                 <- answers.get(IndividualOrOrganisationPage(currentAccountHolderId)(reportId))
+      answer                 <- answers.get(IndividualHaveDateOfBirthPage(currentAccountHolderId)(reportId))
     } yield
-
-      val value = ValueViewModel(
-        HtmlContent(
-          HtmlFormat.escape(messages(s"individualOrOrganisation.$answer"))
-        )
-      )
+      val value = if (answer) "site.yes" else "site.no"
 
       SummaryListRowViewModel(
-        key = "individualOrOrganisation.checkYourAnswersLabel",
-        value = value,
+        key = "individualHaveDateOfBirth.checkYourAnswersLabel",
+        value = ValueViewModel(value),
         actions = Seq(
-          ActionItemViewModel("site.change", controllers.manual.accountHolders.routes.IndividualOrOrganisationController.onPageLoad(CheckMode).url)
-            .withVisuallyHiddenText(messages("individualOrOrganisation.change.hidden"))
+          ActionItemViewModel("site.change", controllers.manual.accountHolders.routes.IndividualHaveDateOfBirthController.onPageLoad(CheckMode).url)
+            .withVisuallyHiddenText(messages("individualHaveDateOfBirth.change.hidden"))
         )
       )
 }
