@@ -25,7 +25,8 @@
     govukInput: GovukInput,
     govukButton: GovukButton,
     currencySelect: CurrencySelect,
-    heading: Heading
+    heading: Heading,
+    para: Paragraph
 )
 
 @(form: Form[_], mode: Mode, regimeType: RegimeType)(implicit request: Request[_], messages: Messages)
@@ -39,6 +40,7 @@
         }
 
         @heading(messages("accountPaymentsAmount.heading"))
+        @para("accountPaymentsAmount.para")
 
         @currencySelect(
             field = form("currency"),
@@ -49,7 +51,7 @@
         @govukInput(
             InputViewModel(
                 field = form("amount"),
-                label = LabelViewModel(messages("accountPaymentsAmount.label.amount"))
+                label = LabelViewModel(messages("accountPaymentsAmount.label.Amount"))
             )
             .withWidth(Fixed10)
             .withHint(HintViewModel(HtmlContent(messages("accountPaymentsAmount.amount.hint"))))

@@ -256,7 +256,7 @@ POST       /manual/account/change-have-payments                   controllers.ma
 
 GET        /manual/account/payments-type                         controllers.manual.account.PaymentTypeController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/account/payments-type                         controllers.manual.account.PaymentTypeController.onSubmit(mode: Mode = NormalMode)
-GET        /manual/account/change-payments-type            controllers.manual.account.PaymentTypeController.onPageLoad(mode: Mode = CheckMode)
+GET        /manual/account/change-payments-type                    controllers.manual.account.PaymentTypeController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/account/change-payments-type                   controllers.manual.account.PaymentTypeController.onSubmit(mode: Mode = CheckMode)
 
 GET        /manual/account/payments-amount                       controllers.AccountPaymentsAmountController.onPageLoad(mode: Mode = NormalMode)

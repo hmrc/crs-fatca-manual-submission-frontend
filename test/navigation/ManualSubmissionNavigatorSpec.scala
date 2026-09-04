@@ -22,6 +22,7 @@ import controllers.routes
 import models.*
 import models.CrsOrFatca.Fatca
 import models.SubmissionsConstants.{CRS, FATCA}
+import models.manual.account.{WasAccountOpen, WhatAccountType}
 import models.manual.account.PaymentType.CRSInterest
 import models.manual.account.{AccountPayment, PaymentType, WasAccountOpen, WhatAccountType}
 import models.manual.cpso.IndividualOrOrganisation

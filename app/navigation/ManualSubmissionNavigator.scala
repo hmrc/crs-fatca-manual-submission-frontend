@@ -77,6 +77,12 @@ class ManualSubmissionNavigator @Inject() () {
       case None    => routes.JourneyRecoveryController.onPageLoad()
     }
 
+  private def NumberTypeNavigation(accountId: AccountId, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
+    userAnswers.get(NumberTypePage(accountId)) match {
+      case Some(_) => controllers.manual.account.routes.AccountClosedController.onPageLoad(mode)
+      case None    => routes.JourneyRecoveryController.onPageLoad()
+    }
+
   private def accountBalanceRouteLogic(mode: Mode)(implicit reportId: ReportId) =
     if (reportId.regime == FATCA) { controllers.manual.account.routes.HavePaymentsController.onPageLoad(mode) }
     else if (reportId.regime == CRS) { controllers.manual.account.routes.IsUndocumentedAccountController.onPageLoad(mode) }
