@@ -16,11 +16,8 @@
 
 package forms
 
-import forms.behaviours.{FieldBehaviours, StringFieldBehaviours}
-import models.Currencies
-import models.SubmissionsConstants.FATCA
-import play.api.data.FormError
 import forms.behaviours.FieldBehaviours
+import forms.manual.account.AccountPaymentsAmountFormProvider
 import models.SubmissionsConstants.*
 import models.{Currencies, Currency}
 import play.api.data.FormError

@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.manual.account
 
 import connectors.DatabaseConnector
 import controllers.actions.*
-import forms.AccountPaymentsAmountFormProvider
-import models.manual.account.AccountPayment
+import forms.manual.account.AccountPaymentsAmountFormProvider
+import models.manual.account.PaymentType.CRSDividends
+import models.manual.account.{AccountPayment, AccountPaymentsAmount, PaymentType}
 import models.viewModels.AccountId
-import models.{AccountPaymentsAmount, Mode, ReportId}
+import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.AccountPaymentsAmountPage
-import pages.manual.account.AccountPaymentPage
+import pages.manual.account.{AccountPaymentPage, AccountPaymentsAmountPage, PaymentTypePage}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.AccountPaymentsAmountView
+import views.html.manual.account.AccountPaymentsAmountView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -54,13 +54,17 @@ class AccountPaymentsAmountController @Inject() (
       implicit val reportId: ReportId   = request.reportId
       implicit val accountId: AccountId = request.accountId
 
-      val preparedForm: Form[AccountPaymentsAmount] =
-        request.userAnswers
-          .get(AccountPaymentPage(request.currentIndex))
-          .flatMap(_.accountPaymentsAmount)
-          .fold(form)(form.fill)
+      request.userAnswers
+        .get(AccountPaymentPage(request.currentIndex))
+        .fold(
+          Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+        ) {
+          accountPayment =>
+            val preparedForm: Form[AccountPaymentsAmount] =
+              accountPayment.accountPaymentsAmount.fold(form)(form.fill)
 
-      Ok(view(preparedForm, mode, regime))
+            Ok(view(preparedForm, mode, regime, accountPayment.paymentType))
+        }
 
   }
 
@@ -72,26 +76,30 @@ class AccountPaymentsAmountController @Inject() (
       implicit val reportId: ReportId   = request.reportId
       implicit val accountId: AccountId = request.accountId
 
-      form
-        .bindFromRequest()
+      request.userAnswers
+        .get(AccountPaymentPage(request.currentIndex))
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, regime))),
-          value => {
-            val maybeUpdated = request.userAnswers
-              .get(AccountPaymentPage(request.currentIndex))
-              .map(_.copy(accountPaymentsAmount = Some(value)))
+          Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+        ) {
+          accountPayment =>
+            val paymentType: PaymentType = accountPayment.paymentType
 
-            maybeUpdated match {
-              case None =>
-                Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
-
-              case Some(accountPayment) =>
-                for {
-                  updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(AccountPaymentPage(request.currentIndex), accountPayment))
-                  _              <- repository.set(updatedAnswers)
-                } yield Redirect(navigator.nextPage(AccountPaymentsAmountPage(request.accountId), mode, updatedAnswers))
-            }
-          }
-        )
+            form
+              .bindFromRequest()
+              .fold(
+                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, regime, paymentType))),
+                value =>
+                  for {
+                    updatedAnswers <- Future.fromTry(
+                      request.userAnswers.setWithReportId(
+                        AccountPaymentPage(request.currentIndex),
+                        accountPayment.copy(accountPaymentsAmount = Some(value))
+                      )
+                    )
+                    _ <- repository.set(updatedAnswers)
+                  } yield Redirect(navigator.nextPage(AccountPaymentsAmountPage(request.accountId), mode, updatedAnswers))
+              )
+        }
   }
+
 }

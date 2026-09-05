@@ -21,7 +21,6 @@ import controllers.manual.reportdetails.routes.*
 import controllers.routes
 import models.*
 import models.SubmissionsConstants.{CRS, FATCA}
-import models.manual.account.WhatAccountType.Depository
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
 import models.viewModels.AccountId
 import pages.*
@@ -94,7 +93,7 @@ class ManualSubmissionNavigator @Inject() () {
 
   private def paymentTypeRouteLogic(mode: Mode, ua: UserAnswers, accountId: AccountId)(implicit reportId: ReportId) =
     ua.get(AccountPaymentListPage(accountId)) match {
-      case Some(payments) if payments.nonEmpty => routes.UnderConstructionController.onPageLoad()
+      case Some(payments) if payments.nonEmpty => controllers.manual.account.routes.AccountPaymentsAmountController.onPageLoad(NormalMode)
       case _                                   => routes.JourneyRecoveryController.onPageLoad()
     }
 

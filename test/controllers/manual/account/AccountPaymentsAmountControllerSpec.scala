@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.manual.account
 
 import base.SpecBase
 import connectors.DatabaseConnector
-import forms.AccountPaymentsAmountFormProvider
+import controllers.routes
+import forms.manual.account.AccountPaymentsAmountFormProvider
 import models.SubmissionsConstants.CRS
 import models.manual.account.PaymentType.CRSDividends
-import models.manual.account.{AccountPayment, PaymentType}
+import models.manual.account.{AccountPayment, AccountPaymentsAmount, PaymentType}
 import models.viewModels.AccountId
-import models.{AccountBalance, AccountPaymentsAmount, Currency, NormalMode, ReportId, UserAnswers}
+import models.{Currency, NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
+import pages.ReportIdPage
 import pages.manual.account.{AccountPaymentPage, CurrentAccountIdPage, CurrentAccountPaymentIndexPage}
-import pages.{AccountPaymentsAmountPage, ReportIdPage}
 import play.api.inject.bind
-import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import views.html.AccountPaymentsAmountView
+import views.html.manual.account.AccountPaymentsAmountView
 
 import scala.concurrent.Future
 
@@ -44,10 +44,11 @@ class AccountPaymentsAmountControllerSpec extends SpecBase with MockitoSugar {
   def onwardRoute = Call("GET", "/foo")
 
   private val regime       = CRS
+  private val paymentType  = PaymentType.CRSDividends
   private val formProvider = new AccountPaymentsAmountFormProvider()
   private val form         = formProvider(regime)
 
-  private lazy val accountPaymentsAmountRoute = routes.AccountPaymentsAmountController.onPageLoad(NormalMode).url
+  private lazy val accountPaymentsAmountRoute = controllers.manual.account.routes.AccountPaymentsAmountController.onPageLoad(NormalMode).url
   private val accountId                       = AccountId("TestAccountId")
 
   private val validFormData = Map(
@@ -68,7 +69,7 @@ class AccountPaymentsAmountControllerSpec extends SpecBase with MockitoSugar {
       .withPage(ReportIdPage, reportId)
       .withPage(CurrentAccountIdPage()(reportId), accountId)
       .withPage(CurrentAccountPaymentIndexPage(accountId)(reportId), 0)
-      .withPage(AccountPaymentPage(0)(reportId, accountId), AccountPayment(CRSDividends))
+      .withPage(AccountPaymentPage(0)(reportId, accountId), AccountPayment(paymentType))
 
     "must return OK and the correct view for a GET" in {
 
@@ -82,7 +83,7 @@ class AccountPaymentsAmountControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, regime)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, regime, paymentType)(request, messages(application)).toString
       }
     }
 
@@ -101,7 +102,7 @@ class AccountPaymentsAmountControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode, regime)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode, regime, paymentType)(request, messages(application)).toString
       }
     }
 
@@ -147,7 +148,7 @@ class AccountPaymentsAmountControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, regime)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, regime, paymentType)(request, messages(application)).toString
       }
     }
 

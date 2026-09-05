@@ -19,10 +19,9 @@ package controllers.manual.account
 import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.manual.account.PaymentTypeFormProvider
-import models.NumberType.{Iban, Semp}
 import models.SubmissionsConstants.{CRS, FATCA, RegimeType}
-import models.manual.account.WhatAccountType.{Depository, InsuranceOrAnnuityContract, InvestmentEntity}
-import models.manual.account.{AccountPayment, PaymentType}
+import models.manual.account.AccountPayment
+import models.manual.account.WhatAccountType.{InsuranceOrAnnuityContract, InvestmentEntity}
 import models.viewModels.AccountId
 import models.{Mode, ReportId, UserAnswers}
 import navigation.ManualSubmissionNavigator

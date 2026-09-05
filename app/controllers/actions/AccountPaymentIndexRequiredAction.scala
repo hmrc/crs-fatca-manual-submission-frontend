@@ -17,9 +17,9 @@
 package controllers.actions
 
 import controllers.routes
-import models.requests.{AccountIdRequest, AccountPaymentIndexRequest, ReportIdRequest}
+import models.requests.{AccountIdRequest, AccountPaymentIndexRequest}
 import models.viewModels.AccountId
-import pages.manual.account.{CurrentAccountIdPage, CurrentAccountPaymentIndexPage}
+import pages.manual.account.CurrentAccountPaymentIndexPage
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{ActionRefiner, Result}
 
