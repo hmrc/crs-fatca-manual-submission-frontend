@@ -19,12 +19,11 @@ package controllers.manual.account
 import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.manual.account.AccountPaymentsAmountFormProvider
-import models.manual.account.PaymentType.CRSDividends
 import models.manual.account.{AccountPayment, AccountPaymentsAmount, PaymentType}
 import models.viewModels.AccountId
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.account.{AccountPaymentPage, AccountPaymentsAmountPage, PaymentTypePage}
+import pages.manual.account.{AccountPaymentPage, AccountPaymentsAmountPage}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}

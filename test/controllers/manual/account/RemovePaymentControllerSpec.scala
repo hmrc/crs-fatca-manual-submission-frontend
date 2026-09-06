@@ -3,7 +3,7 @@ package controllers.manual.account
 import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
-import forms.manual.account.AccountPaymentsFormProvider
+import forms.manual.account.RemovePaymentFormProvider
 import models.SubmissionsConstants.CRS
 import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
@@ -11,38 +11,38 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.account.DoYouNeedToAddPaymentsPage
+import pages.manual.account.RemovePaymentPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import views.html.manual.account.AccountPaymentsView
+import views.html.manual.account.RemovePaymentView
 
 import scala.concurrent.Future
 
-class AccountPaymentsControllerSpec extends SpecBase with MockitoSugar {
+class RemovePaymentControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new AccountPaymentsFormProvider()
-  val form         = formProvider()
+  val formProvider = new RemovePaymentFormProvider()
+  val form = formProvider()
 
-  lazy val accountPaymentsRoute = controllers.manual.account.routes.AccountPaymentsController.onPageLoad(NormalMode).url
+  lazy val removePaymentRoute = controllers.manual.account.routes.RemovePaymentController.onPageLoad().url
 
-  "AccountPayments Controller" - {
+  "RemovePayment Controller" - {
 
-    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
+    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS,2025,None,"TestfiID"))
 
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
 
       running(application) {
-        val request = FakeRequest(GET, accountPaymentsRoute)
+        val request = FakeRequest(GET, removePaymentRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[AccountPaymentsView]
+        val view = application.injector.instanceOf[RemovePaymentView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
@@ -51,16 +51,16 @@ class AccountPaymentsControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
+      implicit val reportId = ReportId(CRS,2025,None,"TestfiID")
 
-      val userAnswers = ua.set(DoYouNeedToAddPaymentsPage(), true).success.value
+      val userAnswers = ua.set(RemovePaymentPage(), true).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, accountPaymentsRoute)
+        val request = FakeRequest(GET, removePaymentRoute)
 
-        val view = application.injector.instanceOf[AccountPaymentsView]
+        val view = application.injector.instanceOf[RemovePaymentView]
 
         val result = route(application, request).value
 
@@ -85,7 +85,7 @@ class AccountPaymentsControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, accountPaymentsRoute)
+          FakeRequest(POST, removePaymentRoute)
             .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
@@ -101,12 +101,12 @@ class AccountPaymentsControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, accountPaymentsRoute)
+          FakeRequest(POST, removePaymentRoute)
             .withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
 
-        val view = application.injector.instanceOf[AccountPaymentsView]
+        val view = application.injector.instanceOf[RemovePaymentView]
 
         val result = route(application, request).value
 
@@ -120,7 +120,7 @@ class AccountPaymentsControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(maybeUserAnswers = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, accountPaymentsRoute)
+        val request = FakeRequest(GET, removePaymentRoute)
 
         val result = route(application, request).value
 
@@ -135,7 +135,7 @@ class AccountPaymentsControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, accountPaymentsRoute)
+          FakeRequest(POST, removePaymentRoute)
             .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value

@@ -16,59 +16,70 @@
 
 package controllers.manual.account
 
-import controllers.actions._
+import controllers.actions.*
 import forms.manual.account.AccountPaymentsFormProvider
+
 import javax.inject.Inject
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.account.DoYouNeedToAddPaymentsPage
+import pages.manual.account.{AccountPaymentListPage, DoYouNeedToAddPaymentsPage, HavePaymentsPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import connectors.DatabaseConnector
+import models.manual.account.AccountPayment
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.account.AccountPaymentsView
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class AccountPaymentsController @Inject()(
-                                         override val messagesApi: MessagesApi,
-                                         repository: DatabaseConnector,
-                                         navigator: ManualSubmissionNavigator,
-                                         actions: Actions,
-                                         formProvider: AccountPaymentsFormProvider,
-                                         val controllerComponents: MessagesControllerComponents,
-                                         view: AccountPaymentsView
-                                 )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+class AccountPaymentsController @Inject() (
+  override val messagesApi: MessagesApi,
+  repository: DatabaseConnector,
+  navigator: ManualSubmissionNavigator,
+  actions: Actions,
+  formProvider: AccountPaymentsFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: AccountPaymentsView
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
+    with I18nSupport {
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (actions.withReportIdRequiredAndAccountIdRequired()) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdRequired() {
     implicit request =>
 
-      implicit val reportId: ReportId = request.reportId
-
+      implicit val reportId: ReportId              = request.reportId
+      val reportingPeriod                          = reportId.reportingYear.toString
+      val regime                                   = reportId.regime.value.toLowerCase()
+      val accountPaymentsList: Seq[AccountPayment] = request.userAnswers.get(AccountPaymentListPage(request.accountId)).getOrElse(Seq.empty)
       val preparedForm = request.userAnswers.get(DoYouNeedToAddPaymentsPage(request.accountId)) match {
-        case None => form
+        case None        => form
         case Some(value) => form.fill(value)
       }
 
-      Ok(view(preparedForm, mode))
+      Ok(view(preparedForm, mode, accountPaymentsList, reportingPeriod, regime))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (actions.withReportIdRequiredAndAccountIdRequired()).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdRequired().async {
     implicit request =>
 
-      implicit val reportId: ReportId = request.reportId
-
-      form.bindFromRequest().fold(
-        formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors, mode))),
-
-        value =>
-          for {
-            updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(DoYouNeedToAddPaymentsPage(request.accountId), value))
-            _              <- repository.set(updatedAnswers)
-          } yield Redirect(navigator.nextPage(DoYouNeedToAddPaymentsPage(request.accountId)), mode, updatedAnswers))
-      )
+      implicit val reportId: ReportId              = request.reportId
+      val reportingPeriod                          = reportId.reportingYear.toString
+      val regime                                   = reportId.regime.value.toLowerCase()
+      val accountPaymentsList: Seq[AccountPayment] = request.userAnswers.get(AccountPaymentListPage(request.accountId)).getOrElse(Seq.empty)
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, accountPaymentsList, reportingPeriod, regime))),
+          value =>
+            val updateHavePayments = !value && accountPaymentsList.isEmpty
+            for {
+              ua <- Future.fromTry(request.userAnswers.setWithReportId(DoYouNeedToAddPaymentsPage(request.accountId), value))
+              updatedAnswers <-
+                if (updateHavePayments) Future.fromTry(ua.setWithReportId(HavePaymentsPage(request.accountId), value)) else Future.successful(ua)
+              _ <- repository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(DoYouNeedToAddPaymentsPage(request.accountId), mode, updatedAnswers))
+        )
   }
 }

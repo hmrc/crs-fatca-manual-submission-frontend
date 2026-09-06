@@ -640,9 +640,27 @@ accountPaymentsAmount.error.Amount.required = Enter Amount
 accountPaymentsAmount.error.Currency.length = Currency must be 100 characters or less
 accountPaymentsAmount.error.Amount.length = Amount must be 100 characters or less
 
+account.payments.title.crs.no.payments = You have not added any payments made to this account
+account.payments.title.fatca.no.payments = You have not added any payments made to this account, a payee or an owner
+account.payments.title.crs.one.payments = You have added {0} payment made to this account
+account.payments.title.fatca.one.payments = You have added {0} payment made to this account, a payee or an owner
+account.payments.title.crs.more.than.one.payments = You have added {0} payments made to this account
+account.payments.title.fatca.more.than.one.payments = You have added {0} payments made to this account, a payee or an owner
 
-accountPayments.title = accountPayments
-accountPayments.heading = accountPayments
-accountPayments.checkYourAnswersLabel = accountPayments
-accountPayments.error.required = Select yes if accountPayments
-accountPayments.change.hidden = AccountPayments
+account.payments.heading.crs.no.payments = You have not added any payments made to this account
+account.payments.heading.fatca.no.payments = You have not added any payments made to this account, a payee or an owner
+account.payments.heading.crs.one.payments = You have added {0} payment made to this account
+account.payments.heading.fatca.one.payments = You have added {0} payment made to this account, a payee or an owner
+account.payments.heading.crs.more.than.one.payments = You have added {0} payments made to this account
+account.payments.heading.fatca.more.than.one.payments = You have added {0} payments made to this account, a payee or an owner
+
+account.payment.form.heading = Do you need to add more payments for {0}?
+account.payments.checkYourAnswersLabel = accountPayments
+account.payments.error.required = Select yes if accountPayments
+account.payments.change.hidden = AccountPayments
+
+removePayment.title = removePayment
+removePayment.heading = removePayment
+removePayment.checkYourAnswersLabel = removePayment
+removePayment.error.required = Select yes if removePayment
+removePayment.change.hidden = RemovePayment

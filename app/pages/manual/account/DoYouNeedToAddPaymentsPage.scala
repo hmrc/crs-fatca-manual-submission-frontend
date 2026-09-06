@@ -23,16 +23,17 @@ import pages.manual.sponsor.CurrentTaxResidentCountryIndexPage
 import play.api.libs.json.JsPath
 
 import scala.util.{Success, Try}
+
 //Todo write a test for this
 final case class DoYouNeedToAddPaymentsPage(accountId: AccountId)(implicit reportId: ReportId) extends QuestionPage[Boolean]:
 
   override def path: JsPath = JsPath \ reportId.mongoKey \ "accounts" \ accountId.value \ "doYouNeedToAddPayments"
 
   override def cleanupWithReportId(
-                                    value: Option[Boolean],
-                                    userData: UserAnswers
-                                  )(implicit reportId: ReportId): Try[UserAnswers] =
+    value: Option[Boolean],
+    userData: UserAnswers
+  )(implicit reportId: ReportId): Try[UserAnswers] =
     value match {
       case Some(true) => userData.remove(CurrentAccountPaymentIndexPage(accountId))
-      case _ => Success(userData)
+      case _          => Success(userData)
     }

@@ -271,3 +271,12 @@ GET        /manual/account/payments                        controllers.manual.ac
 POST       /manual/account/payments                        controllers.manual.account.AccountPaymentsController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/account/change-payments                  controllers.manual.account.AccountPaymentsController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/account/change-payments                  controllers.manual.account.AccountPaymentsController.onSubmit(mode: Mode = CheckMode)
+
+GET         /manual/account/payments/:id/change        controllers.manual.account.CurrentAccountPaymentIndexController.onChangeRedirect(id: Int)
+GET         /manual/account/payments/:id/remove        controllers.manual.account.CurrentAccountPaymentIndexController.onRemoveRedirect(id: Int)
+
+
+GET        /manual/account/remove-payment                        controllers.manual.account.RemovePaymentController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account/remove-payment                        controllers.manual.account.RemovePaymentController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account/remove-payment                  controllers.manual.account.RemovePaymentController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account/remove-payment                  controllers.manual.account.RemovePaymentController.onSubmit(mode: Mode = CheckMode)

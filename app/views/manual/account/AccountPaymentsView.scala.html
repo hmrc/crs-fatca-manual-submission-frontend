@@ -14,17 +14,22 @@
  * limitations under the License.
  *@
 
+@import models.manual.account.AccountPayment
+@import viewmodels.manual.account.AccountPaymentRow
+@import views.html.components._
+@import viewmodels.govuk.ThreeQuartersMainContent
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
     govukRadios: GovukRadios,
-    govukButton: GovukButton
+    govukButton: GovukButton,
+    heading: components.Heading,
 )
 
-@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, accountPaymentsList: Seq[AccountPayment], reportingPeriod: String, regime: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("accountPayments.title"))) {
+@layout(pageTitle = title(form, if (accountPaymentsList.size == 1) messages("account.payments.title.crs.one.payments", accountPaymentsList.size) else if (accountPaymentsList.size > 1) messages("account.payments.title.crs.more.than.one.payments", accountPaymentsList.size) else messages("account.payments.title.crs.no.payments")), mainContentLayout = Some(ThreeQuartersMainContent.apply _)) {
 
     @formHelper(action = controllers.manual.account.routes.AccountPaymentsController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
@@ -32,10 +37,48 @@
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
+        @heading(if(accountPaymentsList.nonEmpty) {
+            if(accountPaymentsList.size > 1) {
+                messages(s"account.payments.heading.${regime}.one.payments", accountPaymentsList.size)
+            } else {
+            messages(s"account.payments.heading.${regime}.more.than.one.payments", accountPaymentsList.size)
+            }
+        } else {
+            messages(s"account.payments.heading.${regime}.no.payments")
+        })
+
+        @if(accountPaymentsList.nonEmpty) {
+            <dl class="govuk-summary-list hmrc-list-with-actions hmrc-list-with-actions--short">
+                @for(row <- AccountPaymentRow.rows(accountPaymentsList)) {
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key govuk-!-font-weight-regular hmrc-summary-list__key" style="line-height:1.4;width:75%">
+                            @row.description
+                        </dt>
+                        <dd class="govuk-summary-list__actions hmrc-summary-list__actions" style="width:25%">
+                            <ul class="govuk-summary-list__actions-list">
+                                <li class="govuk-summary-list__actions-list-item">
+                                    <a class="govuk-link" href="@row.changeUrl">
+                                        <span aria-hidden="true" id="Change-account-payment-@{row.description}">Change</span>
+                                        <span class="govuk-visually-hidden">Change @row.description</span>
+                                    </a>
+                                </li>
+                                <li class="govuk-summary-list__actions-list-item">
+                                    <a class="govuk-link" href="@row.removeUrl">
+                                        <span aria-hidden="true" id="remove-country-@{row.description}">Remove</span>
+                                        <span class="govuk-visually-hidden">Remove @row.description</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </dd>
+                    </div>
+                }
+            </dl>
+        }
+
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = LegendViewModel(messages("accountPayments.heading")).asPageHeading()
+                legend = LegendViewModel(messages("account.payment.form.heading", reportingPeriod)).withCssClass("govuk-fieldset__legend--m")
             )
         )
 
