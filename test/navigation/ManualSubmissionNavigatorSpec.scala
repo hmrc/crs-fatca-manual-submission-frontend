@@ -22,14 +22,13 @@ import controllers.routes
 import models.*
 import models.CrsOrFatca.Fatca
 import models.SubmissionsConstants.{CRS, FATCA}
-import models.manual.account.PaymentType.CRSInterest
 import models.manual.account.{AccountPayment, PaymentType, WasAccountOpen, WhatAccountType}
-import models.manual.cpso.IndividualOrOrganisation
 import models.manual.accountHolders.IndividualName
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
+import models.manual.cpso.IndividualOrOrganisation
 import models.response.{Address, AddressLookup, Country}
-import models.viewModels.{AccountHolderId, AccountId}
 import models.viewModels.manual.cpso.CPSOId
+import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
 import pages.manual.account.*
 import pages.manual.accountHolders.{IndividualNamePage, IndividualOrOrganisationPage}
@@ -580,16 +579,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               controllers.routes.UnderConstructionController.onPageLoad()
           }
 
-          "must go to under construction page when have payments is yes and there are payments" in {
-            val ua = UserAnswers("id")
-              .withPage(HavePaymentsPage(accountId), true)
-              .withPage(AccountPaymentListPage(accountId), Seq(AccountPayment(CRSInterest)))
-
-            navigator.nextPage(HavePaymentsPage(accountId), NormalMode, ua) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
-          }
-
-          "must redirected to check account is depository accountwhen have payments is yes" in {
+          "must redirected to check account is depository account when have payments is yes" in {
             Seq(WhatAccountType.Custodial, WhatAccountType.InsuranceOrAnnuityContract, WhatAccountType.InvestmentEntity, WhatAccountType.NotReported)
               .foreach {
                 accountType =>

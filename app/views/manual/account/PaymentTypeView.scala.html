@@ -21,7 +21,9 @@
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
     govukRadios: GovukRadios,
-    govukButton: GovukButton
+    govukButton: GovukButton,
+    heading: components.Heading,
+    paragraph: components.Paragraph,
 )
 
 @(form: Form[_], mode: Mode, regimeType: RegimeType, showDividendsAndInterestRadioFields: Boolean)(implicit request: Request[_], messages: Messages)
@@ -34,10 +36,13 @@
             @govukErrorSummary(ErrorSummaryViewModel(form,  errorLinkOverrides = Map("value" -> "value_0")))
         }
 
+        @heading(messages("account.paymentType.heading"))
+        @paragraph(messages("account.paymentType.radio.title"))
+
         @govukRadios(
             RadiosViewModel(
                 field  = form("value"),
-                legend = LegendViewModel(messages("account.paymentType.heading")).asPageHeading(),
+                legend = LegendViewModel(""),
                 items  = PaymentType.options(regimeType, showDividendsAndInterestRadioFields)
             )
         )
@@ -47,4 +52,4 @@
             .withAttribute("id" -> "submit")
         )
     }
-}
+}@import views.html.components.Paragraph

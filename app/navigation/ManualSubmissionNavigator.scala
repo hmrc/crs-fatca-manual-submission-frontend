@@ -80,16 +80,12 @@ class ManualSubmissionNavigator @Inject() () {
     else if (reportId.regime == CRS) { controllers.manual.account.routes.IsUndocumentedAccountController.onPageLoad(mode) }
     else routes.JourneyRecoveryController.onPageLoad()
 
-  private def havePaymentRouteLogic(mode: Mode, ua: UserAnswers, accountId: AccountId)(implicit reportId: ReportId) = {
-    val hasAnyPayments = ua.get(AccountPaymentListPage(accountId)).getOrElse(Seq.empty).nonEmpty
+  private def havePaymentRouteLogic(mode: Mode, ua: UserAnswers, accountId: AccountId)(implicit reportId: ReportId) =
     ua.get(HavePaymentsPage(accountId)) match {
       case Some(havePayment) if !havePayment => routes.UnderConstructionController.onPageLoad()
-      case Some(havePayment) if havePayment && hasAnyPayments =>
-        routes.UnderConstructionController.onPageLoad()
       case _ =>
         controllers.manual.account.routes.CheckAccountTypeIsDepositoryController.onChangeRedirect(mode)
     }
-  }
 
   private def paymentTypeRouteLogic(mode: Mode, ua: UserAnswers, accountId: AccountId)(implicit reportId: ReportId) =
     ua.get(AccountPaymentListPage(accountId)) match {

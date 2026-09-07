@@ -21,8 +21,7 @@ import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.account.PaymentTypeFormProvider
 import models.SubmissionsConstants.CRS
-import models.manual.account.WhatAccountType.Depository
-import models.manual.account.{AccountPayment, PaymentType, WhatAccountType}
+import models.manual.account.{AccountPayment, PaymentType}
 import models.viewModels.AccountId
 import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
