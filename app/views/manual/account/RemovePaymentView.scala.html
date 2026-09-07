@@ -14,6 +14,7 @@
  * limitations under the License.
  *@
 
+@import models.manual.account.AccountPayment
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
@@ -22,9 +23,9 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, accountPayment: AccountPayment)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("removePayment.title"))) {
+@layout(pageTitle = title(form, messages("account.remove.payment.title","<amount>","<code>", messages(s"account.paymentType.${accountPayment.paymentType.toString}").toLowerCase))) {
 
     @formHelper(action = controllers.manual.account.routes.RemovePaymentController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
@@ -35,7 +36,7 @@
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = LegendViewModel(messages("removePayment.heading")).asPageHeading()
+                legend = LegendViewModel(messages("account.remove.payment.heading","<amount>","<code>",messages(s"account.paymentType.${accountPayment.paymentType.toString}").toLowerCase)).asPageHeading()
             )
         )
 

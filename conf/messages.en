@@ -659,8 +659,8 @@ account.payments.checkYourAnswersLabel = accountPayments
 account.payments.error.required = Select yes if accountPayments
 account.payments.change.hidden = AccountPayments
 
-removePayment.title = removePayment
-removePayment.heading = removePayment
-removePayment.checkYourAnswersLabel = removePayment
-removePayment.error.required = Select yes if removePayment
-removePayment.change.hidden = RemovePayment
+account.remove.payment.title = Are you sure you want to remove this {0} {1} {2} payment for this account?
+account.remove.payment.heading = Are you sure you want to remove this {0} {1} {2} payment for this account?
+account.remove.payment.checkYourAnswersLabel = removePayment
+account.remove.payment.error.required = Select yes if you are sure you want to remove this payment for this account
+account.remove.payment.change.hidden = RemovePayment

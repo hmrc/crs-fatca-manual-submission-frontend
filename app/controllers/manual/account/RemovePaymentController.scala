@@ -16,15 +16,17 @@
 
 package controllers.manual.account
 
-import controllers.actions._
+import controllers.actions.*
 import forms.manual.account.RemovePaymentFormProvider
+
 import javax.inject.Inject
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.account.RemovePaymentPage
+import pages.manual.account.{AccountPaymentPage, CurrentAccountPaymentIndexPage, RemovePaymentPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import connectors.DatabaseConnector
+import models.viewModels.AccountId
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.account.RemovePaymentView
 
@@ -34,10 +36,7 @@ class RemovePaymentController @Inject()(
                                          override val messagesApi: MessagesApi,
                                          repository: DatabaseConnector,
                                          navigator: ManualSubmissionNavigator,
-                                         identify: IdentifierAction,
-                                         getData: DataRetrievalAction,
-                                         requireData: DataRequiredAction,
-                                         reportIdAction: ReportIdRequiredAction,
+                                         actions: Actions,
                                          formProvider: RemovePaymentFormProvider,
                                          val controllerComponents: MessagesControllerComponents,
                                          view: RemovePaymentView
@@ -45,33 +44,38 @@ class RemovePaymentController @Inject()(
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (actions.withReportIdRequiredAndAccountIdRequiredAndAccountPaymentIndexRequired()) {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
+      implicit val accountId: AccountId = request.accountId
 
-      val preparedForm = request.userAnswers.get(RemovePaymentPage()) match {
-        case None => form
-        case Some(value) => form.fill(value)
+      request.userAnswers.get(AccountPaymentPage(request.currentIndex)) match {
+        case None => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+        case Some(accountPayment) =>
+          Ok(view(form, mode, accountPayment))
       }
-
-      Ok(view(preparedForm, mode))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (actions.withReportIdRequiredAndAccountIdRequiredAndAccountPaymentIndexRequired()).async {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
-
-      form.bindFromRequest().fold(
-        formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors, mode))),
-
-        value =>
-          for {
-            updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(RemovePaymentPage(), value))
-            _              <- repository.set(updatedAnswers)
-          } yield Redirect(navigator.nextPage(RemovePaymentPage(), mode, updatedAnswers))
-      )
+      implicit val accountId: AccountId = request.accountId
+      
+      request.userAnswers.get(AccountPaymentPage(request.currentIndex))
+        .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))) {
+          accountPayment =>
+            form.bindFromRequest().fold(
+              formWithErrors =>
+                Future.successful(BadRequest(view(formWithErrors, mode, accountPayment))),
+              value =>
+                val ua = request.userAnswers
+                for {
+                  _ <- repository.set(ua)
+                } yield Redirect(navigator.nextPage(RemovePaymentPage(accountId), mode, ua))
+            )
+        }
+         
   }
 }

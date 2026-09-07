@@ -21,7 +21,7 @@ import play.api.data.FormError
 
 class RemovePaymentFormProviderSpec extends BooleanFieldBehaviours {
 
-  val requiredKey = "removePayment.error.required"
+  val requiredKey = "account.remove.payment.error.required"
   val invalidKey = "error.boolean"
 
   val form = new RemovePaymentFormProvider()()

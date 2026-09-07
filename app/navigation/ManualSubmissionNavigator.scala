@@ -69,6 +69,7 @@ class ManualSubmissionNavigator @Inject() () {
     case (PaymentTypePage(accountId), mode, ua)            => paymentTypeRouteLogic(mode, ua, accountId)
     case (AccountPaymentsAmountPage(accountId), mode, ua)  => controllers.manual.account.routes.AccountPaymentsController.onPageLoad(mode)
     case (DoYouNeedToAddPaymentsPage(accountId), mode, ua) => doYouNeedToAddPaymentsRouteLogic(mode, ua, accountId)
+    case (RemovePaymentPage(accountId), mode, ua) => controllers.manual.account.routes.AccountPaymentsController.onPageLoad(mode)
   }
 
   private def NumberTypeNavigation(accountId: AccountId, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =

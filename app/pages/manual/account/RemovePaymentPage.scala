@@ -15,11 +15,11 @@
  */
 
 package pages.manual.account
-
+import models.viewModels.AccountId
 import models.ReportId
 import pages.QuestionPage
 import play.api.libs.json.JsPath
 
-final case class RemovePaymentPage()(implicit reportId: ReportId) extends QuestionPage[Boolean]:
+final case class RemovePaymentPage(accountId: AccountId)(implicit reportId: ReportId) extends QuestionPage[Boolean]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "removePayment"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "accounts" \ accountId.value \ "removePayment"
