@@ -16,15 +16,22 @@
 
 package models.manual.account
 
+import base.SpecBase
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen
-import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
+import org.scalatest.OptionValues
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
-import org.scalatest.OptionValues
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
+import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.libs.json.{JsError, JsString, Json}
+import models.manual.account.PaymentType.*
 
-class PaymentTypeSpec extends AnyFreeSpec with Matchers with ScalaCheckPropertyChecks with OptionValues {
+class PaymentTypeSpec extends SpecBase with Matchers with ScalaCheckPropertyChecks with OptionValues with GuiceOneAppPerSuite {
+
+  implicit lazy val messages: Messages =
+    app.injector.instanceOf[MessagesApi].preferred(Seq(Lang("en")))
 
   "PaymentType" - {
 
@@ -55,6 +62,27 @@ class PaymentTypeSpec extends AnyFreeSpec with Matchers with ScalaCheckPropertyC
       forAll(gen) {
         paymentType =>
           Json.toJson(paymentType) mustEqual JsString(paymentType.toString)
+      }
+    }
+
+    "PaymentType" - {
+      "must resolve the message key for each payment type" in {
+        val cases: List[(PaymentType, String)] = List(
+          CRSDividends                    -> "Dividends",
+          CRSInterest                     -> "Interest",
+          CRSGrossProceedsOrRedemptions   -> "Gross proceeds or redemptions",
+          CRSOther                        -> "Other",
+          FATCADividends                  -> "Dividends",
+          FATCAInterest                   -> "Interest",
+          FATCAGrossProceedsOrRedemptions -> "Gross proceeds or redemptions",
+          FATCAOther                      -> "Other"
+        )
+
+        cases.foreach {
+          case (paymentType, msg) =>
+            paymentType.toMessage mustBe msg
+        }
+
       }
     }
   }

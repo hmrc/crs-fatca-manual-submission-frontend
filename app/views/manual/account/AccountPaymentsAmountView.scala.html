@@ -32,7 +32,7 @@
 
 @(form: Form[_], mode: Mode, regimeType: RegimeType, paymentType: PaymentType)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("accountPaymentsAmount.title", paymentType))) {
+@layout(pageTitle = title(form, messages("accountPaymentsAmount.title", paymentType.toMessage))) {
 
     @formHelper(action = controllers.manual.account.routes.AccountPaymentsAmountController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
@@ -40,8 +40,8 @@
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
-        @heading(messages("accountPaymentsAmount.heading", paymentType))
-        @para(messages("accountPaymentsAmount.para", paymentType))
+        @heading(messages("accountPaymentsAmount.heading", paymentType.toMessage))
+        @para(messages("accountPaymentsAmount.para", paymentType.toMessage))
 
         @currencySelect(
             field = form("currency"),

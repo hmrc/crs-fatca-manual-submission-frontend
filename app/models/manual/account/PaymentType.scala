@@ -22,7 +22,11 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 
-sealed trait PaymentType
+sealed trait PaymentType {
+
+  def toMessage(implicit messages: Messages): String =
+    messages(s"account.paymentType.${this.toString}")
+}
 
 object PaymentType extends Enumerable.Implicits {
 
