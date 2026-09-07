@@ -16,6 +16,7 @@
 
 @import models.manual.account.PaymentType
 @import models.SubmissionsConstants.{RegimeType, CRS}
+@import views.html.components.Paragraph
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
@@ -52,4 +53,4 @@
             .withAttribute("id" -> "submit")
         )
     }
-}@import views.html.components.Paragraph
+}
