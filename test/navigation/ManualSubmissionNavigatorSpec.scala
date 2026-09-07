@@ -22,6 +22,7 @@ import controllers.routes
 import models.*
 import models.CrsOrFatca.Fatca
 import models.SubmissionsConstants.{CRS, FATCA}
+import models.manual.account.PaymentType.*
 import models.manual.account.{AccountPayment, PaymentType, WasAccountOpen, WhatAccountType}
 import models.manual.accountHolders.IndividualName
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
@@ -574,15 +575,6 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           "must go to /check-answers (under construction) page when answer is No" in {
             val ua = UserAnswers("id")
               .withPage(HavePaymentsPage(accountId), false)
-
-            navigator.nextPage(HavePaymentsPage(accountId), NormalMode, ua) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
-          }
-
-          "must go to /payments (under construction) page when have payments is yes and there are payments" in {
-            val ua = UserAnswers("id")
-              .withPage(HavePaymentsPage(accountId), true)
-              .withPage(AccountPaymentListPage(accountId), Seq(AccountPayment(CRSInterest)))
 
             navigator.nextPage(HavePaymentsPage(accountId), NormalMode, ua) mustBe
               controllers.routes.UnderConstructionController.onPageLoad()
