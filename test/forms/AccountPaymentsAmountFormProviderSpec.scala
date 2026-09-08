@@ -24,7 +24,6 @@ import play.api.data.FormError
 
 class AccountPaymentsAmountFormProviderSpec extends FieldBehaviours {
 
-//todo check if keys should be shared
   private val currency                   = Currencies.all(FATCA).head
   private val requiredCurrencyKey        = "whatWasTheAccountBalance.error.required.currency"
   private val requiredAmountKey          = "whatWasTheAccountBalance.error.required.amount"

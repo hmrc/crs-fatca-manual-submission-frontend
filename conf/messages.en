@@ -655,7 +655,8 @@ account.payments.heading.fatca.one.payments = You have added {0} payment made to
 account.payments.heading.crs.more.than.one.payments = You have added {0} payments made to this account
 account.payments.heading.fatca.more.than.one.payments = You have added {0} payments made to this account, a payee or an owner
 
-account.payment.form.heading = Do you need to add more payments for {0}?
+account.payment.form.with.payments.heading = Do you need to add more payments for {0}?
+account.payment.form.no.payments.heading = Do you need to add payments for {0}?
 account.payments.checkYourAnswersLabel = accountPayments
 account.payments.has.no.payments.error.required = Select yes if you need to add payments
 account.payments.has.payments.error.required = Select yes if you need to add more payments

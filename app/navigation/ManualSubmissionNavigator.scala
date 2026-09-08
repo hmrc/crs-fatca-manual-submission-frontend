@@ -103,7 +103,7 @@ class ManualSubmissionNavigator @Inject() () {
   private def doYouNeedToAddPaymentsRouteLogic(mode: Mode, ua: UserAnswers, accountId: AccountId)(implicit reportId: ReportId) =
     ua.get(DoYouNeedToAddPaymentsPage(accountId)) match {
       case Some(true) =>
-        controllers.manual.account.routes.CheckAccountTypeIsDepositoryController.onChangeRedirect(CheckMode)
+        controllers.manual.account.routes.CheckAccountTypeIsDepositoryController.onChangeRedirect(mode)
       case _ => routes.UnderConstructionController.onPageLoad()
     }
 
