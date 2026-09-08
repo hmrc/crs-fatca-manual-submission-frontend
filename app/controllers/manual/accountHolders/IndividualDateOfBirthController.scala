@@ -22,6 +22,7 @@ import forms.manual.accountHolders.IndividualDateOfBirthFormProvider
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
 import pages.manual.accountHolders.{IndividualDateOfBirthPage, IndividualNamePage}
+import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -40,7 +41,7 @@ class IndividualDateOfBirthController @Inject() (
   view: IndividualDateOfBirthView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport with Logging {
 
   val form = formProvider()
 
@@ -71,6 +72,7 @@ class IndividualDateOfBirthController @Inject() (
             )
 
           case None =>
+            logger.error("Mandatory individual name is missing from User Answers")
             Redirect(
               controllers.routes.JourneyRecoveryController.onPageLoad()
             )
@@ -120,8 +122,8 @@ class IndividualDateOfBirthController @Inject() (
                     )
                   )
               )
-
           case None =>
+            logger.error("Mandatory individual name is missing from User Answers")
             Future.successful(
               Redirect(
                 controllers.routes.JourneyRecoveryController.onPageLoad()
