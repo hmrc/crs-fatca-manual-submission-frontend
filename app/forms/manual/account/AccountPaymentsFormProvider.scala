@@ -23,8 +23,10 @@ import play.api.data.Form
 
 class AccountPaymentsFormProvider @Inject() extends Mappings {
 
-  def apply(): Form[Boolean] =
+  def apply(accountPaymentListSize: Int): Form[Boolean] =
     Form(
-      "value" -> boolean("accountPayments.error.required")
+      "value" -> boolean(
+        s"${if (accountPaymentListSize > 0) "account.payments.has.payments.error.required" else "account.payments.has.no.payments.error.required"}"
+      )
     )
 }

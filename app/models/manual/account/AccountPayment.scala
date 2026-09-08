@@ -16,9 +16,19 @@
 
 package models.manual.account
 
+import forms.mappings.Transforms
 import play.api.libs.json.{Json, OFormat}
 
-case class AccountPayment(paymentType: PaymentType, accountPaymentsAmount: Option[AccountPaymentsAmount] = None)
+case class AccountPayment(paymentType: PaymentType, accountPaymentsAmount: Option[AccountPaymentsAmount] = None) extends Transforms {
+
+  def paymentsAmountDescription(): String =
+    accountPaymentsAmount
+      .map {
+        paymentAmount =>
+          s"${formatLargeNumber(paymentAmount.amount)} ${paymentAmount.currency.code}"
+      }
+      .getOrElse("")
+}
 
 object AccountPayment {
   implicit val format: OFormat[AccountPayment] = Json.format

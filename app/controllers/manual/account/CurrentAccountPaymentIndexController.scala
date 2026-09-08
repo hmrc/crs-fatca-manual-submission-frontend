@@ -20,7 +20,7 @@ import connectors.DatabaseConnector
 import controllers.actions.*
 import models.requests.AccountIdRequest
 import models.{CheckMode, ReportId}
-import pages.manual.account.{CurrentAccountPaymentIndexPage, AccountPaymentListPage}
+import pages.manual.account.{AccountPaymentListPage, CurrentAccountPaymentIndexPage}
 import play.api.Logging
 import play.api.i18n.I18nSupport
 import play.api.mvc.Results.Redirect
@@ -30,7 +30,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CurrentAccountPaymentIndexController @Inject()(
+class CurrentAccountPaymentIndexController @Inject() (
   repository: DatabaseConnector,
   actions: Actions,
   val controllerComponents: MessagesControllerComponents

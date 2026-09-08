@@ -22,7 +22,7 @@ import forms.manual.account.AccountPaymentsFormProvider
 import javax.inject.Inject
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.account.{AccountPaymentListPage, DoYouNeedToAddPaymentsPage, HavePaymentsPage}
+import pages.manual.account.{AccountPaymentListPage, DoYouNeedToAddPaymentsPage, HavePaymentsPage, PaymentsAddedPreviouslyPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import connectors.DatabaseConnector
@@ -44,8 +44,6 @@ class AccountPaymentsController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  val form = formProvider()
-
   def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdRequired() {
     implicit request =>
 
@@ -53,12 +51,19 @@ class AccountPaymentsController @Inject() (
       val reportingPeriod                          = reportId.reportingYear.toString
       val regime                                   = reportId.regime.value.toLowerCase()
       val accountPaymentsList: Seq[AccountPayment] = request.userAnswers.get(AccountPaymentListPage(request.accountId)).getOrElse(Seq.empty)
-      val preparedForm = request.userAnswers.get(DoYouNeedToAddPaymentsPage(request.accountId)) match {
-        case None        => form
-        case Some(value) => form.fill(value)
+      val paymentsAddedPreviously = request.userAnswers.get(PaymentsAddedPreviouslyPage(request.accountId)).exists(_ == true)
+      val form                                     = formProvider(accountPaymentsList.size)
+      val lastAccountNotComplete:Boolean = accountPaymentsList.lastOption.exists(_.accountPaymentsAmount.isEmpty)
+      (paymentsAddedPreviously, accountPaymentsList.isEmpty) match {
+        case (false, true)  => Redirect(controllers.manual.account.routes.PaymentTypeController.onPageLoad(mode))
+        case (false, false) if lastAccountNotComplete => Redirect(controllers.manual.account.routes.CurrentAccountPaymentIndexController.onChangeRedirect(accountPaymentsList.size - 1))
+        case _ =>
+          val preparedForm = request.userAnswers.get(DoYouNeedToAddPaymentsPage(request.accountId)) match {
+            case None        => form
+            case Some(value) => form.fill(value)
+          }
+          Ok(view(preparedForm, mode, accountPaymentsList, reportingPeriod, regime))
       }
-
-      Ok(view(preparedForm, mode, accountPaymentsList, reportingPeriod, regime))
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdRequired().async {
@@ -68,6 +73,7 @@ class AccountPaymentsController @Inject() (
       val reportingPeriod                          = reportId.reportingYear.toString
       val regime                                   = reportId.regime.value.toLowerCase()
       val accountPaymentsList: Seq[AccountPayment] = request.userAnswers.get(AccountPaymentListPage(request.accountId)).getOrElse(Seq.empty)
+      val form                                     = formProvider(accountPaymentsList.size)
       form
         .bindFromRequest()
         .fold(

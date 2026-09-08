@@ -23,14 +23,14 @@ case class AccountPaymentRow(description: String, changeUrl: String, removeUrl: 
 
 object AccountPaymentRow {
 
-  def rows(accountPaymentList: Seq[AccountPayment])(implicit messages: Messages) = {
+  def rows(accountPaymentList: Seq[AccountPayment])(implicit messages: Messages) =
     accountPaymentList.zipWithIndex.map {
       case (accountPayment, index) =>
         val description = accountPayment.accountPaymentsAmount match {
-          case Some(amount) =>
-            s"${amount.amount}  ${amount.currency.code} ${messages(s"account.paymentType.${accountPayment.paymentType.toString}")} "
+          case Some(_) =>
+            s"${accountPayment.paymentsAmountDescription()} ${messages(s"account.paymentType.${accountPayment.paymentType.toString}").toLowerCase}"
           case None =>
-            messages(s"account.paymentType.${accountPayment.paymentType.toString}")
+            s"${messages(s"account.paymentType.${accountPayment.paymentType.toString}")} incomplete"
         }
         AccountPaymentRow(
           description,
@@ -38,8 +38,5 @@ object AccountPaymentRow {
           controllers.manual.account.routes.CurrentAccountPaymentIndexController.onRemoveRedirect(index).url
         )
 
-
-
     }
-  }
 }

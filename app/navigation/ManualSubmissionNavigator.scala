@@ -69,7 +69,7 @@ class ManualSubmissionNavigator @Inject() () {
     case (PaymentTypePage(accountId), mode, ua)            => paymentTypeRouteLogic(mode, ua, accountId)
     case (AccountPaymentsAmountPage(accountId), mode, ua)  => controllers.manual.account.routes.AccountPaymentsController.onPageLoad(mode)
     case (DoYouNeedToAddPaymentsPage(accountId), mode, ua) => doYouNeedToAddPaymentsRouteLogic(mode, ua, accountId)
-    case (RemovePaymentPage(accountId), mode, ua) => controllers.manual.account.routes.AccountPaymentsController.onPageLoad(mode)
+    case (RemovePaymentPage(accountId), mode, ua)          => controllers.manual.account.routes.AccountPaymentsController.onPageLoad(mode)
   }
 
   private def NumberTypeNavigation(accountId: AccountId, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
@@ -103,7 +103,7 @@ class ManualSubmissionNavigator @Inject() () {
   private def doYouNeedToAddPaymentsRouteLogic(mode: Mode, ua: UserAnswers, accountId: AccountId)(implicit reportId: ReportId) =
     ua.get(DoYouNeedToAddPaymentsPage(accountId)) match {
       case Some(true) =>
-        controllers.manual.account.routes.CheckAccountTypeIsDepositoryController.onChangeRedirect(CheckMode) // this should go to check if depository
+        controllers.manual.account.routes.CheckAccountTypeIsDepositoryController.onChangeRedirect(CheckMode)
       case _ => routes.UnderConstructionController.onPageLoad()
     }
 

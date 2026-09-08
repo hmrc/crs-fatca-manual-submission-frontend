@@ -586,7 +586,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               .withPage(AccountPaymentListPage(accountId), Seq(AccountPayment(CRSInterest)))
 
             navigator.nextPage(HavePaymentsPage(accountId), NormalMode, ua) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.account.routes.AccountPaymentsController.onPageLoad(NormalMode)
           }
 
           "navigation must be handled by CheckAccountTypeIsDepository when have payments is yes" in {

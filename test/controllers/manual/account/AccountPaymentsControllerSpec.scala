@@ -21,17 +21,21 @@ import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.account.AccountPaymentsFormProvider
 import models.SubmissionsConstants.CRS
-import models.{NormalMode, ReportId}
+import models.manual.account.{AccountPayment, AccountPaymentsAmount}
+import models.manual.account.PaymentType.CRSInterest
+import models.*
+import models.viewModels.AccountId
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.account.DoYouNeedToAddPaymentsPage
+import pages.manual.account.{AccountIdPage, AccountPaymentListPage, CurrentAccountIdPage, DoYouNeedToAddPaymentsPage, PaymentsAddedPreviouslyPage}
 import play.api.inject.bind
-import play.api.mvc.Call
+import play.api.mvc.{Call, Flash}
+import play.api.mvc.ControllerHelpers.request2flash
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import views.html.manual.account.AccountPaymentsView
 
 import scala.concurrent.Future
@@ -41,17 +45,24 @@ class AccountPaymentsControllerSpec extends SpecBase with MockitoSugar {
   def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new AccountPaymentsFormProvider()
-  val form         = formProvider()
+  val form         = formProvider(0)
 
   lazy val accountPaymentsRoute = controllers.manual.account.routes.AccountPaymentsController.onPageLoad(NormalMode).url
 
   "AccountPayments Controller" - {
-
+    implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
+    val currency = Currency(code = "VED", displayName = "Venezuelan Bolivar (VED)")
+    val accountPaymentList = Seq(AccountPayment(CRSInterest, Some(AccountPaymentsAmount(currency, "1000"))))
+    val regimeType = "crs"
+    val accountId: AccountId = AccountId("TestAccountId")
+    val reportingPeriod = "2025"
     val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
+      .withPage(CurrentAccountIdPage(), accountId)
 
     "must return OK and the correct view for a GET" in {
-
-      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+      val userAnswers = ua.withPage(PaymentsAddedPreviouslyPage(accountId), true)
+        .withPage(AccountPaymentListPage(accountId), accountPaymentList)
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, accountPaymentsRoute)
@@ -61,15 +72,43 @@ class AccountPaymentsControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[AccountPaymentsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, accountPaymentList, reportingPeriod, regimeType)(request, messages(application), Flash()).toString
+      }
+    }
+
+    "must redirect to PaymentTypeController when there are no previous added payments and accountPayment list is empty" in {
+        val userAnswers = ua.withPage(AccountPaymentListPage(accountId), Seq.empty)
+        val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
+
+        running(application) {
+            val request = FakeRequest(GET, accountPaymentsRoute)
+
+            val result = route(application, request).value
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual controllers.manual.account.routes.PaymentTypeController.onPageLoad(NormalMode).url
+        }
+    }
+
+    "must redirect to CurrentAccountPaymentIndexController when there are no previous added payments and the last account payment is not complete" in {
+      val incompleteAccountPaymentList = Seq(AccountPayment(CRSInterest, None))
+      val userAnswers = ua.withPage(AccountPaymentListPage(accountId), incompleteAccountPaymentList)
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, accountPaymentsRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.manual.account.routes.CurrentAccountPaymentIndexController.onChangeRedirect(incompleteAccountPaymentList.size - 1).url
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-
-      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
-
-      val userAnswers = ua.set(DoYouNeedToAddPaymentsPage(), true).success.value
+      val userAnswers = ua.withPage(DoYouNeedToAddPaymentsPage(accountId), true)
+        .withPage(PaymentsAddedPreviouslyPage(accountId), true)
+        .withPage(AccountPaymentListPage(accountId), accountPaymentList)
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
@@ -81,7 +120,7 @@ class AccountPaymentsControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode, accountPaymentList, reportingPeriod, regimeType)(request, messages(application), Flash()).toString
       }
     }
 
@@ -112,22 +151,25 @@ class AccountPaymentsControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
-
-      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+      val contextForm = formProvider(accountPaymentList.size)
+      val userAnswers = ua.withPage(DoYouNeedToAddPaymentsPage(accountId), true)
+        .withPage(PaymentsAddedPreviouslyPage(accountId), true)
+        .withPage(AccountPaymentListPage(accountId), accountPaymentList)
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
         val request =
           FakeRequest(POST, accountPaymentsRoute)
             .withFormUrlEncodedBody(("value", ""))
 
-        val boundForm = form.bind(Map("value" -> ""))
+        val boundForm = contextForm.bind(Map("value" -> ""))
 
         val view = application.injector.instanceOf[AccountPaymentsView]
 
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, accountPaymentList, reportingPeriod, regimeType)(request, messages(application), Flash()).toString
       }
     }
 

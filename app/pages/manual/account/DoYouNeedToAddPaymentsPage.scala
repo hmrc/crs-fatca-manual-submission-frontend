@@ -16,15 +16,13 @@
 
 package pages.manual.account
 
-import models.{ReportId, UserAnswers}
 import models.viewModels.AccountId
+import models.{ReportId, UserAnswers}
 import pages.QuestionPage
-import pages.manual.sponsor.CurrentTaxResidentCountryIndexPage
 import play.api.libs.json.JsPath
 
 import scala.util.{Success, Try}
 
-//Todo write a test for this
 final case class DoYouNeedToAddPaymentsPage(accountId: AccountId)(implicit reportId: ReportId) extends QuestionPage[Boolean]:
 
   override def path: JsPath = JsPath \ reportId.mongoKey \ "accounts" \ accountId.value \ "doYouNeedToAddPayments"

@@ -15,6 +15,7 @@
  */
 
 package pages.manual.account
+
 import models.viewModels.AccountId
 import models.ReportId
 import pages.QuestionPage

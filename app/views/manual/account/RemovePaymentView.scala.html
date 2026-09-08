@@ -25,7 +25,7 @@
 
 @(form: Form[_], mode: Mode, accountPayment: AccountPayment)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("account.remove.payment.title","<amount>","<code>", messages(s"account.paymentType.${accountPayment.paymentType.toString}").toLowerCase))) {
+@layout(pageTitle = title(form, messages("account.remove.payment.title",accountPayment.paymentsAmountDescription(), messages(s"account.paymentType.${accountPayment.paymentType.toString}").toLowerCase))) {
 
     @formHelper(action = controllers.manual.account.routes.RemovePaymentController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
@@ -36,7 +36,7 @@
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = LegendViewModel(messages("account.remove.payment.heading","<amount>","<code>",messages(s"account.paymentType.${accountPayment.paymentType.toString}").toLowerCase)).asPageHeading()
+                legend = LegendViewModel(messages("account.remove.payment.heading", accountPayment.paymentsAmountDescription(),messages(s"account.paymentType.${accountPayment.paymentType.toString}").toLowerCase)).asPageHeading()
             )
         )
 

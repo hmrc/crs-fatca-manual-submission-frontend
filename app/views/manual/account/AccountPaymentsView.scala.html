@@ -25,14 +25,18 @@
     govukRadios: GovukRadios,
     govukButton: GovukButton,
     heading: components.Heading,
+    notificationBanner: views.html.components.SuccessNotificationBanner
 )
 
-@(form: Form[_], mode: Mode, accountPaymentsList: Seq[AccountPayment], reportingPeriod: String, regime: String)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, accountPaymentsList: Seq[AccountPayment], reportingPeriod: String, regime: String)(implicit request: Request[_], messages: Messages, flash: Flash)
 
 @layout(pageTitle = title(form, if (accountPaymentsList.size == 1) messages("account.payments.title.crs.one.payments", accountPaymentsList.size) else if (accountPaymentsList.size > 1) messages("account.payments.title.crs.more.than.one.payments", accountPaymentsList.size) else messages("account.payments.title.crs.no.payments")), mainContentLayout = Some(ThreeQuartersMainContent.apply _)) {
 
     @formHelper(action = controllers.manual.account.routes.AccountPaymentsController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
+        @flash.get("account-payment-removed").map { message =>
+            @notificationBanner(messages("account.payments.removed", message))
+        }
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
