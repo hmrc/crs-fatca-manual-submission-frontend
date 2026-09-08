@@ -65,8 +65,8 @@ class ViewSubmissionsController @Inject() (
       } yield Ok(view(cards, chosenYear, fiName, submissionYears, fiId)))
         .getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
         .recover {
-          case _ =>
-            logger.error(s"no data found for $fiId")
+          case e =>
+            logger.error(s"no data found for $fiId ${e.getMessage}")
             Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
 
         }

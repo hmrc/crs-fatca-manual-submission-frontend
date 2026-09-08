@@ -17,7 +17,7 @@
 package connectors
 
 import models.ServiceErrors.NoFiDetailFound
-import models.ViewFIDetailsResponse
+import models.response.ViewFIDetailsResponse
 import org.scalatest.matchers.must.Matchers.mustBe
 import org.scalatest.time.SpanSugar.convertIntToGrainOfTime
 import play.api.http.Status.{MULTI_STATUS, OK, UNPROCESSABLE_ENTITY}
@@ -54,7 +54,7 @@ class FinancialInstitutionsConnectorISpec extends ISpecBase {
             "SubscriptionID" -> "SUB001",
             "TINDetails" -> Json.arr(
               Json.obj(
-                "TINType"  -> "EIN",
+                "TINType"  -> "TURN",
                 "TIN"      -> "12-3456789",
                 "IssuedBy" -> "US"
               )
