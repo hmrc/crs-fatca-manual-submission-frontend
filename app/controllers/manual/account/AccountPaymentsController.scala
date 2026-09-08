@@ -51,12 +51,13 @@ class AccountPaymentsController @Inject() (
       val reportingPeriod                          = reportId.reportingYear.toString
       val regime                                   = reportId.regime.value.toLowerCase()
       val accountPaymentsList: Seq[AccountPayment] = request.userAnswers.get(AccountPaymentListPage(request.accountId)).getOrElse(Seq.empty)
-      val paymentsAddedPreviously = request.userAnswers.get(PaymentsAddedPreviouslyPage(request.accountId)).exists(_ == true)
+      val paymentsAddedPreviously                  = request.userAnswers.get(PaymentsAddedPreviouslyPage(request.accountId)).exists(_ == true)
       val form                                     = formProvider(accountPaymentsList.size)
-      val lastAccountNotComplete:Boolean = accountPaymentsList.lastOption.exists(_.accountPaymentsAmount.isEmpty)
+      val lastAccountNotComplete: Boolean          = accountPaymentsList.lastOption.exists(_.accountPaymentsAmount.isEmpty)
       (paymentsAddedPreviously, accountPaymentsList.isEmpty) match {
-        case (false, true)  => Redirect(controllers.manual.account.routes.PaymentTypeController.onPageLoad(mode))
-        case (false, false) if lastAccountNotComplete => Redirect(controllers.manual.account.routes.CurrentAccountPaymentIndexController.onChangeRedirect(accountPaymentsList.size - 1))
+        case (false, true) => Redirect(controllers.manual.account.routes.PaymentTypeController.onPageLoad(mode))
+        case (false, false) if lastAccountNotComplete =>
+          Redirect(controllers.manual.account.routes.CurrentAccountPaymentIndexController.onChangeRedirect(accountPaymentsList.size - 1))
         case _ =>
           val preparedForm = request.userAnswers.get(DoYouNeedToAddPaymentsPage(request.accountId)) match {
             case None        => form

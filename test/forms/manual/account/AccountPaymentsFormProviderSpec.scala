@@ -21,27 +21,28 @@ import play.api.data.FormError
 
 class AccountPaymentsFormProviderSpec extends BooleanFieldBehaviours {
 
-  val requiredKey = Seq("account.payments.has.no.payments.error.required","account.payments.has.payments.error.required")
+  val requiredKey = Seq("account.payments.has.no.payments.error.required", "account.payments.has.payments.error.required")
   val invalidKey  = "error.boolean"
 
   ".value" - {
-    Seq(0, 1).foreach { accountPaymentListSize =>
-      s"when accountPaymentListSize is $accountPaymentListSize" - {
-        val form = new AccountPaymentsFormProvider()(accountPaymentListSize)
-        val fieldName = "value"
+    Seq(0, 1).foreach {
+      accountPaymentListSize =>
+        s"when accountPaymentListSize is $accountPaymentListSize" - {
+          val form      = new AccountPaymentsFormProvider()(accountPaymentListSize)
+          val fieldName = "value"
 
-        behave like booleanField(
-          form,
-          fieldName,
-          invalidError = FormError(fieldName, invalidKey)
-        )
+          behave like booleanField(
+            form,
+            fieldName,
+            invalidError = FormError(fieldName, invalidKey)
+          )
 
-        behave like mandatoryField(
-          form,
-          fieldName,
-          requiredError = FormError(fieldName, requiredKey(accountPaymentListSize))
-        )
-      }
+          behave like mandatoryField(
+            form,
+            fieldName,
+            requiredError = FormError(fieldName, requiredKey(accountPaymentListSize))
+          )
+        }
     }
   }
 }

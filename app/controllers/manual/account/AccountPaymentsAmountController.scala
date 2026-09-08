@@ -95,8 +95,8 @@ class AccountPaymentsAmountController @Inject() (
                         accountPayment.copy(accountPaymentsAmount = Some(value))
                       )
                     )
-                    updatedAnswers <- Future.fromTry(ua.setWithReportId(PaymentsAddedPreviouslyPage(request.accountId),true))
-                    _ <- repository.set(updatedAnswers)
+                    updatedAnswers <- Future.fromTry(ua.setWithReportId(PaymentsAddedPreviouslyPage(request.accountId), true))
+                    _              <- repository.set(updatedAnswers)
                   } yield Redirect(navigator.nextPage(AccountPaymentsAmountPage(request.accountId), mode, updatedAnswers))
               )
         }

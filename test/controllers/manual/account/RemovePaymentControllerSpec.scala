@@ -45,22 +45,24 @@ class RemovePaymentControllerSpec extends SpecBase with MockitoSugar {
   def onwardRoute = Call("GET", "/foo")
 
   implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
-  val accountId: AccountId = AccountId("TestAccountId")
-  val formProvider = new RemovePaymentFormProvider()
-  val form         = formProvider()
-  val currency = Currency(code = "VED", displayName = "Venezuelan Bolivar (VED)")
-  val accountPayment = AccountPayment(CRSInterest, Some(AccountPaymentsAmount(currency, "1000")))
-  val accountPaymentList = Seq(AccountPayment(CRSInterest, Some(AccountPaymentsAmount(currency, "1000"))))
-  lazy val removePaymentRoute = controllers.manual.account.routes.RemovePaymentController.onPageLoad(CheckMode).url
+  val accountId: AccountId        = AccountId("TestAccountId")
+  val formProvider                = new RemovePaymentFormProvider()
+  val form                        = formProvider()
+  val currency                    = Currency(code = "VED", displayName = "Venezuelan Bolivar (VED)")
+  val accountPayment              = AccountPayment(CRSInterest, Some(AccountPaymentsAmount(currency, "1000")))
+  val accountPaymentList          = Seq(AccountPayment(CRSInterest, Some(AccountPaymentsAmount(currency, "1000"))))
+  lazy val removePaymentRoute     = controllers.manual.account.routes.RemovePaymentController.onPageLoad(CheckMode).url
 
   "RemovePayment Controller" - {
 
-    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
+    val ua = emptyUserAnswers
+      .withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
       .withPage(CurrentAccountIdPage(), accountId)
 
     "must return OK and the correct view for a GET" in {
-      val useranswers = ua.withPage(CurrentAccountPaymentIndexPage(accountId), 0)
-      .withPage(AccountPaymentListPage(accountId), accountPaymentList)
+      val useranswers = ua
+        .withPage(CurrentAccountPaymentIndexPage(accountId), 0)
+        .withPage(AccountPaymentListPage(accountId), accountPaymentList)
 
       val application = applicationBuilder(maybeUserAnswers = Some(useranswers)).build()
 
@@ -77,7 +79,8 @@ class RemovePaymentControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to the next page when valid data is submitted" in {
-      val useranswers = ua.withPage(CurrentAccountPaymentIndexPage(accountId), 0)
+      val useranswers = ua
+        .withPage(CurrentAccountPaymentIndexPage(accountId), 0)
         .withPage(AccountPaymentListPage(accountId), accountPaymentList)
       val mockSessionRepository = mock[DatabaseConnector]
 
@@ -105,7 +108,8 @@ class RemovePaymentControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to the next page when no is selected and flash message is not populated" in {
-      val useranswers = ua.withPage(CurrentAccountPaymentIndexPage(accountId), 0)
+      val useranswers = ua
+        .withPage(CurrentAccountPaymentIndexPage(accountId), 0)
         .withPage(AccountPaymentListPage(accountId), accountPaymentList)
       val mockSessionRepository = mock[DatabaseConnector]
 
@@ -133,7 +137,8 @@ class RemovePaymentControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
-      val useranswers = ua.withPage(CurrentAccountPaymentIndexPage(accountId), 0)
+      val useranswers = ua
+        .withPage(CurrentAccountPaymentIndexPage(accountId), 0)
         .withPage(AccountPaymentListPage(accountId), accountPaymentList)
 
       val application = applicationBuilder(maybeUserAnswers = Some(useranswers)).build()
