@@ -48,11 +48,11 @@ class AccountPaymentsAmountViewSpec extends SpecBase {
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
       "must display title" in {
-        doc.title() must include("What was the total amount of these CRS501 payments?")
+        doc.title() must include("What was the total amount of these Dividends payments?")
       }
 
       "must display heading" in {
-        doc.select("h1").text() must include("What was the total amount of these CRS501 payments?")
+        doc.select("h1").text() must include("What was the total amount of these Dividends payments?")
       }
 
       "must display button" in {

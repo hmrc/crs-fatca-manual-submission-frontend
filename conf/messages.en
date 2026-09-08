@@ -616,6 +616,7 @@ account.havePayments.change.hidden = HavePayments
 
 account.paymentType.title = What type of payments were these for this account?
 account.paymentType.heading = What type of payments were these for this account?
+account.paymentType.radio.title = You can add more types of payments later.
 account.paymentType.CRS501 = Dividends
 account.paymentType.FATCA501 = Dividends
 account.paymentType.CRS502 = Interest
