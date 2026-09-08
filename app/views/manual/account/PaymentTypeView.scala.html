@@ -43,7 +43,7 @@
         @govukRadios(
             RadiosViewModel(
                 field  = form("value"),
-                legend = LegendViewModel(""),
+                legend = LegendViewModel(messages("account.paymentType.legend.hidden.title")).withCssClass("govuk-fieldset__legend govuk-visually-hidden"),
                 items  = PaymentType.options(regimeType, showDividendsAndInterestRadioFields)
             )
         )
