@@ -18,8 +18,8 @@ package services
 
 import base.SpecBase
 import connectors.FinancialInstitutionsConnector
-import models.FIDetail
 import models.ServiceErrors.NoFiDetailFound
+import models.response.FIDetail
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito
 import org.mockito.Mockito.when
