@@ -31,7 +31,7 @@ import models.viewModels.manual.cpso.CPSOId
 import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
 import pages.manual.account.*
-import pages.manual.accountHolders.{IndividualNamePage, IndividualOrOrganisationPage}
+import pages.manual.accountHolders.{IndividualHavePlaceOfBirthPage, IndividualNamePage, IndividualOrOrganisationPage}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.*
@@ -607,6 +607,26 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             val ua = UserAnswers("id")
             navigator.nextPage(PaymentTypePage(accountId), NormalMode, ua) mustBe
               controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
+        }
+
+        "IndividualHavePlaceOfBirthPage" - {
+          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+          val accountId                   = AccountHolderId("TestAccountId")
+          "must go to under construction page when user selected yes" in {
+            val ua = UserAnswers("id")
+              .withPage(IndividualHavePlaceOfBirthPage(accountId), true)
+
+            navigator.nextPage(IndividualHavePlaceOfBirthPage(accountId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+
+          "must go to under construction page when user selected no" in {
+            val ua = UserAnswers("id")
+              .withPage(IndividualHavePlaceOfBirthPage(accountId), false)
+
+            navigator.nextPage(IndividualHavePlaceOfBirthPage(accountId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
           }
         }
       }

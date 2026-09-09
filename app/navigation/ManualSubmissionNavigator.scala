@@ -25,7 +25,7 @@ import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organi
 import models.viewModels.AccountId
 import pages.*
 import pages.manual.account.*
-import pages.manual.accountHolders.{IndividualNamePage, IndividualOrOrganisationPage}
+import pages.manual.accountHolders.{IndividualHavePlaceOfBirthPage, IndividualNamePage, IndividualOrOrganisationPage}
 import pages.manual.cpso.IndividualNamePage
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
@@ -116,6 +116,11 @@ class ManualSubmissionNavigator @Inject() () {
         case Organisation => controllers.routes.UnderConstructionController.onPageLoad()
       }
     case (pages.manual.accountHolders.IndividualNamePage(_), _, _) => controllers.routes.UnderConstructionController.onPageLoad()
+    case (pages.manual.accountHolders.IndividualHavePlaceOfBirthPage(id), mode, ua) =>
+      ua.get(IndividualHavePlaceOfBirthPage(id)).fold(controllers.routes.JourneyRecoveryController.onPageLoad()) {
+        case true  => controllers.routes.UnderConstructionController.onPageLoad()
+        case false => controllers.routes.UnderConstructionController.onPageLoad()
+      }
   }
 
   private def cpsoNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
