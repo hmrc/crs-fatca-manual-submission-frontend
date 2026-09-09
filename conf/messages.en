@@ -629,3 +629,10 @@ account.paymentType.legend.hidden.title= What type of payments were these for th
 account.paymentType.checkYourAnswersLabel = paymentType
 account.paymentType.error.required = Select what type of payments these were for this account
 account.paymentType.change.hidden = PaymentType
+
+account.holder.uk.postcode.title = What is the postcode for the account holder?
+account.holder.uk.postcode.heading = What is the postcode for {0}?
+account.holder.uk.postcode.p1 = Enter the postcode to find the address automatically.
+account.holder.uk.postcode.hidden.label= What is the postcode for {0}?
+account.holder.uk.postcode.button = Find address
+account.holder.uk.postcode.p2 = Or enter the address manually

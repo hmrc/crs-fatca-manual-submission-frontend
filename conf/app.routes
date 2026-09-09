@@ -261,3 +261,8 @@ POST       /manual/account/change-payments-type                   controllers.ma
 
 GET        /manual/account/check-account-type-if-depository      controllers.manual.account.CheckAccountTypeIsDepositoryController.onChangeRedirect(mode: Mode = NormalMode)
 GET        /manual/account/change-check-account-type-if-depository      controllers.manual.account.CheckAccountTypeIsDepositoryController.onChangeRedirect(mode: Mode = CheckMode)
+
+GET        /manual/account-holder/uk-postcode                       controllers.manual.accountHolders.UkPostCodeForAccountHolderController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account-holder/uk-postcode                       controllers.manual.accountHolders.UkPostCodeForAccountHolderController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account-holder/change-uk-postcode                  controllers.manual.accountHolders.UkPostCodeForAccountHolderController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account-holder/change-uk-postcode                controllers.manual.accountHolders.UkPostCodeForAccountHolderController.onSubmit(mode: Mode = CheckMode)
