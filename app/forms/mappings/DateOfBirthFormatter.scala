@@ -25,18 +25,18 @@ import java.util.Locale
 import scala.util.Try
 
 class DateOfBirthFormatter(
-                            requiredKey: String,
-                            invalidCharactersKey: String,
-                            dayRequiredKey: String,
-                            monthRequiredKey: String,
-                            yearRequiredKey: String,
-                            dayMonthRequiredKey: String,
-                            dayYearRequiredKey: String,
-                            monthYearRequiredKey: String,
-                            realDateKey: String,
-                            pastKey: String,
-                            futureKey: String
-                          ) extends Formatter[LocalDate] {
+  requiredKey: String,
+  invalidCharactersKey: String,
+  dayRequiredKey: String,
+  monthRequiredKey: String,
+  yearRequiredKey: String,
+  dayMonthRequiredKey: String,
+  dayYearRequiredKey: String,
+  monthYearRequiredKey: String,
+  realDateKey: String,
+  pastKey: String,
+  futureKey: String
+) extends Formatter[LocalDate] {
 
   private val earliestDate =
     LocalDate.of(1900, 1, 1)
@@ -71,9 +71,9 @@ class DateOfBirthFormatter(
   )
 
   override def bind(
-                     key: String,
-                     data: Map[String, String]
-                   ): Either[Seq[FormError], LocalDate] = {
+    key: String,
+    data: Map[String, String]
+  ): Either[Seq[FormError], LocalDate] = {
 
     val day =
       normalise(data.getOrElse(s"$key.day", ""))
@@ -100,9 +100,9 @@ class DateOfBirthFormatter(
   }
 
   override def unbind(
-                       key: String,
-                       value: LocalDate
-                     ): Map[String, String] =
+    key: String,
+    value: LocalDate
+  ): Map[String, String] =
     Map(
       s"$key.day"   -> value.getDayOfMonth.toString,
       s"$key.month" -> value.getMonthValue.toString,
@@ -110,11 +110,11 @@ class DateOfBirthFormatter(
     )
 
   private def validateEmpty(
-                             key: String,
-                             day: String,
-                             month: String,
-                             year: String
-                           ): Option[Either[Seq[FormError], LocalDate]] =
+    key: String,
+    day: String,
+    month: String,
+    year: String
+  ): Option[Either[Seq[FormError], LocalDate]] =
     Option.when(
       day.isEmpty &&
         month.isEmpty &&
@@ -127,11 +127,11 @@ class DateOfBirthFormatter(
     }
 
   private def validateCharacters(
-                                  key: String,
-                                  day: String,
-                                  month: String,
-                                  year: String
-                                ): Option[Either[Seq[FormError], LocalDate]] = {
+    key: String,
+    day: String,
+    month: String,
+    year: String
+  ): Option[Either[Seq[FormError], LocalDate]] = {
 
     val invalidFields = Seq(
       Option.when(day.nonEmpty && !day.forall(_.isDigit))("day"),
@@ -162,11 +162,11 @@ class DateOfBirthFormatter(
   }
 
   private def validateIncompleteDate(
-                                      key: String,
-                                      day: String,
-                                      month: String,
-                                      year: String
-                                    ): Option[Either[Seq[FormError], LocalDate]] = {
+    key: String,
+    day: String,
+    month: String,
+    year: String
+  ): Option[Either[Seq[FormError], LocalDate]] = {
 
     val dayMissing   = day.isEmpty
     val monthMissing = month.isEmpty
@@ -228,11 +228,11 @@ class DateOfBirthFormatter(
   }
 
   private def validateDate(
-                            key: String,
-                            day: String,
-                            month: String,
-                            year: String
-                          ): Option[Either[Seq[FormError], LocalDate]] = {
+    key: String,
+    day: String,
+    month: String,
+    year: String
+  ): Option[Either[Seq[FormError], LocalDate]] = {
 
     val parsedDay   = day.toIntOption
     val parsedMonth = parseMonth(month)
@@ -240,7 +240,9 @@ class DateOfBirthFormatter(
 
     val invalidComponents = Seq(
       Option.when(
-        parsedDay.forall(value => value < 1 || value > 31)
+        parsedDay.forall(
+          value => value < 1 || value > 31
+        )
       )("day"),
       Option.when(
         parsedMonth.isEmpty
@@ -279,11 +281,11 @@ class DateOfBirthFormatter(
   }
 
   private def validateRealDate(
-                                key: String,
-                                day: Int,
-                                month: Int,
-                                year: Int
-                              ): Option[Either[Seq[FormError], LocalDate]] = {
+    key: String,
+    day: Int,
+    month: Int,
+    year: Int
+  ): Option[Either[Seq[FormError], LocalDate]] = {
 
     val maybeDate =
       Try(
@@ -323,8 +325,7 @@ class DateOfBirthFormatter(
               Seq(today.format(displayDateFormatter))
             )
           )
-        else
-          None
+        else None
     }
   }
 
@@ -334,11 +335,11 @@ class DateOfBirthFormatter(
       value.toLowerCase(Locale.UK)
 
     if normalisedMonth.forall(_.isDigit) then
-      normalisedMonth
-        .toIntOption
-        .filter(month => month >= 1 && month <= 12)
-    else
-      monthNames.get(normalisedMonth)
+      normalisedMonth.toIntOption
+        .filter(
+          month => month >= 1 && month <= 12
+        )
+    else monthNames.get(normalisedMonth)
   }
 
   private def validMonthCharacters(value: String): Boolean =
@@ -348,10 +349,10 @@ class DateOfBirthFormatter(
     value.replaceAll("""[\s-]""", "")
 
   private def error(
-                     key: String,
-                     message: String,
-                     args: Seq[Any] = Seq.empty
-                   ): Either[Seq[FormError], LocalDate] =
+    key: String,
+    message: String,
+    args: Seq[Any] = Seq.empty
+  ): Either[Seq[FormError], LocalDate] =
     Left(
       Seq(
         FormError(

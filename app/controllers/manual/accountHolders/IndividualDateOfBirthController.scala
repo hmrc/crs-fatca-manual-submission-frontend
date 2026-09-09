@@ -41,7 +41,8 @@ class IndividualDateOfBirthController @Inject() (
   view: IndividualDateOfBirthView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport with Logging {
+    with I18nSupport
+    with Logging {
 
   val form = formProvider()
 
