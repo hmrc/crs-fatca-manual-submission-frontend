@@ -266,3 +266,8 @@ GET        /manual/account-holder/uk-postcode                       controllers.
 POST       /manual/account-holder/uk-postcode                       controllers.manual.accountHolders.UkPostCodeForAccountHolderController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/account-holder/change-uk-postcode                  controllers.manual.accountHolders.UkPostCodeForAccountHolderController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/account-holder/change-uk-postcode                controllers.manual.accountHolders.UkPostCodeForAccountHolderController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/account-holder/is-this-the-address                       controllers.manual.accountHolders.IsThisTheAddressForAccountHoldersController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account-holder/is-this-the-address                        controllers.manual.accountHolders.IsThisTheAddressForAccountHoldersController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account-holder/change-is-this-the-address                  controllers.manual.accountHolders.IsThisTheAddressForAccountHoldersController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account-holder/change-is-this-the-address                 controllers.manual.accountHolders.IsThisTheAddressForAccountHoldersController.onSubmit(mode: Mode = CheckMode)
