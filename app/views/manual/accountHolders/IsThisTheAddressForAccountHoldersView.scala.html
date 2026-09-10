@@ -14,17 +14,19 @@
  * limitations under the License.
  *@
 
+@import models.response.Address
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
     govukRadios: GovukRadios,
-    govukButton: GovukButton
+    govukButton: GovukButton,
+    heading: components.Heading,
 )
 
-@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, address: Address, accountHolder: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("isThisTheAddressForAccountHolders.title"))) {
+@layout(pageTitle = title(form, messages("account.holder.uk.isThisTheAddressForAccountHolders.title"))) {
 
     @formHelper(action = controllers.manual.accountHolders.routes.IsThisTheAddressForAccountHoldersController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
@@ -32,15 +34,24 @@
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
+        @heading(messages("account.holder.uk.isThisTheAddressForAccountHolders.heading", accountHolder))
+
+        <p class="govuk-body">
+            @for(addressLine <- address.formatAsSeq) {
+                <span class="govuk-!-margin-bottom-0">@addressLine</span><br>
+            }
+        </p>
+
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = LegendViewModel(messages("isThisTheAddressForAccountHolders.heading")).asPageHeading()
+                legend = LegendViewModel(messages("account.holder.uk.isThisTheAddressForAccountHolders.heading", accountHolder)).withCssClass("govuk-visually-hidden")
             )
         )
 
         @govukButton(
             ButtonViewModel(messages("site.saveContinue"))
+            .withAttribute("id" -> "submit")
         )
     }
 }

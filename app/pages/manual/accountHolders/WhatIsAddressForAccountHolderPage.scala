@@ -17,10 +17,11 @@
 package pages.manual.accountHolders
 
 import models.ReportId
+import models.response.Address
 import models.viewModels.AccountHolderId
 import pages.QuestionPage
 import play.api.libs.json.JsPath
 
-final case class IsThisTheAddressForAccountHoldersPage(accountHolderId: AccountHolderId, reportId: ReportId) extends QuestionPage[Boolean]:
+final case class WhatIsAddressForAccountHolderPage(accountHolderId: AccountHolderId, reportId: ReportId) extends QuestionPage[Address]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "accountHolder" \ accountHolderId.value \ "isThisTheAddressForAccountHolder"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "accountHolder" \ accountHolderId.value \ "whatIsAddressForAccountHolder"

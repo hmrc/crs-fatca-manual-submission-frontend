@@ -25,6 +25,6 @@ class IsThisTheAddressForAccountHoldersFormProvider @Inject() extends Mappings {
 
   def apply(): Form[Boolean] =
     Form(
-      "value" -> boolean("isThisTheAddressForAccountHolders.error.required")
+      "value" -> boolean("account.holder.uk.isThisTheAddressForAccountHolders.error.required ")
     )
 }

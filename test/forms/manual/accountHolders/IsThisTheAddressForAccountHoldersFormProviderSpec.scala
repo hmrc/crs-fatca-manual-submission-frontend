@@ -21,8 +21,8 @@ import play.api.data.FormError
 
 class IsThisTheAddressForAccountHoldersFormProviderSpec extends BooleanFieldBehaviours {
 
-  val requiredKey = "isThisTheAddressForAccountHolders.error.required"
-  val invalidKey = "error.boolean"
+  val requiredKey = "account.holder.uk.isThisTheAddressForAccountHolders.error.required "
+  val invalidKey  = "error.boolean"
 
   val form = new IsThisTheAddressForAccountHoldersFormProvider()()
 

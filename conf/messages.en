@@ -636,8 +636,9 @@ account.holder.uk.postcode.p1 = Enter the postcode to find the address automatic
 account.holder.uk.postcode.hidden.label= What is the postcode for {0}?
 account.holder.uk.postcode.button = Find address
 account.holder.uk.postcode.p2 = Or enter the address manually
-isThisTheAddressForAccountHolders.title = isThisTheAddressForAccountHolders
-isThisTheAddressForAccountHolders.heading = isThisTheAddressForAccountHolders
+
+account.holder.uk.isThisTheAddressForAccountHolders.title = Is this the account holder’s address?
+account.holder.uk.isThisTheAddressForAccountHolders.heading = Is this the address for {0}?
+account.holder.uk.isThisTheAddressForAccountHolders.error.required = Select yes if this is the account holder’s address
 isThisTheAddressForAccountHolders.checkYourAnswersLabel = isThisTheAddressForAccountHolders
-isThisTheAddressForAccountHolders.error.required = Select yes if isThisTheAddressForAccountHolders
 isThisTheAddressForAccountHolders.change.hidden = IsThisTheAddressForAccountHolders
