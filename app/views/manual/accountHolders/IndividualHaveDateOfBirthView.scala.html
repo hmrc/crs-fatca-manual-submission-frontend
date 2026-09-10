@@ -55,11 +55,11 @@
         @messages("individualHaveDateOfBirth.heading")
         </h1>
 
-        <p class="govuk-body govuk-!-margin-bottom-2">
+        <p class="govuk-body govuk-!-margin-bottom-2 wrappable">
         @messages(paragraphMessageKey, accountHolderName)
         </p>
 
-        <ul class="govuk-list govuk-list--bullet">
+        <ul class="govuk-list govuk-list--bullet wrappable">
             <li>
             @messages("individualHaveDateOfBirth.bullet1", fiName)
             </li>
@@ -79,7 +79,7 @@
                         "individualHaveDateOfBirth.question",
                         accountHolderName
                     )
-                ).withCssClass("govuk-fieldset__legend--m")
+                ).withCssClass("govuk-fieldset__legend--m wrappable")
             )
         )
 
