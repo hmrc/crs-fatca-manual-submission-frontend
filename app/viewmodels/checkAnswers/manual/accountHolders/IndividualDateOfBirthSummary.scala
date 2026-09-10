@@ -17,34 +17,33 @@
 package viewmodels.checkAnswers.manual.accountHolders
 
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.accountHolders.{CurrentAccountHolderIdPage, IndividualOrOrganisationPage}
+import pages.manual.accountHolders.{CurrentAccountHolderIdPage, IndividualDateOfBirthPage}
 import play.api.i18n.Messages
-import play.twirl.api.HtmlFormat
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist.*
 import viewmodels.implicits.*
 
-object individualOrOrganisationSummary {
+import java.time.format.DateTimeFormatter
+import java.util.Locale
+
+object IndividualDateOfBirthSummary {
+
+  private val dateFormatter =
+    DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.UK)
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
     for {
       currentAccountHolderId <- answers.get(CurrentAccountHolderIdPage()(reportId))
-      answer                 <- answers.get(IndividualOrOrganisationPage(currentAccountHolderId)(reportId))
-    } yield
-
-      val value = ValueViewModel(
-        HtmlContent(
-          HtmlFormat.escape(messages(s"individualOrOrganisation.$answer"))
+      answer                 <- answers.get(IndividualDateOfBirthPage(currentAccountHolderId)(reportId))
+    } yield SummaryListRowViewModel(
+      key = "individualDateOfBirth.checkYourAnswersLabel",
+      value = ValueViewModel(answer.dateOfBirth.format(dateFormatter)),
+      actions = Seq(
+        ActionItemViewModel(
+          "site.change",
+          controllers.manual.accountHolders.routes.IndividualDateOfBirthController.onPageLoad(CheckMode).url
         )
+          .withVisuallyHiddenText(messages("individualDateOfBirth.change.hidden"))
       )
-
-      SummaryListRowViewModel(
-        key = "individualOrOrganisation.checkYourAnswersLabel",
-        value = value,
-        actions = Seq(
-          ActionItemViewModel("site.change", controllers.manual.accountHolders.routes.IndividualOrOrganisationController.onPageLoad(CheckMode).url)
-            .withVisuallyHiddenText(messages("individualOrOrganisation.change.hidden"))
-        )
-      )
+    )
 }

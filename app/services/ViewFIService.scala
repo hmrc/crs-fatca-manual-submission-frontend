@@ -18,8 +18,8 @@ package services
 
 import com.google.inject.Inject
 import connectors.FinancialInstitutionsConnector
-import models.FIDetail
 import models.ServiceErrors.NoFiDetailFound
+import models.response.FIDetail
 import uk.gov.hmrc.http.HeaderCarrier
 import scala.concurrent.{ExecutionContext, Future}
 
