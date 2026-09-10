@@ -24,6 +24,7 @@ import models.viewModels.AccountId
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
 import pages.manual.account.{AccountPaymentPage, AccountPaymentsAmountPage, PaymentsAddedPreviouslyPage}
+import play.api.Logging
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -43,7 +44,8 @@ class AccountPaymentsAmountController @Inject() (
   view: AccountPaymentsAmountView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with Logging {
 
   def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdRequiredAndAccountPaymentIndexRequired() {
     implicit request =>
@@ -55,9 +57,10 @@ class AccountPaymentsAmountController @Inject() (
 
       request.userAnswers
         .get(AccountPaymentPage(request.currentIndex))
-        .fold(
+        .fold {
+          logger.error(s"AccountPaymentPage is missing for index ${request.currentIndex}")
           Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
-        ) {
+        } {
           accountPayment =>
             val preparedForm: Form[AccountPaymentsAmount] =
               accountPayment.accountPaymentsAmount.fold(form)(form.fill)
@@ -77,9 +80,10 @@ class AccountPaymentsAmountController @Inject() (
 
       request.userAnswers
         .get(AccountPaymentPage(request.currentIndex))
-        .fold(
+        .fold {
+          logger.error(s"AccountPaymentPage is missing for index ${request.currentIndex}")
           Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
-        ) {
+        } {
           accountPayment =>
             val paymentType: PaymentType = accountPayment.paymentType
 

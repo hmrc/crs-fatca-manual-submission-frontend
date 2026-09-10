@@ -68,14 +68,14 @@ class PaymentTypeSpec extends SpecBase with Matchers with ScalaCheckPropertyChec
     "PaymentType" - {
       "must resolve the message key for each payment type" in {
         val cases: List[(PaymentType, String)] = List(
-          CRSDividends                    -> "Dividends",
-          CRSInterest                     -> "Interest",
-          CRSGrossProceedsOrRedemptions   -> "Gross proceeds or redemptions",
-          CRSOther                        -> "Other",
-          FATCADividends                  -> "Dividends",
-          FATCAInterest                   -> "Interest",
-          FATCAGrossProceedsOrRedemptions -> "Gross proceeds or redemptions",
-          FATCAOther                      -> "Other"
+          CRSDividends                    -> "dividends",
+          CRSInterest                     -> "interest",
+          CRSGrossProceedsOrRedemptions   -> "gross proceeds or redemptions",
+          CRSOther                        -> "other",
+          FATCADividends                  -> "dividends",
+          FATCAInterest                   -> "interest",
+          FATCAGrossProceedsOrRedemptions -> "gross proceeds or redemptions",
+          FATCAOther                      -> "other"
         )
 
         cases.foreach {

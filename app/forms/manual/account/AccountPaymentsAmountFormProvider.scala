@@ -30,14 +30,14 @@ class AccountPaymentsAmountFormProvider @Inject() extends Mappings with Transfor
 
   def apply(regime: RegimeType): Form[AccountPaymentsAmount] = {
 
-    val requiredAmountError   = "whatWasTheAccountBalance.error.required.amount"
-    val invalidErrorKey       = s"whatWasTheAccountBalance.error.invalid.${regime.value}"
-    val minusAmountErrorKey   = "whatWasTheAccountBalance.error.minus.FATCA"
-    val decimalPlacesErrorKey = "whatWasTheAccountBalance.error.decimalPlaces"
+    val requiredAmountError   = "accountPaymentsAmount.error.required.amount"
+    val invalidErrorKey       = s"accountPaymentsAmount.error.invalid.${regime.value}"
+    val minusAmountErrorKey   = "accountPaymentsAmount.error.minus.FATCA"
+    val decimalPlacesErrorKey = "accountPaymentsAmount.error.decimalPlaces"
 
     Form(
       mapping(
-        "currency" -> text("whatWasTheAccountBalance.error.required.currency")
+        "currency" -> text("accountPaymentsAmount.error.required.currency")
           .verifying(currencyConstraint(regime))
           .transform[Currency](
             code => Currencies.all(regime).find(_.code == code).get,
@@ -55,7 +55,7 @@ class AccountPaymentsAmountFormProvider @Inject() extends Mappings with Transfor
       if (Currencies.all(regime).exists(_.code == code)) {
         Valid
       } else {
-        Invalid(ValidationError("whatWasTheAccountBalance.error.required.currency"))
+        Invalid(ValidationError("accountPaymentsAmount.error.required.currency"))
       }
   }
 

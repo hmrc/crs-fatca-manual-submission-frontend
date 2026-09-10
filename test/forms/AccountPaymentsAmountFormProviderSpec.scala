@@ -25,11 +25,11 @@ import play.api.data.FormError
 class AccountPaymentsAmountFormProviderSpec extends FieldBehaviours {
 
   private val currency                   = Currencies.all(FATCA).head
-  private val requiredCurrencyKey        = "whatWasTheAccountBalance.error.required.currency"
-  private val requiredAmountKey          = "whatWasTheAccountBalance.error.required.amount"
-  private val minusAmountErrorKey        = "whatWasTheAccountBalance.error.minus.FATCA"
-  private val fatcaInvalidFormatErrorKey = "whatWasTheAccountBalance.error.invalid.FATCA"
-  private val crsInvalidFormatErrorKey   = "whatWasTheAccountBalance.error.invalid.CRS"
+  private val requiredCurrencyKey        = "accountPaymentsAmount.error.required.currency"
+  private val requiredAmountKey          = "accountPaymentsAmount.error.required.amount"
+  private val minusAmountErrorKey        = "accountPaymentsAmount.error.minus.FATCA"
+  private val fatcaInvalidFormatErrorKey = "accountPaymentsAmount.error.invalid.FATCA"
+  private val crsInvalidFormatErrorKey   = "accountPaymentsAmount.error.invalid.CRS"
 
   "Amount field" - {
 
@@ -86,7 +86,7 @@ class AccountPaymentsAmountFormProviderSpec extends FieldBehaviours {
 
       "must fail when amount has more than 2 decimal places" in {
         val result = form.bind(Map("currency" -> currency.code, fieldName -> "123.456"))
-        result.errors must contain(FormError(fieldName, "whatWasTheAccountBalance.error.decimalPlaces"))
+        result.errors must contain(FormError(fieldName, "accountPaymentsAmount.error.decimalPlaces"))
       }
 
       "must fail when amount is empty" in {
@@ -136,7 +136,7 @@ class AccountPaymentsAmountFormProviderSpec extends FieldBehaviours {
 
       "must fail when amount has more than 2 decimal places" in {
         val result = form.bind(Map("currency" -> currency.code, fieldName -> "123.456"))
-        result.errors must contain(FormError(fieldName, "whatWasTheAccountBalance.error.decimalPlaces"))
+        result.errors must contain(FormError(fieldName, "accountPaymentsAmount.error.decimalPlaces"))
       }
 
       "must not bind a value with more than one decimal point" in {

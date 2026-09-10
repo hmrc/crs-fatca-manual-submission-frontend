@@ -22,6 +22,7 @@ import models.manual.account.AccountPaymentsAmount
 import pages.QuestionPage
 import play.api.libs.json.JsPath
 
+//this class is currently only used for navigation
 final case class AccountPaymentsAmountPage(accountId: AccountId)(implicit reportId: ReportId) extends QuestionPage[AccountPaymentsAmount]:
 
   override def path: JsPath = JsPath \ reportId.mongoKey \ "accounts" \ accountId.value \ "accountPaymentsAmount"
