@@ -34,11 +34,11 @@ object IndividualHavePlaceOfBirthSummary {
       val value = if (answer) "site.yes" else "site.no"
 
       SummaryListRowViewModel(
-        key = "individualHavePlaceOfBirth.checkYourAnswersLabel",
+        key = "accountHolders.individualHavePlaceOfBirth.checkYourAnswersLabel",
         value = ValueViewModel(value),
         actions = Seq(
           ActionItemViewModel("site.change", routes.IndividualHavePlaceOfBirthController.onPageLoad(CheckMode).url)
-            .withVisuallyHiddenText(messages("individualHavePlaceOfBirth.change.hidden"))
+            .withVisuallyHiddenText(messages("accountHolders.individualHavePlaceOfBirth.change.hidden"))
         )
       )
 }
