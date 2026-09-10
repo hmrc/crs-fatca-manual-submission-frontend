@@ -17,10 +17,8 @@
 package forms.manual.accountHolders
 
 import forms.behaviours.StringFieldBehaviours
-import forms.manual.sponsor.AddressNonUkFormProvider
 import models.AddressNonUk
 import org.scalatest.OptionValues
-import org.scalatest.funsuite.AnyFunSuiteLike
 
 class AccountHolderAddressNonUkFormProviderSpec extends StringFieldBehaviours with OptionValues {
 

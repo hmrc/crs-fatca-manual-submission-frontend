@@ -103,7 +103,6 @@ class AccountHolderAddressNonUkControllerSpec extends SpecBase with MockitoSugar
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        println(individualAccountHolder.toString)
         contentAsString(result) mustEqual
           view(
             form,

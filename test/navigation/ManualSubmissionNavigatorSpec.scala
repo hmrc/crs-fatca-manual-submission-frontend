@@ -757,12 +757,12 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               controllers.routes.UnderConstructionController.onPageLoad()
           }
 
-          "must go to under construction page when user selected no" in {
+          "must go to AccountHolderNonUkAddress page when user selected no" in {
             val ua = UserAnswers("id")
               .withPage(WhereAreTheyBasedPage(accountId), false)
 
             navigator.nextPage(WhereAreTheyBasedPage(accountId), NormalMode, ua) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.accountHolders.routes.AccountHolderAddressNonUkController.onPageLoad(NormalMode)
           }
         }
       }

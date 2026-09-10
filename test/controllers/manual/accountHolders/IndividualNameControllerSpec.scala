@@ -23,7 +23,7 @@ import forms.manual.accountHolders.IndividualNameFormProvider
 import models.SubmissionsConstants.CRS
 import models.manual.accountHolders.IndividualName
 import models.viewModels.AccountHolderId
-import models.{NormalMode, ReportId, UserAnswers}
+import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -31,7 +31,6 @@ import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
 import pages.manual.accountHolders.{AccountHolderIndividualNamePage, CurrentAccountHolderIdPage}
 import play.api.inject.bind
-import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*

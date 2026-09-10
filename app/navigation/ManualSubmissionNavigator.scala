@@ -25,8 +25,7 @@ import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organi
 import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
 import pages.manual.account.*
-import pages.manual.accountHolders.{AccountHolderIndividualNamePage, IndividualOrOrganisationPage}
-import pages.manual.accountHolders.{IndividualHavePlaceOfBirthPage, IndividualOrOrganisationPage}
+import pages.manual.accountHolders.{AccountHolderIndividualNamePage, IndividualHavePlaceOfBirthPage, IndividualOrOrganisationPage}
 import pages.manual.cpso.IndividualNamePage
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
@@ -131,7 +130,11 @@ class ManualSubmissionNavigator @Inject() () {
           controllers.routes.JourneyRecoveryController.onPageLoad()
       }
     case (pages.manual.accountHolders.IndividualHavePlaceOfBirthPage(id), mode, ua) => handleIndividualHavePlaceOfBirthNavigation(id, mode, ua)
-    case (pages.manual.accountHolders.WhereAreTheyBasedPage(_), _, _)               => controllers.routes.UnderConstructionController.onPageLoad()
+    case (pages.manual.accountHolders.WhereAreTheyBasedPage(id), mode, ua) =>
+      ua.get(pages.manual.accountHolders.WhereAreTheyBasedPage(id)) match {
+        case Some(false) => controllers.manual.accountHolders.routes.AccountHolderAddressNonUkController.onPageLoad(mode)
+        case _           => routes.UnderConstructionController.onPageLoad()
+      }
 
     case (pages.manual.accountHolders.IndividualHaveDateOfBirthPage(id), mode, ua) =>
       ua.get(pages.manual.accountHolders.IndividualHaveDateOfBirthPage(id)) match {
@@ -148,7 +151,6 @@ class ManualSubmissionNavigator @Inject() () {
         case None =>
           controllers.routes.JourneyRecoveryController.onPageLoad()
       }
-    case (pages.manual.accountHolders.AccountHolderIndividualNamePage(_), _, _) => controllers.routes.UnderConstructionController.onPageLoad()
   }
 
   private def cpsoNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
