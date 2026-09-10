@@ -22,10 +22,11 @@ import controllers.routes
 import models.*
 import models.SubmissionsConstants.{CRS, FATCA}
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
-import models.viewModels.AccountId
+import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
 import pages.manual.account.*
 import pages.manual.accountHolders.{AccountHolderIndividualNamePage, IndividualOrOrganisationPage}
+import pages.manual.accountHolders.{IndividualHavePlaceOfBirthPage, IndividualOrOrganisationPage}
 import pages.manual.cpso.IndividualNamePage
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
@@ -129,20 +130,21 @@ class ManualSubmissionNavigator @Inject() () {
         case None =>
           controllers.routes.JourneyRecoveryController.onPageLoad()
       }
+    case (pages.manual.accountHolders.IndividualHavePlaceOfBirthPage(id), mode, ua) => handleIndividualHavePlaceOfBirthNavigation(id, mode, ua)
+    case (pages.manual.accountHolders.WhereAreTheyBasedPage(_), _, _)               => controllers.routes.UnderConstructionController.onPageLoad()
 
     case (pages.manual.accountHolders.IndividualHaveDateOfBirthPage(id), mode, ua) =>
       ua.get(pages.manual.accountHolders.IndividualHaveDateOfBirthPage(id)) match {
         case Some(true) =>
           controllers.manual.accountHolders.routes.IndividualDateOfBirthController.onPageLoad(mode)
         case Some(false) =>
-          controllers.routes.UnderConstructionController.onPageLoad()
+          controllers.manual.accountHolders.routes.IndividualHavePlaceOfBirthController.onPageLoad(mode)
         case None =>
           controllers.routes.JourneyRecoveryController.onPageLoad()
       }
     case (pages.manual.accountHolders.IndividualDateOfBirthPage(id), mode, ua) =>
       ua.get(pages.manual.accountHolders.IndividualDateOfBirthPage(id)) match {
-        case Some(_) =>
-          controllers.routes.UnderConstructionController.onPageLoad()
+        case Some(_) => controllers.manual.accountHolders.routes.IndividualHavePlaceOfBirthController.onPageLoad(mode)
         case None =>
           controllers.routes.JourneyRecoveryController.onPageLoad()
       }
@@ -242,6 +244,13 @@ class ManualSubmissionNavigator @Inject() () {
       case (Some(true), Some(address)) => handleNavigationToSponsorResidentTaxView(userAnswers, mode)
       case (Some(false), _)            => controllers.manual.sponsor.routes.UkAddressController.onPageLoad(mode)
       case (_, _)                      => routes.JourneyRecoveryController.onPageLoad()
+    }
+
+  private def handleIndividualHavePlaceOfBirthNavigation(accountId: AccountHolderId, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
+    userAnswers.get(IndividualHavePlaceOfBirthPage(accountId)) match {
+      case Some(true)  => routes.UnderConstructionController.onPageLoad()
+      case Some(false) => controllers.manual.accountHolders.routes.WhereAreTheyBasedController.onPageLoad(mode)
+      case _           => routes.JourneyRecoveryController.onPageLoad()
     }
 
 }
