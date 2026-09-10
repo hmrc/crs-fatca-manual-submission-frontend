@@ -16,30 +16,29 @@
 
 package viewmodels.checkAnswers.manual.accountHolders
 
+import controllers.manual.accountHolders.routes
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.accountHolders.{AccountHolderIndividualNamePage, CurrentAccountHolderIdPage}
+import pages.manual.accountHolders.{CurrentAccountHolderIdPage, WhereAreTheyBasedPage}
 import play.api.i18n.Messages
-import play.twirl.api.HtmlFormat
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist.*
 import viewmodels.implicits.*
 
-object IndividualNameSummary {
+object WhereAreTheyBasedSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
     for {
       currentAccountHolderId <- answers.get(CurrentAccountHolderIdPage()(reportId))
-      answer                 <- answers.get(AccountHolderIndividualNamePage(currentAccountHolderId)(reportId))
+      answer                 <- answers.get(WhereAreTheyBasedPage(currentAccountHolderId)(reportId))
     } yield
-      val value = HtmlFormat.escape(answer.firstName).toString + "<br/>" + HtmlFormat.escape(answer.lastName).toString
+      val value = if (answer) "site.yes" else "site.no"
 
       SummaryListRowViewModel(
-        key = "individualName.checkYourAnswersLabel",
-        value = ValueViewModel(HtmlContent(value)),
+        key = "accountHolders.whereAreTheyBased.checkYourAnswersLabel",
+        value = ValueViewModel(value),
         actions = Seq(
-          ActionItemViewModel("site.change", controllers.manual.accountHolders.routes.IndividualNameController.onPageLoad(CheckMode).url)
-            .withVisuallyHiddenText(messages("individualName.change.hidden"))
+          ActionItemViewModel("site.change", routes.WhereAreTheyBasedController.onPageLoad(CheckMode).url)
+            .withVisuallyHiddenText(messages("accountHolders.whereAreTheyBased.change.hidden"))
         )
       )
 }

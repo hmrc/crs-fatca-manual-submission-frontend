@@ -22,7 +22,7 @@ import forms.manual.accountHolders.IndividualHaveDateOfBirthFormProvider
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
 import pages.manual.FINamePage
-import pages.manual.accountHolders.{IndividualHaveDateOfBirthPage, IndividualNamePage}
+import pages.manual.accountHolders.{AccountHolderIndividualNamePage, IndividualHaveDateOfBirthPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -58,11 +58,10 @@ class IndividualHaveDateOfBirthController @Inject() (
 
         (
           request.userAnswers.get(FINamePage()),
-          request.userAnswers.get(IndividualNamePage(request.accountHolderId))
+          request.userAnswers.get(AccountHolderIndividualNamePage(request.accountHolderId))
         ) match {
           case (Some(fiName), Some(individualName)) =>
-            val accountHolderName =
-              s"${individualName.FirstName} ${individualName.LastName}".trim
+            val accountHolderName = individualName.fullName
             Ok(
               view(
                 preparedForm,
@@ -86,11 +85,10 @@ class IndividualHaveDateOfBirthController @Inject() (
 
         (
           request.userAnswers.get(FINamePage()),
-          request.userAnswers.get(IndividualNamePage(request.accountHolderId))
+          request.userAnswers.get(AccountHolderIndividualNamePage(request.accountHolderId))
         ) match {
           case (Some(fiName), Some(individualName)) =>
-            val accountHolderName =
-              s"${individualName.FirstName} ${individualName.LastName}".trim
+            val accountHolderName = individualName.fullName
             form
               .bindFromRequest()
               .fold(

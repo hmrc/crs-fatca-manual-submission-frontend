@@ -18,26 +18,26 @@ package controllers.manual.accountHolders
 
 import connectors.DatabaseConnector
 import controllers.actions.*
-import forms.manual.accountHolders.IndividualNameFormProvider
+import forms.manual.accountHolders.IndividualHavePlaceOfBirthFormProvider
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.accountHolders.AccountHolderIndividualNamePage
+import pages.manual.accountHolders.IndividualHavePlaceOfBirthPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.manual.accountHolders.IndividualNameView
+import views.html.manual.accountHolders.IndividualHavePlaceOfBirthView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class IndividualNameController @Inject() (
+class IndividualHavePlaceOfBirthController @Inject() (
   override val messagesApi: MessagesApi,
   repository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
   actions: Actions,
-  formProvider: IndividualNameFormProvider,
+  formProvider: IndividualHavePlaceOfBirthFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: IndividualNameView
+  view: IndividualHavePlaceOfBirthView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -46,9 +46,10 @@ class IndividualNameController @Inject() (
 
   def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequired() {
     implicit request =>
+
       implicit val reportId: ReportId = request.reportId
 
-      val preparedForm = request.userAnswers.get(AccountHolderIndividualNamePage(request.accountHolderId)) match {
+      val preparedForm = request.userAnswers.get(IndividualHavePlaceOfBirthPage(request.accountHolderId)) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
@@ -58,6 +59,7 @@ class IndividualNameController @Inject() (
 
   def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequired().async {
     implicit request =>
+
       implicit val reportId: ReportId = request.reportId
 
       form
@@ -66,9 +68,9 @@ class IndividualNameController @Inject() (
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(AccountHolderIndividualNamePage(request.accountHolderId), value))
+              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(IndividualHavePlaceOfBirthPage(request.accountHolderId), value))
               _              <- repository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(AccountHolderIndividualNamePage(request.accountHolderId), mode, updatedAnswers))
+            } yield Redirect(navigator.nextPage(IndividualHavePlaceOfBirthPage(request.accountHolderId), mode, updatedAnswers))
         )
   }
 }

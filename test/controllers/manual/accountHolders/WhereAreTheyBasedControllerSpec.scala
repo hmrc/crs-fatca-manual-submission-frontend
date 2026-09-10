@@ -19,9 +19,8 @@ package controllers.manual.accountHolders
 import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
-import forms.manual.accountHolders.IndividualNameFormProvider
+import forms.manual.accountHolders.WhereAreTheyBasedFormProvider
 import models.SubmissionsConstants.CRS
-import models.manual.accountHolders.IndividualName
 import models.viewModels.AccountHolderId
 import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
@@ -29,26 +28,28 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.accountHolders.{AccountHolderIndividualNamePage, CurrentAccountHolderIdPage}
+import pages.manual.accountHolders.{CurrentAccountHolderIdPage, WhereAreTheyBasedPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import views.html.manual.accountHolders.IndividualNameView
+import views.html.manual.accountHolders.WhereAreTheyBasedView
 
 import scala.concurrent.Future
 
-class IndividualNameControllerSpec extends SpecBase with MockitoSugar {
+class WhereAreTheyBasedControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  private val form = new IndividualNameFormProvider()()
+  val formProvider = new WhereAreTheyBasedFormProvider()
+  val form         = formProvider()
 
-  private lazy val individualNameRoute = controllers.manual.accountHolders.routes.IndividualNameController.onPageLoad(NormalMode).url
+  lazy val whereAreTheyBasedRoute = controllers.manual.accountHolders.routes.WhereAreTheyBasedController.onPageLoad(NormalMode).url
 
-  "IndividualName Controller" - {
-    val reportId               = ReportId(CRS, 2025, None, "TestfiID")
+  "WhereAreTheyBased Controller" - {
+
     val currentAccountHolderId = AccountHolderId("testid")
+    val reportId               = ReportId(CRS, 2025, None, "TestfiID")
     val ua = emptyUserAnswers
       .withPage(ReportIdPage, reportId)
       .withPage(CurrentAccountHolderIdPage()(reportId), currentAccountHolderId)
@@ -58,11 +59,11 @@ class IndividualNameControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
 
       running(application) {
-        val request = FakeRequest(GET, individualNameRoute)
-
-        val view = application.injector.instanceOf[IndividualNameView]
+        val request = FakeRequest(GET, whereAreTheyBasedRoute)
 
         val result = route(application, request).value
+
+        val view = application.injector.instanceOf[WhereAreTheyBasedView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
@@ -70,22 +71,20 @@ class IndividualNameControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-      val validAnswer = IndividualName("value", "value")
-      val userAnswers = ua
-        .withPage(CurrentAccountHolderIdPage()(reportId), currentAccountHolderId)
-        .withPage(AccountHolderIndividualNamePage(currentAccountHolderId)(reportId), validAnswer)
+
+      val userAnswers = ua.set(WhereAreTheyBasedPage(currentAccountHolderId)(reportId), true).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, individualNameRoute)
+        val request = FakeRequest(GET, whereAreTheyBasedRoute)
 
-        val view = application.injector.instanceOf[IndividualNameView]
+        val view = application.injector.instanceOf[WhereAreTheyBasedView]
 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(IndividualName("value", "value")), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
       }
     }
 
@@ -105,8 +104,8 @@ class IndividualNameControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, individualNameRoute)
-            .withFormUrlEncodedBody(("FirstName", "value"), ("LastName", "value"))
+          FakeRequest(POST, whereAreTheyBasedRoute)
+            .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
@@ -121,12 +120,12 @@ class IndividualNameControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, individualNameRoute)
-            .withFormUrlEncodedBody(("value", "invalid value"))
+          FakeRequest(POST, whereAreTheyBasedRoute)
+            .withFormUrlEncodedBody(("value", ""))
 
-        val boundForm = form.bind(Map("value" -> "invalid value"))
+        val boundForm = form.bind(Map("value" -> ""))
 
-        val view = application.injector.instanceOf[IndividualNameView]
+        val view = application.injector.instanceOf[WhereAreTheyBasedView]
 
         val result = route(application, request).value
 
@@ -140,7 +139,7 @@ class IndividualNameControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(maybeUserAnswers = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, individualNameRoute)
+        val request = FakeRequest(GET, whereAreTheyBasedRoute)
 
         val result = route(application, request).value
 
@@ -155,8 +154,8 @@ class IndividualNameControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, individualNameRoute)
-            .withFormUrlEncodedBody(("FirstName", "value"), ("LastName", "value"))
+          FakeRequest(POST, whereAreTheyBasedRoute)
+            .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 

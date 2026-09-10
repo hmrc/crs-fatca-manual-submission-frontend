@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-package pages.manual.accountHolders
+package forms.manual.accountHolders
 
-import models.ReportId
-import models.manual.accountHolders.IndividualName
-import models.viewModels.AccountHolderId
-import pages.QuestionPage
-import play.api.libs.json.JsPath
+import javax.inject.Inject
 
-final case class IndividualNamePage(accountHolderId: AccountHolderId)(implicit reportId: ReportId) extends QuestionPage[IndividualName]:
+import forms.mappings.Mappings
+import play.api.data.Form
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "accountHolder" \ accountHolderId.value \ "individualName"
+class WhereAreTheyBasedFormProvider @Inject() extends Mappings {
+
+  def apply(): Form[Boolean] =
+    Form(
+      "value" -> boolean("accountHolders.whereAreTheyBased.error.required")
+    )
+}

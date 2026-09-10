@@ -655,3 +655,26 @@ account.paymentType.legend.hidden.title= What type of payments were these for th
 account.paymentType.checkYourAnswersLabel = paymentType
 account.paymentType.error.required = Select what type of payments these were for this account
 account.paymentType.change.hidden = PaymentType
+
+accountHolders.individualHavePlaceOfBirth.title = Do you want to provide the place of birth for the account holder?
+accountHolders.individualHavePlaceOfBirth.heading = Do you want to provide the place of birth for Account Holdings plc?
+accountHolders.individualHavePlaceOfBirth.checkYourAnswersLabel = individualHavePlaceOfBirth
+accountHolders.individualHavePlaceOfBirth.error.required = Select yes if you want to provide the place of birth for the account holder
+accountHolders.individualHavePlaceOfBirth.change.hidden = IndividualHavePlaceOfBirth
+
+accountHolders.whereAreTheyBased.title = Is the account holder based in the UK, Jersey, Guernsey or the Isle of Man?
+accountHolders.whereAreTheyBased.heading = Is Account Holdings plc based in the UK, Jersey, Guernsey or the Isle of Man?
+accountHolders.whereAreTheyBased.checkYourAnswersLabel = Is Account Holdings plc based in the UK, Jersey, Guernsey or the Isle of Man?
+accountHolders.whereAreTheyBased.error.required = Select yes if they are based in the UK, Jersey, Guernsey or the Isle of Man
+accountHolders.whereAreTheyBased.change.hidden = WhereAreTheyBased
+accountHolderAddressNonUk.title = What is the account holder’s address?
+accountHolderAddressNonUk.heading = What is the address for {0}?
+accountHolderAddressNonUk.addressLine1 = Address line 1
+accountHolderAddressNonUk.addressLine2 = Address line 2 (optional)
+accountHolderAddressNonUk.addressLine3 = City
+accountHolderAddressNonUk.addressLine4 = Region (optional)
+accountHolderAddressNonUk.postcode = Postcode (optional)
+accountHolderAddressNonUk.country = Country
+accountHolderAddressNonUk.checkYourAnswersLabel = What is the account holder’s address?
+accountHolderAddressNonUk.change.hidden = Change the account holder’s address
+

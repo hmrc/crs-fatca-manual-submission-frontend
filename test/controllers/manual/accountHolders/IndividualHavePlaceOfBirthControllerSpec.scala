@@ -19,9 +19,8 @@ package controllers.manual.accountHolders
 import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
-import forms.manual.accountHolders.IndividualNameFormProvider
+import forms.manual.accountHolders.IndividualHavePlaceOfBirthFormProvider
 import models.SubmissionsConstants.CRS
-import models.manual.accountHolders.IndividualName
 import models.viewModels.AccountHolderId
 import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
@@ -29,40 +28,42 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.accountHolders.{AccountHolderIndividualNamePage, CurrentAccountHolderIdPage}
+import pages.manual.accountHolders.{CurrentAccountHolderIdPage, IndividualHavePlaceOfBirthPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import views.html.manual.accountHolders.IndividualNameView
+import views.html.manual.accountHolders.IndividualHavePlaceOfBirthView
 
 import scala.concurrent.Future
 
-class IndividualNameControllerSpec extends SpecBase with MockitoSugar {
+class IndividualHavePlaceOfBirthControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  private val form = new IndividualNameFormProvider()()
+  val formProvider = new IndividualHavePlaceOfBirthFormProvider()
+  val form         = formProvider()
 
-  private lazy val individualNameRoute = controllers.manual.accountHolders.routes.IndividualNameController.onPageLoad(NormalMode).url
+  lazy val individualHavePlaceOfBirthRoute = controllers.manual.accountHolders.routes.IndividualHavePlaceOfBirthController.onPageLoad(NormalMode).url
 
-  "IndividualName Controller" - {
-    val reportId               = ReportId(CRS, 2025, None, "TestfiID")
-    val currentAccountHolderId = AccountHolderId("testid")
+  "IndividualHavePlaceOfBirth Controller" - {
+
+    val reportId  = ReportId(CRS, 2025, None, "TestfiID")
+    val accountId = AccountHolderId("testId")
     val ua = emptyUserAnswers
       .withPage(ReportIdPage, reportId)
-      .withPage(CurrentAccountHolderIdPage()(reportId), currentAccountHolderId)
+      .withPage(CurrentAccountHolderIdPage()(reportId), accountId)
 
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
 
       running(application) {
-        val request = FakeRequest(GET, individualNameRoute)
-
-        val view = application.injector.instanceOf[IndividualNameView]
+        val request = FakeRequest(GET, individualHavePlaceOfBirthRoute)
 
         val result = route(application, request).value
+
+        val view = application.injector.instanceOf[IndividualHavePlaceOfBirthView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
@@ -70,22 +71,20 @@ class IndividualNameControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-      val validAnswer = IndividualName("value", "value")
-      val userAnswers = ua
-        .withPage(CurrentAccountHolderIdPage()(reportId), currentAccountHolderId)
-        .withPage(AccountHolderIndividualNamePage(currentAccountHolderId)(reportId), validAnswer)
+
+      val userAnswers = ua.set(IndividualHavePlaceOfBirthPage(accountId)(reportId), true).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, individualNameRoute)
+        val request = FakeRequest(GET, individualHavePlaceOfBirthRoute)
 
-        val view = application.injector.instanceOf[IndividualNameView]
+        val view = application.injector.instanceOf[IndividualHavePlaceOfBirthView]
 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(IndividualName("value", "value")), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
       }
     }
 
@@ -105,8 +104,8 @@ class IndividualNameControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, individualNameRoute)
-            .withFormUrlEncodedBody(("FirstName", "value"), ("LastName", "value"))
+          FakeRequest(POST, individualHavePlaceOfBirthRoute)
+            .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
@@ -121,12 +120,12 @@ class IndividualNameControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, individualNameRoute)
-            .withFormUrlEncodedBody(("value", "invalid value"))
+          FakeRequest(POST, individualHavePlaceOfBirthRoute)
+            .withFormUrlEncodedBody(("value", ""))
 
-        val boundForm = form.bind(Map("value" -> "invalid value"))
+        val boundForm = form.bind(Map("value" -> ""))
 
-        val view = application.injector.instanceOf[IndividualNameView]
+        val view = application.injector.instanceOf[IndividualHavePlaceOfBirthView]
 
         val result = route(application, request).value
 
@@ -140,7 +139,7 @@ class IndividualNameControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(maybeUserAnswers = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, individualNameRoute)
+        val request = FakeRequest(GET, individualHavePlaceOfBirthRoute)
 
         val result = route(application, request).value
 
@@ -155,8 +154,8 @@ class IndividualNameControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, individualNameRoute)
-            .withFormUrlEncodedBody(("FirstName", "value"), ("LastName", "value"))
+          FakeRequest(POST, individualHavePlaceOfBirthRoute)
+            .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
