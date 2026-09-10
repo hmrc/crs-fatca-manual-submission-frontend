@@ -25,7 +25,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 sealed trait PaymentType {
 
   def toMessage(implicit messages: Messages): String =
-    messages(s"account.paymentType.${this.toString}")
+    messages(s"account.paymentType.${this.toString}").toLowerCase
 }
 
 object PaymentType extends Enumerable.Implicits {
