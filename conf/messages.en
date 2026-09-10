@@ -637,3 +637,6 @@ accountHolderAddressNonUk.addressLine3 = City
 accountHolderAddressNonUk.addressLine4 = Region (optional)
 accountHolderAddressNonUk.postcode = Postcode (optional)
 accountHolderAddressNonUk.country = Country
+accountHolderAddressNonUk.checkYourAnswersLabel = What is the account holder’s address?
+accountHolderAddressNonUk.change.hidden = Change the account holder’s address
+
