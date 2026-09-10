@@ -22,7 +22,7 @@ import controllers.routes
 import models.*
 import models.SubmissionsConstants.{CRS, FATCA}
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
-import models.viewModels.AccountId
+import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
 import pages.manual.account.*
 import pages.manual.accountHolders.{IndividualHavePlaceOfBirthPage, IndividualNamePage, IndividualOrOrganisationPage}
@@ -115,12 +115,9 @@ class ManualSubmissionNavigator @Inject() () {
         case Individual   => controllers.manual.accountHolders.routes.IndividualNameController.onPageLoad(mode)
         case Organisation => controllers.routes.UnderConstructionController.onPageLoad()
       }
-    case (pages.manual.accountHolders.IndividualNamePage(_), _, _) => controllers.routes.UnderConstructionController.onPageLoad()
-    case (pages.manual.accountHolders.IndividualHavePlaceOfBirthPage(id), mode, ua) =>
-      ua.get(IndividualHavePlaceOfBirthPage(id)).fold(controllers.routes.JourneyRecoveryController.onPageLoad()) {
-        case true  => controllers.routes.UnderConstructionController.onPageLoad()
-        case false => controllers.routes.UnderConstructionController.onPageLoad()
-      }
+    case (pages.manual.accountHolders.IndividualNamePage(_), _, _)                  => controllers.routes.UnderConstructionController.onPageLoad()
+    case (pages.manual.accountHolders.IndividualHavePlaceOfBirthPage(id), mode, ua) => handleIndividualHavePlaceOfBirthNavigation(id, mode, ua)
+    case (pages.manual.accountHolders.WhereAreTheyBasedPage(_), _, _)               => controllers.routes.UnderConstructionController.onPageLoad()
   }
 
   private def cpsoNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
@@ -216,6 +213,13 @@ class ManualSubmissionNavigator @Inject() () {
       case (Some(true), Some(address)) => handleNavigationToSponsorResidentTaxView(userAnswers, mode)
       case (Some(false), _)            => controllers.manual.sponsor.routes.UkAddressController.onPageLoad(mode)
       case (_, _)                      => routes.JourneyRecoveryController.onPageLoad()
+    }
+
+  private def handleIndividualHavePlaceOfBirthNavigation(accountId: AccountHolderId, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
+    userAnswers.get(IndividualHavePlaceOfBirthPage(accountId)) match {
+      case Some(true)  => routes.UnderConstructionController.onPageLoad()
+      case Some(false) => controllers.manual.accountHolders.routes.WhereAreTheyBasedController.onPageLoad(mode)
+      case _           => routes.JourneyRecoveryController.onPageLoad()
     }
 
 }

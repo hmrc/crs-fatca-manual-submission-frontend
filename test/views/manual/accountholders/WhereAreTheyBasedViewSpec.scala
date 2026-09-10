@@ -17,28 +17,28 @@
 package views.manual.accountholders
 
 import base.SpecBase
-import forms.manual.accountHolders.{IndividualHavePlaceOfBirthFormProvider, IndividualNameFormProvider}
+import forms.manual.accountHolders.{IndividualNameFormProvider, WhereAreTheyBasedFormProvider}
 import models.NormalMode
 import org.jsoup.Jsoup
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
-import views.html.manual.accountHolders.IndividualHavePlaceOfBirthView
+import views.html.manual.accountHolders.{IndividualHavePlaceOfBirthView, WhereAreTheyBasedView}
 
-class IndividualHavePlaceOfBirthViewSpec extends SpecBase {
+class WhereAreTheyBasedViewSpec extends SpecBase {
 
   private val application = applicationBuilder().build()
 
-  private val view: IndividualHavePlaceOfBirthView                       = application.injector.instanceOf[IndividualHavePlaceOfBirthView]
+  private val view: WhereAreTheyBasedView                                = application.injector.instanceOf[WhereAreTheyBasedView]
   private val messagesControllerComponents: MessagesControllerComponents = application.injector.instanceOf[MessagesControllerComponents]
-  val formProvider                                                       = new IndividualHavePlaceOfBirthFormProvider()
+  val formProvider                                                       = new WhereAreTheyBasedFormProvider()
   val form                                                               = formProvider()
 
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
   implicit private val messages: Messages               = messagesControllerComponents.messagesApi.preferred(Seq(Lang("en")))
 
-  "IndividualHavePlaceOfBirthView" - {
+  "WhereAreTheyBasedView" - {
 
     "should render page components" - {
 
@@ -46,11 +46,11 @@ class IndividualHavePlaceOfBirthViewSpec extends SpecBase {
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
       "must display title" in {
-        doc.title() must include("Do you want to provide the place of birth for the account holder?")
+        doc.title() must include("Is the account holder based in the UK, Jersey, Guernsey or the Isle of Man?")
       }
 
       "must display heading" in {
-        doc.select("h1").text() must include("Do you want to provide the place of birth for Account Holdings plc?")
+        doc.select("h1").text() must include("Is Account Holdings plc based in the UK, Jersey, Guernsey or the Isle of Man?")
       }
 
       "must display button" in {
