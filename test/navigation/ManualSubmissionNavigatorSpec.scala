@@ -23,7 +23,7 @@ import models.*
 import models.CrsOrFatca.Fatca
 import models.SubmissionsConstants.{CRS, FATCA}
 import models.manual.account.{AccountPayment, PaymentType, WasAccountOpen, WhatAccountType}
-import models.manual.accountHolders.IndividualName
+import models.manual.accountHolders.{IndividualDateOfBirth, IndividualName}
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
 import models.manual.cpso.IndividualOrOrganisation
 import models.response.{Address, AddressLookup, Country}
@@ -31,10 +31,12 @@ import models.viewModels.manual.cpso.CPSOId
 import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
 import pages.manual.account.*
-import pages.manual.accountHolders.{IndividualHaveDateOfBirthPage, IndividualNamePage, IndividualOrOrganisationPage}
+import pages.manual.accountHolders.{IndividualDateOfBirthPage, IndividualHaveDateOfBirthPage, IndividualNamePage, IndividualOrOrganisationPage}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.*
+
+import java.time.LocalDate
 
 class ManualSubmissionNavigatorSpec extends SpecBase {
 
@@ -647,6 +649,35 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
 
             navigator.nextPage(
               IndividualHaveDateOfBirthPage(currentAccountHolderId),
+              NormalMode,
+              ua
+            ) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
+        }
+
+        "IndividualDateOfBirthPage" - {
+
+          "must go to under construction page after entering DOB" in {
+            val ua = UserAnswers("id")
+              .withPage(
+                IndividualDateOfBirthPage(currentAccountHolderId)(reportId),
+                IndividualDateOfBirth(LocalDate.of(1996, 3, 8))
+              )
+
+            navigator.nextPage(
+              IndividualDateOfBirthPage(currentAccountHolderId),
+              NormalMode,
+              ua
+            ) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+
+          "must go to Journey Recovery when the answer is missing" in {
+            val ua = UserAnswers("id")
+
+            navigator.nextPage(
+              IndividualDateOfBirthPage(currentAccountHolderId),
               NormalMode,
               ua
             ) mustBe
