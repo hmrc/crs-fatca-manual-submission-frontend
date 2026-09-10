@@ -25,7 +25,13 @@ import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organi
 import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
 import pages.manual.account.*
-import pages.manual.accountHolders.{AddressLookupForAccountHolderPage, IndividualNamePage, IndividualOrOrganisationPage, UkPostCodeForAccountHolderPage}
+import pages.manual.accountHolders.{
+  AddressLookupForAccountHolderPage,
+  IndividualNamePage,
+  IndividualOrOrganisationPage,
+  IsThisTheAddressForAccountHoldersPage,
+  UkPostCodeForAccountHolderPage
+}
 import pages.manual.cpso.IndividualNamePage
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
@@ -117,6 +123,8 @@ class ManualSubmissionNavigator @Inject() () {
       }
     case (pages.manual.accountHolders.IndividualNamePage(_), _, _)             => controllers.routes.UnderConstructionController.onPageLoad()
     case (UkPostCodeForAccountHolderPage(accountHolderId, reportId), mode, ua) => handleUKPostcodeNavigationForAccountHolders(ua, mode, accountHolderId)
+    case (IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId), mode, ua) =>
+      handleIsThisTheAddressForAccountHoldersRouting(ua, mode, accountHolderId)
   }
 
   private def cpsoNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
@@ -207,6 +215,15 @@ class ManualSubmissionNavigator @Inject() () {
       case Some(value) if value.length.equals(1) => controllers.manual.accountHolders.routes.IsThisTheAddressForAccountHoldersController.onPageLoad(mode)
       case Some(value)                           => routes.UnderConstructionController.onPageLoad()
       case None                                  => routes.JourneyRecoveryController.onPageLoad()
+    }
+
+  private def handleIsThisTheAddressForAccountHoldersRouting(userAnswers: UserAnswers, mode: Mode, accountHolderId: AccountHolderId)(implicit
+    reportId: ReportId
+  ) =
+    userAnswers.get(IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId)) match {
+      case Some(true)  => routes.UnderConstructionController.onPageLoad()
+      case Some(false) => routes.UnderConstructionController.onPageLoad()
+      case None        => routes.JourneyRecoveryController.onPageLoad()
     }
 
   private def handleWhatIsAddressForSponsorNavigation(userAnswers: UserAnswers, mode: Mode)(implicit reportId: ReportId) =

@@ -31,7 +31,13 @@ import models.viewModels.manual.cpso.CPSOId
 import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
 import pages.manual.account.*
-import pages.manual.accountHolders.{AddressLookupForAccountHolderPage, IndividualNamePage, IndividualOrOrganisationPage, UkPostCodeForAccountHolderPage}
+import pages.manual.accountHolders.{
+  AddressLookupForAccountHolderPage,
+  IndividualNamePage,
+  IndividualOrOrganisationPage,
+  IsThisTheAddressForAccountHoldersPage,
+  UkPostCodeForAccountHolderPage
+}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.*
@@ -654,6 +660,34 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           "must go to JourneyRecovery page when AccountPaymentListPage is absent" in {
             val ua = UserAnswers("id")
             navigator.nextPage(PaymentTypePage(accountId), NormalMode, ua) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
+        }
+
+        "IsThisTheAddressForAccountHoldersPage" - {
+          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+          val accountHolderId             = AccountHolderId("holder-id")
+
+          "must go to under construction for a yes answer" in {
+            val ua = UserAnswers("id")
+              .withPage(IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId), true)
+
+            navigator.nextPage(IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+
+          "must go to under construction for a no answer" in {
+            val ua = UserAnswers("id")
+              .withPage(IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId), false)
+
+            navigator.nextPage(IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+
+          "must go to journey recovery when IsThisTheAddressForAccountHoldersPage is not present" in {
+            val ua = UserAnswers("id")
+
+            navigator.nextPage(IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId), NormalMode, ua) mustBe
               controllers.routes.JourneyRecoveryController.onPageLoad()
           }
         }
