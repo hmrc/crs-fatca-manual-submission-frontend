@@ -137,14 +137,13 @@ class ManualSubmissionNavigator @Inject() () {
         case Some(true) =>
           controllers.manual.accountHolders.routes.IndividualDateOfBirthController.onPageLoad(mode)
         case Some(false) =>
-          controllers.routes.UnderConstructionController.onPageLoad()
+          controllers.manual.accountHolders.routes.IndividualHavePlaceOfBirthController.onPageLoad(mode)
         case None =>
           controllers.routes.JourneyRecoveryController.onPageLoad()
       }
     case (pages.manual.accountHolders.IndividualDateOfBirthPage(id), mode, ua) =>
       ua.get(pages.manual.accountHolders.IndividualDateOfBirthPage(id)) match {
-        case Some(_) =>
-          controllers.routes.UnderConstructionController.onPageLoad()
+        case Some(_) => controllers.manual.accountHolders.routes.IndividualHavePlaceOfBirthController.onPageLoad(mode)
         case None =>
           controllers.routes.JourneyRecoveryController.onPageLoad()
       }

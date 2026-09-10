@@ -640,7 +640,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               NormalMode,
               ua
             ) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.accountHolders.routes.IndividualHavePlaceOfBirthController.onPageLoad(NormalMode)
           }
 
           "must go to Journey Recovery when the answer is missing" in {
@@ -669,7 +669,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               NormalMode,
               ua
             ) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.accountHolders.routes.IndividualHavePlaceOfBirthController.onPageLoad(NormalMode)
           }
 
           "must go to Journey Recovery when the answer is missing" in {
