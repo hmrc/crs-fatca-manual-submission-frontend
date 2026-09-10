@@ -60,6 +60,10 @@ class PaymentTypeViewSpec extends SpecBase {
         doc.select("p.govuk-body").text() must include("You can add more types of payments later.")
       }
 
+      "must contain hidden legend text" in {
+        doc.select("legend.govuk-fieldset__legend").text() must include("What type of payments were these for this account?")
+      }
+
       "must display CRS payment type options when showDividendsAndInterestRadioFields is true" in {
         val elements = doc.select(".govuk-radios__label")
         elements.size() mustBe PaymentType.crsValues.size

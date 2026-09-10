@@ -18,11 +18,11 @@ package models.manual.accountHolders
 
 import play.api.libs.json.*
 
-case class IndividualName(firstName: String, lastName: String) {
-  def fullName: String = s"$firstName $lastName".trim
-}
+import java.time.LocalDate
 
-object IndividualName {
+case class IndividualDateOfBirth(dateOfBirth: LocalDate)
 
-  implicit val format: OFormat[IndividualName] = Json.format
+object IndividualDateOfBirth {
+
+  implicit val format: OFormat[IndividualDateOfBirth] = Json.format
 }

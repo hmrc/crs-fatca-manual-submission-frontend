@@ -109,11 +109,42 @@ class ManualSubmissionNavigator @Inject() () {
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
-  private def accountHolderNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
+  private def accountHolderNavigation(implicit
+    reportId: ReportId
+  ): PartialFunction[(Page, Mode, UserAnswers), Call] = {
+
     case (IndividualOrOrganisationPage(id), mode, ua) =>
-      ua.get(IndividualOrOrganisationPage(id)).fold(controllers.routes.JourneyRecoveryController.onPageLoad()) {
-        case Individual   => controllers.manual.accountHolders.routes.IndividualNameController.onPageLoad(mode)
-        case Organisation => controllers.routes.UnderConstructionController.onPageLoad()
+      ua.get(IndividualOrOrganisationPage(id))
+        .fold(controllers.routes.JourneyRecoveryController.onPageLoad()) {
+          case Individual =>
+            controllers.manual.accountHolders.routes.IndividualNameController.onPageLoad(mode)
+          case Organisation =>
+            controllers.routes.UnderConstructionController.onPageLoad()
+        }
+
+    case (AccountHolderIndividualNamePage(id), mode, ua) =>
+      ua.get(AccountHolderIndividualNamePage(id)) match {
+        case Some(_) =>
+          controllers.manual.accountHolders.routes.IndividualHaveDateOfBirthController.onPageLoad(mode)
+        case None =>
+          controllers.routes.JourneyRecoveryController.onPageLoad()
+      }
+
+    case (pages.manual.accountHolders.IndividualHaveDateOfBirthPage(id), mode, ua) =>
+      ua.get(pages.manual.accountHolders.IndividualHaveDateOfBirthPage(id)) match {
+        case Some(true) =>
+          controllers.manual.accountHolders.routes.IndividualDateOfBirthController.onPageLoad(mode)
+        case Some(false) =>
+          controllers.routes.UnderConstructionController.onPageLoad()
+        case None =>
+          controllers.routes.JourneyRecoveryController.onPageLoad()
+      }
+    case (pages.manual.accountHolders.IndividualDateOfBirthPage(id), mode, ua) =>
+      ua.get(pages.manual.accountHolders.IndividualDateOfBirthPage(id)) match {
+        case Some(_) =>
+          controllers.routes.UnderConstructionController.onPageLoad()
+        case None =>
+          controllers.routes.JourneyRecoveryController.onPageLoad()
       }
     case (pages.manual.accountHolders.AccountHolderIndividualNamePage(_), _, _) => controllers.routes.UnderConstructionController.onPageLoad()
   }

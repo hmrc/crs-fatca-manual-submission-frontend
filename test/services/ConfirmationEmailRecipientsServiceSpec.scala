@@ -17,8 +17,8 @@
 package services
 
 import base.SpecBase
-import models.{FIDetail, ViewFIDetailsResponse}
 import models.ServiceErrors.NoFiDetailFound
+import models.response.{FIDetail, ViewFIDetailsResponse}
 import models.subscription.*
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
@@ -257,7 +257,7 @@ class ConfirmationEmailRecipientsServiceSpec extends SpecBase {
                 "SubscriptionID" -> "SUB001",
                 "TINDetails" -> Json.arr(
                   Json.obj(
-                    "TINType"  -> "EIN",
+                    "TINType"  -> "CRN",
                     "TIN"      -> "12-3456789",
                     "IssuedBy" -> "US"
                   )

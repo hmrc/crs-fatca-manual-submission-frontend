@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
-package models.manual.accountHolders
+package models.response
 
-import play.api.libs.json.*
+import play.api.libs.json.{Json, OFormat}
 
-case class IndividualName(firstName: String, lastName: String) {
-  def fullName: String = s"$firstName $lastName".trim
-}
+final case class TINDetails(TINType: TINType, TIN: String, IssuedBy: String)
 
-object IndividualName {
-
-  implicit val format: OFormat[IndividualName] = Json.format
-}
+object TINDetails:
+  given format: OFormat[TINDetails] = Json.format[TINDetails]

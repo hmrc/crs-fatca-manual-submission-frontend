@@ -17,7 +17,8 @@
 package base
 
 import models.SubmissionsConstants.{FATCA, FATCA1, PASSED}
-import models.{AddressDetails, FIDetail, SubmissionsConstants, SubmittedReport, UserAnswers}
+import models.response.{AddressDetails, FIDetail}
+import models.{SubmissionsConstants, SubmittedReport, UserAnswers}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import java.time.LocalDateTime
