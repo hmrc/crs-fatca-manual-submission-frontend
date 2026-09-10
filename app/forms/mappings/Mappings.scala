@@ -99,6 +99,35 @@ trait Mappings extends Formatters with Constraints {
   ): FieldMapping[LocalDate] =
     of(new LocalDateFormatter(invalidKey, allRequiredKey, twoRequiredKey, requiredKey, args))
 
+  protected def dateOfBirth(
+    requiredKey: String,
+    invalidCharactersKey: String,
+    dayRequiredKey: String,
+    monthRequiredKey: String,
+    yearRequiredKey: String,
+    dayMonthRequiredKey: String,
+    dayYearRequiredKey: String,
+    monthYearRequiredKey: String,
+    realDateKey: String,
+    pastKey: String,
+    futureKey: String
+  ): FieldMapping[LocalDate] =
+    of(
+      new DateOfBirthFormatter(
+        requiredKey = requiredKey,
+        invalidCharactersKey = invalidCharactersKey,
+        dayRequiredKey = dayRequiredKey,
+        monthRequiredKey = monthRequiredKey,
+        yearRequiredKey = yearRequiredKey,
+        dayMonthRequiredKey = dayMonthRequiredKey,
+        dayYearRequiredKey = dayYearRequiredKey,
+        monthYearRequiredKey = monthYearRequiredKey,
+        realDateKey = realDateKey,
+        pastKey = pastKey,
+        futureKey = futureKey
+      )
+    )
+
   protected def currency(requiredKey: String = "error.required",
                          invalidNumeric: String = "error.invalidNumeric",
                          nonNumericKey: String = "error.nonNumeric",

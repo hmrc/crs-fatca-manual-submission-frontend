@@ -17,7 +17,7 @@
 package views.manual.accountholders
 
 import base.SpecBase
-import forms.manual.accountHolders.{IndividualHavePlaceOfBirthFormProvider, IndividualNameFormProvider}
+import forms.manual.accountHolders.IndividualHavePlaceOfBirthFormProvider
 import models.NormalMode
 import org.jsoup.Jsoup
 import play.api.i18n.{Lang, Messages}

@@ -18,7 +18,7 @@ package connectors
 
 import config.FrontendAppConfig
 import models.ServiceErrors.NoFiDetailFound
-import models.{FIDetail, ViewFIDetailsResponse}
+import models.response.{FIDetail, ViewFIDetailsResponse}
 import play.api.Logging
 import play.api.http.Status.*
 import play.api.libs.json.{JsError, JsSuccess, Json}
