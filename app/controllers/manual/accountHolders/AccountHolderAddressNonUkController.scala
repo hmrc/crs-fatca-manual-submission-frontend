@@ -18,14 +18,14 @@ package controllers.manual.accountHolders
 
 import connectors.DatabaseConnector
 import controllers.actions.*
+import forms.manual.accountHolders.AccountHolderAddressNonUkFormProvider
 import models.{Countries, Mode, ReportId}
 import navigation.ManualSubmissionNavigator
+import pages.manual.accountHolders.{AccountHolderAddressNonUkPage, AccountHolderIndividualNamePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import pages.manual.accountHolders.AccountHolderAddressNonUkPage
 import views.html.manual.accountHolders.AccountHolderAddressNonUkView
-import forms.manual.accountHolders.AccountHolderAddressNonUkFormProvider
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -42,34 +42,42 @@ class AccountHolderAddressNonUkController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  val form                     = formProvider()
-  val PLACEHOLDERACCOUNTHOLDER = "PLACEHOLDERACCOUNTHOLDER"
+  val form = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequired() {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
 
-      val preparedForm = request.userAnswers.get(AccountHolderAddressNonUkPage()) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
+      request.userAnswers
+        .get(AccountHolderIndividualNamePage(request.accountHolderId)(request.reportId))
+        .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)) {
+          ahName =>
+            val preparedForm = request.userAnswers.get(AccountHolderAddressNonUkPage()) match {
+              case None        => form
+              case Some(value) => form.fill(value)
+            }
+            Ok(view(preparedForm, mode, ahName.fullName, Countries.nonUkTerritories))
 
-      Ok(view(preparedForm, mode, PLACEHOLDERACCOUNTHOLDER, Countries.nonUkTerritories))
+        }
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequired().async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
-
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, PLACEHOLDERACCOUNTHOLDER, Countries.nonUkTerritories))),
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(AccountHolderAddressNonUkPage(), value))
-              _              <- repository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(AccountHolderAddressNonUkPage(), mode, updatedAnswers))
-        )
+      request.userAnswers
+        .get(AccountHolderIndividualNamePage(request.accountHolderId)(request.reportId))
+        .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))) {
+          ahName =>
+            form
+              .bindFromRequest()
+              .fold(
+                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, ahName.fullName, Countries.nonUkTerritories))),
+                value =>
+                  for {
+                    updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(AccountHolderAddressNonUkPage(), value))
+                    _              <- repository.set(updatedAnswers)
+                  } yield Redirect(navigator.nextPage(AccountHolderAddressNonUkPage(), mode, updatedAnswers))
+              )
+        }
   }
 }

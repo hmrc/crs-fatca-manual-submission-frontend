@@ -17,7 +17,7 @@
 package viewmodels.checkAnswers.manual.accountHolders
 
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.accountHolders.{CurrentAccountHolderIdPage, IndividualNamePage}
+import pages.manual.accountHolders.{AccountHolderIndividualNamePage, CurrentAccountHolderIdPage}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
@@ -30,9 +30,9 @@ object IndividualNameSummary {
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
     for {
       currentAccountHolderId <- answers.get(CurrentAccountHolderIdPage()(reportId))
-      answer                 <- answers.get(IndividualNamePage(currentAccountHolderId)(reportId))
+      answer                 <- answers.get(AccountHolderIndividualNamePage(currentAccountHolderId)(reportId))
     } yield
-      val value = HtmlFormat.escape(answer.FirstName).toString + "<br/>" + HtmlFormat.escape(answer.LastName).toString
+      val value = HtmlFormat.escape(answer.firstName).toString + "<br/>" + HtmlFormat.escape(answer.lastName).toString
 
       SummaryListRowViewModel(
         key = "individualName.checkYourAnswersLabel",

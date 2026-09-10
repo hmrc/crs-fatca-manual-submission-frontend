@@ -22,6 +22,6 @@ import models.viewModels.AccountHolderId
 import pages.QuestionPage
 import play.api.libs.json.JsPath
 
-final case class IndividualNamePage(accountHolderId: AccountHolderId)(implicit reportId: ReportId) extends QuestionPage[IndividualName]:
+final case class AccountHolderIndividualNamePage(accountHolderId: AccountHolderId)(implicit reportId: ReportId) extends QuestionPage[IndividualName]:
 
   override def path: JsPath = JsPath \ reportId.mongoKey \ "accountHolder" \ accountHolderId.value \ "individualName"

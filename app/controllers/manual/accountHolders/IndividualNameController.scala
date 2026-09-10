@@ -21,7 +21,7 @@ import controllers.actions.*
 import forms.manual.accountHolders.IndividualNameFormProvider
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.accountHolders.IndividualNamePage
+import pages.manual.accountHolders.AccountHolderIndividualNamePage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -48,7 +48,7 @@ class IndividualNameController @Inject() (
     implicit request =>
       implicit val reportId: ReportId = request.reportId
 
-      val preparedForm = request.userAnswers.get(IndividualNamePage(request.accountHolderId)) match {
+      val preparedForm = request.userAnswers.get(AccountHolderIndividualNamePage(request.accountHolderId)) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
@@ -66,9 +66,9 @@ class IndividualNameController @Inject() (
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(IndividualNamePage(request.accountHolderId), value))
+              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(AccountHolderIndividualNamePage(request.accountHolderId), value))
               _              <- repository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(IndividualNamePage(request.accountHolderId), mode, updatedAnswers))
+            } yield Redirect(navigator.nextPage(AccountHolderIndividualNamePage(request.accountHolderId), mode, updatedAnswers))
         )
   }
 }

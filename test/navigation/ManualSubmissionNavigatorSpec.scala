@@ -31,7 +31,7 @@ import models.viewModels.manual.cpso.CPSOId
 import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
 import pages.manual.account.*
-import pages.manual.accountHolders.{IndividualNamePage, IndividualOrOrganisationPage}
+import pages.manual.accountHolders.{AccountHolderIndividualNamePage, IndividualOrOrganisationPage}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.*
@@ -562,8 +562,8 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         "IndividualName" - {
           "must go to UnderConstruction page" in {
             val ua = UserAnswers("id")
-              .withPage(IndividualNamePage(currentAccountHolderId)(reportId), IndividualName("firstName", "lastName"))
-            navigator.nextPage(IndividualNamePage(currentAccountHolderId), NormalMode, ua) mustBe
+              .withPage(AccountHolderIndividualNamePage(currentAccountHolderId)(reportId), IndividualName("firstName", "lastName"))
+            navigator.nextPage(AccountHolderIndividualNamePage(currentAccountHolderId), NormalMode, ua) mustBe
               controllers.routes.UnderConstructionController.onPageLoad()
           }
         }

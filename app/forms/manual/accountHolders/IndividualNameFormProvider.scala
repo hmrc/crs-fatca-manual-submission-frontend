@@ -48,7 +48,7 @@ class IndividualNameFormProvider @Inject() extends Mappings {
         )
       )
     )(IndividualName.apply)(
-      x => Some((x.FirstName, x.LastName))
+      x => Some((x.firstName, x.lastName))
     )
   )
 }
