@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package models.manual.account
+package models.response
 
 import play.api.libs.json.{Json, OFormat}
 
-case class AccountPayment(paymentType: PaymentType, accountPaymentsAmount: Option[AccountPaymentsAmount] = None)
+final case class TINDetails(TINType: TINType, TIN: String, IssuedBy: String)
 
-object AccountPayment {
-  implicit val format: OFormat[AccountPayment] = Json.format
-
-}
+object TINDetails:
+  given format: OFormat[TINDetails] = Json.format[TINDetails]

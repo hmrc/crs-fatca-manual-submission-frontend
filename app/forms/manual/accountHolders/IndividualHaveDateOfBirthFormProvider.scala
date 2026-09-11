@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-package models.manual.account
+package forms.manual.accountHolders
 
-import play.api.libs.json.{Json, OFormat}
+import forms.mappings.Mappings
+import play.api.data.Form
 
-case class AccountPayment(paymentType: PaymentType, accountPaymentsAmount: Option[AccountPaymentsAmount] = None)
+import javax.inject.Inject
 
-object AccountPayment {
-  implicit val format: OFormat[AccountPayment] = Json.format
+class IndividualHaveDateOfBirthFormProvider @Inject() extends Mappings {
 
+  def apply(): Form[Boolean] =
+    Form(
+      "value" -> boolean("individualHaveDateOfBirth.error.required")
+    )
 }

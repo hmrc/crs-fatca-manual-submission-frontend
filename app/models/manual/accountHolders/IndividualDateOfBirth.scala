@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package models.manual.account
+package models.manual.accountHolders
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.*
 
-case class AccountPayment(paymentType: PaymentType, accountPaymentsAmount: Option[AccountPaymentsAmount] = None)
+import java.time.LocalDate
 
-object AccountPayment {
-  implicit val format: OFormat[AccountPayment] = Json.format
+case class IndividualDateOfBirth(dateOfBirth: LocalDate)
 
+object IndividualDateOfBirth {
+
+  implicit val format: OFormat[IndividualDateOfBirth] = Json.format
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package models
+package models.response
 
 import play.api.libs.json.{Json, OFormat}
 
@@ -68,11 +68,6 @@ final case class ContactDetails(ContactName: String, EmailAddress: String, Phone
 
 object ContactDetails:
   given format: OFormat[ContactDetails] = Json.format[ContactDetails]
-
-final case class TINDetails(TINType: String, TIN: String, IssuedBy: String)
-
-object TINDetails:
-  given format: OFormat[TINDetails] = Json.format[TINDetails]
 
 final case class AddressDetails(
   AddressLine1: String,

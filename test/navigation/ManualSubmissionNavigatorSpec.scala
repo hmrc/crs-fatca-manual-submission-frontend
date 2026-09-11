@@ -22,8 +22,9 @@ import controllers.routes
 import models.*
 import models.CrsOrFatca.Fatca
 import models.SubmissionsConstants.{CRS, FATCA}
+import models.manual.account.PaymentType.*
 import models.manual.account.{AccountPayment, PaymentType, WasAccountOpen, WhatAccountType}
-import models.manual.accountHolders.IndividualName
+import models.manual.accountHolders.{IndividualDateOfBirth, IndividualName}
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
 import models.manual.cpso.IndividualOrOrganisation
 import models.response.{Address, AddressLookup, Country}
@@ -41,6 +42,8 @@ import pages.manual.accountHolders.{
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.*
+
+import java.time.LocalDate
 
 class ManualSubmissionNavigatorSpec extends SpecBase {
 
@@ -585,47 +588,162 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
       }
 
       "accountHolderPages" - {
+
         val currentAccountHolderId = AccountHolderId("01")
+
         "IndividualOrOrganisationPage" - {
+
           "must go to UnderConstruction page when organisation is selected" in {
             val ua = UserAnswers("id")
-              .withPage(IndividualOrOrganisationPage(currentAccountHolderId)(reportId), Organisation)
-            navigator.nextPage(IndividualOrOrganisationPage(currentAccountHolderId), NormalMode, ua) mustBe
+              .withPage(
+                IndividualOrOrganisationPage(currentAccountHolderId)(reportId),
+                Organisation
+              )
+
+            navigator.nextPage(
+              IndividualOrOrganisationPage(currentAccountHolderId),
+              NormalMode,
+              ua
+            ) mustBe
               controllers.routes.UnderConstructionController.onPageLoad()
           }
 
           "must go to IndividualName page when individual is selected" in {
             val ua = UserAnswers("id")
-              .withPage(IndividualOrOrganisationPage(currentAccountHolderId)(reportId), Individual)
-            navigator.nextPage(IndividualOrOrganisationPage(currentAccountHolderId), NormalMode, ua) mustBe
-              controllers.manual.accountHolders.routes.IndividualNameController.onPageLoad(NormalMode)
+              .withPage(
+                IndividualOrOrganisationPage(currentAccountHolderId)(reportId),
+                Individual
+              )
+
+            navigator.nextPage(
+              IndividualOrOrganisationPage(currentAccountHolderId),
+              NormalMode,
+              ua
+            ) mustBe
+              controllers.manual.accountHolders.routes.IndividualNameController
+                .onPageLoad(NormalMode)
           }
 
-          "must go to Journey Recovery if IndividualOrOrganisationPage is absent" in {
+          "must go to Journey Recovery when the answer is missing" in {
             val ua = UserAnswers("id")
-            navigator.nextPage(IndividualOrOrganisationPage(currentAccountHolderId), NormalMode, ua) mustBe
-              routes.JourneyRecoveryController.onPageLoad()
-          }
 
-          "must go to JourneyRecovery page when No value is selected" in {
-            val ua = UserAnswers("id")
-            navigator.nextPage(IndividualOrOrganisationPage(currentAccountHolderId), NormalMode, ua) mustBe
+            navigator.nextPage(
+              IndividualOrOrganisationPage(currentAccountHolderId),
+              NormalMode,
+              ua
+            ) mustBe
               controllers.routes.JourneyRecoveryController.onPageLoad()
           }
         }
-        "IndividualName" - {
-          "must go to UnderConstruction page" in {
+
+        "IndividualNamePage" - {
+
+          "must go to IndividualHaveDateOfBirth page when the individual name exists" in {
             val ua = UserAnswers("id")
-              .withPage(IndividualNamePage(currentAccountHolderId)(reportId), IndividualName("firstName", "lastName"))
-            navigator.nextPage(IndividualNamePage(currentAccountHolderId), NormalMode, ua) mustBe
+              .withPage(
+                IndividualNamePage(currentAccountHolderId)(reportId),
+                IndividualName("firstName", "lastName")
+              )
+
+            navigator.nextPage(
+              IndividualNamePage(currentAccountHolderId),
+              NormalMode,
+              ua
+            ) mustBe
+              controllers.manual.accountHolders.routes.IndividualHaveDateOfBirthController
+                .onPageLoad(NormalMode)
+          }
+
+          "must go to Journey Recovery when the individual name is missing" in {
+            val ua = UserAnswers("id")
+
+            navigator.nextPage(
+              IndividualNamePage(currentAccountHolderId),
+              NormalMode,
+              ua
+            ) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
+        }
+
+        "IndividualHaveDateOfBirthPage" - {
+
+          "must go to IndividualDateOfBirth page when the answer is yes" in {
+            val ua = UserAnswers("id")
+              .withPage(
+                IndividualHaveDateOfBirthPage(currentAccountHolderId)(reportId),
+                true
+              )
+
+            navigator.nextPage(
+              IndividualHaveDateOfBirthPage(currentAccountHolderId),
+              NormalMode,
+              ua
+            ) mustBe
+              controllers.manual.accountHolders.routes.IndividualDateOfBirthController
+                .onPageLoad(NormalMode)
+          }
+
+          "must go to UnderConstruction page when the answer is no" in {
+            val ua = UserAnswers("id")
+              .withPage(
+                IndividualHaveDateOfBirthPage(currentAccountHolderId)(reportId),
+                false
+              )
+
+            navigator.nextPage(
+              IndividualHaveDateOfBirthPage(currentAccountHolderId),
+              NormalMode,
+              ua
+            ) mustBe
               controllers.routes.UnderConstructionController.onPageLoad()
+          }
+
+          "must go to Journey Recovery when the answer is missing" in {
+            val ua = UserAnswers("id")
+
+            navigator.nextPage(
+              IndividualHaveDateOfBirthPage(currentAccountHolderId),
+              NormalMode,
+              ua
+            ) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
+        }
+
+        "IndividualDateOfBirthPage" - {
+
+          "must go to under construction page after entering DOB" in {
+            val ua = UserAnswers("id")
+              .withPage(
+                IndividualDateOfBirthPage(currentAccountHolderId)(reportId),
+                IndividualDateOfBirth(LocalDate.of(1996, 3, 8))
+              )
+
+            navigator.nextPage(
+              IndividualDateOfBirthPage(currentAccountHolderId),
+              NormalMode,
+              ua
+            ) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+
+          "must go to Journey Recovery when the answer is missing" in {
+            val ua = UserAnswers("id")
+
+            navigator.nextPage(
+              IndividualDateOfBirthPage(currentAccountHolderId),
+              NormalMode,
+              ua
+            ) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
           }
         }
 
         "HavePaymentPage" - {
           implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
           val accountId                   = AccountId("TestAccountId")
-          "must go to under construction page when have payments is no" in {
+          "must go to /check-answers (under construction) page when answer is No" in {
             val ua = UserAnswers("id")
               .withPage(HavePaymentsPage(accountId), false)
 
@@ -633,7 +751,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               controllers.routes.UnderConstructionController.onPageLoad()
           }
 
-          "must redirected to check account is depository account when have payments is yes" in {
+          "navigation must be handled by CheckAccountTypeIsDepository when have payments is yes" in {
             Seq(WhatAccountType.Custodial, WhatAccountType.InsuranceOrAnnuityContract, WhatAccountType.InvestmentEntity, WhatAccountType.NotReported)
               .foreach {
                 accountType =>
@@ -650,11 +768,11 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         "PaymentTypePage" - {
           implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
           val accountId                   = AccountId("TestAccountId")
-          "must go to UnderConstruction page" in {
+          "must go to AccountPaymentsAmount page" in {
             val ua = UserAnswers("id")
               .withPage(AccountPaymentListPage(accountId), Seq(AccountPayment(PaymentType.CRSDividends)))
             navigator.nextPage(PaymentTypePage(accountId), NormalMode, ua) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.account.routes.AccountPaymentsAmountController.onPageLoad(NormalMode)
           }
 
           "must go to JourneyRecovery page when AccountPaymentListPage is absent" in {
