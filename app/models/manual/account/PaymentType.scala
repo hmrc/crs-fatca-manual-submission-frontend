@@ -17,13 +17,16 @@
 package models.manual.account
 
 import models.SubmissionsConstants.{CRS, FATCA, RegimeType}
-import models.manual.account.PaymentType.crsValues
 import models.{Enumerable, WithName}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 
-sealed trait PaymentType
+sealed trait PaymentType {
+
+  def toMessage(implicit messages: Messages): String =
+    messages(s"account.paymentType.${this.toString}").toLowerCase
+}
 
 object PaymentType extends Enumerable.Implicits {
 

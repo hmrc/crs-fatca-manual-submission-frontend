@@ -656,6 +656,20 @@ account.paymentType.checkYourAnswersLabel = paymentType
 account.paymentType.error.required = Select what type of payments these were for this account
 account.paymentType.change.hidden = PaymentType
 
+accountPaymentsAmount.title = What was the total amount of these {0} payments?
+accountPaymentsAmount.heading = What was the total amount of these {0} payments?
+accountPaymentsAmount.para = You should report the total amount of all {0} payments made in the reporting year.
+accountPaymentsAmount.Currency = Currency
+accountPaymentsAmount.label.Amount = Amount
+accountPaymentsAmount.amount.hint = For example, 20124 or -112.43.
+accountPaymentsAmount.checkYourAnswersLabel = AccountPaymentsAmount
+accountPaymentsAmount.error.required.currency = Select an option for the currency
+accountPaymentsAmount.error.required.amount = Enter a figure for the amount
+accountPaymentsAmount.error.invalid.CRS = Amount must only include numbers 0 to 9 and a full stop
+accountPaymentsAmount.error.invalid.FATCA = Amount must only include numbers 0 to 9, a minus sign and a full stop
+accountPaymentsAmount.error.minus.FATCA = Amount can only include a minus sign as the first character
+accountPaymentsAmount.error.decimalPlaces = Amount cannot have more than 2 decimal places
+
 accountHolders.individualHavePlaceOfBirth.title = Do you want to provide the place of birth for the account holder?
 accountHolders.individualHavePlaceOfBirth.heading = Do you want to provide the place of birth for Account Holdings plc?
 accountHolders.individualHavePlaceOfBirth.checkYourAnswersLabel = individualHavePlaceOfBirth
