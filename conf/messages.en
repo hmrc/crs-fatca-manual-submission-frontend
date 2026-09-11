@@ -669,3 +669,19 @@ accountPaymentsAmount.error.invalid.CRS = Amount must only include numbers 0 to 
 accountPaymentsAmount.error.invalid.FATCA = Amount must only include numbers 0 to 9, a minus sign and a full stop
 accountPaymentsAmount.error.minus.FATCA = Amount can only include a minus sign as the first character
 accountPaymentsAmount.error.decimalPlaces = Amount cannot have more than 2 decimal places
+
+account.holder.uk.postcode.title = What is the postcode for the account holder?
+account.holder.uk.postcode.heading = What is the postcode for {0}?
+account.holder.uk.postcode.p1 = Enter the postcode to find the address automatically.
+account.holder.uk.postcode.hidden.label= What is the postcode for {0}?
+account.holder.uk.postcode.button = Find address
+account.holder.uk.postcode.p2 = Or enter the address manually
+
+account.holder.uk.isThisTheAddressForAccountHolders.title = Is this the account holder’s address?
+account.holder.uk.isThisTheAddressForAccountHolders.heading = Is this the address for {0}?
+account.holder.uk.isThisTheAddressForAccountHolders.error.required = Select yes if this is the account holder’s address
+isThisTheAddressForAccountHolders.checkYourAnswersLabel = isThisTheAddressForAccountHolders
+isThisTheAddressForAccountHolders.change.hidden = IsThisTheAddressForAccountHolders
+
+whatIsAddressForAccountHolder.checkYourAnswersLabel = Address
+whatIsAddressForAccountHolder.change.hidden = Change the address for the account holder
