@@ -22,6 +22,8 @@ import forms.manual.accountHolders.IndividualHavePlaceOfBirthFormProvider
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
 import pages.manual.accountHolders.IndividualHavePlaceOfBirthPage
+import pages.manual.accountHolders.IndividualNamePage
+import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -40,7 +42,8 @@ class IndividualHavePlaceOfBirthController @Inject() (
   view: IndividualHavePlaceOfBirthView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with Logging {
 
   val form = formProvider()
 
@@ -49,12 +52,18 @@ class IndividualHavePlaceOfBirthController @Inject() (
 
       implicit val reportId: ReportId = request.reportId
 
-      val preparedForm = request.userAnswers.get(IndividualHavePlaceOfBirthPage(request.accountHolderId)) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
+      request.userAnswers.get(IndividualNamePage(request.accountHolderId)) match {
+        case Some(name) =>
+          val preparedForm = request.userAnswers.get(IndividualHavePlaceOfBirthPage(request.accountHolderId)) match {
+            case None        => form
+            case Some(value) => form.fill(value)
+          }
 
-      Ok(view(preparedForm, mode))
+          Ok(view(preparedForm, mode, name.fullName))
+        case None =>
+          logger.error("Individual Name value is missing")
+          Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+      }
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequired().async {
@@ -62,15 +71,22 @@ class IndividualHavePlaceOfBirthController @Inject() (
 
       implicit val reportId: ReportId = request.reportId
 
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(IndividualHavePlaceOfBirthPage(request.accountHolderId), value))
-              _              <- repository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(IndividualHavePlaceOfBirthPage(request.accountHolderId), mode, updatedAnswers))
-        )
+      request.userAnswers.get(IndividualNamePage(request.accountHolderId)) match {
+        case Some(name) =>
+          form
+            .bindFromRequest()
+            .fold(
+              formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, name.fullName))),
+              value =>
+                for {
+                  updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(IndividualHavePlaceOfBirthPage(request.accountHolderId), value))
+                  _              <- repository.set(updatedAnswers)
+                } yield Redirect(navigator.nextPage(IndividualHavePlaceOfBirthPage(request.accountHolderId), mode, updatedAnswers))
+            )
+        case None =>
+          logger.error("Individual Name value is missing")
+          Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+      }
+
   }
 }

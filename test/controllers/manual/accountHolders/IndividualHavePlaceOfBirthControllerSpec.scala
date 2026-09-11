@@ -21,6 +21,7 @@ import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.accountHolders.IndividualHavePlaceOfBirthFormProvider
 import models.SubmissionsConstants.CRS
+import models.manual.accountHolders.IndividualName
 import models.viewModels.AccountHolderId
 import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
@@ -28,7 +29,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.accountHolders.{CurrentAccountHolderIdPage, IndividualHavePlaceOfBirthPage}
+import pages.manual.accountHolders.{CurrentAccountHolderIdPage, IndividualHavePlaceOfBirthPage, IndividualNamePage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -48,10 +49,12 @@ class IndividualHavePlaceOfBirthControllerSpec extends SpecBase with MockitoSuga
 
   "IndividualHavePlaceOfBirth Controller" - {
 
-    val reportId  = ReportId(CRS, 2025, None, "TestfiID")
-    val accountId = AccountHolderId("testId")
+    val reportId       = ReportId(CRS, 2025, None, "TestfiID")
+    val accountId      = AccountHolderId("testId")
+    val individualName = IndividualName("testFirst", "testLast")
     val ua = emptyUserAnswers
       .withPage(ReportIdPage, reportId)
+      .withPage(IndividualNamePage(accountId)(reportId), individualName)
       .withPage(CurrentAccountHolderIdPage()(reportId), accountId)
 
     "must return OK and the correct view for a GET" in {
@@ -66,7 +69,7 @@ class IndividualHavePlaceOfBirthControllerSpec extends SpecBase with MockitoSuga
         val view = application.injector.instanceOf[IndividualHavePlaceOfBirthView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, individualName.fullName)(request, messages(application)).toString
       }
     }
 
@@ -84,7 +87,7 @@ class IndividualHavePlaceOfBirthControllerSpec extends SpecBase with MockitoSuga
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode, individualName.fullName)(request, messages(application)).toString
       }
     }
 
@@ -130,7 +133,7 @@ class IndividualHavePlaceOfBirthControllerSpec extends SpecBase with MockitoSuga
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, individualName.fullName)(request, messages(application)).toString
       }
     }
 

@@ -21,6 +21,7 @@ import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.accountHolders.WhereAreTheyBasedFormProvider
 import models.SubmissionsConstants.CRS
+import models.manual.accountHolders.IndividualName
 import models.viewModels.AccountHolderId
 import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
@@ -28,7 +29,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.accountHolders.{CurrentAccountHolderIdPage, WhereAreTheyBasedPage}
+import pages.manual.accountHolders.{CurrentAccountHolderIdPage, IndividualNamePage, WhereAreTheyBasedPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -50,9 +51,11 @@ class WhereAreTheyBasedControllerSpec extends SpecBase with MockitoSugar {
 
     val currentAccountHolderId = AccountHolderId("testid")
     val reportId               = ReportId(CRS, 2025, None, "TestfiID")
+    val individualName         = IndividualName("test", "last")
     val ua = emptyUserAnswers
       .withPage(ReportIdPage, reportId)
       .withPage(CurrentAccountHolderIdPage()(reportId), currentAccountHolderId)
+      .withPage(IndividualNamePage(currentAccountHolderId)(reportId), individualName)
 
     "must return OK and the correct view for a GET" in {
 
@@ -66,7 +69,7 @@ class WhereAreTheyBasedControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[WhereAreTheyBasedView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, individualName.fullName)(request, messages(application)).toString
       }
     }
 
@@ -84,7 +87,7 @@ class WhereAreTheyBasedControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode, individualName.fullName)(request, messages(application)).toString
       }
     }
 
@@ -130,7 +133,7 @@ class WhereAreTheyBasedControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, individualName.fullName)(request, messages(application)).toString
       }
     }
 

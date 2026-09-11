@@ -42,7 +42,7 @@ class WhereAreTheyBasedViewSpec extends SpecBase {
 
     "should render page components" - {
 
-      val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode)
+      val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, "Test Last")
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
       "must display title" in {
@@ -50,7 +50,7 @@ class WhereAreTheyBasedViewSpec extends SpecBase {
       }
 
       "must display heading" in {
-        doc.select("h1").text() must include("Is Account Holdings plc based in the UK, Jersey, Guernsey or the Isle of Man?")
+        doc.select("h1").text() must include("Is Test Last based in the UK, Jersey, Guernsey or the Isle of Man?")
       }
 
       "must display button" in {

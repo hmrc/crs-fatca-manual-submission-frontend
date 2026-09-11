@@ -671,13 +671,13 @@ accountPaymentsAmount.error.minus.FATCA = Amount can only include a minus sign a
 accountPaymentsAmount.error.decimalPlaces = Amount cannot have more than 2 decimal places
 
 accountHolders.individualHavePlaceOfBirth.title = Do you want to provide the place of birth for the account holder?
-accountHolders.individualHavePlaceOfBirth.heading = Do you want to provide the place of birth for Account Holdings plc?
+accountHolders.individualHavePlaceOfBirth.heading = Do you want to provide the place of birth for {0}?
 accountHolders.individualHavePlaceOfBirth.checkYourAnswersLabel = individualHavePlaceOfBirth
 accountHolders.individualHavePlaceOfBirth.error.required = Select yes if you want to provide the place of birth for the account holder
 accountHolders.individualHavePlaceOfBirth.change.hidden = IndividualHavePlaceOfBirth
 
 accountHolders.whereAreTheyBased.title = Is the account holder based in the UK, Jersey, Guernsey or the Isle of Man?
-accountHolders.whereAreTheyBased.heading = Is Account Holdings plc based in the UK, Jersey, Guernsey or the Isle of Man?
+accountHolders.whereAreTheyBased.heading = Is {0} based in the UK, Jersey, Guernsey or the Isle of Man?
 accountHolders.whereAreTheyBased.checkYourAnswersLabel = Is Account Holdings plc based in the UK, Jersey, Guernsey or the Isle of Man?
 accountHolders.whereAreTheyBased.error.required = Select yes if they are based in the UK, Jersey, Guernsey or the Isle of Man
 accountHolders.whereAreTheyBased.change.hidden = WhereAreTheyBased

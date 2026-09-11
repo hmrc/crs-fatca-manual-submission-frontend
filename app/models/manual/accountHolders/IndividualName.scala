@@ -18,7 +18,9 @@ package models.manual.accountHolders
 
 import play.api.libs.json.*
 
-case class IndividualName(FirstName: String, LastName: String)
+case class IndividualName(FirstName: String, LastName: String) {
+  def fullName: String = s"$FirstName $LastName"
+}
 
 object IndividualName {
 
