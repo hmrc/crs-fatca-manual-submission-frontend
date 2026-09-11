@@ -682,3 +682,6 @@ account.holder.uk.isThisTheAddressForAccountHolders.heading = Is this the addres
 account.holder.uk.isThisTheAddressForAccountHolders.error.required = Select yes if this is the account holder’s address
 isThisTheAddressForAccountHolders.checkYourAnswersLabel = isThisTheAddressForAccountHolders
 isThisTheAddressForAccountHolders.change.hidden = IsThisTheAddressForAccountHolders
+
+whatIsAddressForAccountHolder.checkYourAnswersLabel = Address
+whatIsAddressForAccountHolder.change.hidden = Change the address for the account holder
