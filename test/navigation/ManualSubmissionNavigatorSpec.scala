@@ -32,13 +32,7 @@ import models.viewModels.manual.cpso.CPSOId
 import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
 import pages.manual.account.*
-import pages.manual.accountHolders.{
-  AddressLookupForAccountHolderPage,
-  IndividualNamePage,
-  IndividualOrOrganisationPage,
-  IsThisTheAddressForAccountHoldersPage,
-  UkPostCodeForAccountHolderPage
-}
+import pages.manual.accountHolders.*
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.*
