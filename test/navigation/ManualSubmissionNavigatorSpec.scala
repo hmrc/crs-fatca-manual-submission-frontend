@@ -697,6 +697,15 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               controllers.routes.UnderConstructionController.onPageLoad()
           }
 
+          "must go to /payments page when have payments is yes and there are payments" in {
+            val ua = UserAnswers("id")
+              .withPage(HavePaymentsPage(accountId), true)
+              .withPage(AccountPaymentListPage(accountId), Seq(AccountPayment(CRSInterest)))
+
+            navigator.nextPage(HavePaymentsPage(accountId), NormalMode, ua) mustBe
+              controllers.manual.account.routes.AccountPaymentsController.onPageLoad(NormalMode)
+          }
+
           "navigation must be handled by CheckAccountTypeIsDepository when have payments is yes" in {
             Seq(WhatAccountType.Custodial, WhatAccountType.InsuranceOrAnnuityContract, WhatAccountType.InvestmentEntity, WhatAccountType.NotReported)
               .foreach {
@@ -725,6 +734,47 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             val ua = UserAnswers("id")
             navigator.nextPage(PaymentTypePage(accountId), NormalMode, ua) mustBe
               controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
+        }
+
+        "AccountPaymentsAmountPage" - {
+          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+          val accountId                   = AccountId("TestAccountId")
+          "must go to AccountPayments page" in {
+            val ua = UserAnswers("id")
+              .withPage(AccountPaymentListPage(accountId), Seq(AccountPayment(PaymentType.CRSDividends)))
+            navigator.nextPage(AccountPaymentsAmountPage(accountId), NormalMode, ua) mustBe
+              controllers.manual.account.routes.AccountPaymentsController.onPageLoad(NormalMode)
+          }
+        }
+
+        "DoYouNeedToAddPaymentsPage" - {
+          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+          val accountId                   = AccountId("TestAccountId")
+          "must go to CheckAccountTypeIsDepositoryController when answer is yes" in {
+            val ua = UserAnswers("id")
+              .withPage(AccountPaymentListPage(accountId), Seq(AccountPayment(PaymentType.CRSDividends)))
+              .withPage(DoYouNeedToAddPaymentsPage(accountId), true)
+            navigator.nextPage(DoYouNeedToAddPaymentsPage(accountId), NormalMode, ua) mustBe
+              controllers.manual.account.routes.CheckAccountTypeIsDepositoryController.onChangeRedirect(NormalMode)
+          }
+
+          "must go to underconstruction when answer is no" in {
+            val ua = UserAnswers("id")
+              .withPage(AccountPaymentListPage(accountId), Seq(AccountPayment(PaymentType.CRSDividends)))
+              .withPage(DoYouNeedToAddPaymentsPage(accountId), false)
+            navigator.nextPage(DoYouNeedToAddPaymentsPage(accountId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+        }
+
+        "RemovePaymentPage" - {
+          "must go to account payments" in {
+            val ua = UserAnswers("id")
+              .withPage(AccountPaymentListPage(accountId), Seq(AccountPayment(PaymentType.CRSDividends)))
+
+            navigator.nextPage(RemovePaymentPage(accountId), NormalMode, ua) mustBe
+              controllers.manual.account.routes.AccountPaymentsController.onPageLoad(NormalMode)
           }
         }
       }

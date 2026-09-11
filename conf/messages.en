@@ -669,3 +669,31 @@ accountPaymentsAmount.error.invalid.CRS = Amount must only include numbers 0 to 
 accountPaymentsAmount.error.invalid.FATCA = Amount must only include numbers 0 to 9, a minus sign and a full stop
 accountPaymentsAmount.error.minus.FATCA = Amount can only include a minus sign as the first character
 accountPaymentsAmount.error.decimalPlaces = Amount cannot have more than 2 decimal places
+
+account.payments.title.crs.no.payments = You have not added any payments made to this account
+account.payments.title.fatca.no.payments = You have not added any payments made to this account, a payee or an owner
+account.payments.title.crs.one.payments = You have added {0} payment made to this account
+account.payments.title.fatca.one.payments = You have added {0} payment made to this account, a payee or an owner
+account.payments.title.crs.more.than.one.payments = You have added {0} payments made to this account
+account.payments.title.fatca.more.than.one.payments = You have added {0} payments made to this account, a payee or an owner
+
+account.payments.heading.crs.no.payments = You have not added any payments made to this account
+account.payments.heading.fatca.no.payments = You have not added any payments made to this account, a payee or an owner
+account.payments.heading.crs.one.payments = You have added {0} payment made to this account
+account.payments.heading.fatca.one.payments = You have added {0} payment made to this account, a payee or an owner
+account.payments.heading.crs.more.than.one.payments = You have added {0} payments made to this account
+account.payments.heading.fatca.more.than.one.payments = You have added {0} payments made to this account, a payee or an owner
+
+account.payment.form.with.payments.heading = Do you need to add more payments for {0}?
+account.payment.form.no.payments.heading = Do you need to add payments for {0}?
+account.payments.checkYourAnswersLabel = accountPayments
+account.payments.has.no.payments.error.required = Select yes if you need to add payments
+account.payments.has.payments.error.required = Select yes if you need to add more payments
+account.payments.change.hidden = AccountPayments
+
+account.remove.payment.title = Are you sure you want to remove this {0} {1} payment for this account?
+account.remove.payment.heading = Are you sure you want to remove this {0} {1} payment for this account?
+account.remove.payment.checkYourAnswersLabel = removePayment
+account.remove.payment.error.required = Select yes if you are sure you want to remove this payment for this account
+account.remove.payment.change.hidden = RemovePayment
+account.payments.removed = {0} payment removed.

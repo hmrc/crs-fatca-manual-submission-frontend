@@ -14,23 +14,32 @@
  * limitations under the License.
  */
 
-package models.manual.account
+package forms.manual.account
 
-import forms.mappings.Transforms
-import play.api.libs.json.{Json, OFormat}
+import forms.behaviours.BooleanFieldBehaviours
+import play.api.data.FormError
 
-case class AccountPayment(paymentType: PaymentType, accountPaymentsAmount: Option[AccountPaymentsAmount] = None) extends Transforms {
+class RemovePaymentFormProviderSpec extends BooleanFieldBehaviours {
 
-  def paymentsAmountDescription(): String =
-    accountPaymentsAmount
-      .map {
-        paymentAmount =>
-          s"${formatLargeNumber(paymentAmount.amount)} ${paymentAmount.currency.code}"
-      }
-      .getOrElse("")
-}
+  val requiredKey = "account.remove.payment.error.required"
+  val invalidKey  = "error.boolean"
 
-object AccountPayment {
-  implicit val format: OFormat[AccountPayment] = Json.format
+  val form = new RemovePaymentFormProvider()()
 
+  ".value" - {
+
+    val fieldName = "value"
+
+    behave like booleanField(
+      form,
+      fieldName,
+      invalidError = FormError(fieldName, invalidKey)
+    )
+
+    behave like mandatoryField(
+      form,
+      fieldName,
+      requiredError = FormError(fieldName, requiredKey)
+    )
+  }
 }

@@ -23,7 +23,7 @@ import models.manual.account.{AccountPayment, AccountPaymentsAmount, PaymentType
 import models.viewModels.AccountId
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.account.{AccountPaymentPage, AccountPaymentsAmountPage}
+import pages.manual.account.{AccountPaymentPage, AccountPaymentsAmountPage, PaymentsAddedPreviouslyPage}
 import play.api.Logging
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -93,13 +93,14 @@ class AccountPaymentsAmountController @Inject() (
                 formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, regime, paymentType))),
                 value =>
                   for {
-                    updatedAnswers <- Future.fromTry(
+                    ua <- Future.fromTry(
                       request.userAnswers.setWithReportId(
                         AccountPaymentPage(request.currentIndex),
                         accountPayment.copy(accountPaymentsAmount = Some(value))
                       )
                     )
-                    _ <- repository.set(updatedAnswers)
+                    updatedAnswers <- Future.fromTry(ua.setWithReportId(PaymentsAddedPreviouslyPage(request.accountId), true))
+                    _              <- repository.set(updatedAnswers)
                   } yield Redirect(navigator.nextPage(AccountPaymentsAmountPage(request.accountId), mode, updatedAnswers))
               )
         }

@@ -14,23 +14,13 @@
  * limitations under the License.
  */
 
-package models.manual.account
+package pages.manual.account
 
-import forms.mappings.Transforms
-import play.api.libs.json.{Json, OFormat}
+import models.ReportId
+import models.viewModels.AccountId
+import pages.QuestionPage
+import play.api.libs.json.JsPath
 
-case class AccountPayment(paymentType: PaymentType, accountPaymentsAmount: Option[AccountPaymentsAmount] = None) extends Transforms {
+final case class PaymentsAddedPreviouslyPage(accountId: AccountId)(implicit reportId: ReportId) extends QuestionPage[Boolean]:
 
-  def paymentsAmountDescription(): String =
-    accountPaymentsAmount
-      .map {
-        paymentAmount =>
-          s"${formatLargeNumber(paymentAmount.amount)} ${paymentAmount.currency.code}"
-      }
-      .getOrElse("")
-}
-
-object AccountPayment {
-  implicit val format: OFormat[AccountPayment] = Json.format
-
-}
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "accounts" \ accountId.value \ "paymentsAddedPreviously"
