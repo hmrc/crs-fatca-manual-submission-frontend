@@ -16,30 +16,15 @@
 
 package forms.manual.accountHolders
 
-import forms.behaviours.BooleanFieldBehaviours
-import play.api.data.FormError
+import javax.inject.Inject
 
-class IndividualHaveDateOfBirthFormProviderSpec extends BooleanFieldBehaviours {
+import forms.mappings.Mappings
+import play.api.data.Form
 
-  val requiredKey = "individualHaveDateOfBirth.error.required"
-  val invalidKey  = "error.boolean"
+class IndividualHavePlaceOfBirthFormProvider @Inject() extends Mappings {
 
-  val form = new IndividualHaveDateOfBirthFormProvider()()
-
-  ".value" - {
-
-    val fieldName = "value"
-
-    behave like booleanField(
-      form,
-      fieldName,
-      invalidError = FormError(fieldName, invalidKey)
+  def apply(): Form[Boolean] =
+    Form(
+      "value" -> boolean("accountHolders.individualHavePlaceOfBirth.error.required")
     )
-
-    behave like mandatoryField(
-      form,
-      fieldName,
-      requiredError = FormError(fieldName, requiredKey)
-    )
-  }
 }

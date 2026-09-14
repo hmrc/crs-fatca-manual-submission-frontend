@@ -628,7 +628,7 @@ individualDateOfBirth.error.dayYear.required=Enter the day and year the account 
 individualDateOfBirth.error.monthYear.required=Enter the month and year the account holder was born
 individualDateOfBirth.error.real=Enter a real date of birth
 individualDateOfBirth.error.past=Date of birth must be after 1899
-individualDateOfBirth.error.future=Date of birth must be on or before {0}
+individualDateOfBirth.error.future=Date of birth must be no later than {0}
 individualDateOfBirth.checkYourAnswersLabel=Date of birth
 individualDateOfBirth.change.hidden=date of birth
 account.havePayments.crs.title = Were any payments made to this account in {0}?
@@ -670,6 +670,17 @@ accountPaymentsAmount.error.invalid.FATCA = Amount must only include numbers 0 t
 accountPaymentsAmount.error.minus.FATCA = Amount can only include a minus sign as the first character
 accountPaymentsAmount.error.decimalPlaces = Amount cannot have more than 2 decimal places
 
+accountHolders.individualHavePlaceOfBirth.title = Do you want to provide the place of birth for the account holder?
+accountHolders.individualHavePlaceOfBirth.heading = Do you want to provide the place of birth for {0}?
+accountHolders.individualHavePlaceOfBirth.checkYourAnswersLabel = individualHavePlaceOfBirth
+accountHolders.individualHavePlaceOfBirth.error.required = Select yes if you want to provide the place of birth for the account holder
+accountHolders.individualHavePlaceOfBirth.change.hidden = IndividualHavePlaceOfBirth
+
+accountHolders.whereAreTheyBased.title = Is the account holder based in the UK, Jersey, Guernsey or the Isle of Man?
+accountHolders.whereAreTheyBased.heading = Is {0} based in the UK, Jersey, Guernsey or the Isle of Man?
+accountHolders.whereAreTheyBased.checkYourAnswersLabel = Is Account Holdings plc based in the UK, Jersey, Guernsey or the Isle of Man?
+accountHolders.whereAreTheyBased.error.required = Select yes if they are based in the UK, Jersey, Guernsey or the Isle of Man
+accountHolders.whereAreTheyBased.change.hidden = WhereAreTheyBased
 account.payments.title.crs.no.payments = You have not added any payments made to this account
 account.payments.title.fatca.no.payments = You have not added any payments made to this account, a payee or an owner
 account.payments.title.crs.one.payments = You have added {0} payment made to this account
