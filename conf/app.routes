@@ -276,3 +276,8 @@ GET        /manual/account/payments-amount                       controllers.man
 POST       /manual/account/payments-amount                        controllers.manual.account.AccountPaymentsAmountController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/account/change-payments-amount                  controllers.manual.account.AccountPaymentsAmountController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/account/change-payments-amount                  controllers.manual.account.AccountPaymentsAmountController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/cp-so/organisation-name                        controllers.manual.cpso.CpsoOrganisationNameController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/cp-so/organisation-name                       controllers.manual.cpso.CpsoOrganisationNameController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/cp-so/change-organisation-name                  controllers.manual.cpso.CpsoOrganisationNameController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/cp-so/change-organisation-name                   controllers.manual.cpso.CpsoOrganisationNameController.onSubmit(mode: Mode = CheckMode)

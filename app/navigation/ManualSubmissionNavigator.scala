@@ -152,7 +152,7 @@ class ManualSubmissionNavigator @Inject() () {
     case (pages.manual.cpso.IndividualOrOrganisationPage(cpsoId), mode, ua) =>
       ua.get(pages.manual.cpso.IndividualOrOrganisationPage(cpsoId)) match {
         case Some(models.manual.cpso.IndividualOrOrganisation.Individual) => controllers.manual.cpso.routes.IndividualNameController.onPageLoad(mode)
-        case Some(_)                                                      => routes.UnderConstructionController.onPageLoad()
+        case Some(models.manual.cpso.IndividualOrOrganisation.Organisation)      => controllers.manual.cpso.routes.CpsoOrganisationNameController.onPageLoad(mode)
         case _                                                            => routes.JourneyRecoveryController.onPageLoad()
       }
     case (pages.manual.cpso.IndividualNamePage(cpsoId), mode, ua) =>

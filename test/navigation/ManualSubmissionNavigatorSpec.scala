@@ -521,6 +521,13 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             navigator.nextPage(pages.manual.cpso.IndividualOrOrganisationPage(currentCPSOId), NormalMode, ua) mustBe
               controllers.manual.cpso.routes.IndividualNameController.onPageLoad(NormalMode)
           }
+
+          "must go to cpo Individual organisation name page when submitted" in {
+            val ua = UserAnswers("id")
+              .withPage(pages.manual.cpso.IndividualOrOrganisationPage(currentCPSOId), models.manual.cpso.IndividualOrOrganisation.Organisation)
+            navigator.nextPage(pages.manual.cpso.IndividualOrOrganisationPage(currentCPSOId), NormalMode, ua) mustBe
+              controllers.manual.cpso.routes.CpsoOrganisationNameController.onPageLoad(NormalMode)
+          }
         }
 
         "IndividualNamePage" - {
