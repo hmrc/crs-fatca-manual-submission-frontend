@@ -23,7 +23,7 @@ import models.manual.account.{AccountPayment, AccountPaymentsAmount, PaymentType
 import models.viewModels.AccountId
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.account.{AccountPaymentPage, AccountPaymentsAmountPage, PaymentsAddedPreviouslyPage}
+import pages.manual.account.{AccountPaymentPage, AccountPaymentsAmountPage}
 import play.api.Logging
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -99,9 +99,8 @@ class AccountPaymentsAmountController @Inject() (
                         accountPayment.copy(accountPaymentsAmount = Some(value))
                       )
                     )
-                    updatedAnswers <- Future.fromTry(ua.setWithReportId(PaymentsAddedPreviouslyPage(request.accountId), true))
-                    _              <- repository.set(updatedAnswers)
-                  } yield Redirect(navigator.nextPage(AccountPaymentsAmountPage(request.accountId), mode, updatedAnswers))
+                    _ <- repository.set(ua)
+                  } yield Redirect(navigator.nextPage(AccountPaymentsAmountPage(request.accountId), mode, ua))
               )
         }
   }

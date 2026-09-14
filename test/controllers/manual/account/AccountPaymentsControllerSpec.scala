@@ -20,20 +20,19 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.account.AccountPaymentsFormProvider
-import models.SubmissionsConstants.CRS
-import models.manual.account.{AccountPayment, AccountPaymentsAmount}
-import models.manual.account.PaymentType.CRSInterest
 import models.*
+import models.SubmissionsConstants.CRS
+import models.manual.account.PaymentType.CRSInterest
+import models.manual.account.{AccountPayment, AccountPaymentsAmount}
 import models.viewModels.AccountId
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.account.{AccountIdPage, AccountPaymentListPage, CurrentAccountIdPage, DoYouNeedToAddPaymentsPage, PaymentsAddedPreviouslyPage}
+import pages.manual.account.{AccountPaymentListPage, CurrentAccountIdPage, DoYouNeedToAddPaymentsPage}
 import play.api.inject.bind
 import play.api.mvc.{Call, Flash}
-import play.api.mvc.ControllerHelpers.request2flash
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import views.html.manual.account.AccountPaymentsView
@@ -62,7 +61,6 @@ class AccountPaymentsControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the correct view for a GET" in {
       val userAnswers = ua
-        .withPage(PaymentsAddedPreviouslyPage(accountId), true)
         .withPage(AccountPaymentListPage(accountId), accountPaymentList)
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
@@ -77,60 +75,6 @@ class AccountPaymentsControllerSpec extends SpecBase with MockitoSugar {
         contentAsString(result) mustEqual view(form, NormalMode, accountPaymentList, reportingPeriod, regimeType)(request,
                                                                                                                   messages(application),
                                                                                                                   Flash()
-        ).toString
-      }
-    }
-
-    "must redirect to PaymentTypeController when there are no previous added payments and accountPayment list is empty" in {
-      val userAnswers = ua.withPage(AccountPaymentListPage(accountId), Seq.empty)
-      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
-
-      running(application) {
-        val request = FakeRequest(GET, accountPaymentsRoute)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual controllers.manual.account.routes.PaymentTypeController.onPageLoad(NormalMode).url
-      }
-    }
-
-    "must redirect to CurrentAccountPaymentIndexController when there are no previous added payments and the last account payment is not complete" in {
-      val incompleteAccountPaymentList = Seq(AccountPayment(CRSInterest, None))
-      val userAnswers                  = ua.withPage(AccountPaymentListPage(accountId), incompleteAccountPaymentList)
-      val application                  = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
-
-      running(application) {
-        val request = FakeRequest(GET, accountPaymentsRoute)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual controllers.manual.account.routes.CurrentAccountPaymentIndexController
-          .onChangeRedirect(incompleteAccountPaymentList.size - 1)
-          .url
-      }
-    }
-
-    "must populate the view correctly on a GET when the question has previously been answered" in {
-      val userAnswers = ua
-        .withPage(DoYouNeedToAddPaymentsPage(accountId), true)
-        .withPage(PaymentsAddedPreviouslyPage(accountId), true)
-        .withPage(AccountPaymentListPage(accountId), accountPaymentList)
-
-      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
-
-      running(application) {
-        val request = FakeRequest(GET, accountPaymentsRoute)
-
-        val view = application.injector.instanceOf[AccountPaymentsView]
-
-        val result = route(application, request).value
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode, accountPaymentList, reportingPeriod, regimeType)(request,
-                                                                                                                             messages(application),
-                                                                                                                             Flash()
         ).toString
       }
     }
@@ -165,7 +109,6 @@ class AccountPaymentsControllerSpec extends SpecBase with MockitoSugar {
       val contextForm = formProvider(accountPaymentList.size)
       val userAnswers = ua
         .withPage(DoYouNeedToAddPaymentsPage(accountId), true)
-        .withPage(PaymentsAddedPreviouslyPage(accountId), true)
         .withPage(AccountPaymentListPage(accountId), accountPaymentList)
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
