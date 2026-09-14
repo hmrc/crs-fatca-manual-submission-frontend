@@ -21,7 +21,8 @@
         formHelper: FormWithCSRF,
         govukErrorSummary: GovukErrorSummary,
         govukRadios: GovukRadios,
-        govukButton: GovukButton
+        govukButton: GovukButton,
+        heading: components.Heading
 )
 
 @(
@@ -51,9 +52,7 @@
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
-        <h1 class="govuk-heading-l">
-        @messages("individualHaveDateOfBirth.heading")
-        </h1>
+        @heading(messages("individualHaveDateOfBirth.heading"))
 
         <p class="govuk-body govuk-!-margin-bottom-2 wrappable">
         @messages(paragraphMessageKey, accountHolderName)
