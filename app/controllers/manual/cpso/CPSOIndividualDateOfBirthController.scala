@@ -47,28 +47,28 @@ class CPSOIndividualDateOfBirthController @Inject()(
   val form = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
-    actions.withReportIdRequiredAndAccountHolderIdRequired() {
+    actions.withReportIdRequiredAndCPSOIdCreation() {
       implicit request =>
 
         implicit val reportId: ReportId = request.reportId
 
         val preparedForm =
           request.userAnswers
-            .get(CPSOIndividualDateOfBirthPage(request.accountHolderId))
+            .get(CPSOIndividualDateOfBirthPage(request.cpsoId))
             .fold(form)(form.fill)
 
         request.userAnswers
-          .get(IndividualNamePage(request.accountHolderId)) match {
+          .get(IndividualNamePage(request.cpsoId)) match {
 
           case Some(individualName) =>
-            val accountHolderName =
-              s"${individualName.FirstName} ${individualName.LastName}".trim
+            val cpsoName =
+              s"${individualName.firstName} ${individualName.lastName}".trim
 
             Ok(
               view(
                 preparedForm,
                 mode,
-                accountHolderName
+                cpsoName
               )
             )
 
@@ -81,17 +81,17 @@ class CPSOIndividualDateOfBirthController @Inject()(
     }
 
   def onSubmit(mode: Mode): Action[AnyContent] =
-    actions.withReportIdRequiredAndAccountHolderIdRequired().async {
+    actions.withReportIdRequiredAndCPSOIdCreation().async {
       implicit request =>
 
         implicit val reportId: ReportId = request.reportId
 
         request.userAnswers
-          .get(IndividualNamePage(request.accountHolderId)) match {
+          .get(IndividualNamePage(request.cpsoId)) match {
 
           case Some(individualName) =>
-            val accountHolderName =
-              s"${individualName.FirstName} ${individualName.LastName}".trim
+            val cpsoName =
+              s"${individualName.firstName} ${individualName.lastName}".trim
 
             form
               .bindFromRequest()
@@ -102,7 +102,7 @@ class CPSOIndividualDateOfBirthController @Inject()(
                       view(
                         formWithErrors,
                         mode,
-                        accountHolderName
+                        cpsoName
                       )
                     )
                   ),
@@ -110,14 +110,14 @@ class CPSOIndividualDateOfBirthController @Inject()(
                   for {
                     updatedAnswers <- Future.fromTry(
                       request.userAnswers.setWithReportId(
-                        CPSOIndividualDateOfBirthPage(request.accountHolderId),
+                        CPSOIndividualDateOfBirthPage(request.cpsoId),
                         value
                       )
                     )
                     _ <- repository.set(updatedAnswers)
                   } yield Redirect(
                     navigator.nextPage(
-                      CPSOIndividualDateOfBirthPage(request.accountHolderId),
+                      CPSOIndividualDateOfBirthPage(request.cpsoId),
                       mode,
                       updatedAnswers
                     )

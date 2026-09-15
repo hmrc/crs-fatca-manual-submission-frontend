@@ -18,10 +18,10 @@ package pages.manual.cpso
 
 import models.ReportId
 import models.manual.accountHolders.IndividualDateOfBirth
-import models.viewModels.AccountHolderId
+import models.viewModels.manual.cpso.CPSOId
 import pages.QuestionPage
 import play.api.libs.json.JsPath
 
-final case class CPSOIndividualDateOfBirthPage(accountHolderId: AccountHolderId)(implicit reportId: ReportId) extends QuestionPage[IndividualDateOfBirth]:
+final case class CPSOIndividualDateOfBirthPage(currentId: CPSOId)(implicit reportId: ReportId) extends QuestionPage[IndividualDateOfBirth]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "accountHolder" \ accountHolderId.value \ "individualDateOfBirth"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "cp-so" \ currentId.value \ "individualDateOfBirth"
