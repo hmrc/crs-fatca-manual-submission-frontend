@@ -84,7 +84,7 @@ class AccountHolderAddressNonUkControllerSpec extends SpecBase with MockitoSugar
 
   private val userAnswers = emptyUserAnswers
     .withPage(ReportIdPage, reportId)
-    .withPage(CurrentAccountHolderIdPage()(reportId), accountHolderId)
+    .withPage(CurrentAccountHolderIdPage(), accountHolderId)
     .withPage(AccountHolderIndividualNamePage(accountHolderId)(reportId), individualAccountHolder)
 
   "AddressNonUkController" - {
@@ -117,7 +117,7 @@ class AccountHolderAddressNonUkControllerSpec extends SpecBase with MockitoSugar
 
       val answers =
         userAnswers
-          .set(AccountHolderAddressNonUkPage(), validAddress)
+          .set(AccountHolderAddressNonUkPage(accountHolderId, reportId), validAddress)
           .success
           .value
 

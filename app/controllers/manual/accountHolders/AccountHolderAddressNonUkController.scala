@@ -46,13 +46,11 @@ class AccountHolderAddressNonUkController @Inject() (
 
   def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequired() {
     implicit request =>
-      implicit val reportId: ReportId = request.reportId
-
       request.userAnswers
         .get(AccountHolderIndividualNamePage(request.accountHolderId)(request.reportId))
         .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)) {
           ahName =>
-            val preparedForm = request.userAnswers.get(AccountHolderAddressNonUkPage()) match {
+            val preparedForm = request.userAnswers.get(AccountHolderAddressNonUkPage(request.accountHolderId, request.reportId)) match {
               case None        => form
               case Some(value) => form.fill(value)
             }
@@ -74,9 +72,10 @@ class AccountHolderAddressNonUkController @Inject() (
                 formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, ahName.fullName, Countries.nonUkTerritories))),
                 value =>
                   for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(AccountHolderAddressNonUkPage(), value))
-                    _              <- repository.set(updatedAnswers)
-                  } yield Redirect(navigator.nextPage(AccountHolderAddressNonUkPage(), mode, updatedAnswers))
+                    updatedAnswers <- Future
+                      .fromTry(request.userAnswers.setWithReportId(AccountHolderAddressNonUkPage(request.accountHolderId, request.reportId), value))
+                    _ <- repository.set(updatedAnswers)
+                  } yield Redirect(navigator.nextPage(AccountHolderAddressNonUkPage(request.accountHolderId, request.reportId), mode, updatedAnswers))
               )
         }
   }
