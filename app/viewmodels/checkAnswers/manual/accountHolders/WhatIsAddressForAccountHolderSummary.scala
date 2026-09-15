@@ -16,9 +16,8 @@
 
 package viewmodels.checkAnswers.manual.sponsor
 
-import models.{CheckMode, ReportId, UserAnswers}
+import models.{ReportId, UserAnswers}
 import pages.manual.accountHolders.{CurrentAccountHolderIdPage, WhatIsAddressForAccountHolderPage}
-import pages.manual.sponsor.WhatIsAddressForSponsorPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent

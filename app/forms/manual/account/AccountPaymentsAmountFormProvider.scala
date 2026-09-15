@@ -17,7 +17,7 @@
 package forms.manual.account
 
 import forms.mappings.{Mappings, Transforms}
-import models.SubmissionsConstants.RegimeType
+import models.SubmissionsConstants.{FATCA, RegimeType}
 import models.manual.account.AccountPaymentsAmount
 import models.{Currencies, Currency}
 import play.api.data.Form
@@ -31,8 +31,8 @@ class AccountPaymentsAmountFormProvider @Inject() extends Mappings with Transfor
   def apply(regime: RegimeType): Form[AccountPaymentsAmount] = {
 
     val requiredAmountError   = "accountPaymentsAmount.error.required.amount"
-    val invalidErrorKey       = s"accountPaymentsAmount.error.invalid.${regime.value}"
-    val minusAmountErrorKey   = "accountPaymentsAmount.error.minus.FATCA"
+    val invalidErrorKey       = "accountPaymentsAmount.error.invalid"
+    val minusAmountErrorKey   = "accountPaymentsAmount.error.minus"
     val decimalPlacesErrorKey = "accountPaymentsAmount.error.decimalPlaces"
 
     Form(
@@ -43,7 +43,7 @@ class AccountPaymentsAmountFormProvider @Inject() extends Mappings with Transfor
             code => Currencies.all(regime).find(_.code == code).get,
             currency => currency.code
           ),
-        "amount" -> currencyAmount(regime, requiredAmountError, invalidErrorKey, minusAmountErrorKey, decimalPlacesErrorKey)
+        "amount" -> currencyAmount(FATCA, requiredAmountError, invalidErrorKey, minusAmountErrorKey, decimalPlacesErrorKey)
       )(AccountPaymentsAmount.apply)(
         ab => Some((ab.currency, ab.amount))
       )

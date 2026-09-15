@@ -24,8 +24,8 @@ import models.CrsOrFatca.Fatca
 import models.SubmissionsConstants.{CRS, FATCA}
 import models.manual.account.PaymentType.*
 import models.manual.account.{AccountPayment, PaymentType, WasAccountOpen, WhatAccountType}
-import models.manual.accountHolders.{IndividualDateOfBirth, IndividualName}
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
+import models.manual.accountHolders.{IndividualDateOfBirth, IndividualName}
 import models.manual.cpso.IndividualOrOrganisation
 import models.response.{Address, AddressLookup, Country}
 import models.viewModels.manual.cpso.CPSOId
@@ -212,7 +212,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             .withPage(UkPostCodeForAccountHolderPage(accountHolderId, reportId), "ZZ1 1ZZ")
             .withPage(AddressLookupForAccountHolderPage(accountHolderId, reportId), addresses)
           navigator.nextPage(UkPostCodeForAccountHolderPage(accountHolderId, reportId), NormalMode, ua) mustBe
-            routes.UnderConstructionController.onPageLoad()
+            controllers.routes.UnderConstructionController.onPageLoad()
         }
         "must go to ProblemPage when no addresses are found" in {
           val ua = UserAnswers("id")
@@ -690,7 +690,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               NormalMode,
               ua
             ) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.accountHolders.routes.IndividualHavePlaceOfBirthController.onPageLoad(NormalMode)
           }
 
           "must go to Journey Recovery when the answer is missing" in {
@@ -719,7 +719,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               NormalMode,
               ua
             ) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.accountHolders.routes.IndividualHavePlaceOfBirthController.onPageLoad(NormalMode)
           }
 
           "must go to Journey Recovery when the answer is missing" in {
@@ -773,6 +773,46 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             val ua = UserAnswers("id")
             navigator.nextPage(PaymentTypePage(accountId), NormalMode, ua) mustBe
               controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
+        }
+
+        "IndividualHavePlaceOfBirthPage" - {
+          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+          val accountId                   = AccountHolderId("TestAccountId")
+          "must go to under construction page when user selected yes" in {
+            val ua = UserAnswers("id")
+              .withPage(IndividualHavePlaceOfBirthPage(accountId), true)
+
+            navigator.nextPage(IndividualHavePlaceOfBirthPage(accountId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+
+          "must go to under construction page when user selected no" in {
+            val ua = UserAnswers("id")
+              .withPage(IndividualHavePlaceOfBirthPage(accountId), false)
+
+            navigator.nextPage(IndividualHavePlaceOfBirthPage(accountId), NormalMode, ua) mustBe
+              controllers.manual.accountHolders.routes.WhereAreTheyBasedController.onPageLoad(NormalMode)
+          }
+        }
+
+        "WhereAreTheyBasedPage" - {
+          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+          val accountId                   = AccountHolderId("TestAccountId")
+          "must go to under construction page when user selected yes" in {
+            val ua = UserAnswers("id")
+              .withPage(WhereAreTheyBasedPage(accountId), true)
+
+            navigator.nextPage(WhereAreTheyBasedPage(accountId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+
+          "must go to under construction page when user selected no" in {
+            val ua = UserAnswers("id")
+              .withPage(WhereAreTheyBasedPage(accountId), false)
+
+            navigator.nextPage(WhereAreTheyBasedPage(accountId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
           }
         }
 
