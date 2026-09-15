@@ -553,7 +553,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               controllers.routes.UnderConstructionController.onPageLoad()
           }
 
-          "must go to IndividualName page when individual is selected" in {
+          "must go to AccountHolder IndividualName page when individual is selected" in {
             val ua = UserAnswers("id")
               .withPage(
                 IndividualOrOrganisationPage(currentAccountHolderId)(reportId),
@@ -586,12 +586,12 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           "must go to IndividualHaveDateOfBirth page when the individual name exists" in {
             val ua = UserAnswers("id")
               .withPage(
-                IndividualNamePage(currentAccountHolderId)(reportId),
+                AccountHolderIndividualNamePage(currentAccountHolderId)(reportId),
                 IndividualName("firstName", "lastName")
               )
 
             navigator.nextPage(
-              IndividualNamePage(currentAccountHolderId),
+              AccountHolderIndividualNamePage(currentAccountHolderId),
               NormalMode,
               ua
             ) mustBe
@@ -603,7 +603,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             val ua = UserAnswers("id")
 
             navigator.nextPage(
-              IndividualNamePage(currentAccountHolderId),
+              AccountHolderIndividualNamePage(currentAccountHolderId),
               NormalMode,
               ua
             ) mustBe
@@ -758,12 +758,12 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               controllers.routes.UnderConstructionController.onPageLoad()
           }
 
-          "must go to under construction page when user selected no" in {
+          "must go to AccountHolderNonUkAddress page when user selected no" in {
             val ua = UserAnswers("id")
               .withPage(WhereAreTheyBasedPage(accountId), false)
 
             navigator.nextPage(WhereAreTheyBasedPage(accountId), NormalMode, ua) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.accountHolders.routes.AccountHolderAddressNonUkController.onPageLoad(NormalMode)
           }
         }
       }

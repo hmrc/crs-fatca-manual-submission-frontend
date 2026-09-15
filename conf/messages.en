@@ -656,6 +656,29 @@ account.paymentType.checkYourAnswersLabel = paymentType
 account.paymentType.error.required = Select what type of payments these were for this account
 account.paymentType.change.hidden = PaymentType
 
+accountHolders.individualHavePlaceOfBirth.title = Do you want to provide the place of birth for the account holder?
+accountHolders.individualHavePlaceOfBirth.heading = Do you want to provide the place of birth for {0}?
+accountHolders.individualHavePlaceOfBirth.checkYourAnswersLabel = individualHavePlaceOfBirth
+accountHolders.individualHavePlaceOfBirth.error.required = Select yes if you want to provide the place of birth for the account holder
+accountHolders.individualHavePlaceOfBirth.change.hidden = IndividualHavePlaceOfBirth
+
+accountHolders.whereAreTheyBased.title = Is the account holder based in the UK, Jersey, Guernsey or the Isle of Man?
+accountHolders.whereAreTheyBased.heading = Is {0} based in the UK, Jersey, Guernsey or the Isle of Man?
+accountHolders.whereAreTheyBased.checkYourAnswersLabel = Is Account Holdings plc based in the UK, Jersey, Guernsey or the Isle of Man?
+accountHolders.whereAreTheyBased.error.required = Select yes if they are based in the UK, Jersey, Guernsey or the Isle of Man
+accountHolders.whereAreTheyBased.change.hidden = WhereAreTheyBased
+
+accountHolderAddressNonUk.title = What is the account holder’s address?
+accountHolderAddressNonUk.heading = What is the address for {0}?
+accountHolderAddressNonUk.addressLine1 = Address line 1
+accountHolderAddressNonUk.addressLine2 = Address line 2 (optional)
+accountHolderAddressNonUk.addressLine3 = City
+accountHolderAddressNonUk.addressLine4 = Region (optional)
+accountHolderAddressNonUk.postcode = Postcode (optional)
+accountHolderAddressNonUk.country = Country
+accountHolderAddressNonUk.checkYourAnswersLabel = What is the account holder’s address?
+accountHolderAddressNonUk.change.hidden = Change the account holder’s address
+
 accountPaymentsAmount.title = What was the total amount of these {0} payments?
 accountPaymentsAmount.heading = What was the total amount of these {0} payments?
 accountPaymentsAmount.para = You should report the total amount of all {0} payments made in the reporting year.
@@ -668,15 +691,3 @@ accountPaymentsAmount.error.required.amount = Enter a figure for the amount
 accountPaymentsAmount.error.invalid = Amount must only include numbers 0 to 9, a minus sign and a full stop
 accountPaymentsAmount.error.minus = Amount can only include a minus sign as the first character
 accountPaymentsAmount.error.decimalPlaces = Amount cannot have more than 2 decimal places
-
-accountHolders.individualHavePlaceOfBirth.title = Do you want to provide the place of birth for the account holder?
-accountHolders.individualHavePlaceOfBirth.heading = Do you want to provide the place of birth for {0}?
-accountHolders.individualHavePlaceOfBirth.checkYourAnswersLabel = individualHavePlaceOfBirth
-accountHolders.individualHavePlaceOfBirth.error.required = Select yes if you want to provide the place of birth for the account holder
-accountHolders.individualHavePlaceOfBirth.change.hidden = IndividualHavePlaceOfBirth
-
-accountHolders.whereAreTheyBased.title = Is the account holder based in the UK, Jersey, Guernsey or the Isle of Man?
-accountHolders.whereAreTheyBased.heading = Is {0} based in the UK, Jersey, Guernsey or the Isle of Man?
-accountHolders.whereAreTheyBased.checkYourAnswersLabel = Is Account Holdings plc based in the UK, Jersey, Guernsey or the Isle of Man?
-accountHolders.whereAreTheyBased.error.required = Select yes if they are based in the UK, Jersey, Guernsey or the Isle of Man
-accountHolders.whereAreTheyBased.change.hidden = WhereAreTheyBased
