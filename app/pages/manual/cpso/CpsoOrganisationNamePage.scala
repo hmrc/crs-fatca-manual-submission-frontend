@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package pages
+package pages.manual.cpso
 
 import models.ReportId
 import models.manual.cpso.CpsoOrganisationName
+import models.viewModels.manual.cpso.CPSOId
+import pages.QuestionPage
 import play.api.libs.json.JsPath
 
-final case class CpsoOrganisationNamePage()(implicit reportId: ReportId) extends QuestionPage[CpsoOrganisationName]:
+final case class CpsoOrganisationNamePage(currentId: CPSOId, reportId: ReportId) extends QuestionPage[String]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "cpsoOrganisationName"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "cp-so" \ currentId.value \ "organizationName"

@@ -16,7 +16,8 @@ import models.SubmissionsConstants.CRS
 import models.manual.cpso.CpsoOrganisationName
 import models.{NormalMode, ReportId, UserAnswers}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
-import pages.{ReportIdPage, CpsoOrganisationNamePage}
+import pages.ReportIdPage
+import pages.manual.cpso.CpsoOrganisationNamePage
 
 import scala.concurrent.Future
 

@@ -21,12 +21,13 @@
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
     govukInput: GovukInput,
-    govukButton: GovukButton
+    govukButton: GovukButton,
+    heading: components.Heading,
 )
 
 @(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("cpsoOrganisationName.title"))) {
+@layout(pageTitle = title(form, messages("cpso.organisationName.title"))) {
 
     @formHelper(action = controllers.manual.cpso.routes.CpsoOrganisationNameController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
@@ -34,22 +35,19 @@
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
-        <h1 class="govuk-heading-xl">@messages("cpsoOrganisationName.heading")</h1>
+        <h1 class="govuk-label-wrapper">
+            <label class="govuk-label govuk-label--l" for="manual-cpso-org-name">
+                @messages("cpso.organisationName.heading")
+            </label>
+        </h1>
+
 
         @govukInput(
             InputViewModel(
                 field = form("organizationName"),
-                label = LabelViewModel(messages("cpsoOrganisationName.organizationName"))
+                label = LabelViewModel(messages("cpsoOrganisationName.organizationName")).withCssClass("govuk-visually-hidden")
             )
-            .withWidth(Full)
-        )
-
-        @govukInput(
-            InputViewModel(
-                field = form("some-name"),
-                label = LabelViewModel(messages("cpsoOrganisationName.some-name"))
-            )
-            .withWidth(Full)
+            .withWidth(ThreeQuarters)
         )
 
         @govukButton(

@@ -38,7 +38,7 @@ class CpsoIdRequiredActionImpl  @Inject() (implicit
     }
   }
 
-  def toCpsoIdRequest[A](request: ReportIdRequest[A], cpsoId: CPSOId) =
+  private def toCpsoIdRequest[A](request: ReportIdRequest[A], cpsoId: CPSOId) =
     CPSOIdRequest(
       request = request.request,
       userId = request.userId,

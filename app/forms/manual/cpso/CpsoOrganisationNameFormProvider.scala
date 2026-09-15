@@ -17,18 +17,27 @@
 package forms.manual.cpso
 
 import forms.mappings.Mappings
+import models.ErrorValidation
 import models.manual.cpso.CpsoOrganisationName
 import play.api.data.Form
 import play.api.data.Forms.*
-
+import utils.RegexConstants
+import play.api.data.Forms.single
 import javax.inject.Inject
 
 class CpsoOrganisationNameFormProvider @Inject() extends Mappings {
 
-   def apply(): Form[CpsoOrganisationName] = Form(
-     mapping(
-      "organizationName" -> text("cpsoOrganisationName.error.organizationName.required")
-        .verifying(maxLength(200, "cpsoOrganisationName.error.organizationName.length"))
-    )(CpsoOrganisationName.apply)(x => (Some(x.organizationName)))
+   def apply(): Form[String] =  Form(
+     single(
+       "value" -> defaultStringFieldFormat(
+         "cpso.organisationName.error.required",
+         200,
+         "cpso.organisationName.error.length",
+         Seq(
+           ErrorValidation(RegexConstants.DEFAULT_ALPHA_NUMERIC_FIELD_VALID, "cpso.organisationName.error.invalid"),
+           ErrorValidation(RegexConstants.DOUBLE_DASH_INVALID, "cpso.organisationName.error.invalid-combination")
+         )
+       )
+     )
    )
  }

@@ -21,7 +21,7 @@ import controllers.actions.*
 import forms.manual.cpso.CpsoOrganisationNameFormProvider
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.CpsoOrganisationNamePage
+import pages.manual.cpso.CpsoOrganisationNamePage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -45,8 +45,8 @@ class CpsoOrganisationNameController @Inject()(
   def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndCPSOIdRequired() {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
-
-      val preparedForm = request.userAnswers.get(CpsoOrganisationNamePage()) match {
+      
+      val preparedForm = request.userAnswers.get(CpsoOrganisationNamePage(request.cpsoId, reportId)) match {
         case None => form
         case Some(value) => form.fill(value)
       }
@@ -57,6 +57,7 @@ class CpsoOrganisationNameController @Inject()(
   def onSubmit(mode: Mode): Action[AnyContent] = (actions.withReportIdRequiredAndCPSOIdRequired()).async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
+      val cpsoId = request.cpsoId
 
       form.bindFromRequest().fold(
         formWithErrors =>
@@ -64,9 +65,9 @@ class CpsoOrganisationNameController @Inject()(
 
         value =>
           for {
-            updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(CpsoOrganisationNamePage(), value))
+            updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(CpsoOrganisationNamePage(cpsoId, reportId), value))
             _              <- repository.set(updatedAnswers)
-          } yield Redirect(navigator.nextPage(CpsoOrganisationNamePage(), mode, updatedAnswers))
+          } yield Redirect(navigator.nextPage(CpsoOrganisationNamePage(cpsoId, reportId), mode, updatedAnswers))
       )
   }
 }
