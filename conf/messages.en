@@ -680,3 +680,18 @@ accountHolders.whereAreTheyBased.heading = Is {0} based in the UK, Jersey, Guern
 accountHolders.whereAreTheyBased.checkYourAnswersLabel = Is Account Holdings plc based in the UK, Jersey, Guernsey or the Isle of Man?
 accountHolders.whereAreTheyBased.error.required = Select yes if they are based in the UK, Jersey, Guernsey or the Isle of Man
 accountHolders.whereAreTheyBased.change.hidden = WhereAreTheyBased
+account.holder.uk.postcode.title = What is the postcode for the account holder?
+account.holder.uk.postcode.heading = What is the postcode for {0}?
+account.holder.uk.postcode.p1 = Enter the postcode to find the address automatically.
+account.holder.uk.postcode.hidden.label= What is the postcode for {0}?
+account.holder.uk.postcode.button = Find address
+account.holder.uk.postcode.p2 = Or enter the address manually
+
+account.holder.uk.isThisTheAddressForAccountHolders.title = Is this the account holder’s address?
+account.holder.uk.isThisTheAddressForAccountHolders.heading = Is this the address for {0}?
+account.holder.uk.isThisTheAddressForAccountHolders.error.required = Select yes if this is the account holder’s address
+isThisTheAddressForAccountHolders.checkYourAnswersLabel = isThisTheAddressForAccountHolders
+isThisTheAddressForAccountHolders.change.hidden = IsThisTheAddressForAccountHolders
+
+whatIsAddressForAccountHolder.checkYourAnswersLabel = Address
+whatIsAddressForAccountHolder.change.hidden = Change the address for the account holder
