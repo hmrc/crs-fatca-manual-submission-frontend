@@ -30,6 +30,8 @@ import pages.manual.accountHolders.{
   IndividualNamePage,
   IndividualOrOrganisationPage,
   IsThisTheAddressForAccountHoldersPage,
+  SelectAddressPage,
+  UkAddressPage as AccountHolderUkAddressPage,
   UkPostCodeForAccountHolderPage
 }
 import pages.manual.cpso.IndividualNamePage
@@ -155,6 +157,8 @@ class ManualSubmissionNavigator @Inject() () {
     case (UkPostCodeForAccountHolderPage(accountHolderId, reportId), mode, ua) => handleUKPostcodeNavigationForAccountHolders(ua, mode, accountHolderId)
     case (IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId), mode, ua) =>
       handleIsThisTheAddressForAccountHoldersRouting(ua, mode, accountHolderId)
+    case (AccountHolderUkAddressPage(_, _), _, _) => controllers.routes.UnderConstructionController.onPageLoad()
+    case (SelectAddressPage(_, _), _, _)          => controllers.routes.UnderConstructionController.onPageLoad()
   }
 
   private def cpsoNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
@@ -243,7 +247,7 @@ class ManualSubmissionNavigator @Inject() () {
     userAnswers.get(AddressLookupForAccountHolderPage(accountHolderId, reportId)) match {
       case Some(value) if value.isEmpty          => routes.JourneyRecoveryController.onPageLoad()
       case Some(value) if value.length.equals(1) => controllers.manual.accountHolders.routes.IsThisTheAddressForAccountHoldersController.onPageLoad(mode)
-      case Some(value)                           => routes.UnderConstructionController.onPageLoad()
+      case Some(value)                           => controllers.manual.accountHolders.routes.SelectAddressController.onPageLoad(mode)
       case None                                  => routes.JourneyRecoveryController.onPageLoad()
     }
 

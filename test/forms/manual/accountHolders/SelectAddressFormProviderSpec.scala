@@ -16,24 +16,23 @@
 
 package forms.manual.accountHolders
 
-import forms.behaviours.BooleanFieldBehaviours
+import forms.behaviours.StringFieldBehaviours
+import org.scalacheck.Gen
 import play.api.data.FormError
 
-class IndividualHaveDateOfBirthFormProviderSpec extends BooleanFieldBehaviours {
+class SelectAddressFormProviderSpec extends StringFieldBehaviours {
 
-  val requiredKey = "individualHaveDateOfBirth.error.required"
-  val invalidKey  = "error.boolean"
-
-  val form = new IndividualHaveDateOfBirthFormProvider()()
+  val form = new SelectAddressFormProvider()()
 
   ".value" - {
 
-    val fieldName = "value"
+    val fieldName   = "value"
+    val requiredKey = "accountHolders.selectAddress.error.required"
 
-    behave like booleanField(
+    behave like fieldThatBindsValidData(
       form,
       fieldName,
-      invalidError = FormError(fieldName, invalidKey)
+      Gen.const("1 Address line 1 Road, Address line 2 Road Town, zz11zz")
     )
 
     behave like mandatoryField(
