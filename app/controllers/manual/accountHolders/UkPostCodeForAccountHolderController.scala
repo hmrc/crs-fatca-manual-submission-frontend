@@ -105,7 +105,7 @@ class UkPostCodeForAccountHolderController @Inject() (
                       uaWithAddressLookup <- Future
                         .fromTry(updatedAnswers.setWithReportId(AddressLookupForAccountHolderPage(request.accountHolderId, reportId), address))
                       _ <- repository.set(uaWithAddressLookup)
-                    } yield Redirect(navigator.nextPage(UkPostCodeForAccountHolderPage(request.accountHolderId, reportId), mode, updatedAnswers))
+                    } yield Redirect(navigator.nextPage(UkPostCodeForAccountHolderPage(request.accountHolderId, reportId), mode, uaWithAddressLookup))
 
                 }
             )
