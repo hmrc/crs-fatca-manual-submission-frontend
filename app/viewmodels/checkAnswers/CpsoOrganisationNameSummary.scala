@@ -17,7 +17,7 @@
 package viewmodels.checkAnswers
 
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.cpso.CpsoOrganisationNamePage
+import pages.manual.cpso.{CpsoOrganisationNamePage, CurrentCPSOIdPage, IndividualNamePage}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
@@ -28,13 +28,14 @@ import viewmodels.implicits.*
 object CpsoOrganisationNameSummary  {
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
-    answers.get(CpsoOrganisationNamePage()).map {
-      answer =>
-
-      val value = HtmlFormat.escape(answer.organizationName).toString + "<br/>"
+    for {
+      currentId <- answers.get(CurrentCPSOIdPage()(reportId))
+      answer    <- answers.get(CpsoOrganisationNamePage(currentId, reportId))
+    } yield {
+      val value = HtmlFormat.escape(answer).toString + "<br/>"
 
         SummaryListRowViewModel(
-          key     = "cpsoOrganisationName.checkYourAnswersLabel",
+          key     = "cpso.organisationName.checkYourAnswersLabel",
           value   = ValueViewModel(HtmlContent(value)),
           actions = Seq(
             ActionItemViewModel("site.change", controllers.manual.cpso.routes.CpsoOrganisationNameController.onPageLoad(CheckMode).url)
