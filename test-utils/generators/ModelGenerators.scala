@@ -25,14 +25,6 @@ import org.scalacheck.{Arbitrary, Gen}
 import org.scalacheck.Arbitrary.*
 trait ModelGenerators {
 
-  implicit lazy val arbitraryCpsoOrganisationName: Arbitrary[CpsoOrganisationName] =
-    Arbitrary {
-      for {
-        organizationName <- arbitrary[String]
-        some-name <- arbitrary[String]
-      } yield CpsoOrganisationName(organizationName, some-name)
-    }
-
   implicit lazy val arbitraryPaymentType: Arbitrary[PaymentType] =
     Arbitrary {
       Gen.oneOf(PaymentType.values)

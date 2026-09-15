@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package controllers
 
 import base.SpecBase
@@ -8,7 +24,7 @@ import play.api.inject.bind
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import connectors.DatabaseConnector
 import forms.manual.cpso.CpsoOrganisationNameFormProvider
 import views.html.CpsoOrganisationNameView
@@ -17,7 +33,7 @@ import models.manual.cpso.CpsoOrganisationName
 import models.{NormalMode, ReportId, UserAnswers}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import pages.ReportIdPage
-import pages.manual.cpso.CpsoOrganisationNamePage
+import pages.manual.cpso.{CpsoOrganisationNamePage, CurrentCPSOIdPage}
 
 import scala.concurrent.Future
 
@@ -27,8 +43,9 @@ class CpsoOrganisationNameControllerSpec extends SpecBase with MockitoSugar {
 
   val formProvider = new CpsoOrganisationNameFormProvider()
   val form = formProvider()
+  val reportId = ReportId(CRS, 2025, None, "TestfiID")
 
-  lazy val cpsoOrganisationNameRoute = routes.CpsoOrganisationNameController.onPageLoad(NormalMode).url
+  lazy val cpsoOrganisationNameRoute = controllers.manual.cpso.routes.CpsoOrganisationNameController.onPageLoad(NormalMode).url
 
   val userAnswers = UserAnswers(
     userAnswersId,
@@ -41,7 +58,9 @@ class CpsoOrganisationNameControllerSpec extends SpecBase with MockitoSugar {
   )
 
   "CpsoOrganisationName Controller" - {
-    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS,2025,None,"TestfiID"))
+    val ua = emptyUserAnswers
+      .withPage(ReportIdPage, ReportId(CRS,2025,None,"TestfiID"))
+      .withPage(CurrentCPSOIdPage()(reportId), currentId)
 
     "must return OK and the correct view for a GET" in {
 
@@ -60,8 +79,8 @@ class CpsoOrganisationNameControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-      val validAnswer = CpsoOrganisationName("value 1", "value 2")
-      implicit val reportId = ReportId(CRS,2025,None,"TestfiID")
+      val validAnswer = "value 1"
+     
       val userAnswers = ua.set(CpsoOrganisationNamePage(), validAnswer).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
@@ -74,7 +93,7 @@ class CpsoOrganisationNameControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(CpsoOrganisationName("value 1", "value 2")), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill("value 1")), NormalMode)(request, messages(application)).toString
       }
     }
 
