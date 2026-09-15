@@ -16,30 +16,24 @@
 
 package controllers.actions
 
-import models.requests.{
-  AccountHolderIdRequest,
-  AccountIdRequest,
-  AccountPaymentIndexRequest,
-  CPSOIdRequest,
-  ReportIdRequest,
-  SponsorNameRequest,
-  SponsorTaxResidentIdRequest
-}
+import models.requests.*
 import play.api.mvc.{ActionBuilder, AnyContent}
 
 import javax.inject.Inject
 
-class Actions @Inject() (identify: IdentifierAction,
-                         getData: DataRetrievalAction,
-                         requireData: DataRequiredAction,
-                         reportIdAction: ReportIdRequiredAction,
-                         accountIdCreationAction: AccountIdCreationAction,
-                         accountIdRequiredAction: AccountIdRequiredAction,
-                         accountHolderIdRequiredAction: AccountHolderIdRequiredAction,
-                         sponsorNameRequiredAction: SponsorNameRequiredAction,
-                         cpsoIdCreationAction: CpsoIdCreationAction,
-                         taxResidentCountryIdCreationAction: TaxResidentCountryIdCreationAction,
-                         accountPaymentIndexCreationAction: AccountPaymentIndexCreationAction
+class Actions @Inject() (
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
+  reportIdAction: ReportIdRequiredAction,
+  accountIdCreationAction: AccountIdCreationAction,
+  accountIdRequiredAction: AccountIdRequiredAction,
+  accountHolderIdRequiredAction: AccountHolderIdRequiredAction,
+  sponsorNameRequiredAction: SponsorNameRequiredAction,
+  cpsoIdCreationAction: CpsoIdCreationAction,
+  taxResidentCountryIdCreationAction: TaxResidentCountryIdCreationAction,
+  accountPaymentIndexCreationAction: AccountPaymentIndexCreationAction,
+  accountPaymentIndexRequiredAction: AccountPaymentIndexRequiredAction
 ) {
 
   def withReportIdRequiredAndAccountIdCreation(): ActionBuilder[AccountIdRequest, AnyContent] =
@@ -50,6 +44,9 @@ class Actions @Inject() (identify: IdentifierAction,
 
   def withReportIdRequiredAndAccountIdRequiredAndAccountPaymentIndexCreation(): ActionBuilder[AccountPaymentIndexRequest, AnyContent] =
     withReportIdRequired() andThen accountIdRequiredAction andThen accountPaymentIndexCreationAction
+
+  def withReportIdRequiredAndAccountIdRequiredAndAccountPaymentIndexRequired(): ActionBuilder[AccountPaymentIndexRequest, AnyContent] =
+    withReportIdRequired() andThen accountIdRequiredAction andThen accountPaymentIndexRequiredAction
 
   def withReportIdRequiredAndAccountHolderIdRequired(): ActionBuilder[AccountHolderIdRequest, AnyContent] =
     withReportIdRequired() andThen accountHolderIdRequiredAction

@@ -42,7 +42,7 @@ class IndividualHavePlaceOfBirthViewSpec extends SpecBase {
 
     "should render page components" - {
 
-      val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode)
+      val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, "Test Name")
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
       "must display title" in {
@@ -50,7 +50,7 @@ class IndividualHavePlaceOfBirthViewSpec extends SpecBase {
       }
 
       "must display heading" in {
-        doc.select("h1").text() must include("Do you want to provide the place of birth for Account Holdings plc?")
+        doc.select("h1").text() must include("Do you want to provide the place of birth for Test Name?")
       }
 
       "must display button" in {

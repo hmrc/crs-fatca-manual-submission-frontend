@@ -16,18 +16,19 @@
 
 package controllers.manual.accountHolders
 
-import controllers.actions._
+import connectors.DatabaseConnector
+import controllers.actions.*
 import forms.manual.accountHolders.WhereAreTheyBasedFormProvider
-import javax.inject.Inject
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.accountHolders.WhereAreTheyBasedPage
+import pages.manual.accountHolders.{AccountHolderIndividualNamePage, WhereAreTheyBasedPage}
+import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import connectors.DatabaseConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.accountHolders.WhereAreTheyBasedView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class WhereAreTheyBasedController @Inject() (
@@ -40,7 +41,8 @@ class WhereAreTheyBasedController @Inject() (
   view: WhereAreTheyBasedView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with Logging {
 
   val form = formProvider()
 
@@ -49,12 +51,18 @@ class WhereAreTheyBasedController @Inject() (
 
       implicit val reportId: ReportId = request.reportId
 
-      val preparedForm = request.userAnswers.get(WhereAreTheyBasedPage(request.accountHolderId)) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
+      request.userAnswers.get(AccountHolderIndividualNamePage(request.accountHolderId)) match {
+        case Some(name) =>
+          val preparedForm = request.userAnswers.get(WhereAreTheyBasedPage(request.accountHolderId)) match {
+            case None        => form
+            case Some(value) => form.fill(value)
+          }
 
-      Ok(view(preparedForm, mode))
+          Ok(view(preparedForm, mode, name.fullName))
+        case None =>
+          logger.error("Individual Name value is missing")
+          Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+      }
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequired().async {
@@ -62,15 +70,23 @@ class WhereAreTheyBasedController @Inject() (
 
       implicit val reportId: ReportId = request.reportId
 
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(WhereAreTheyBasedPage(request.accountHolderId), value))
-              _              <- repository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(WhereAreTheyBasedPage(request.accountHolderId), mode, updatedAnswers))
-        )
+      // TODO: ORG NAME SHOULD BE ADDED ONCE IMPLEMENTED
+      request.userAnswers.get(AccountHolderIndividualNamePage(request.accountHolderId)) match {
+        case Some(name) =>
+          form
+            .bindFromRequest()
+            .fold(
+              formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, name.fullName))),
+              value =>
+                for {
+                  updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(WhereAreTheyBasedPage(request.accountHolderId), value))
+                  _              <- repository.set(updatedAnswers)
+                } yield Redirect(navigator.nextPage(WhereAreTheyBasedPage(request.accountHolderId), mode, updatedAnswers))
+            )
+        case None =>
+          logger.error("Individual Name value is missing")
+          Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+      }
+
   }
 }

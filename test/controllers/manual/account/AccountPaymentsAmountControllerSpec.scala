@@ -14,80 +14,95 @@
  * limitations under the License.
  */
 
-package controllers.manual.accountHolders
+package controllers.manual.account
 
 import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
-import forms.manual.accountHolders.WhereAreTheyBasedFormProvider
+import forms.manual.account.AccountPaymentsAmountFormProvider
 import models.SubmissionsConstants.CRS
-import models.manual.accountHolders.IndividualName
-import models.viewModels.AccountHolderId
-import models.{NormalMode, ReportId}
+import models.manual.account.PaymentType.CRSDividends
+import models.manual.account.{AccountPayment, AccountPaymentsAmount, PaymentType}
+import models.viewModels.AccountId
+import models.{Currency, NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.accountHolders.{AccountHolderIndividualNamePage, CurrentAccountHolderIdPage, WhereAreTheyBasedPage}
+import pages.manual.account.{AccountPaymentPage, CurrentAccountIdPage, CurrentAccountPaymentIndexPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import views.html.manual.accountHolders.WhereAreTheyBasedView
+import views.html.manual.account.AccountPaymentsAmountView
 
 import scala.concurrent.Future
 
-class WhereAreTheyBasedControllerSpec extends SpecBase with MockitoSugar {
+class AccountPaymentsAmountControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new WhereAreTheyBasedFormProvider()
-  val form         = formProvider()
+  private val regime       = CRS
+  private val paymentType  = PaymentType.CRSDividends
+  private val formProvider = new AccountPaymentsAmountFormProvider()
+  private val form         = formProvider(regime)
 
-  lazy val whereAreTheyBasedRoute = controllers.manual.accountHolders.routes.WhereAreTheyBasedController.onPageLoad(NormalMode).url
+  private lazy val accountPaymentsAmountRoute = controllers.manual.account.routes.AccountPaymentsAmountController.onPageLoad(NormalMode).url
+  private val accountId                       = AccountId("TestAccountId")
 
-  "WhereAreTheyBased Controller" - {
+  private val validFormData = Map(
+    "currency" -> "CLP",
+    "amount"   -> "123"
+  )
 
-    val currentAccountHolderId = AccountHolderId("testid")
-    val reportId               = ReportId(CRS, 2025, None, "TestfiID")
-    val individualName         = IndividualName("test", "last")
+  private val invalidFormData = Map(
+    "currency" -> "",
+    "amount"   -> ""
+  )
+
+  val validAnswer: AccountPaymentsAmount = AccountPaymentsAmount(Currency.GBP, "123")
+
+  "AccountPaymentsAmount Controller" - {
+    val reportId = ReportId(CRS, 2025, None, "TestfiID")
     val ua = emptyUserAnswers
       .withPage(ReportIdPage, reportId)
-      .withPage(CurrentAccountHolderIdPage()(reportId), currentAccountHolderId)
-      .withPage(AccountHolderIndividualNamePage(currentAccountHolderId)(reportId), individualName)
+      .withPage(CurrentAccountIdPage()(reportId), accountId)
+      .withPage(CurrentAccountPaymentIndexPage(accountId)(reportId), 0)
+      .withPage(AccountPaymentPage(0)(reportId, accountId), AccountPayment(paymentType))
 
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
 
       running(application) {
-        val request = FakeRequest(GET, whereAreTheyBasedRoute)
+        val request = FakeRequest(GET, accountPaymentsAmountRoute)
+
+        val view = application.injector.instanceOf[AccountPaymentsAmountView]
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[WhereAreTheyBasedView]
-
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, individualName.fullName)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, regime, paymentType)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = ua.set(WhereAreTheyBasedPage(currentAccountHolderId)(reportId), true).success.value
+      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
+      val userAnswers       = ua.set(AccountPaymentPage(0)(reportId, accountId), AccountPayment(CRSDividends, Some(validAnswer))).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, whereAreTheyBasedRoute)
+        val request = FakeRequest(GET, accountPaymentsAmountRoute)
 
-        val view = application.injector.instanceOf[WhereAreTheyBasedView]
+        val view = application.injector.instanceOf[AccountPaymentsAmountView]
 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode, individualName.fullName)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode, regime, paymentType)(request, messages(application)).toString
       }
     }
 
@@ -107,8 +122,8 @@ class WhereAreTheyBasedControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, whereAreTheyBasedRoute)
-            .withFormUrlEncodedBody(("value", "true"))
+          FakeRequest(POST, accountPaymentsAmountRoute)
+            .withFormUrlEncodedBody(validFormData.toSeq*)
 
         val result = route(application, request).value
 
@@ -123,17 +138,17 @@ class WhereAreTheyBasedControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, whereAreTheyBasedRoute)
-            .withFormUrlEncodedBody(("value", ""))
+          FakeRequest(POST, accountPaymentsAmountRoute)
+            .withFormUrlEncodedBody(invalidFormData.toSeq*)
 
-        val boundForm = form.bind(Map("value" -> ""))
+        val boundForm = form.bind(invalidFormData)
 
-        val view = application.injector.instanceOf[WhereAreTheyBasedView]
+        val view = application.injector.instanceOf[AccountPaymentsAmountView]
 
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, individualName.fullName)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, regime, paymentType)(request, messages(application)).toString
       }
     }
 
@@ -142,7 +157,7 @@ class WhereAreTheyBasedControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(maybeUserAnswers = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, whereAreTheyBasedRoute)
+        val request = FakeRequest(GET, accountPaymentsAmountRoute)
 
         val result = route(application, request).value
 
@@ -157,8 +172,8 @@ class WhereAreTheyBasedControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, whereAreTheyBasedRoute)
-            .withFormUrlEncodedBody(("value", "true"))
+          FakeRequest(POST, accountPaymentsAmountRoute)
+            .withFormUrlEncodedBody(validFormData.toSeq*)
 
         val result = route(application, request).value
 
