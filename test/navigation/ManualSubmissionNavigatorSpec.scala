@@ -18,7 +18,6 @@ package navigation
 
 import base.SpecBase
 import controllers.manual.reportdetails.routes.{ReportDetailsCheckAnswersController, ReportingYearController, TypeOfReportController}
-import controllers.routes
 import models.*
 import models.CrsOrFatca.Fatca
 import models.SubmissionsConstants.{CRS, FATCA}
@@ -804,15 +803,21 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               .withPage(WhereAreTheyBasedPage(accountId), true)
 
             navigator.nextPage(WhereAreTheyBasedPage(accountId), NormalMode, ua) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.accountHolders.routes.UkPostCodeForAccountHolderController.onPageLoad(NormalMode)
           }
 
           "must go to under construction page when user selected no" in {
             val ua = UserAnswers("id")
               .withPage(WhereAreTheyBasedPage(accountId), false)
-
             navigator.nextPage(WhereAreTheyBasedPage(accountId), NormalMode, ua) mustBe
               controllers.routes.UnderConstructionController.onPageLoad()
+          }
+
+          "must go to journey recovery if WhereAreTheyBasedPage is not present" in {
+            val ua = UserAnswers("id")
+
+            navigator.nextPage(WhereAreTheyBasedPage(accountId), NormalMode, ua) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
           }
         }
 

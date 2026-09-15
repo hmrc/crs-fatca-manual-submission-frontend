@@ -27,11 +27,12 @@ import pages.*
 import pages.manual.account.*
 import pages.manual.accountHolders.{
   AddressLookupForAccountHolderPage,
+  IndividualHavePlaceOfBirthPage,
   IndividualNamePage,
   IndividualOrOrganisationPage,
   IsThisTheAddressForAccountHoldersPage,
   UkPostCodeForAccountHolderPage,
-  IndividualHavePlaceOfBirthPage
+  WhereAreTheyBasedPage
 }
 import pages.manual.cpso.IndividualNamePage
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
@@ -137,7 +138,12 @@ class ManualSubmissionNavigator @Inject() () {
           controllers.routes.JourneyRecoveryController.onPageLoad()
       }
     case (pages.manual.accountHolders.IndividualHavePlaceOfBirthPage(id), mode, ua) => handleIndividualHavePlaceOfBirthNavigation(id, mode, ua)
-    case (pages.manual.accountHolders.WhereAreTheyBasedPage(_), _, _)               => controllers.routes.UnderConstructionController.onPageLoad()
+    case (pages.manual.accountHolders.WhereAreTheyBasedPage(id), mode, ua) =>
+      ua.get(WhereAreTheyBasedPage(id)) match {
+        case Some(true)  => controllers.manual.accountHolders.routes.UkPostCodeForAccountHolderController.onPageLoad(mode)
+        case Some(false) => controllers.routes.UnderConstructionController.onPageLoad()
+        case None        => controllers.routes.JourneyRecoveryController.onPageLoad()
+      }
 
     case (pages.manual.accountHolders.IndividualHaveDateOfBirthPage(id), mode, ua) =>
       ua.get(pages.manual.accountHolders.IndividualHaveDateOfBirthPage(id)) match {
