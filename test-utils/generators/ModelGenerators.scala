@@ -20,21 +20,11 @@ import models.manual.account.{PaymentType, WasAccountOpen, WhatAccountType}
 import models.manual.accountHolders.IndividualName
 import models.manual.cpso.IndividualOrOrganisation
 import models.{CrsOrFatca, NumberType, TypeOfReport, UkAddress}
-import org.scalacheck.Arbitrary.*
 import org.scalacheck.{Arbitrary, Gen}
 
-import models.UkPostCodeForAccountHolder
 import org.scalacheck.Arbitrary.*
 
 trait ModelGenerators {
-
-  implicit lazy val arbitraryUkPostCodeForAccountHolder: Arbitrary[UkPostCodeForAccountHolder] =
-    Arbitrary {
-      for {
-        postcode <- arbitrary[String]
-        some     <- arbitrary[String]
-      } yield UkPostCodeForAccountHolder(postcode)
-    }
 
   implicit lazy val arbitraryPaymentType: Arbitrary[PaymentType] =
     Arbitrary {

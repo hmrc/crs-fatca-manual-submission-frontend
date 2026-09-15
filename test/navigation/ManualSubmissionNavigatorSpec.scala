@@ -31,7 +31,7 @@ import models.viewModels.manual.cpso.CPSOId
 import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
 import pages.manual.account.*
-import pages.manual.accountHolders.*
+import pages.manual.accountHolders.{UkAddressPage as AccountHolderUkAddressPage, *}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.*
@@ -204,14 +204,14 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           navigator.nextPage(UkPostCodeForAccountHolderPage(accountHolderId, reportId), NormalMode, ua) mustBe
             controllers.manual.accountHolders.routes.IsThisTheAddressForAccountHoldersController.onPageLoad(NormalMode)
         }
-        "must go to under construction when multiple addresses are found" in {
+        "must go to select address when multiple addresses are found" in {
           val addresses: Seq[AddressLookup] = Seq(addressLookup, addressLookup)
 
           val ua = UserAnswers("id")
             .withPage(UkPostCodeForAccountHolderPage(accountHolderId, reportId), "ZZ1 1ZZ")
             .withPage(AddressLookupForAccountHolderPage(accountHolderId, reportId), addresses)
           navigator.nextPage(UkPostCodeForAccountHolderPage(accountHolderId, reportId), NormalMode, ua) mustBe
-            controllers.routes.UnderConstructionController.onPageLoad()
+            controllers.manual.accountHolders.routes.SelectAddressController.onPageLoad(NormalMode)
         }
         "must go to ProblemPage when no addresses are found" in {
           val ua = UserAnswers("id")
@@ -847,6 +847,52 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             navigator.nextPage(IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId), NormalMode, ua) mustBe
               controllers.routes.JourneyRecoveryController.onPageLoad()
           }
+        }
+
+        "SelectAddressPage" - {
+          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+          val address = Address(uprn = None,
+                                addressLine1 = "string",
+                                addressLine2 = None,
+                                addressLine3 = Some("string"),
+                                addressLine4 = None,
+                                town = "town",
+                                postCode = None,
+                                country = Country.GB
+          )
+          val accountHolderId = AccountHolderId("holder-id")
+
+          "must go to under construction" in {
+            val ua = UserAnswers("id")
+              .withPage(SelectAddressPage(accountHolderId, reportId), address)
+
+            navigator.nextPage(SelectAddressPage(accountHolderId, reportId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+
+        }
+
+        "UKAddressPage" - {
+          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+          val address = Address(uprn = None,
+                                addressLine1 = "string",
+                                addressLine2 = None,
+                                addressLine3 = Some("string"),
+                                addressLine4 = None,
+                                town = "town",
+                                postCode = None,
+                                country = Country.GB
+          ).ukAddress
+          val accountHolderId = AccountHolderId("holder-id")
+
+          "must go to under construction" in {
+            val ua = UserAnswers("id")
+              .withPage(AccountHolderUkAddressPage(accountHolderId, reportId), address)
+
+            navigator.nextPage(AccountHolderUkAddressPage(accountHolderId, reportId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+
         }
       }
     }
