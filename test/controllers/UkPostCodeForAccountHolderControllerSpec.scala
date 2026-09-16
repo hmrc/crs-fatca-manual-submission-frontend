@@ -29,7 +29,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.accountHolders.{CurrentAccountHolderIdPage, IndividualNamePage, UkPostCodeForAccountHolderPage}
+import pages.manual.accountHolders.{AccountHolderIndividualNamePage, CurrentAccountHolderIdPage, UkPostCodeForAccountHolderPage}
 import play.api.data.FormError
 import play.api.inject.bind
 import play.api.libs.json.Json
@@ -48,7 +48,7 @@ class UkPostCodeForAccountHolderControllerSpec extends SpecBase with MockitoSuga
   implicit val reportId: ReportId      = ReportId(CRS, 2025, None, "TestfiID")
   val accountHolderId: AccountHolderId = AccountHolderId("some-id")
   val individualName                   = IndividualName("Some-name", "Some-last-name")
-  val accountHolderName                = s"${individualName.FirstName} ${individualName.LastName}".trim
+  val accountHolderName                = s"${individualName.firstName} ${individualName.lastName}".trim
   val form                             = formProvider()
 
   val addressLookup =
@@ -70,7 +70,7 @@ class UkPostCodeForAccountHolderControllerSpec extends SpecBase with MockitoSuga
     val ua = emptyUserAnswers
       .withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
       .withPage(CurrentAccountHolderIdPage(), accountHolderId)
-      .withPage(IndividualNamePage(accountHolderId), individualName)
+      .withPage(AccountHolderIndividualNamePage(accountHolderId), individualName)
 
     "must return OK and the correct view for a GET" in {
 
@@ -93,7 +93,7 @@ class UkPostCodeForAccountHolderControllerSpec extends SpecBase with MockitoSuga
       val userAnswers = emptyUserAnswers
         .withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
         .withPage(CurrentAccountHolderIdPage(), accountHolderId)
-        .withPage(IndividualNamePage(accountHolderId), individualName)
+        .withPage(AccountHolderIndividualNamePage(accountHolderId), individualName)
         .withPage(UkPostCodeForAccountHolderPage(accountHolderId, reportId), validAnswer)
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
@@ -132,7 +132,7 @@ class UkPostCodeForAccountHolderControllerSpec extends SpecBase with MockitoSuga
       val userAnswers = emptyUserAnswers
         .withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
         .withPage(CurrentAccountHolderIdPage(), accountHolderId)
-        .withPage(IndividualNamePage(accountHolderId), individualName)
+        .withPage(AccountHolderIndividualNamePage(accountHolderId), individualName)
 
       val mockSessionRepository = mock[DatabaseConnector]
       val mockAddressLookup     = mock[AddressLookupConnector]
@@ -165,7 +165,7 @@ class UkPostCodeForAccountHolderControllerSpec extends SpecBase with MockitoSuga
       val userAnswers = emptyUserAnswers
         .withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
         .withPage(CurrentAccountHolderIdPage(), accountHolderId)
-        .withPage(IndividualNamePage(accountHolderId), individualName)
+        .withPage(AccountHolderIndividualNamePage(accountHolderId), individualName)
 
       val mockSessionRepository = mock[DatabaseConnector]
       val mockAddressLookup     = mock[AddressLookupConnector]
