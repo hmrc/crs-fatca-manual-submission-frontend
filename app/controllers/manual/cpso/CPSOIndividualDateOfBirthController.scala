@@ -31,7 +31,7 @@ import views.html.manual.cpso.CPSOIndividualDateOfBirthView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CPSOIndividualDateOfBirthController @Inject()(
+class CPSOIndividualDateOfBirthController @Inject() (
   override val messagesApi: MessagesApi,
   repository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
@@ -47,9 +47,8 @@ class CPSOIndividualDateOfBirthController @Inject()(
   val form = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
-    actions.withReportIdRequiredAndCPSOIdCreation() {
+    actions.withReportIdRequiredAndCPSOIdRequired() {
       implicit request =>
-
         implicit val reportId: ReportId = request.reportId
 
         val preparedForm =
@@ -59,16 +58,12 @@ class CPSOIndividualDateOfBirthController @Inject()(
 
         request.userAnswers
           .get(IndividualNamePage(request.cpsoId)) match {
-
           case Some(individualName) =>
-            val cpsoName =
-              s"${individualName.firstName} ${individualName.lastName}".trim
-
             Ok(
               view(
                 preparedForm,
                 mode,
-                cpsoName
+                individualName.fullName
               )
             )
 
@@ -81,30 +76,19 @@ class CPSOIndividualDateOfBirthController @Inject()(
     }
 
   def onSubmit(mode: Mode): Action[AnyContent] =
-    actions.withReportIdRequiredAndCPSOIdCreation().async {
+    actions.withReportIdRequiredAndCPSOIdRequired().async {
       implicit request =>
-
         implicit val reportId: ReportId = request.reportId
 
         request.userAnswers
           .get(IndividualNamePage(request.cpsoId)) match {
-
           case Some(individualName) =>
-            val cpsoName =
-              s"${individualName.firstName} ${individualName.lastName}".trim
-
             form
               .bindFromRequest()
               .fold(
                 formWithErrors =>
                   Future.successful(
-                    BadRequest(
-                      view(
-                        formWithErrors,
-                        mode,
-                        cpsoName
-                      )
-                    )
+                    BadRequest(view(formWithErrors, mode, individualName.fullName))
                   ),
                 value =>
                   for {
