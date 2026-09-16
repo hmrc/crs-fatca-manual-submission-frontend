@@ -26,7 +26,6 @@ import play.api.mvc.{ActionRefiner, Result}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-//Todo ensure test is written
 class CpsoIdRequiredActionImpl @Inject() (implicit
   val executionContext: ExecutionContext
 ) extends CpsoIdRequiredAction {
