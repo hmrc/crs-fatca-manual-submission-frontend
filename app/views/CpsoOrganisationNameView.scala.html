@@ -29,14 +29,14 @@
 
 @layout(pageTitle = title(form, messages("cpso.organisationName.title"))) {
 
-    @formHelper(action = controllers.manual.cpso.routes.CpsoOrganisationNameController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+    @formHelper(action = controllers.manual.cpso.routes.CpsoOrganisationNameController.onSubmit(mode), Symbol("autoComplete") -> "on") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
         <h1 class="govuk-label-wrapper">
-            <label class="govuk-label govuk-label--l" for="manual-cpso-org-name">
+            <label class="govuk-label govuk-label--l">
                 @messages("cpso.organisationName.heading")
             </label>
         </h1>
@@ -48,6 +48,7 @@
                 label = LabelViewModel(messages("cpsoOrganisationName.organizationName")).withCssClass("govuk-visually-hidden")
             )
             .withWidth(ThreeQuarters)
+            .withAutocomplete("organization")
         )
 
         @govukButton(
