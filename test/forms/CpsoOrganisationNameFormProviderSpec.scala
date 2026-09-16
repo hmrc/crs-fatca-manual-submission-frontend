@@ -18,63 +18,51 @@ package forms
 
 import forms.behaviours.StringFieldBehaviours
 import forms.manual.cpso.CpsoOrganisationNameFormProvider
+import org.scalatest.matchers.should.Matchers.shouldBe
 import play.api.data.FormError
 
 class CpsoOrganisationNameFormProviderSpec extends StringFieldBehaviours {
 
+  val requiredKey = "cpsoOrganisationName.error.organizationName.required"
+  val lengthKey   = "cpsoOrganisationName.error.organizationName.length"
+  val maxLength   = 200
+
   val form = new CpsoOrganisationNameFormProvider()()
 
-  ".organizationName" - {
+  private val validData = Map(
+    "value" -> "Organization Name"
+  )
 
-    val fieldName = "organizationName"
-    val requiredKey = "cpsoOrganisationName.error.organizationName.required"
-    val lengthKey = "cpsoOrganisationName.error.organizationName.length"
-    val maxLength = 200
+  ".CpsoOrganisationNameFormProvider" - {
 
-    behave like fieldThatBindsValidData(
-      form,
-      fieldName,
-      stringsWithMaxLength(maxLength)
-    )
+    "bind valid data" in {
+      val result = form.bind(validData)
+      result.errors shouldBe empty
+    }
 
-    behave like fieldWithMaxLength(
-      form,
-      fieldName,
-      maxLength = maxLength,
-      lengthError = FormError(fieldName, lengthKey, Seq(maxLength))
-    )
+    "value" - {
+      "cannot be empty" in {
+        val result = form.bind(validData.updated("value", ""))
+        result.errors("value").map(_.message) shouldBe Seq("cpso.organisationName.error.required")
+      }
 
-    behave like mandatoryField(
-      form,
-      fieldName,
-      requiredError = FormError(fieldName, requiredKey)
-    )
-  }
+      "must fail when longer than 200 characters" in {
+        val orgName = "A" * 201
+        val result  = form.bind(validData.updated("value", orgName))
+        result.errors("value").map(_.message) shouldBe Seq("cpso.organisationName.error.length")
+      }
 
-  ".some-name" - {
+      "must fail when invalid characters are entered" in {
+        val orgName = "org name!"
+        val result  = form.bind(validData.updated("value", orgName))
+        result.errors("value").map(_.message) shouldBe Seq("cpso.organisationName.error.invalid")
+      }
 
-    val fieldName = "some-name"
-    val requiredKey = "cpsoOrganisationName.error.some-name.required"
-    val lengthKey = "cpsoOrganisationName.error.some-name.length"
-    val maxLength = 100
-
-    behave like fieldThatBindsValidData(
-      form,
-      fieldName,
-      stringsWithMaxLength(maxLength)
-    )
-
-    behave like fieldWithMaxLength(
-      form,
-      fieldName,
-      maxLength = maxLength,
-      lengthError = FormError(fieldName, lengthKey, Seq(maxLength))
-    )
-
-    behave like mandatoryField(
-      form,
-      fieldName,
-      requiredError = FormError(fieldName, requiredKey)
-    )
+      "must fail when it contains a double dash" in {
+        val orgName = "orgname--name"
+        val result  = form.bind(validData.updated("value", orgName))
+        result.errors("value").map(_.message) shouldBe Seq("cpso.organisationName.error.invalid-combination")
+      }
+    }
   }
 }

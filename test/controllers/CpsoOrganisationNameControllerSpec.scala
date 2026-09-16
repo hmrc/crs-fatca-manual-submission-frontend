@@ -28,8 +28,8 @@ import play.api.test.Helpers.*
 import connectors.DatabaseConnector
 import forms.manual.cpso.CpsoOrganisationNameFormProvider
 import views.html.CpsoOrganisationNameView
-import models.SubmissionsConstants.CRS
-import models.manual.cpso.CpsoOrganisationName
+import models.SubmissionsConstants.{CRS, FATCA}
+import models.viewModels.manual.cpso.CPSOId
 import models.{NormalMode, ReportId, UserAnswers}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import pages.ReportIdPage
@@ -42,8 +42,9 @@ class CpsoOrganisationNameControllerSpec extends SpecBase with MockitoSugar {
   def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new CpsoOrganisationNameFormProvider()
-  val form = formProvider()
-  val reportId = ReportId(CRS, 2025, None, "TestfiID")
+  val form         = formProvider()
+  val reportId     = ReportId(FATCA, 2025, None, "TestfiID")
+  val currentId    = CPSOId("cpso-id")
 
   lazy val cpsoOrganisationNameRoute = controllers.manual.cpso.routes.CpsoOrganisationNameController.onPageLoad(NormalMode).url
 
@@ -52,14 +53,14 @@ class CpsoOrganisationNameControllerSpec extends SpecBase with MockitoSugar {
     Json.obj(
       CpsoOrganisationNamePage.toString -> Json.obj(
         "organizationName" -> "value 1",
-        "some-name" -> "value 2"
+        "some-name"        -> "value 2"
       )
     )
   )
 
   "CpsoOrganisationName Controller" - {
     val ua = emptyUserAnswers
-      .withPage(ReportIdPage, ReportId(CRS,2025,None,"TestfiID"))
+      .withPage(ReportIdPage, reportId)
       .withPage(CurrentCPSOIdPage()(reportId), currentId)
 
     "must return OK and the correct view for a GET" in {
@@ -78,10 +79,26 @@ class CpsoOrganisationNameControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
+    "must redirect to journey recovery when CRS is used in GET" in {
+      val updatedUa   = ua.withPage(ReportIdPage, reportId.copy(regime = CRS))
+      val application = applicationBuilder(maybeUserAnswers = Some(updatedUa)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, cpsoOrganisationNameRoute)
+
+        val view = application.injector.instanceOf[CpsoOrganisationNameView]
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
     "must populate the view correctly on a GET when the question has previously been answered" in {
       val validAnswer = "value 1"
-     
-      val userAnswers = ua.set(CpsoOrganisationNamePage(), validAnswer).success.value
+
+      val userAnswers = ua.withPage(CpsoOrganisationNamePage(currentId, reportId), validAnswer)
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
@@ -93,7 +110,7 @@ class CpsoOrganisationNameControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill("value 1")), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill("value 1"), NormalMode)(request, messages(application)).toString
       }
     }
 
@@ -114,12 +131,38 @@ class CpsoOrganisationNameControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, cpsoOrganisationNameRoute)
-            .withFormUrlEncodedBody(("organizationName", "value 1"), ("some-name", "value 2"))
+            .withFormUrlEncodedBody(("value", "value 1"))
 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
+      }
+    }
+
+    "must redirect to journey recovery when valid data is submitted for crs regime" in {
+      val updatedUa             = ua.withPage(ReportIdPage, reportId.copy(regime = CRS))
+      val mockSessionRepository = mock[DatabaseConnector]
+
+      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(updatedUa))
+          .overrides(
+            bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
+            bind[DatabaseConnector].toInstance(mockSessionRepository)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, cpsoOrganisationNameRoute)
+            .withFormUrlEncodedBody(("value", "value 1"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 
@@ -130,9 +173,9 @@ class CpsoOrganisationNameControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, cpsoOrganisationNameRoute)
-            .withFormUrlEncodedBody(("value", "invalid value"))
+            .withFormUrlEncodedBody(("value", "invalid--value"))
 
-        val boundForm = form.bind(Map("value" -> "invalid value"))
+        val boundForm = form.bind(Map("value" -> "invalid--value"))
 
         val view = application.injector.instanceOf[CpsoOrganisationNameView]
 

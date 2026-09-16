@@ -30,44 +30,47 @@ import views.html.CpsoOrganisationNameView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CpsoOrganisationNameController @Inject()(
-                                      override val messagesApi: MessagesApi,
-                                      repository: DatabaseConnector,
-                                      navigator: ManualSubmissionNavigator,
-                                      actions: Actions,
-                                      formProvider: CpsoOrganisationNameFormProvider,
-                                      val controllerComponents: MessagesControllerComponents,
-                                      view: CpsoOrganisationNameView
-                                     )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+class CpsoOrganisationNameController @Inject() (
+  override val messagesApi: MessagesApi,
+  repository: DatabaseConnector,
+  navigator: ManualSubmissionNavigator,
+  actions: Actions,
+  fatcaOnlyFilterAction: CPSOFATCAOnlyFilterAction,
+  formProvider: CpsoOrganisationNameFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: CpsoOrganisationNameView
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
+    with I18nSupport {
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndCPSOIdRequired() {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (actions.withReportIdRequiredAndCPSOIdRequired() andThen fatcaOnlyFilterAction) {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
-      
+
       val preparedForm = request.userAnswers.get(CpsoOrganisationNamePage(request.cpsoId, reportId)) match {
-        case None => form
+        case None        => form
         case Some(value) => form.fill(value)
       }
 
       Ok(view(preparedForm, mode))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (actions.withReportIdRequiredAndCPSOIdRequired()).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (actions.withReportIdRequiredAndCPSOIdRequired() andThen fatcaOnlyFilterAction).async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
-      val cpsoId = request.cpsoId
+      val cpsoId                      = request.cpsoId
 
-      form.bindFromRequest().fold(
-        formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors, mode))),
-
-        value =>
-          for {
-            updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(CpsoOrganisationNamePage(cpsoId, reportId), value))
-            _              <- repository.set(updatedAnswers)
-          } yield Redirect(navigator.nextPage(CpsoOrganisationNamePage(cpsoId, reportId), mode, updatedAnswers))
-      )
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(CpsoOrganisationNamePage(cpsoId, reportId), value))
+              _              <- repository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(CpsoOrganisationNamePage(cpsoId, reportId), mode, updatedAnswers))
+        )
   }
 }

@@ -56,7 +56,7 @@ class Actions @Inject() (
     withReportIdRequired() andThen cpsoIdCreationAction
 
   def withReportIdRequiredAndCPSOIdRequired(): ActionBuilder[CPSOIdRequest, AnyContent] =
-    withReportIdRequired() andThen  cpsoIdRequiredAction
+    withReportIdRequired() andThen cpsoIdRequiredAction
 
   def withReportIdRequiredAndSponsorNameRequired(): ActionBuilder[SponsorNameRequest, AnyContent] =
     withReportIdRequired() andThen sponsorNameRequiredAction

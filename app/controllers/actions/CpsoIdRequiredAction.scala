@@ -25,16 +25,16 @@ import play.api.mvc.{ActionRefiner, Result}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-//Todo ensure test is written
-class CpsoIdRequiredActionImpl  @Inject() (implicit
-                                           val executionContext: ExecutionContext
-                                          ) extends CpsoIdRequiredAction {
 
+//Todo ensure test is written
+class CpsoIdRequiredActionImpl @Inject() (implicit
+  val executionContext: ExecutionContext
+) extends CpsoIdRequiredAction {
 
   override protected def refine[A](request: ReportIdRequest[A]): Future[Either[Result, CPSOIdRequest[A]]] = Future.successful {
     request.userAnswers.get(CurrentCPSOIdPage()(request.reportId)) match {
       case Some(cpsoId) => Right(toCpsoIdRequest(request, cpsoId))
-      case None => Left(Redirect(routes.JourneyRecoveryController.onPageLoad()))
+      case None         => Left(Redirect(routes.JourneyRecoveryController.onPageLoad()))
     }
   }
 
@@ -50,4 +50,3 @@ class CpsoIdRequiredActionImpl  @Inject() (implicit
 }
 
 trait CpsoIdRequiredAction extends ActionRefiner[ReportIdRequest, CPSOIdRequest]
-
