@@ -18,7 +18,7 @@ package viewmodels.checkAnswers.manual.accountHolders
 
 import models.ServiceErrors.CountryLookup_Error
 import models.{CheckMode, Countries, ReportId, UserAnswers}
-import pages.manual.sponsor.AddressNonUkPage
+import pages.manual.accountHolders.{AccountHolderAddressNonUkPage, CurrentAccountHolderIdPage}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
@@ -31,36 +31,36 @@ object AccountHolderAddressNonUkSummary {
   def row(
     answers: UserAnswers
   )(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
-    answers.get(AddressNonUkPage()).map {
-      answer =>
+    for {
+      currentAccountHolderId <- answers.get(CurrentAccountHolderIdPage()(reportId))
+      answer                 <- answers.get(AccountHolderAddressNonUkPage(currentAccountHolderId, reportId))
+    } yield
+      def formatLine(line: String): String =
+        s"""<span class="govuk-!-margin-bottom-0">${HtmlFormat.escape(line)}</span><br>"""
 
-        def formatLine(line: String): String =
-          s"""<span class="govuk-!-margin-bottom-0">${HtmlFormat.escape(line)}</span><br>"""
+      def formatLastLine(line: String): String = s"""<span>${HtmlFormat.escape(line)}</span><br>"""
 
-        def formatLastLine(line: String): String = s"""<span>${HtmlFormat.escape(line)}</span><br>"""
+      def countryDescription(code: String): String = Countries.all
+        .find(_.code == code)
+        .map(_.description)
+        .getOrElse(throw CountryLookup_Error)
 
-        def countryDescription(code: String): String = Countries.all
-          .find(_.code == code)
-          .map(_.description)
-          .getOrElse(throw CountryLookup_Error)
+      val addressHtml: String =
+        formatLine(answer.addressLine1) concat
+          answer.addressLine2.fold("")(formatLine) concat
+          formatLine(answer.addressLine3) concat
+          answer.addressLine4.fold("")(formatLine) concat
+          answer.postcode.fold("")(formatLine) concat
+          formatLastLine(countryDescription(answer.country))
 
-        val addressHtml: String =
-          formatLine(answer.addressLine1) concat
-            answer.addressLine2.fold("")(formatLine) concat
-            formatLine(answer.addressLine3) concat
-            answer.addressLine4.fold("")(formatLine) concat
-            answer.postcode.fold("")(formatLine) concat
-            formatLastLine(countryDescription(answer.country))
-
-        SummaryListRowViewModel(
-          key = "accountHolderAddressNonUk.checkYourAnswersLabel",
-          value = ValueViewModel(
-            HtmlContent(addressHtml)
-          ),
-          actions = Seq(
-            ActionItemViewModel("site.change", controllers.manual.sponsor.routes.IsSponsorBasedInUKController.onPageLoad(CheckMode).url)
-              .withVisuallyHiddenText(messages("accountHolderAddressNonUk.change.hidden"))
-          )
+      SummaryListRowViewModel(
+        key = "accountHolderAddressNonUk.checkYourAnswersLabel",
+        value = ValueViewModel(
+          HtmlContent(addressHtml)
+        ),
+        actions = Seq(
+          ActionItemViewModel("site.change", controllers.manual.sponsor.routes.IsSponsorBasedInUKController.onPageLoad(CheckMode).url)
+            .withVisuallyHiddenText(messages("accountHolderAddressNonUk.change.hidden"))
         )
-    }
+      )
 }
