@@ -833,12 +833,12 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               controllers.routes.UnderConstructionController.onPageLoad()
           }
 
-          "must go to under construction for a no answer" in {
+          "must go to address uk for a no answer" in {
             val ua = UserAnswers("id")
               .withPage(IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId), false)
 
             navigator.nextPage(IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId), NormalMode, ua) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.accountHolders.routes.UkAddressController.onPageLoad(NormalMode)
           }
 
           "must go to journey recovery when IsThisTheAddressForAccountHoldersPage is not present" in {

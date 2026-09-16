@@ -264,7 +264,7 @@ class ManualSubmissionNavigator @Inject() () {
   ) =
     userAnswers.get(IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId)) match {
       case Some(true)  => routes.UnderConstructionController.onPageLoad()
-      case Some(false) => routes.UnderConstructionController.onPageLoad()
+      case Some(false) => controllers.manual.accountHolders.routes.UkAddressController.onPageLoad(mode)
       case None        => routes.JourneyRecoveryController.onPageLoad()
     }
 
