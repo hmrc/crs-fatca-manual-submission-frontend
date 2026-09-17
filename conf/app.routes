@@ -303,3 +303,12 @@ POST       /manual/account-holder/is-this-the-address                        con
 GET        /manual/account-holder/change-is-this-the-address                  controllers.manual.accountHolders.IsThisTheAddressForAccountHoldersController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/account-holder/change-is-this-the-address                 controllers.manual.accountHolders.IsThisTheAddressForAccountHoldersController.onSubmit(mode: Mode = CheckMode)
 
+GET        /manual/account-holder/select-address                        controllers.manual.accountHolders.SelectAddressController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account-holder/select-address                        controllers.manual.accountHolders.SelectAddressController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account-holder/change-select-address                  controllers.manual.accountHolders.SelectAddressController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account-holder/change-select-address                  controllers.manual.accountHolders.SelectAddressController.onSubmit(mode: Mode = CheckMode)
+
+GET         /manual/account-holder/address-uk                               controllers.manual.accountHolders.UkAddressController.onPageLoad(mode: Mode = NormalMode)
+POST        /manual/account-holder/address-uk                               controllers.manual.accountHolders.UkAddressController.onSubmit(mode: Mode = NormalMode)
+GET         /manual/account-holder/change-address-uk                        controllers.manual.accountHolders.UkAddressController.onPageLoad(mode: Mode = CheckMode)
+POST        /manual/account-holder/change-address-uk                        controllers.manual.accountHolders.UkAddressController.onSubmit(mode: Mode = CheckMode)

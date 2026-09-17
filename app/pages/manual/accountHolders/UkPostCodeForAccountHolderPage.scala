@@ -16,11 +16,40 @@
 
 package pages.manual.accountHolders
 
-import models.ReportId
+import models.{ReportId, UserAnswers}
 import models.viewModels.AccountHolderId
 import pages.QuestionPage
+import play.api.Logging
 import play.api.libs.json.JsPath
 
-final case class UkPostCodeForAccountHolderPage(accountHolderId: AccountHolderId, reportId: ReportId) extends QuestionPage[String]:
+import scala.util.{Failure, Success, Try}
+
+final case class UkPostCodeForAccountHolderPage(accountHolderId: AccountHolderId, reportId: ReportId) extends QuestionPage[String] with Logging:
 
   override def path: JsPath = JsPath \ reportId.mongoKey \ "accountHolder" \ accountHolderId.value \ "ukPostcode"
+
+  override def cleanupWithReportId(
+    value: Option[String],
+    userData: UserAnswers
+  )(implicit reportId: ReportId): Try[UserAnswers] =
+    value match {
+      case Some(_) =>
+        cleanUpPages
+          .foldLeft(Try(userData))(removePage())
+          .recoverWith {
+            case e =>
+              logger.error(
+                s"Failed to clean up pages for reportId=$reportId, accountHolderId=${accountHolderId.value}",
+                e
+              )
+              Failure(e)
+          }
+      case _ => Success(userData)
+    }
+
+  private val cleanUpPages: Seq[QuestionPage[_]] = List(
+    AddressLookupForAccountHolderPage(accountHolderId, reportId),
+    SelectAddressPage(accountHolderId, reportId),
+    IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId),
+    UkAddressPage(accountHolderId, reportId)
+  )

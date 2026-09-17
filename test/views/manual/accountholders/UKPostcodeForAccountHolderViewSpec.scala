@@ -17,7 +17,6 @@
 package views.manual.accountholders
 
 import base.SpecBase
-import controllers.routes
 import forms.manual.accountHolders.UkPostCodeForAccountHolderFormProvider
 import models.NormalMode
 import org.jsoup.Jsoup
@@ -62,7 +61,7 @@ class UKPostcodeForAccountHolderViewSpec extends SpecBase {
 
       "must display link" in {
         doc.select("a#enter-manually-id").text() must include("Or enter the address manually")
-        doc.select("a#enter-manually-id").attr("href") mustBe routes.UnderConstructionController.onPageLoad().url
+        doc.select("a#enter-manually-id").attr("href") mustBe controllers.manual.accountHolders.routes.UkAddressController.onPageLoad(NormalMode).url
       }
 
       "must have autocomplete" in {
