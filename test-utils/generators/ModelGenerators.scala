@@ -20,8 +20,9 @@ import models.manual.account.{PaymentType, WasAccountOpen, WhatAccountType}
 import models.manual.accountHolders.IndividualName
 import models.manual.cpso.IndividualOrOrganisation
 import models.{CrsOrFatca, NumberType, TypeOfReport, UkAddress}
-import org.scalacheck.Arbitrary.*
 import org.scalacheck.{Arbitrary, Gen}
+
+import org.scalacheck.Arbitrary.*
 
 trait ModelGenerators {
 

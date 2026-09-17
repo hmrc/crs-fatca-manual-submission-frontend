@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package models.manual.accountHolders
+package pages.manual.accountHolders
 
-import play.api.libs.json.*
+import models.ReportId
+import models.response.AddressLookup
+import models.viewModels.AccountHolderId
+import pages.QuestionPage
+import play.api.libs.json.JsPath
 
-case class IndividualName(FirstName: String, LastName: String) {
-  def fullName: String = s"$FirstName $LastName".trim
-}
+final case class AddressLookupForAccountHolderPage(accountHolderId: AccountHolderId, reportId: ReportId) extends QuestionPage[Seq[AddressLookup]]:
 
-object IndividualName {
-
-  implicit val format: OFormat[IndividualName] = Json.format
-}
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "accountHolder" \ accountHolderId.value \ "addressLookup"

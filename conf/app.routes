@@ -288,6 +288,26 @@ POST       /manual/account-holder/where-are-they-based                        co
 GET        /manual/account-holder/change-where-are-they-based                  controllers.manual.accountHolders.WhereAreTheyBasedController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/account-holder/change-where-are-they-based                  controllers.manual.accountHolders.WhereAreTheyBasedController.onSubmit(mode: Mode = CheckMode)
 
+GET        /manual/account-holder/uk-postcode                       controllers.manual.accountHolders.UkPostCodeForAccountHolderController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account-holder/uk-postcode                       controllers.manual.accountHolders.UkPostCodeForAccountHolderController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account-holder/change-uk-postcode                  controllers.manual.accountHolders.UkPostCodeForAccountHolderController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account-holder/change-uk-postcode                controllers.manual.accountHolders.UkPostCodeForAccountHolderController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/account-holder/is-this-the-address                       controllers.manual.accountHolders.IsThisTheAddressForAccountHoldersController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account-holder/is-this-the-address                        controllers.manual.accountHolders.IsThisTheAddressForAccountHoldersController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account-holder/change-is-this-the-address                  controllers.manual.accountHolders.IsThisTheAddressForAccountHoldersController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account-holder/change-is-this-the-address                 controllers.manual.accountHolders.IsThisTheAddressForAccountHoldersController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/account-holder/select-address                        controllers.manual.accountHolders.SelectAddressController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account-holder/select-address                        controllers.manual.accountHolders.SelectAddressController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account-holder/change-select-address                  controllers.manual.accountHolders.SelectAddressController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account-holder/change-select-address                  controllers.manual.accountHolders.SelectAddressController.onSubmit(mode: Mode = CheckMode)
+
+GET         /manual/account-holder/address-uk                               controllers.manual.accountHolders.UkAddressController.onPageLoad(mode: Mode = NormalMode)
+POST        /manual/account-holder/address-uk                               controllers.manual.accountHolders.UkAddressController.onSubmit(mode: Mode = NormalMode)
+GET         /manual/account-holder/change-address-uk                        controllers.manual.accountHolders.UkAddressController.onPageLoad(mode: Mode = CheckMode)
+POST        /manual/account-holder/change-address-uk                        controllers.manual.accountHolders.UkAddressController.onSubmit(mode: Mode = CheckMode)
+
 GET        /manual/account/payments                        controllers.manual.account.AccountPaymentsController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/account/payments                        controllers.manual.account.AccountPaymentsController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/account/change-payments                  controllers.manual.account.AccountPaymentsController.onPageLoad(mode: Mode = CheckMode)

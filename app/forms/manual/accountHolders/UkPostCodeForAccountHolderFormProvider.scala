@@ -14,15 +14,25 @@
  * limitations under the License.
  */
 
-package models.manual.accountHolders
+package forms.manual.accountHolders
 
-import play.api.libs.json.*
+import forms.mappings.Mappings
+import play.api.data.Form
+import utils.RegexConstants.{POSTCODE_FORMAT, POSTCODE_VALID}
 
-case class IndividualName(FirstName: String, LastName: String) {
-  def fullName: String = s"$FirstName $LastName".trim
-}
+import javax.inject.Inject
 
-object IndividualName {
+class UkPostCodeForAccountHolderFormProvider @Inject() extends Mappings {
 
-  implicit val format: OFormat[IndividualName] = Json.format
+  def apply(): Form[String] =
+    Form(
+      "value" -> mandatoryPostcode(
+        "uKPostcode.error.required",
+        "uKPostcode.error.length",
+        POSTCODE_VALID,
+        "uKPostcode.error.invalid",
+        POSTCODE_FORMAT,
+        "uKPostcode.error.format"
+      )
+    )
 }

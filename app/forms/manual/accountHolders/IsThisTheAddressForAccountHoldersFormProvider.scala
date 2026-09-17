@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package models.manual.accountHolders
+package forms.manual.accountHolders
 
-import play.api.libs.json.*
+import javax.inject.Inject
 
-case class IndividualName(FirstName: String, LastName: String) {
-  def fullName: String = s"$FirstName $LastName".trim
-}
+import forms.mappings.Mappings
+import play.api.data.Form
 
-object IndividualName {
+class IsThisTheAddressForAccountHoldersFormProvider @Inject() extends Mappings {
 
-  implicit val format: OFormat[IndividualName] = Json.format
+  def apply(): Form[Boolean] =
+    Form(
+      "value" -> boolean("account.holder.uk.isThisTheAddressForAccountHolders.error.required")
+    )
 }

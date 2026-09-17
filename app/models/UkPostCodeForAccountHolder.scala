@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package models.manual.accountHolders
+package models
 
-import play.api.libs.json.*
+import play.api.libs.json._
 
-case class IndividualName(FirstName: String, LastName: String) {
-  def fullName: String = s"$FirstName $LastName".trim
-}
+case class UkPostCodeForAccountHolder(postcode: String)
 
-object IndividualName {
+object UkPostCodeForAccountHolder {
 
-  implicit val format: OFormat[IndividualName] = Json.format
+  implicit val format: OFormat[UkPostCodeForAccountHolder] = Json.format
 }

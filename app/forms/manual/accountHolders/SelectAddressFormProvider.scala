@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package models.manual.accountHolders
+package forms.manual.accountHolders
 
-import play.api.libs.json.*
+import forms.mappings.Mappings
+import play.api.data.Form
 
-case class IndividualName(FirstName: String, LastName: String) {
-  def fullName: String = s"$FirstName $LastName".trim
-}
+import javax.inject.Inject
 
-object IndividualName {
+class SelectAddressFormProvider @Inject() extends Mappings {
 
-  implicit val format: OFormat[IndividualName] = Json.format
+  def apply(): Form[String] =
+    Form(
+      "value" -> text("accountHolders.selectAddress.error.required")
+    )
 }
