@@ -108,7 +108,7 @@ class CPSOIndividualDateOfBirthController @Inject() (
                   )
               )
           case None =>
-            logger.error("Mandatory individual name is missing from User Answers")
+            logger.error("CPSO Name is missing from User Answers")
             Future.successful(
               Redirect(
                 controllers.routes.JourneyRecoveryController.onPageLoad()

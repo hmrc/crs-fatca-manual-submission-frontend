@@ -244,10 +244,10 @@ POST       /manual/cp-so/individual-name                      controllers.manual
 GET        /manual/cp-so/change-individual-name             controllers.manual.cpso.IndividualNameController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/cp-so/change-individual-name                 controllers.manual.cpso.IndividualNameController.onSubmit(mode: Mode = CheckMode)
 
-GET        /manual/cpso/individual-date-of-birth                        controllers.manual.cpso.CPSOIndividualDateOfBirthController.onPageLoad(mode: Mode = NormalMode)
-POST       /manual/cpso/individual-date-of-birth                        controllers.manual.cpso.CPSOIndividualDateOfBirthController.onSubmit(mode: Mode = NormalMode)
-GET        /manual/cpso/change-individual-date-of-birth                 controllers.manual.cpso.CPSOIndividualDateOfBirthController.onPageLoad(mode: Mode = CheckMode)
-POST       /manual/cpso/change-individual-date-of-birth                 controllers.manual.cpso.CPSOIndividualDateOfBirthController.onSubmit(mode: Mode = CheckMode)
+GET        /manual/cp-so/individual-date-of-birth                        controllers.manual.cpso.CPSOIndividualDateOfBirthController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/cp-so/individual-date-of-birth                        controllers.manual.cpso.CPSOIndividualDateOfBirthController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/cp-so/change-individual-date-of-birth                 controllers.manual.cpso.CPSOIndividualDateOfBirthController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/cp-so/change-individual-date-of-birth                 controllers.manual.cpso.CPSOIndividualDateOfBirthController.onSubmit(mode: Mode = CheckMode)
 
 GET         /manual/account/type                                     controllers.manual.account.WhatAccountTypeController.onPageLoad(mode: Mode = NormalMode)
 POST        /manual/account/type                                     controllers.manual.account.WhatAccountTypeController.onSubmit(mode: Mode = NormalMode)
