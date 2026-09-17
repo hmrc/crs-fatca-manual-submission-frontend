@@ -281,3 +281,8 @@ GET        /manual/cp-so/organisation-name                        controllers.ma
 POST       /manual/cp-so/organisation-name                       controllers.manual.cpso.CpsoOrganisationNameController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/cp-so/change-organisation-name                  controllers.manual.cpso.CpsoOrganisationNameController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/cp-so/change-organisation-name                   controllers.manual.cpso.CpsoOrganisationNameController.onSubmit(mode: Mode = CheckMode)
+
+GET         /manual/cp-so/self-certification                       controllers.manual.cpso.CpsoSelfCertificationController.onPageLoad(mode: Mode = NormalMode)
+POST        /manual/cp-so/self-certification                       controllers.manual.cpso.CpsoSelfCertificationController.onSubmit(mode: Mode = NormalMode)
+GET         /manual/cp-so/change-self-certification                 controllers.manual.cpso.CpsoSelfCertificationController.onPageLoad(mode: Mode = CheckMode)
+POST        /manual/cp-so/change-self-certification                  controllers.manual.cpso.CpsoSelfCertificationController.onSubmit(mode: Mode = CheckMode)

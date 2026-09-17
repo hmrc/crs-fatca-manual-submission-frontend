@@ -679,3 +679,12 @@ cpso.organisationName.error.invalid-combination = Organisation’s name must not
 cpso.organisationName.checkYourAnswersLabel = Organisation name
 cpso.organisationName.organizationName.change.hidden = Organisation name
 cpso.organisationName.organizationName = organizationName
+
+cpso.selfCertification.title = Has the controlling person provided a valid self-certification?
+cpso.selfCertification.heading = Has {0} provided a valid self-certification?
+cpso.selfCertification.CRS1000 = Not reported
+cpso.selfCertification.CRS1001 = Yes
+cpso.selfCertification.CRS1002 = No
+cpso.selfCertification.checkYourAnswersLabel = Have they provided a valid self certification?
+cpso.selfCertification.error.required = Select whether the controlling person has provided a valid self-certification
+cpso.selfCertification.change.hidden = CpsoSelfCertification

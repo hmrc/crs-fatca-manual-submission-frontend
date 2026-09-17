@@ -26,7 +26,7 @@ import models.viewModels.AccountId
 import pages.*
 import pages.manual.account.*
 import pages.manual.accountHolders.{IndividualNamePage, IndividualOrOrganisationPage}
-import pages.manual.cpso.IndividualNamePage
+import pages.manual.cpso.{CpsoOrganisationNamePage, CpsoSelfCertificationPage, IndividualNamePage}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.*
@@ -155,8 +155,9 @@ class ManualSubmissionNavigator @Inject() () {
         case Some(models.manual.cpso.IndividualOrOrganisation.Organisation) => controllers.manual.cpso.routes.CpsoOrganisationNameController.onPageLoad(mode)
         case _                                                              => routes.JourneyRecoveryController.onPageLoad()
       }
-    case (pages.manual.cpso.IndividualNamePage(cpsoId), mode, ua) =>
-      routes.UnderConstructionController.onPageLoad()
+    case (pages.manual.cpso.IndividualNamePage(cpsoId), mode, ua) => routes.UnderConstructionController.onPageLoad()
+    case (CpsoOrganisationNamePage(cpsoId, reportId), mode, ua)   => routes.UnderConstructionController.onPageLoad()
+    case (CpsoSelfCertificationPage(cpsoId, reportId), mode, ua)  => routes.UnderConstructionController.onPageLoad()
   }
 
   private def sponsorNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {

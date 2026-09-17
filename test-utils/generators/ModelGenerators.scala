@@ -18,12 +18,17 @@ package generators
 
 import models.manual.account.{PaymentType, WasAccountOpen, WhatAccountType}
 import models.manual.accountHolders.IndividualName
-import models.manual.cpso.IndividualOrOrganisation
+import models.manual.cpso.{CpsoSelfCertification, IndividualOrOrganisation}
 import models.{CrsOrFatca, NumberType, TypeOfReport, UkAddress}
 import org.scalacheck.Arbitrary.*
 import org.scalacheck.{Arbitrary, Gen}
 
 trait ModelGenerators {
+
+  implicit lazy val arbitraryCpsoSelfCertification: Arbitrary[CpsoSelfCertification] =
+    Arbitrary {
+      Gen.oneOf(CpsoSelfCertification.allValidValues)
+    }
 
   implicit lazy val arbitraryPaymentType: Arbitrary[PaymentType] =
     Arbitrary {

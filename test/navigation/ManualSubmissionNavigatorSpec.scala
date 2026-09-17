@@ -26,6 +26,7 @@ import models.manual.account.PaymentType.*
 import models.manual.account.{AccountPayment, PaymentType, WasAccountOpen, WhatAccountType}
 import models.manual.accountHolders.{IndividualDateOfBirth, IndividualName}
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
+import models.manual.cpso.CpsoSelfCertification.Yes
 import models.manual.cpso.IndividualOrOrganisation
 import models.response.{Address, AddressLookup, Country}
 import models.viewModels.manual.cpso.CPSOId
@@ -33,6 +34,7 @@ import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
 import pages.manual.account.*
 import pages.manual.accountHolders.{IndividualDateOfBirthPage, IndividualHaveDateOfBirthPage, IndividualNamePage, IndividualOrOrganisationPage}
+import pages.manual.cpso.{CpsoOrganisationNamePage, CpsoSelfCertificationPage}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.*
@@ -535,6 +537,24 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             val ua = UserAnswers("id")
               .withPage(pages.manual.cpso.IndividualNamePage(currentCPSOId), models.manual.cpso.IndividualName("first-name", "last-name"))
             navigator.nextPage(pages.manual.cpso.IndividualNamePage(currentCPSOId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+        }
+
+        "CpsoOrganisationNamePage" - {
+          "must go to underconstruction page when submitted" in {
+            val ua = UserAnswers("id")
+              .withPage(CpsoOrganisationNamePage(currentCPSOId, reportId), "organisation-name")
+            navigator.nextPage(CpsoOrganisationNamePage(currentCPSOId, reportId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+        }
+
+        "CpsoSelfCertificationPage" - {
+          "must go to underconstruction page when submitted" in {
+            val ua = UserAnswers("id")
+              .withPage(CpsoSelfCertificationPage(currentCPSOId, reportId), Yes)
+            navigator.nextPage(CpsoSelfCertificationPage(currentCPSOId, reportId), NormalMode, ua) mustBe
               controllers.routes.UnderConstructionController.onPageLoad()
           }
         }
