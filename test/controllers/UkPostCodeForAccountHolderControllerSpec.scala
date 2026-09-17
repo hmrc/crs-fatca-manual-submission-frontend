@@ -128,7 +128,6 @@ class UkPostCodeForAccountHolderControllerSpec extends SpecBase with MockitoSuga
     }
 
     "must redirect to the next page when valid data is submitted" in {
-      val postcode = "SOME-POST-CODE"
       val userAnswers = emptyUserAnswers
         .withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
         .withPage(CurrentAccountHolderIdPage(), accountHolderId)
