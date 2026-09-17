@@ -27,33 +27,33 @@
     link: components.Link
 )
 
-@(form: Form[_], mode: Mode, sponsorName: String)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, accountHolderName: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("uKPostcode.title"))) {
+@layout(pageTitle = title(form, messages("account.holder.uk.postcode.title"))) {
 
-    @formHelper(action = controllers.manual.sponsor.routes.UKPostcodeController.onSubmit(mode), Symbol("autoComplete") -> "on") {
+    @formHelper(action = controllers.manual.accountHolders.routes.UkPostCodeForAccountHolderController.onSubmit(mode), Symbol("autoComplete") -> "on") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
-        @heading(headingContent = messages("uKPostcode.heading",sponsorName))
+        @heading(headingContent = messages("account.holder.uk.postcode.heading", accountHolderName))
 
-        @paragraph(messageKey = messages("uKPostcode.p1"))
+        @paragraph(messageKey = messages("account.holder.uk.postcode.p1"))
 
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(messages("uKPostcode.heading",sponsorName)).withCssClass("govuk-visually-hidden")
+                label = LabelViewModel(messages("account.holder.uk.postcode.hidden.label", accountHolderName)).withCssClass("govuk-visually-hidden")
             )
             .withWidth(Fixed10)
             .withAutocomplete("postal-code")
         )
 
-        @link(controllers.manual.sponsor.routes.UkAddressController.onPageLoad(mode).url, messages("uKPostcode.p2"), id = Some("enter-manually-id"))
+        @link(controllers.manual.accountHolders.routes.UkAddressController.onPageLoad(mode).url, messages("account.holder.uk.postcode.p2"), id = Some("enter-manually-id"))
 
         @govukButton(
-            ButtonViewModel(messages("ukPostcode.btn")).withAttribute("id" -> "submit")
+            ButtonViewModel(messages("account.holder.uk.postcode.button")).withAttribute("id" -> "submit")
         )
     }
 }

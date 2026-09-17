@@ -14,26 +14,36 @@
  * limitations under the License.
  */
 
-package forms.manual.accountHolders
+package forms
 
-import forms.behaviours.BooleanFieldBehaviours
+import forms.behaviours.StringFieldBehaviours
+import forms.manual.accountHolders.UkPostCodeForAccountHolderFormProvider
 import play.api.data.FormError
 
-class IndividualHaveDateOfBirthFormProviderSpec extends BooleanFieldBehaviours {
+class UkPostCodeForAccountHolderFormProviderSpec extends StringFieldBehaviours {
 
-  val requiredKey = "individualHaveDateOfBirth.error.required"
-  val invalidKey  = "error.boolean"
+  val requiredKey = "uKPostcode.error.required"
+  val lengthKey   = "uKPostcode.error.length"
+  val maxLength   = 10
 
-  val form = new IndividualHaveDateOfBirthFormProvider()()
+  val form = new UkPostCodeForAccountHolderFormProvider()()
 
-  ".value" - {
+  ".postCode" - {
 
     val fieldName = "value"
 
-    behave like booleanField(
+    "bind valid data" in {
+      val testPostCode = "ZZ1 1ZZ"
+      val result       = form.bind(Map(fieldName -> testPostCode)).apply(fieldName)
+      result.value.value mustBe testPostCode
+      result.errors mustBe empty
+    }
+
+    behave like fieldWithMaxLength(
       form,
       fieldName,
-      invalidError = FormError(fieldName, invalidKey)
+      maxLength = maxLength,
+      lengthError = FormError(fieldName, lengthKey)
     )
 
     behave like mandatoryField(

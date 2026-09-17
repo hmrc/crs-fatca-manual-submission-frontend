@@ -16,30 +16,23 @@
 
 package forms.manual.accountHolders
 
-import forms.behaviours.BooleanFieldBehaviours
-import play.api.data.FormError
+import forms.mappings.Mappings
+import play.api.data.Form
+import utils.RegexConstants.{POSTCODE_FORMAT, POSTCODE_VALID}
 
-class IndividualHaveDateOfBirthFormProviderSpec extends BooleanFieldBehaviours {
+import javax.inject.Inject
 
-  val requiredKey = "individualHaveDateOfBirth.error.required"
-  val invalidKey  = "error.boolean"
+class UkPostCodeForAccountHolderFormProvider @Inject() extends Mappings {
 
-  val form = new IndividualHaveDateOfBirthFormProvider()()
-
-  ".value" - {
-
-    val fieldName = "value"
-
-    behave like booleanField(
-      form,
-      fieldName,
-      invalidError = FormError(fieldName, invalidKey)
+  def apply(): Form[String] =
+    Form(
+      "value" -> mandatoryPostcode(
+        "uKPostcode.error.required",
+        "uKPostcode.error.length",
+        POSTCODE_VALID,
+        "uKPostcode.error.invalid",
+        POSTCODE_FORMAT,
+        "uKPostcode.error.format"
+      )
     )
-
-    behave like mandatoryField(
-      form,
-      fieldName,
-      requiredError = FormError(fieldName, requiredKey)
-    )
-  }
 }

@@ -19,12 +19,12 @@ package forms.manual.accountHolders
 import forms.behaviours.BooleanFieldBehaviours
 import play.api.data.FormError
 
-class IndividualHaveDateOfBirthFormProviderSpec extends BooleanFieldBehaviours {
+class IsThisTheAddressForAccountHoldersFormProviderSpec extends BooleanFieldBehaviours {
 
-  val requiredKey = "individualHaveDateOfBirth.error.required"
+  val requiredKey = "account.holder.uk.isThisTheAddressForAccountHolders.error.required"
   val invalidKey  = "error.boolean"
 
-  val form = new IndividualHaveDateOfBirthFormProvider()()
+  val form = new IsThisTheAddressForAccountHoldersFormProvider()()
 
   ".value" - {
 

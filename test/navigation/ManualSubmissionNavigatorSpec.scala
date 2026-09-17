@@ -18,13 +18,11 @@ package navigation
 
 import base.SpecBase
 import controllers.manual.reportdetails.routes.{ReportDetailsCheckAnswersController, ReportingYearController, TypeOfReportController}
-import controllers.routes
 import models.*
 import models.CrsOrFatca.Fatca
 import models.SubmissionsConstants.{CRS, FATCA}
 import models.manual.account.PaymentType.*
 import models.manual.account.{AccountPayment, PaymentType, WasAccountOpen, WhatAccountType}
-import models.manual.accountHolders.{IndividualDateOfBirth, IndividualName}
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
 import models.manual.cpso.CpsoSelfCertification.Yes
 import models.manual.cpso.IndividualOrOrganisation
@@ -33,8 +31,8 @@ import models.viewModels.manual.cpso.CPSOId
 import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
 import pages.manual.account.*
-import pages.manual.accountHolders.{IndividualDateOfBirthPage, IndividualHaveDateOfBirthPage, IndividualNamePage, IndividualOrOrganisationPage}
 import pages.manual.cpso.{CpsoOrganisationNamePage, CpsoSelfCertificationPage}
+import pages.manual.accountHolders.{UkAddressPage as AccountHolderUkAddressPage, *}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.*
@@ -179,6 +177,54 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         "must go to JourneyRecovery Page when AddressLookupPage is missing" in {
           val userData = UserAnswers("id")
           navigator.nextPage(HaveSponsorPage(), NormalMode, userData) mustBe
+            controllers.routes.JourneyRecoveryController.onPageLoad()
+        }
+      }
+
+      "UKPostcodePageForAccountHolder" - {
+        implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+        val accountHolderId             = AccountHolderId("holder-id")
+        val addressLookup: AddressLookup =
+          AddressLookup(200000706253L,
+                        Some("1 Address line 1 Road"),
+                        None,
+                        Some("Address line 2 Road"),
+                        None,
+                        "Town",
+                        Some("County"),
+                        "zz11zz",
+                        Some(Country.GB)
+          )
+
+        "must go to IsThisAddressForSponsor when one address is found" in {
+          val address: Seq[AddressLookup] = Seq(addressLookup)
+
+          val ua = UserAnswers("id")
+            .withPage(UkPostCodeForAccountHolderPage(accountHolderId, reportId), "ZZ1 1ZZ")
+            .withPage(AddressLookupForAccountHolderPage(accountHolderId, reportId), address)
+          navigator.nextPage(UkPostCodeForAccountHolderPage(accountHolderId, reportId), NormalMode, ua) mustBe
+            controllers.manual.accountHolders.routes.IsThisTheAddressForAccountHoldersController.onPageLoad(NormalMode)
+        }
+        "must go to select address when multiple addresses are found" in {
+          val addresses: Seq[AddressLookup] = Seq(addressLookup, addressLookup)
+
+          val ua = UserAnswers("id")
+            .withPage(UkPostCodeForAccountHolderPage(accountHolderId, reportId), "ZZ1 1ZZ")
+            .withPage(AddressLookupForAccountHolderPage(accountHolderId, reportId), addresses)
+          navigator.nextPage(UkPostCodeForAccountHolderPage(accountHolderId, reportId), NormalMode, ua) mustBe
+            controllers.manual.accountHolders.routes.SelectAddressController.onPageLoad(NormalMode)
+        }
+        "must go to ProblemPage when no addresses are found" in {
+          val ua = UserAnswers("id")
+            .withPage(UkPostCodeForAccountHolderPage(accountHolderId, reportId), "ZZ1 1ZZ")
+            .withPage(AddressLookupForAccountHolderPage(accountHolderId, reportId), Seq.empty)
+
+          navigator.nextPage(UkPostCodeForAccountHolderPage(accountHolderId, reportId), NormalMode, ua) mustBe
+            controllers.routes.JourneyRecoveryController.onPageLoad()
+        }
+        "must go to JourneyRecovery Page when AddressLookupPage is missing" in {
+          val userData = UserAnswers("id")
+          navigator.nextPage(UkPostCodeForAccountHolderPage(accountHolderId, reportId), NormalMode, userData) mustBe
             controllers.routes.JourneyRecoveryController.onPageLoad()
         }
       }
@@ -669,7 +715,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               NormalMode,
               ua
             ) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.accountHolders.routes.IndividualHavePlaceOfBirthController.onPageLoad(NormalMode)
           }
 
           "must go to Journey Recovery when the answer is missing" in {
@@ -698,7 +744,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               NormalMode,
               ua
             ) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.accountHolders.routes.IndividualHavePlaceOfBirthController.onPageLoad(NormalMode)
           }
 
           "must go to Journey Recovery when the answer is missing" in {
@@ -753,6 +799,126 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             navigator.nextPage(PaymentTypePage(accountId), NormalMode, ua) mustBe
               controllers.routes.JourneyRecoveryController.onPageLoad()
           }
+        }
+
+        "IndividualHavePlaceOfBirthPage" - {
+          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+          val accountId                   = AccountHolderId("TestAccountId")
+          "must go to under construction page when user selected yes" in {
+            val ua = UserAnswers("id")
+              .withPage(IndividualHavePlaceOfBirthPage(accountId), true)
+
+            navigator.nextPage(IndividualHavePlaceOfBirthPage(accountId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+
+          "must go to under construction page when user selected no" in {
+            val ua = UserAnswers("id")
+              .withPage(IndividualHavePlaceOfBirthPage(accountId), false)
+
+            navigator.nextPage(IndividualHavePlaceOfBirthPage(accountId), NormalMode, ua) mustBe
+              controllers.manual.accountHolders.routes.WhereAreTheyBasedController.onPageLoad(NormalMode)
+          }
+        }
+
+        "WhereAreTheyBasedPage" - {
+          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+          val accountId                   = AccountHolderId("TestAccountId")
+          "must go to under construction page when user selected yes" in {
+            val ua = UserAnswers("id")
+              .withPage(WhereAreTheyBasedPage(accountId), true)
+
+            navigator.nextPage(WhereAreTheyBasedPage(accountId), NormalMode, ua) mustBe
+              controllers.manual.accountHolders.routes.UkPostCodeForAccountHolderController.onPageLoad(NormalMode)
+          }
+
+          "must go to under construction page when user selected no" in {
+            val ua = UserAnswers("id")
+              .withPage(WhereAreTheyBasedPage(accountId), false)
+            navigator.nextPage(WhereAreTheyBasedPage(accountId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+
+          "must go to journey recovery if WhereAreTheyBasedPage is not present" in {
+            val ua = UserAnswers("id")
+
+            navigator.nextPage(WhereAreTheyBasedPage(accountId), NormalMode, ua) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
+        }
+
+        "IsThisTheAddressForAccountHoldersPage" - {
+          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+          val accountHolderId             = AccountHolderId("holder-id")
+
+          "must go to under construction for a yes answer" in {
+            val ua = UserAnswers("id")
+              .withPage(IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId), true)
+
+            navigator.nextPage(IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+
+          "must go to address uk for a no answer" in {
+            val ua = UserAnswers("id")
+              .withPage(IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId), false)
+
+            navigator.nextPage(IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId), NormalMode, ua) mustBe
+              controllers.manual.accountHolders.routes.UkAddressController.onPageLoad(NormalMode)
+          }
+
+          "must go to journey recovery when IsThisTheAddressForAccountHoldersPage is not present" in {
+            val ua = UserAnswers("id")
+
+            navigator.nextPage(IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId), NormalMode, ua) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
+        }
+
+        "SelectAddressPage" - {
+          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+          val address = Address(uprn = None,
+                                addressLine1 = "string",
+                                addressLine2 = None,
+                                addressLine3 = Some("string"),
+                                addressLine4 = None,
+                                town = "town",
+                                postCode = None,
+                                country = Country.GB
+          )
+          val accountHolderId = AccountHolderId("holder-id")
+
+          "must go to under construction" in {
+            val ua = UserAnswers("id")
+              .withPage(SelectAddressPage(accountHolderId, reportId), address)
+
+            navigator.nextPage(SelectAddressPage(accountHolderId, reportId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+
+        }
+
+        "UKAddressPage" - {
+          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+          val address = Address(uprn = None,
+                                addressLine1 = "string",
+                                addressLine2 = None,
+                                addressLine3 = Some("string"),
+                                addressLine4 = None,
+                                town = "town",
+                                postCode = None,
+                                country = Country.GB
+          ).ukAddress
+          val accountHolderId = AccountHolderId("holder-id")
+
+          "must go to under construction" in {
+            val ua = UserAnswers("id")
+              .withPage(AccountHolderUkAddressPage(accountHolderId, reportId), address)
+
+            navigator.nextPage(AccountHolderUkAddressPage(accountHolderId, reportId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+
         }
       }
     }
