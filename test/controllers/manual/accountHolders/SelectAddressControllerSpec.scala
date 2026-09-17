@@ -30,7 +30,7 @@ import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
 import models.response.{Address, AddressLookup, Country}
-import pages.manual.accountHolders.{AddressLookupForAccountHolderPage, CurrentAccountHolderIdPage, IndividualNamePage, SelectAddressPage}
+import pages.manual.accountHolders.{AccountHolderIndividualNamePage, AddressLookupForAccountHolderPage, CurrentAccountHolderIdPage, SelectAddressPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -65,7 +65,7 @@ class SelectAddressControllerSpec extends SpecBase with MockitoSugar {
     val baseAnswer = emptyUserAnswers
       .withPage(ReportIdPage, reportId)
       .withPage(CurrentAccountHolderIdPage()(reportId), accountHolderId)
-      .withPage(IndividualNamePage(accountHolderId)(reportId), name)
+      .withPage(AccountHolderIndividualNamePage(accountHolderId)(reportId), name)
     val ua = baseAnswer
       .withPage(AddressLookupForAccountHolderPage(accountHolderId, reportId), addresses)
 

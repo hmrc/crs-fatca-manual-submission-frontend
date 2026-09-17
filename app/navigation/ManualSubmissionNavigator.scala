@@ -25,7 +25,17 @@ import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organi
 import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
 import pages.manual.account.*
-import pages.manual.accountHolders.*
+import pages.manual.accountHolders.{
+  AccountHolderIndividualNamePage,
+  AddressLookupForAccountHolderPage,
+  IndividualHavePlaceOfBirthPage,
+  IndividualOrOrganisationPage,
+  IsThisTheAddressForAccountHoldersPage,
+  SelectAddressPage,
+  UkAddressPage as AccountHolderUkAddressPage,
+  UkPostCodeForAccountHolderPage,
+  WhereAreTheyBasedPage
+}
 import pages.manual.cpso.IndividualNamePage
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}

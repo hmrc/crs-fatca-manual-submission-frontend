@@ -67,7 +67,7 @@ class UkAddressControllerSpec extends SpecBase with MockitoSugar {
       .withPage(CurrentAccountHolderIdPage(), accountHolderId)
 
     "must return OK and the correct view for a GET" in {
-      val userAnswers = ua.withPage(IndividualNamePage(accountHolderId), testName)
+      val userAnswers = ua.withPage(AccountHolderIndividualNamePage(accountHolderId), testName)
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
@@ -98,7 +98,7 @@ class UkAddressControllerSpec extends SpecBase with MockitoSugar {
     "must populate the view correctly on a GET when UK Address page has previously been answered" in {
       val validAnswer       = UkAddress("value 1", Some("value 2"), "Some City", Some("Some County"), "AA1 1AA", "GB")
       implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
-      val userAnswers       = ua.withPage(UkAddressPage(accountHolderId, reportId), validAnswer).withPage(IndividualNamePage(accountHolderId), testName)
+      val userAnswers = ua.withPage(UkAddressPage(accountHolderId, reportId), validAnswer).withPage(AccountHolderIndividualNamePage(accountHolderId), testName)
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
@@ -134,7 +134,7 @@ class UkAddressControllerSpec extends SpecBase with MockitoSugar {
             )
           )
         )
-        .withPage(IndividualNamePage(accountHolderId), testName)
+        .withPage(AccountHolderIndividualNamePage(accountHolderId), testName)
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
@@ -155,7 +155,7 @@ class UkAddressControllerSpec extends SpecBase with MockitoSugar {
       implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
       val userAnswers = ua
         .withPage(UkPostCodeForAccountHolderPage(accountHolderId, reportId), "AA1 1AA")
-        .withPage(IndividualNamePage(accountHolderId), testName)
+        .withPage(AccountHolderIndividualNamePage(accountHolderId), testName)
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
@@ -172,7 +172,7 @@ class UkAddressControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to the next page when valid data is submitted" in {
-      val userAnswers           = ua.withPage(IndividualNamePage(accountHolderId), testName)
+      val userAnswers           = ua.withPage(AccountHolderIndividualNamePage(accountHolderId), testName)
       val mockSessionRepository = mock[DatabaseConnector]
 
       when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
@@ -204,7 +204,7 @@ class UkAddressControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
-      val userAnswers = ua.withPage(IndividualNamePage(accountHolderId), testName)
+      val userAnswers = ua.withPage(AccountHolderIndividualNamePage(accountHolderId), testName)
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
