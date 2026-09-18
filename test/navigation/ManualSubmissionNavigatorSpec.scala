@@ -894,6 +894,30 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           }
 
         }
+
+        "AccountHolderAddressNonUk Page" - {
+          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+          val address = Address(
+            uprn = None,
+            addressLine1 = "string",
+            addressLine2 = None,
+            addressLine3 = Some("string"),
+            addressLine4 = None,
+            town = "town",
+            postCode = None,
+            country = Country("SE", "Sweden")
+          ).ukAddress
+          val accountHolderId = AccountHolderId("holder-id")
+
+          "must go to under construction" in {
+            val ua = UserAnswers("id")
+              .withPage(AccountHolderAddressNonUkPage(accountHolderId, reportId), address)
+
+            navigator.nextPage(AccountHolderAddressNonUkPage(accountHolderId, reportId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+
+        }
       }
     }
   }

@@ -26,6 +26,7 @@ import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
 import pages.manual.account.*
 import pages.manual.accountHolders.{
+  AccountHolderAddressNonUkPage,
   AccountHolderIndividualNamePage,
   AddressLookupForAccountHolderPage,
   IndividualHavePlaceOfBirthPage,
@@ -131,7 +132,6 @@ class ManualSubmissionNavigator @Inject() () {
           case Organisation =>
             controllers.routes.UnderConstructionController.onPageLoad()
         }
-
     case (AccountHolderIndividualNamePage(id), mode, ua) =>
       ua.get(AccountHolderIndividualNamePage(id)) match {
         case Some(_) =>
@@ -146,7 +146,6 @@ class ManualSubmissionNavigator @Inject() () {
         case Some(false) => controllers.manual.accountHolders.routes.AccountHolderAddressNonUkController.onPageLoad(mode)
         case None        => controllers.routes.JourneyRecoveryController.onPageLoad()
       }
-
     case (pages.manual.accountHolders.IndividualHaveDateOfBirthPage(id), mode, ua) =>
       ua.get(pages.manual.accountHolders.IndividualHaveDateOfBirthPage(id)) match {
         case Some(true) =>
@@ -165,8 +164,9 @@ class ManualSubmissionNavigator @Inject() () {
     case (UkPostCodeForAccountHolderPage(accountHolderId, reportId), mode, ua) => handleUKPostcodeNavigationForAccountHolders(ua, mode, accountHolderId)
     case (IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId), mode, ua) =>
       handleIsThisTheAddressForAccountHoldersRouting(ua, mode, accountHolderId)
-    case (AccountHolderUkAddressPage(_, _), _, _) => controllers.routes.UnderConstructionController.onPageLoad()
-    case (SelectAddressPage(_, _), _, _)          => controllers.routes.UnderConstructionController.onPageLoad()
+    case (AccountHolderUkAddressPage(_, _), _, _)    => controllers.routes.UnderConstructionController.onPageLoad()
+    case (SelectAddressPage(_, _), _, _)             => controllers.routes.UnderConstructionController.onPageLoad()
+    case (AccountHolderAddressNonUkPage(_, _), _, _) => controllers.routes.UnderConstructionController.onPageLoad()
   }
 
   private def cpsoNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
