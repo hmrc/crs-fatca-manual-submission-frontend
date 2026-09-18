@@ -16,6 +16,7 @@
 
 package models
 
+import models.CrsOrFatca.{Crs, Fatca}
 import models.response.Country
 
 object Countries {
@@ -725,10 +726,6 @@ object Countries {
       description = "Mozambique"
     ),
     Country(
-      code = "XX",
-      description = "Other country"
-    ),
-    Country(
       code = "NA",
       description = "Namibia"
     ),
@@ -1050,4 +1047,17 @@ object Countries {
   )
 
   val all: Seq[Country] = ukTerritories ++ nonUkTerritories
+
+  def nonUkTerritories(regime: CrsOrFatca = Crs): Seq[Country] =
+    regime match {
+      case Fatca =>
+        nonUkTerritories ++ Seq(
+          Country(
+            code = "XX",
+            description = "Other country"
+          )
+        )
+      case _ => nonUkTerritories
+    }
+
 }

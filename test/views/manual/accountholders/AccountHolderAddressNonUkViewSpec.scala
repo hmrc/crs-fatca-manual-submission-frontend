@@ -54,7 +54,7 @@ class AccountHolderAddressNonUkViewSpec extends SpecBase {
 
   private val individualAccountHolder = IndividualName("Some", "Dude").fullName
 
-  private val countries = Countries.nonUkTerritories
+  private val countries = Countries.nonUkTerritories()
 
   "AccountHolderAddressNonUkView" - {
 
@@ -154,7 +154,7 @@ class AccountHolderAddressNonUkViewSpec extends SpecBase {
 
       "must display all countries and the placeholder option" in {
         doc.select("#country option").size() mustBe
-          Countries.nonUkTerritories.size + 1
+          Countries.nonUkTerritories().size + 1
       }
 
       "must use the country code as the option value" in {
