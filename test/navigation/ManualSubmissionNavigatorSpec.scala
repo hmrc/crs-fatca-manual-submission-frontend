@@ -661,7 +661,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             val ua = UserAnswers("id")
               .withPage(
                 AccountHolderIndividualNamePage(currentAccountHolderId)(reportId),
-                IndividualName("firstName", "lastName")
+                models.manual.accountHolders.IndividualName("firstName", "lastName")
               )
 
             navigator.nextPage(

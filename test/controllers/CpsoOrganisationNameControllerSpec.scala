@@ -86,8 +86,6 @@ class CpsoOrganisationNameControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request = FakeRequest(GET, cpsoOrganisationNameRoute)
 
-        val view = application.injector.instanceOf[CpsoOrganisationNameView]
-
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER

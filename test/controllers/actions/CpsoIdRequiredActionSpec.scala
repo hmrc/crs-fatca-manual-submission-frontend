@@ -18,13 +18,11 @@ package controllers.actions
 
 import base.SpecBase
 import controllers.routes
-import models.{ReportId, UserAnswers}
 import models.SubmissionsConstants.FATCA
 import models.requests.{CPSOIdRequest, ReportIdRequest}
-import models.viewModels.AccountId
 import models.viewModels.manual.cpso.CPSOId
+import models.{ReportId, UserAnswers}
 import pages.ReportIdPage
-import pages.manual.account.CurrentAccountIdPage
 import pages.manual.cpso.CurrentCPSOIdPage
 import play.api.http.Status.SEE_OTHER
 import play.api.mvc.Result
