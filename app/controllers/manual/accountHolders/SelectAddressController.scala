@@ -22,7 +22,7 @@ import forms.manual.accountHolders.SelectAddressFormProvider
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
 import pages.manual.accountHolders.{AddressLookupForAccountHolderPage, SelectAddressPage}
-import pages.manual.accountHolders.IndividualNamePage
+import pages.manual.accountHolders.AccountHolderIndividualNamePage
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -56,7 +56,7 @@ class SelectAddressController @Inject() (
 
       (for {
         addresses <- request.userAnswers.get(AddressLookupForAccountHolderPage(request.accountHolderId, reportId))
-        name      <- request.userAnswers.get(IndividualNamePage(request.accountHolderId)(reportId)) // TODO : Need to implement Organisation Name
+        name      <- request.userAnswers.get(AccountHolderIndividualNamePage(request.accountHolderId)(reportId)) // TODO : Need to implement Organisation Name
       } yield {
         val preparedForm = request.userAnswers.get(SelectAddressPage(request.accountHolderId, reportId)) match {
           case None => form
@@ -85,7 +85,7 @@ class SelectAddressController @Inject() (
 
       (for {
         addresses <- request.userAnswers.get(AddressLookupForAccountHolderPage(request.accountHolderId, reportId))
-        name      <- request.userAnswers.get(IndividualNamePage(request.accountHolderId)) // TODO : Need to implement Organisation Name
+        name      <- request.userAnswers.get(AccountHolderIndividualNamePage(request.accountHolderId)) // TODO : Need to implement Organisation Name
       } yield {
         val options: Seq[RadioItem] = addresses.map(
           address => RadioItem(content = Text(s"${address.formatRadios}"), value = Some(s"${address.format}"))

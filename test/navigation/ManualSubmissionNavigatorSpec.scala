@@ -601,7 +601,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               controllers.routes.UnderConstructionController.onPageLoad()
           }
 
-          "must go to IndividualName page when individual is selected" in {
+          "must go to AccountHolder IndividualName page when individual is selected" in {
             val ua = UserAnswers("id")
               .withPage(
                 IndividualOrOrganisationPage(currentAccountHolderId)(reportId),
@@ -634,12 +634,12 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           "must go to IndividualHaveDateOfBirth page when the individual name exists" in {
             val ua = UserAnswers("id")
               .withPage(
-                IndividualNamePage(currentAccountHolderId)(reportId),
+                AccountHolderIndividualNamePage(currentAccountHolderId)(reportId),
                 IndividualName("firstName", "lastName")
               )
 
             navigator.nextPage(
-              IndividualNamePage(currentAccountHolderId),
+              AccountHolderIndividualNamePage(currentAccountHolderId),
               NormalMode,
               ua
             ) mustBe
@@ -651,7 +651,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             val ua = UserAnswers("id")
 
             navigator.nextPage(
-              IndividualNamePage(currentAccountHolderId),
+              AccountHolderIndividualNamePage(currentAccountHolderId),
               NormalMode,
               ua
             ) mustBe
@@ -815,11 +815,11 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               controllers.manual.accountHolders.routes.UkPostCodeForAccountHolderController.onPageLoad(NormalMode)
           }
 
-          "must go to under construction page when user selected no" in {
+          "must go to AccountHolderNonUkAddress page when user selected no" in {
             val ua = UserAnswers("id")
               .withPage(WhereAreTheyBasedPage(accountId), false)
             navigator.nextPage(WhereAreTheyBasedPage(accountId), NormalMode, ua) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.accountHolders.routes.AccountHolderAddressNonUkController.onPageLoad(NormalMode)
           }
 
           "must go to journey recovery if WhereAreTheyBasedPage is not present" in {
@@ -899,6 +899,28 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               .withPage(AccountHolderUkAddressPage(accountHolderId, reportId), address)
 
             navigator.nextPage(AccountHolderUkAddressPage(accountHolderId, reportId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+
+        }
+
+        "AccountHolderAddressNonUk Page" - {
+          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+          val address = AddressNonUk(
+            addressLine1 = "string",
+            addressLine2 = None,
+            addressLine3 = "string",
+            addressLine4 = None,
+            postcode = None,
+            country = "Sweden"
+          )
+          val accountHolderId = AccountHolderId("holder-id")
+
+          "must go to under construction" in {
+            val ua = UserAnswers("id")
+              .withPage(AccountHolderAddressNonUkPage(accountHolderId, reportId), address)
+
+            navigator.nextPage(AccountHolderAddressNonUkPage(accountHolderId, reportId), NormalMode, ua) mustBe
               controllers.routes.UnderConstructionController.onPageLoad()
           }
 
