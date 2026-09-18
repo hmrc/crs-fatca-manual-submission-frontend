@@ -117,7 +117,7 @@ class CPSOIndividualDateOfBirthControllerSpec extends SpecBase with MockitoSugar
 
       val userAnswers =
         ua.withPage(
-          CPSOIndividualDateOfBirthPage(cpsoId)(reportId),
+          CPSOIndividualDateOfBirthPage(cpsoId, reportId),
           validAnswer
         )
 

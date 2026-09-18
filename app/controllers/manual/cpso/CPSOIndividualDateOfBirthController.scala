@@ -53,7 +53,7 @@ class CPSOIndividualDateOfBirthController @Inject() (
 
         val preparedForm =
           request.userAnswers
-            .get(CPSOIndividualDateOfBirthPage(request.cpsoId))
+            .get(CPSOIndividualDateOfBirthPage(request.cpsoId, request.reportId))
             .fold(form)(form.fill)
 
         request.userAnswers
@@ -94,14 +94,14 @@ class CPSOIndividualDateOfBirthController @Inject() (
                   for {
                     updatedAnswers <- Future.fromTry(
                       request.userAnswers.setWithReportId(
-                        CPSOIndividualDateOfBirthPage(request.cpsoId),
+                        CPSOIndividualDateOfBirthPage(request.cpsoId, request.reportId),
                         value
                       )
                     )
                     _ <- repository.set(updatedAnswers)
                   } yield Redirect(
                     navigator.nextPage(
-                      CPSOIndividualDateOfBirthPage(request.cpsoId),
+                      CPSOIndividualDateOfBirthPage(request.cpsoId, request.reportId),
                       mode,
                       updatedAnswers
                     )
