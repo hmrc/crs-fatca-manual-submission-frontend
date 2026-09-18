@@ -29,7 +29,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.accountHolders.{CurrentAccountHolderIdPage, IndividualDateOfBirthPage, IndividualNamePage}
+import pages.manual.accountHolders.{AccountHolderIndividualNamePage, CurrentAccountHolderIdPage, IndividualDateOfBirthPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -60,10 +60,7 @@ class IndividualDateOfBirthControllerSpec extends SpecBase with MockitoSugar {
       AccountHolderId("testid")
 
     val individualName =
-      IndividualName(
-        FirstName = "Account Holdings",
-        LastName = "plc"
-      )
+      IndividualName("Account Holdings", "plc")
 
     val accountHolderName =
       "Account Holdings plc"
@@ -76,7 +73,7 @@ class IndividualDateOfBirthControllerSpec extends SpecBase with MockitoSugar {
           currentAccountHolderId
         )
         .withPage(
-          IndividualNamePage(currentAccountHolderId)(reportId),
+          AccountHolderIndividualNamePage(currentAccountHolderId)(reportId),
           individualName
         )
 

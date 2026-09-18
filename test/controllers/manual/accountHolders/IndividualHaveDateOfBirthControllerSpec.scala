@@ -30,7 +30,7 @@ import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
 import pages.manual.FINamePage
-import pages.manual.accountHolders.{CurrentAccountHolderIdPage, IndividualHaveDateOfBirthPage, IndividualNamePage}
+import pages.manual.accountHolders.{AccountHolderIndividualNamePage, CurrentAccountHolderIdPage, IndividualHaveDateOfBirthPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -63,10 +63,7 @@ class IndividualHaveDateOfBirthControllerSpec extends SpecBase with MockitoSugar
       "Test FI"
 
     val individualName =
-      IndividualName(
-        FirstName = "Account Holdings",
-        LastName = "plc"
-      )
+      IndividualName("Account Holdings", "plc")
 
     val accountHolderName =
       "Account Holdings plc"
@@ -83,7 +80,7 @@ class IndividualHaveDateOfBirthControllerSpec extends SpecBase with MockitoSugar
           fiName
         )
         .withPage(
-          IndividualNamePage(currentAccountHolderId)(reportId),
+          AccountHolderIndividualNamePage(currentAccountHolderId)(reportId),
           individualName
         )
 

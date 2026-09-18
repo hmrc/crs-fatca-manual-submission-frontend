@@ -30,7 +30,12 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.accountHolders.{AddressLookupForAccountHolderPage, CurrentAccountHolderIdPage, IndividualNamePage, IsThisTheAddressForAccountHoldersPage}
+import pages.manual.accountHolders.{
+  AccountHolderIndividualNamePage,
+  AddressLookupForAccountHolderPage,
+  CurrentAccountHolderIdPage,
+  IsThisTheAddressForAccountHoldersPage
+}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -49,7 +54,7 @@ class IsThisTheAddressForAccountHoldersControllerSpec extends SpecBase with Mock
   implicit val reportId: ReportId      = ReportId(CRS, 2025, None, "TestfiID")
   val accountHolderId: AccountHolderId = AccountHolderId("some-id")
   val individualName                   = IndividualName("Some-name", "Some-last-name")
-  val accountHolderName                = s"${individualName.FirstName} ${individualName.LastName}".trim
+  val accountHolderName                = s"${individualName.firstName} ${individualName.lastName}".trim
 
   val addressLookup =
     AddressLookup(990091234514L, Some("2 Other place"), None, Some("Some District"), None, "Town", Some("County"), "postcode", Some(Country.GB))
@@ -62,7 +67,7 @@ class IsThisTheAddressForAccountHoldersControllerSpec extends SpecBase with Mock
     val ua = emptyUserAnswers
       .withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
       .withPage(CurrentAccountHolderIdPage(), accountHolderId)
-      .withPage(IndividualNamePage(accountHolderId), individualName)
+      .withPage(AccountHolderIndividualNamePage(accountHolderId), individualName)
       .withPage(AddressLookupForAccountHolderPage(accountHolderId, reportId), Seq(addressLookup))
 
     "must return OK and the correct view for a GET" in {
@@ -182,7 +187,7 @@ class IsThisTheAddressForAccountHoldersControllerSpec extends SpecBase with Mock
       val answers = emptyUserAnswers
         .withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
         .withPage(CurrentAccountHolderIdPage(), accountHolderId)
-        .withPage(IndividualNamePage(accountHolderId), individualName)
+        .withPage(AccountHolderIndividualNamePage(accountHolderId), individualName)
 
       val application = applicationBuilder(maybeUserAnswers = Some(answers)).build()
 
@@ -236,7 +241,7 @@ class IsThisTheAddressForAccountHoldersControllerSpec extends SpecBase with Mock
       val answer = emptyUserAnswers
         .withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
         .withPage(CurrentAccountHolderIdPage(), accountHolderId)
-        .withPage(IndividualNamePage(accountHolderId), individualName)
+        .withPage(AccountHolderIndividualNamePage(accountHolderId), individualName)
 
       val application = applicationBuilder(maybeUserAnswers = Some(answer)).build()
 
