@@ -661,7 +661,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             val ua = UserAnswers("id")
               .withPage(
                 IndividualNamePage(currentAccountHolderId)(reportId),
-                IndividualName("firstName", "lastName")
+                models.manual.accountHolders.IndividualName("firstName", "lastName")
               )
 
             navigator.nextPage(
@@ -736,7 +736,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             val ua = UserAnswers("id")
               .withPage(
                 IndividualDateOfBirthPage(currentAccountHolderId)(reportId),
-                IndividualDateOfBirth(LocalDate.of(1996, 3, 8))
+                models.manual.accountHolders.IndividualDateOfBirth(LocalDate.of(1996, 3, 8))
               )
 
             navigator.nextPage(
