@@ -43,7 +43,7 @@
 
     @formHelper(
         action = controllers.manual.accountHolders.routes.AccountHolderAddressNonUkController.onSubmit(mode),
-        Symbol("autoComplete") -> "off"
+        Symbol("autoComplete") -> "on"
     ) {
 
         @if(form.errors.nonEmpty) {

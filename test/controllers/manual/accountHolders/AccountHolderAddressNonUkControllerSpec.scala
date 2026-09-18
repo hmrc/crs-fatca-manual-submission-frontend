@@ -20,6 +20,7 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.accountHolders.AccountHolderAddressNonUkFormProvider
+import models.CrsOrFatca.Crs
 import models.SubmissionsConstants.CRS
 import models.manual.accountHolders.IndividualName
 import models.viewModels.AccountHolderId
@@ -30,6 +31,7 @@ import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
 import pages.manual.accountHolders.{AccountHolderAddressNonUkPage, AccountHolderIndividualNamePage, CurrentAccountHolderIdPage}
+import pages.manual.reportdetails.CrsOrFatcaPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -47,7 +49,7 @@ class AccountHolderAddressNonUkControllerSpec extends SpecBase with MockitoSugar
 
   implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
 
-  private val countries = Countries.nonUkTerritories
+  private val countries = Countries.nonUkTerritories()
 
   private val validAddress = AddressNonUk(
     addressLine1 = "1 Test Street",
@@ -84,6 +86,7 @@ class AccountHolderAddressNonUkControllerSpec extends SpecBase with MockitoSugar
 
   private val userAnswers = emptyUserAnswers
     .withPage(ReportIdPage, reportId)
+    .withPage(CrsOrFatcaPage, Crs)
     .withPage(CurrentAccountHolderIdPage(), accountHolderId)
     .withPage(AccountHolderIndividualNamePage(accountHolderId)(reportId), individualAccountHolder)
 
