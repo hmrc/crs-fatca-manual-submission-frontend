@@ -93,14 +93,14 @@ class AccountPaymentsAmountController @Inject() (
                 formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, regime, paymentType))),
                 value =>
                   for {
-                    updatedAnswers <- Future.fromTry(
+                    ua <- Future.fromTry(
                       request.userAnswers.setWithReportId(
                         AccountPaymentPage(request.currentIndex),
                         accountPayment.copy(accountPaymentsAmount = Some(value))
                       )
                     )
-                    _ <- repository.set(updatedAnswers)
-                  } yield Redirect(navigator.nextPage(AccountPaymentsAmountPage(request.accountId), mode, updatedAnswers))
+                    _ <- repository.set(ua)
+                  } yield Redirect(navigator.nextPage(AccountPaymentsAmountPage(request.accountId), mode, ua))
               )
         }
   }
