@@ -41,9 +41,9 @@ class UkAddressViewSpec extends SpecBase {
       lazy val doc     = Jsoup.parse(renderedHtml.body)
       val expectedTitleLabels = Seq(
         "Address line 1 ",
-        "Address line 2 (Optional)",
+        "Address line 2 (optional)",
         "City",
-        "County (Optional)",
+        "County (optional)",
         "Postcode",
         "Country"
       )
