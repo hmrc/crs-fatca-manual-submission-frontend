@@ -31,9 +31,9 @@ import play.api.test.Helpers.LOCATION
 
 import scala.concurrent.Future
 
-class CpsoIdRequiredActionSpec extends SpecBase {
+class CPSOIdRequiredActionSpec extends SpecBase {
 
-  class Harness extends CpsoIdRequiredActionImpl {
+  class Harness extends CPSOIdRequiredActionImpl {
 
     def callRefine[A](request: ReportIdRequest[A]): Future[Either[Result, CPSOIdRequest[A]]] =
       refine(request)

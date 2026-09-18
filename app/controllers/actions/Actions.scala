@@ -31,7 +31,7 @@ class Actions @Inject() (
   accountHolderIdRequiredAction: AccountHolderIdRequiredAction,
   sponsorNameRequiredAction: SponsorNameRequiredAction,
   cpsoIdCreationAction: CpsoIdCreationAction,
-  cpsoIdRequiredAction: CpsoIdRequiredAction,
+  cpsoIdRequiredAction: CPSOIdRequiredAction,
   taxResidentCountryIdCreationAction: TaxResidentCountryIdCreationAction,
   accountPaymentIndexCreationAction: AccountPaymentIndexCreationAction,
   accountPaymentIndexRequiredAction: AccountPaymentIndexRequiredAction

@@ -26,26 +26,34 @@ import play.api.mvc.{ActionRefiner, Result}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CpsoIdRequiredActionImpl @Inject() (implicit
+class CPSOIdRequiredActionImpl @Inject() (implicit
   val executionContext: ExecutionContext
-) extends CpsoIdRequiredAction {
+) extends CPSOIdRequiredAction {
 
-  override protected def refine[A](request: ReportIdRequest[A]): Future[Either[Result, CPSOIdRequest[A]]] = Future.successful {
-    request.userAnswers.get(CurrentCPSOIdPage()(request.reportId)) match {
-      case Some(cpsoId) => Right(toCpsoIdRequest(request, cpsoId))
-      case None         => Left(Redirect(routes.JourneyRecoveryController.onPageLoad()))
+  override protected def refine[A](request: ReportIdRequest[A]): Future[Either[Result, CPSOIdRequest[A]]] =
+    Future.successful {
+      request.userAnswers.get(CurrentCPSOIdPage()(request.reportId)) match {
+        case Some(id) =>
+          Right(toIdRequest(request, id))
+
+        case None =>
+          Left(Redirect(routes.JourneyRecoveryController.onPageLoad()))
+      }
     }
-  }
 
-  private def toCpsoIdRequest[A](request: ReportIdRequest[A], cpsoId: CPSOId) =
+  private def toIdRequest[A](
+    request: ReportIdRequest[A],
+    id: CPSOId
+  ): CPSOIdRequest[A] =
     CPSOIdRequest(
       request = request.request,
       userId = request.userId,
       userAnswers = request.userAnswers,
       fatcaId = request.fatcaId,
       reportId = request.reportId,
-      cpsoId = cpsoId
+      cpsoId = id
     )
+
 }
 
-trait CpsoIdRequiredAction extends ActionRefiner[ReportIdRequest, CPSOIdRequest]
+trait CPSOIdRequiredAction extends ActionRefiner[ReportIdRequest, CPSOIdRequest]
