@@ -16,20 +16,19 @@
 
 package controllers.manual.accountHolders
 
+import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.manual.accountHolders.WhereAreTheyBasedFormProvider
-
-import javax.inject.Inject
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.accountHolders.{IndividualNamePage, WhereAreTheyBasedPage}
+import pages.manual.accountHolders.{AccountHolderIndividualNamePage, WhereAreTheyBasedPage}
+import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import connectors.DatabaseConnector
-import play.api.Logging
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.accountHolders.WhereAreTheyBasedView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class WhereAreTheyBasedController @Inject() (
@@ -52,7 +51,7 @@ class WhereAreTheyBasedController @Inject() (
 
       implicit val reportId: ReportId = request.reportId
 
-      request.userAnswers.get(IndividualNamePage(request.accountHolderId)) match {
+      request.userAnswers.get(AccountHolderIndividualNamePage(request.accountHolderId)) match {
         case Some(name) =>
           val preparedForm = request.userAnswers.get(WhereAreTheyBasedPage(request.accountHolderId)) match {
             case None        => form
@@ -72,7 +71,7 @@ class WhereAreTheyBasedController @Inject() (
       implicit val reportId: ReportId = request.reportId
 
       // TODO: ORG NAME SHOULD BE ADDED ONCE IMPLEMENTED
-      request.userAnswers.get(IndividualNamePage(request.accountHolderId)) match {
+      request.userAnswers.get(AccountHolderIndividualNamePage(request.accountHolderId)) match {
         case Some(name) =>
           form
             .bindFromRequest()

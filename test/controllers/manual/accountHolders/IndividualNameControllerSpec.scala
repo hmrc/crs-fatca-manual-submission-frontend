@@ -23,15 +23,14 @@ import forms.manual.accountHolders.IndividualNameFormProvider
 import models.SubmissionsConstants.CRS
 import models.manual.accountHolders.IndividualName
 import models.viewModels.AccountHolderId
-import models.{NormalMode, ReportId, UserAnswers}
+import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.accountHolders.{CurrentAccountHolderIdPage, IndividualNamePage}
+import pages.manual.accountHolders.{AccountHolderIndividualNamePage, CurrentAccountHolderIdPage}
 import play.api.inject.bind
-import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
@@ -43,20 +42,9 @@ class IndividualNameControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new IndividualNameFormProvider()
-  val form         = formProvider()
+  private val form = new IndividualNameFormProvider()()
 
-  lazy val individualNameRoute = controllers.manual.accountHolders.routes.IndividualNameController.onPageLoad(NormalMode).url
-
-  val userAnswers = UserAnswers(
-    userAnswersId,
-    Json.obj(
-      IndividualNamePage.toString -> Json.obj(
-        "FirstName" -> "value",
-        "LastName"  -> "value"
-      )
-    )
-  )
+  private lazy val individualNameRoute = controllers.manual.accountHolders.routes.IndividualNameController.onPageLoad(NormalMode).url
 
   "IndividualName Controller" - {
     val reportId               = ReportId(CRS, 2025, None, "TestfiID")
@@ -85,7 +73,7 @@ class IndividualNameControllerSpec extends SpecBase with MockitoSugar {
       val validAnswer = IndividualName("value", "value")
       val userAnswers = ua
         .withPage(CurrentAccountHolderIdPage()(reportId), currentAccountHolderId)
-        .withPage(IndividualNamePage(currentAccountHolderId)(reportId), validAnswer)
+        .withPage(AccountHolderIndividualNamePage(currentAccountHolderId)(reportId), validAnswer)
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 

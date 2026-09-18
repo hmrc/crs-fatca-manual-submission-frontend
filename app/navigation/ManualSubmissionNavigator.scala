@@ -26,9 +26,10 @@ import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
 import pages.manual.account.*
 import pages.manual.accountHolders.{
+  AccountHolderAddressNonUkPage,
+  AccountHolderIndividualNamePage,
   AddressLookupForAccountHolderPage,
   IndividualHavePlaceOfBirthPage,
-  IndividualNamePage,
   IndividualOrOrganisationPage,
   IsThisTheAddressForAccountHoldersPage,
   SelectAddressPage,
@@ -131,9 +132,8 @@ class ManualSubmissionNavigator @Inject() () {
           case Organisation =>
             controllers.routes.UnderConstructionController.onPageLoad()
         }
-
-    case (pages.manual.accountHolders.IndividualNamePage(id), mode, ua) =>
-      ua.get(pages.manual.accountHolders.IndividualNamePage(id)) match {
+    case (AccountHolderIndividualNamePage(id), mode, ua) =>
+      ua.get(AccountHolderIndividualNamePage(id)) match {
         case Some(_) =>
           controllers.manual.accountHolders.routes.IndividualHaveDateOfBirthController.onPageLoad(mode)
         case None =>
@@ -143,10 +143,9 @@ class ManualSubmissionNavigator @Inject() () {
     case (pages.manual.accountHolders.WhereAreTheyBasedPage(id), mode, ua) =>
       ua.get(WhereAreTheyBasedPage(id)) match {
         case Some(true)  => controllers.manual.accountHolders.routes.UkPostCodeForAccountHolderController.onPageLoad(mode)
-        case Some(false) => controllers.routes.UnderConstructionController.onPageLoad()
+        case Some(false) => controllers.manual.accountHolders.routes.AccountHolderAddressNonUkController.onPageLoad(mode)
         case None        => controllers.routes.JourneyRecoveryController.onPageLoad()
       }
-
     case (pages.manual.accountHolders.IndividualHaveDateOfBirthPage(id), mode, ua) =>
       ua.get(pages.manual.accountHolders.IndividualHaveDateOfBirthPage(id)) match {
         case Some(true) =>
@@ -165,8 +164,9 @@ class ManualSubmissionNavigator @Inject() () {
     case (UkPostCodeForAccountHolderPage(accountHolderId, reportId), mode, ua) => handleUKPostcodeNavigationForAccountHolders(ua, mode, accountHolderId)
     case (IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId), mode, ua) =>
       handleIsThisTheAddressForAccountHoldersRouting(ua, mode, accountHolderId)
-    case (AccountHolderUkAddressPage(_, _), _, _) => controllers.routes.UnderConstructionController.onPageLoad()
-    case (SelectAddressPage(_, _), _, _)          => controllers.routes.UnderConstructionController.onPageLoad()
+    case (AccountHolderUkAddressPage(_, _), _, _)    => controllers.routes.UnderConstructionController.onPageLoad()
+    case (SelectAddressPage(_, _), _, _)             => controllers.routes.UnderConstructionController.onPageLoad()
+    case (AccountHolderAddressNonUkPage(_, _), _, _) => controllers.routes.UnderConstructionController.onPageLoad()
   }
 
   private def cpsoNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
