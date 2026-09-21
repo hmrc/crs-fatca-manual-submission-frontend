@@ -44,11 +44,10 @@ class CPSOIndividualDateOfBirthController @Inject() (
     with I18nSupport
     with Logging {
 
-  val form = formProvider()
-
   def onPageLoad(mode: Mode): Action[AnyContent] =
     actions.withReportIdRequiredAndCPSOIdRequired() {
       implicit request =>
+        val form                        = formProvider(request.reportId.regime)
         implicit val reportId: ReportId = request.reportId
 
         val preparedForm =
@@ -63,7 +62,8 @@ class CPSOIndividualDateOfBirthController @Inject() (
               view(
                 preparedForm,
                 mode,
-                individualName.fullName
+                individualName.fullName,
+                request.reportId.regime.value
               )
             )
 
@@ -78,6 +78,7 @@ class CPSOIndividualDateOfBirthController @Inject() (
   def onSubmit(mode: Mode): Action[AnyContent] =
     actions.withReportIdRequiredAndCPSOIdRequired().async {
       implicit request =>
+        val form                        = formProvider(request.reportId.regime)
         implicit val reportId: ReportId = request.reportId
 
         request.userAnswers
@@ -88,7 +89,7 @@ class CPSOIndividualDateOfBirthController @Inject() (
               .fold(
                 formWithErrors =>
                   Future.successful(
-                    BadRequest(view(formWithErrors, mode, individualName.fullName))
+                    BadRequest(view(formWithErrors, mode, individualName.fullName, request.reportId.regime.value))
                   ),
                 value =>
                   for {

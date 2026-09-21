@@ -631,6 +631,7 @@ individualDateOfBirth.error.past=Date of birth must be after 1899
 individualDateOfBirth.error.future=Date of birth must be no later than {0}
 individualDateOfBirth.checkYourAnswersLabel=Date of birth
 individualDateOfBirth.change.hidden=date of birth
+
 account.havePayments.crs.title = Were any payments made to this account in {0}?
 account.havePayments.fatca.title = Were any payments made to this account, a payee or an owner in {0}?
 account.havePayments.crs.heading = Were any payments made to this account in {0}?
@@ -772,3 +773,35 @@ accountHolders.ukAddress.uk = United Kingdom
 accountHolders.ukAddress.jersey = Jersey
 accountHolders.ukAddress.guernsey = Guernsey
 accountHolders.ukAddress.isleOfMan = Isle of Man
+
+cpso.individualDateOfBirth.title.CRS = What is the date of birth for the controlling person?
+cpso.individualDateOfBirth.title.FATCA = What is the date of birth for the substantial owner?
+cpso.individualDateOfBirth.heading = What is the date of birth for the {0}?
+cpso.individualDateOfBirth.hint = For example, 31 3 1980.
+cpso.individualDateOfBirth.error.required.CRS = Enter the date of birth for the controlling person
+cpso.individualDateOfBirth.error.required.FATCA = Enter the date of birth for the substantial owner
+cpso.individualDateOfBirth.error.invalidCharacters = Date of birth must only include numbers 0 to 9
+
+cpso.individualDateOfBirth.error.day.required.CRS = Enter the day the controlling person was born
+cpso.individualDateOfBirth.error.day.required.FATCA = Enter the day the substantial owner was born
+
+cpso.individualDateOfBirth.error.month.required.CRS = Enter the month the controlling person was born
+cpso.individualDateOfBirth.error.month.required.FATCA = Enter the month the substantial owner was born
+
+cpso.individualDateOfBirth.error.year.required.CRS = Enter the year the controlling person was born
+cpso.individualDateOfBirth.error.year.required.FATCA = Enter the year the substantial owner was born
+
+cpso.individualDateOfBirth.error.dayMonth.required.CRS = Enter the day and month the controlling person was born
+cpso.individualDateOfBirth.error.dayMonth.required.FATCA = Enter the day and month the substantial owner was born
+
+cpso.individualDateOfBirth.error.dayYear.required.CRS = Enter the day and year the controlling person was born
+cpso.individualDateOfBirth.error.dayYear.required.FATCA = Enter the day and year the substantial owner was born
+
+cpso.individualDateOfBirth.error.monthYear.required.CRS = Enter the month and year the controlling person was born
+cpso.individualDateOfBirth.error.monthYear.required.FATCA = Enter the month and year the substantial owner was born
+
+cpso.individualDateOfBirth.error.real = Enter a real date of birth
+cpso.individualDateOfBirth.error.past = Date of birth must be after 1899
+cpso.individualDateOfBirth.error.future = Date of birth must be no later than {0}
+cpso.individualDateOfBirth.checkYourAnswersLabel = Date of birth
+cpso.individualDateOfBirth.change.hidden = date of birth

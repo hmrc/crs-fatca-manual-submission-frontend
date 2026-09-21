@@ -28,7 +28,8 @@
 @(
         form: Form[_],
         mode: Mode,
-        accountHolderName: String
+        name: String,
+        regime: String
 )(implicit request: Request[_], messages: Messages)
 
 @dateInput = @{
@@ -36,7 +37,7 @@
     val baseDateInput = DateInput(
         hint = Some(
             Hint(
-                content = Text(messages("individualDateOfBirth.hint"))
+                content = Text(messages("cpso.individualDateOfBirth.hint"))
             )
         ),
         fieldset = Some(
@@ -46,7 +47,7 @@
                         content = Text(
                             messages(
                                 "individualDateOfBirth.heading",
-                                accountHolderName
+                                name
                             )
                         ),
                         classes = "govuk-fieldset__legend--l wrappable",
@@ -62,13 +63,13 @@
 
     val additionalErrorFields =
         errorMessage match {
-            case Some("individualDateOfBirth.error.dayMonth.required") =>
+            case Some(s"cpso.individualDateOfBirth.error.dayMonth.required.$regime") =>
                 Set("day", "month")
 
-            case Some("individualDateOfBirth.error.dayYear.required") =>
+            case Some(s"cpso.individualDateOfBirth.error.dayYear.required.$regime") =>
                 Set("day", "year")
 
-            case Some("individualDateOfBirth.error.monthYear.required") =>
+            case Some(s"cpso.individualDateOfBirth.error.monthYear.required.$regime") =>
                 Set("month", "year")
 
             case _ =>
@@ -119,8 +120,7 @@
     pageTitle = title(
         form,
         messages(
-            "individualDateOfBirth.title",
-            accountHolderName
+            s"cpso.individualDateOfBirth.title.$regime"
         )
     )
 ) {

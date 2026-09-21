@@ -17,6 +17,7 @@
 package forms.manual.cpso
 
 import forms.mappings.Mappings
+import models.SubmissionsConstants.RegimeType
 import models.manual.accountHolders.IndividualDateOfBirth
 import play.api.data.Form
 
@@ -24,21 +25,21 @@ import javax.inject.Inject
 
 class CPSOIndividualDateOfBirthFormProvider @Inject() extends Mappings {
 
-  def apply(): Form[IndividualDateOfBirth] =
+  def apply(regime: RegimeType): Form[IndividualDateOfBirth] =
     Form(
       "value" ->
         dateOfBirth(
-          requiredKey = "individualDateOfBirth.error.required",
-          invalidCharactersKey = "individualDateOfBirth.error.invalidCharacters",
-          dayRequiredKey = "individualDateOfBirth.error.day.required",
-          monthRequiredKey = "individualDateOfBirth.error.month.required",
-          yearRequiredKey = "individualDateOfBirth.error.year.required",
-          dayMonthRequiredKey = "individualDateOfBirth.error.dayMonth.required",
-          dayYearRequiredKey = "individualDateOfBirth.error.dayYear.required",
-          monthYearRequiredKey = "individualDateOfBirth.error.monthYear.required",
-          realDateKey = "individualDateOfBirth.error.real",
-          pastKey = "individualDateOfBirth.error.past",
-          futureKey = "individualDateOfBirth.error.future"
+          requiredKey = s"cpso.individualDateOfBirth.error.required.$regime",
+          invalidCharactersKey = "cpso.individualDateOfBirth.error.invalidCharacters",
+          dayRequiredKey = s"cpso.individualDateOfBirth.error.day.required.$regime",
+          monthRequiredKey = s"cpso.individualDateOfBirth.error.month.required.$regime",
+          yearRequiredKey = s"cpso.individualDateOfBirth.error.year.required.$regime",
+          dayMonthRequiredKey = s"cpso.individualDateOfBirth.error.dayMonth.required.$regime",
+          dayYearRequiredKey = s"cpso.individualDateOfBirth.error.dayYear.required.$regime",
+          monthYearRequiredKey = s"cpso.individualDateOfBirth.error.monthYear.required.$regime",
+          realDateKey = "cpso.individualDateOfBirth.error.real",
+          pastKey = "cpso.individualDateOfBirth.error.past",
+          futureKey = "cpso.individualDateOfBirth.error.future"
         )
           .transform[IndividualDateOfBirth](
             IndividualDateOfBirth.apply,

@@ -20,6 +20,7 @@ import models.manual.accountHolders.IndividualDateOfBirth
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import play.api.data.FormError
+import models.SubmissionsConstants.CRS
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -27,41 +28,43 @@ import java.util.Locale
 
 class CPSOIndividualDateOfBirthFormProviderSpec extends AnyFreeSpec with Matchers {
 
+  private val regime = CRS
+
   private val form =
-    new CPSOIndividualDateOfBirthFormProvider()()
+    new CPSOIndividualDateOfBirthFormProvider()(regime)
 
   private val requiredKey =
-    "individualDateOfBirth.error.required"
+    s"cpso.individualDateOfBirth.error.required.$regime"
 
   private val invalidCharactersKey =
-    "individualDateOfBirth.error.invalidCharacters"
+    "cpso.individualDateOfBirth.error.invalidCharacters"
 
   private val dayRequiredKey =
-    "individualDateOfBirth.error.day.required"
+    s"cpso.individualDateOfBirth.error.day.required.$regime"
 
   private val monthRequiredKey =
-    "individualDateOfBirth.error.month.required"
+    s"cpso.individualDateOfBirth.error.month.required.$regime"
 
   private val yearRequiredKey =
-    "individualDateOfBirth.error.year.required"
+    s"cpso.individualDateOfBirth.error.year.required.$regime"
 
   private val dayMonthRequiredKey =
-    "individualDateOfBirth.error.dayMonth.required"
+    s"cpso.individualDateOfBirth.error.dayMonth.required.$regime"
 
   private val dayYearRequiredKey =
-    "individualDateOfBirth.error.dayYear.required"
+    s"cpso.individualDateOfBirth.error.dayYear.required.$regime"
 
   private val monthYearRequiredKey =
-    "individualDateOfBirth.error.monthYear.required"
+    s"cpso.individualDateOfBirth.error.monthYear.required.$regime"
 
   private val realDateKey =
-    "individualDateOfBirth.error.real"
+    "cpso.individualDateOfBirth.error.real"
 
   private val pastKey =
-    "individualDateOfBirth.error.past"
+    "cpso.individualDateOfBirth.error.past"
 
   private val futureKey =
-    "individualDateOfBirth.error.future"
+    "cpso.individualDateOfBirth.error.future"
 
   private def dateData(
     day: String,

@@ -45,7 +45,7 @@ class CPSOIndividualDateOfBirthControllerSpec extends SpecBase with MockitoSugar
   def onwardRoute: Call = Call("GET", "/foo")
 
   val formProvider = new CPSOIndividualDateOfBirthFormProvider()
-  val form         = formProvider()
+  val form         = formProvider(CRS)
 
   lazy val CPSOIndividualDateOfBirthRoute =
     controllers.manual.cpso.routes.CPSOIndividualDateOfBirthController
@@ -103,7 +103,8 @@ class CPSOIndividualDateOfBirthControllerSpec extends SpecBase with MockitoSugar
           view(
             form,
             NormalMode,
-            cpsoName
+            cpsoName,
+            CRS.value
           )(request, messages(application)).toString
       }
     }
@@ -141,7 +142,8 @@ class CPSOIndividualDateOfBirthControllerSpec extends SpecBase with MockitoSugar
           view(
             form.fill(validAnswer),
             NormalMode,
-            cpsoName
+            cpsoName,
+            CRS.value
           )(request, messages(application)).toString
       }
     }
@@ -219,7 +221,8 @@ class CPSOIndividualDateOfBirthControllerSpec extends SpecBase with MockitoSugar
           view(
             boundForm,
             NormalMode,
-            cpsoName
+            cpsoName,
+            CRS.value
           )(request, messages(application)).toString
       }
     }
