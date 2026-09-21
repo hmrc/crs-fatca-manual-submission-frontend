@@ -114,7 +114,7 @@ class SubmissionsHistoryServiceSpec extends SpecBase {
 
       "convert SubmittedReport to SubmissionCard correctly" in {
         val report = submittedReport.copy(
-          submissionDeleteStatus = Some(true),
+          submissionDeleteStatus = true,
           messageRefId = "ref123",
           originalMessageRefId = None,
           submissionFileType = FATCA1,
@@ -123,7 +123,7 @@ class SubmissionsHistoryServiceSpec extends SpecBase {
         val result = service.prepareSubmissionHistoryCards(List(report), 2016)
 
         val card = result("ref123").head
-        card.isVoided mustBe Some(true)
+        card.isVoided mustBe true
         card.messageRefId mustEqual "ref123"
         card.originalMessageRefId mustEqual "ref123"
         card.fileType mustEqual FATCA1

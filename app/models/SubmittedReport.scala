@@ -33,8 +33,9 @@ case class SubmittedReport(
   submissionType: SubmissionType,
   submissionFileType: SubmissionFileType,
   messageRefId: String,
-  submissionDeleteStatus: Option[Boolean] = None,
-  originalMessageRefId: Option[String] = None
+  submissionDeleteStatus: Boolean,
+  originalMessageRefId: Option[String] = None,
+  isNilReport: Boolean
 )
 
 object SubmittedReport {

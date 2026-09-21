@@ -47,6 +47,7 @@ class SubmissionHistoryService @Inject() (readSubmissionConnector: ReadSubmissio
       originalMessageRefId = report.originalMessageRefId.getOrElse(report.messageRefId),
       timeSent = report.uploadDateTime,
       fileType = if report.originalMessageRefId.isDefined & report.submissionFileType == CRS701 then CRSAdditional701 else report.submissionFileType,
-      submissionType = report.submissionType
+      submissionType = report.submissionType,
+      isNilReport = report.isNilReport
     )
 }
