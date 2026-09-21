@@ -23,12 +23,7 @@ import forms.manual.accountHolders.IsThisTheAddressForAccountHoldersFormProvider
 import javax.inject.Inject
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.accountHolders.{
-  AddressLookupForAccountHolderPage,
-  IndividualNamePage,
-  IsThisTheAddressForAccountHoldersPage,
-  WhatIsAddressForAccountHolderPage
-}
+import pages.manual.accountHolders.*
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import connectors.DatabaseConnector
@@ -65,7 +60,7 @@ class IsThisTheAddressForAccountHoldersController @Inject() (
         .fold(form)(form.fill)
 
       // todo will need to cater for organization name
-      val individualName = request.userAnswers.get(IndividualNamePage(request.accountHolderId))
+      val individualName = request.userAnswers.get(AccountHolderIndividualNamePage(request.accountHolderId))
       val address = request.userAnswers
         .get(AddressLookupForAccountHolderPage(request.accountHolderId, request.reportId))
         .flatMap(_.headOption.flatMap(_.toAddress))
@@ -73,7 +68,7 @@ class IsThisTheAddressForAccountHoldersController @Inject() (
       (individualName, address)
         .mapN {
           (indName, addr) =>
-            val accountHolderName = s"${indName.FirstName} ${indName.LastName}".trim
+            val accountHolderName = s"${indName.firstName} ${indName.lastName}".trim
             Ok(view(preparedForm, mode, addr, accountHolderName))
         }
         .getOrElse {
@@ -89,7 +84,7 @@ class IsThisTheAddressForAccountHoldersController @Inject() (
       implicit val reportId: ReportId      = request.reportId
       val accountHolderId: AccountHolderId = request.accountHolderId
       // todo will need to cater for organization name in the future
-      val individualName = request.userAnswers.get(IndividualNamePage(request.accountHolderId))
+      val individualName = request.userAnswers.get(AccountHolderIndividualNamePage(request.accountHolderId))
       val address = request.userAnswers
         .get(AddressLookupForAccountHolderPage(request.accountHolderId, request.reportId))
         .flatMap(_.headOption.flatMap(_.toAddress))
@@ -97,7 +92,7 @@ class IsThisTheAddressForAccountHoldersController @Inject() (
       (individualName, address)
         .mapN {
           (indName, addr) =>
-            val accountHolderName = s"${indName.FirstName} ${indName.LastName}".trim
+            val accountHolderName = s"${indName.firstName} ${indName.lastName}".trim
             form
               .bindFromRequest()
               .fold(

@@ -29,7 +29,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.accountHolders.{CurrentAccountHolderIdPage, IndividualHavePlaceOfBirthPage, IndividualNamePage}
+import pages.manual.accountHolders.{AccountHolderIndividualNamePage, CurrentAccountHolderIdPage, IndividualHavePlaceOfBirthPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -54,7 +54,7 @@ class IndividualHavePlaceOfBirthControllerSpec extends SpecBase with MockitoSuga
     val individualName = IndividualName("testFirst", "testLast")
     val ua = emptyUserAnswers
       .withPage(ReportIdPage, reportId)
-      .withPage(IndividualNamePage(accountId)(reportId), individualName)
+      .withPage(AccountHolderIndividualNamePage(accountId)(reportId), individualName)
       .withPage(CurrentAccountHolderIdPage()(reportId), accountId)
 
     "must return OK and the correct view for a GET" in {

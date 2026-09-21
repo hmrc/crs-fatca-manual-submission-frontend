@@ -29,7 +29,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.accountHolders.{CurrentAccountHolderIdPage, IndividualNamePage, WhereAreTheyBasedPage}
+import pages.manual.accountHolders.{AccountHolderIndividualNamePage, CurrentAccountHolderIdPage, WhereAreTheyBasedPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -55,7 +55,7 @@ class WhereAreTheyBasedControllerSpec extends SpecBase with MockitoSugar {
     val ua = emptyUserAnswers
       .withPage(ReportIdPage, reportId)
       .withPage(CurrentAccountHolderIdPage()(reportId), currentAccountHolderId)
-      .withPage(IndividualNamePage(currentAccountHolderId)(reportId), individualName)
+      .withPage(AccountHolderIndividualNamePage(currentAccountHolderId)(reportId), individualName)
 
     "must return OK and the correct view for a GET" in {
 

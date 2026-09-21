@@ -24,7 +24,13 @@ import models.response.{Address, AddressLookup}
 import models.viewModels.AccountHolderId
 import models.{Countries, Mode, ReportId, UkAddress, UserAnswers}
 import navigation.ManualSubmissionNavigator
-import pages.manual.accountHolders.{AddressLookupForAccountHolderPage, IndividualNamePage, SelectAddressPage, UkAddressPage, UkPostCodeForAccountHolderPage}
+import pages.manual.accountHolders.{
+  AccountHolderIndividualNamePage,
+  AddressLookupForAccountHolderPage,
+  SelectAddressPage,
+  UkAddressPage,
+  UkPostCodeForAccountHolderPage
+}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -52,7 +58,7 @@ class UkAddressController @Inject() (
   def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequired() {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
-      request.userAnswers.get(IndividualNamePage(request.accountHolderId)) match {
+      request.userAnswers.get(AccountHolderIndividualNamePage(request.accountHolderId)) match {
         case Some(name) =>
           val preparedForm = resolveAddress(request.userAnswers, request.accountHolderId).fold(form)(form.fill)
           Ok(view(preparedForm, mode, name.fullName, Countries.ukTerritories))
@@ -84,7 +90,7 @@ class UkAddressController @Inject() (
   def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequired().async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
-      request.userAnswers.get(IndividualNamePage(request.accountHolderId)) match {
+      request.userAnswers.get(AccountHolderIndividualNamePage(request.accountHolderId)) match {
         case Some(name) =>
           form
             .bindFromRequest()

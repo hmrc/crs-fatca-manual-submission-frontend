@@ -21,7 +21,7 @@ import controllers.actions.*
 import forms.manual.accountHolders.UkPostCodeForAccountHolderFormProvider
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.accountHolders.{AddressLookupForAccountHolderPage, IndividualNamePage, UkPostCodeForAccountHolderPage}
+import pages.manual.accountHolders.*
 import play.api.Logging
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -58,9 +58,9 @@ class UkPostCodeForAccountHolderController @Inject() (
 
       // Todo in the future we should cater for organisation-name too
       request.userAnswers
-        .get(IndividualNamePage(request.accountHolderId)) match {
+        .get(AccountHolderIndividualNamePage(request.accountHolderId)) match {
         case Some(individualName) =>
-          val accountHolderName = s"${individualName.FirstName} ${individualName.LastName}".trim
+          val accountHolderName = s"${individualName.firstName} ${individualName.lastName}".trim
           Ok(view(preparedForm, mode, accountHolderName))
         case None =>
           logger.warn("Mandatory individual name is missing from User Answers")
@@ -77,7 +77,7 @@ class UkPostCodeForAccountHolderController @Inject() (
       implicit val reportId: ReportId = request.reportId
 
       request.userAnswers
-        .get(IndividualNamePage(request.accountHolderId)) match {
+        .get(AccountHolderIndividualNamePage(request.accountHolderId)) match {
         case None =>
           logger.warn("Mandatory individual name is missing from User Answers")
           Future.successful(
@@ -86,7 +86,7 @@ class UkPostCodeForAccountHolderController @Inject() (
             )
           )
         case Some(individualName) =>
-          val accountHolderName = s"${individualName.FirstName} ${individualName.LastName}".trim
+          val accountHolderName = s"${individualName.firstName} ${individualName.lastName}".trim
           val formReturned      = form.bindFromRequest()
 
           formReturned
