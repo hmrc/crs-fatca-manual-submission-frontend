@@ -18,6 +18,7 @@ package views.manual.sponsor
 
 import base.SpecBase
 import forms.manual.sponsor.AddressNonUkFormProvider
+import models.SubmissionsConstants.CRS
 import models.{AddressNonUk, Countries, NormalMode}
 import org.jsoup.Jsoup
 import play.api.i18n.{Lang, Messages}
@@ -52,7 +53,7 @@ class AddressNonUkViewSpec extends SpecBase {
     )
 
   private val sponsorName = "Test Sponsor"
-  private val countries   = Countries.nonUkTerritories()
+  private val countries   = Countries.nonUkTerritories(CRS)
 
   "AddressNonUkView" - {
 
@@ -152,7 +153,7 @@ class AddressNonUkViewSpec extends SpecBase {
 
       "must display all countries and the placeholder option" in {
         doc.select("#country option").size() mustBe
-          Countries.nonUkTerritories().size + 1
+          Countries.nonUkTerritories(CRS).size + 1
       }
 
       "must use the country code as the option value" in {

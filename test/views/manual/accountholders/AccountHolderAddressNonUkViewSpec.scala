@@ -26,6 +26,7 @@ import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
 import views.html.manual.accountHolders.AccountHolderAddressNonUkView
+import models.SubmissionsConstants.CRS
 
 class AccountHolderAddressNonUkViewSpec extends SpecBase {
 
@@ -54,7 +55,7 @@ class AccountHolderAddressNonUkViewSpec extends SpecBase {
 
   private val individualAccountHolder = IndividualName("Some", "Dude").fullName
 
-  private val countries = Countries.nonUkTerritories()
+  private val countries = Countries.nonUkTerritories(CRS)
 
   "AccountHolderAddressNonUkView" - {
 
@@ -154,7 +155,7 @@ class AccountHolderAddressNonUkViewSpec extends SpecBase {
 
       "must display all countries and the placeholder option" in {
         doc.select("#country option").size() mustBe
-          Countries.nonUkTerritories().size + 1
+          Countries.nonUkTerritories(CRS).size + 1
       }
 
       "must use the country code as the option value" in {

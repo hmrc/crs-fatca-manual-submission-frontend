@@ -34,10 +34,6 @@ class CountriesSpec extends SpecBase {
 
     "nonUkTerritories must" - {
 
-      "default to CRS country list" in {
-        Countries.nonUkTerritories() mustBe Countries.nonUkTerritories(CRS)
-      }
-
       "not include 'Other country' for CRS" in {
         Countries.nonUkTerritories(CRS) must not contain otherCountry
       }

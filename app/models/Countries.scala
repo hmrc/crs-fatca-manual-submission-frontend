@@ -1059,7 +1059,7 @@ object Countries {
     case _ => all
   }
 
-  def nonUkTerritories(regime: RegimeType = CRS): Seq[Country] =
+  def nonUkTerritories(regime: RegimeType): Seq[Country] =
     regime match {
       case FATCA =>
         nonUkTerritories ++ Seq(

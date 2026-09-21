@@ -53,7 +53,7 @@ class AddressNonUkController @Inject() (
         case Some(value) => form.fill(value)
       }
 
-      Ok(view(preparedForm, mode, request.sponsorName, Countries.nonUkTerritories()))
+      Ok(view(preparedForm, mode, request.sponsorName, Countries.nonUkTerritories(reportId.regime)))
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequired().async {
@@ -63,7 +63,7 @@ class AddressNonUkController @Inject() (
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, request.sponsorName, Countries.nonUkTerritories()))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, request.sponsorName, Countries.nonUkTerritories(reportId.regime)))),
           value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(AddressNonUkPage(), value))
