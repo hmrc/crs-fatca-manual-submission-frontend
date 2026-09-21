@@ -578,6 +578,40 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               controllers.routes.UnderConstructionController.onPageLoad()
           }
         }
+
+        "IndividualHavePlaceOfBirthPage" - {
+
+          "must go to IndividualPlaceOfBirth page when answer is yes" in {
+            val ua = UserAnswers("id")
+              .withPage(pages.manual.cpso.IndividualHavePlaceOfBirthPage(currentCPSOId, reportId), true)
+            navigator.nextPage(pages.manual.cpso.IndividualHavePlaceOfBirthPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+              controllers.manual.cpso.routes.IndividualPlaceOfBirthController.onPageLoad(NormalMode)
+          }
+
+          "must go to underconstruction page when answer is no" in {
+            val ua = UserAnswers("id")
+              .withPage(pages.manual.cpso.IndividualHavePlaceOfBirthPage(currentCPSOId, reportId), false)
+            navigator.nextPage(pages.manual.cpso.IndividualHavePlaceOfBirthPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+
+          "must go to JourneyRecovery page when page doesnt have value" in {
+            val ua = UserAnswers("id")
+            navigator.nextPage(pages.manual.cpso.IndividualHavePlaceOfBirthPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
+        }
+
+        "IndividualPlaceOfBirthPage" - {
+          "must go to underconstruction page when submitted" in {
+            val ua = UserAnswers("id")
+              .withPage(pages.manual.cpso.IndividualPlaceOfBirthPage(currentCPSOId, reportId),
+                        models.manual.cpso.IndividualPlaceOfBirth(Some("city"), Some("region"), "FR")
+              )
+            navigator.nextPage(pages.manual.cpso.IndividualPlaceOfBirthPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+        }
       }
 
       "accountHolderPages" - {

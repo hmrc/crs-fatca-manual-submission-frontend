@@ -79,3 +79,12 @@ case class SponsorTaxResidentIdRequest[A](request: Request[A],
                                           sponsorName: String,
                                           currentId: Int
 ) extends WrappedRequest[A](request)
+
+case class CPSONameRequest[A](request: Request[A],
+                              userId: String,
+                              userAnswers: UserAnswers,
+                              fatcaId: String,
+                              reportId: ReportId,
+                              cpsoId: CPSOId,
+                              cpsoName: String
+) extends WrappedRequest[A](request)

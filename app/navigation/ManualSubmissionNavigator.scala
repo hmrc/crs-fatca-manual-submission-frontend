@@ -178,6 +178,14 @@ class ManualSubmissionNavigator @Inject() () {
       }
     case (pages.manual.cpso.IndividualNamePage(cpsoId), mode, ua) =>
       routes.UnderConstructionController.onPageLoad()
+    case (pages.manual.cpso.IndividualHavePlaceOfBirthPage(cpsoId, reportId), mode, ua) =>
+      ua.get(pages.manual.cpso.IndividualHavePlaceOfBirthPage(cpsoId, reportId)) match {
+        case Some(true)  => controllers.manual.cpso.routes.IndividualPlaceOfBirthController.onPageLoad(mode)
+        case Some(false) => routes.UnderConstructionController.onPageLoad()
+        case None        => routes.JourneyRecoveryController.onPageLoad()
+      }
+    case (pages.manual.cpso.IndividualPlaceOfBirthPage(cpsoId, reportId), mode, ua) =>
+      routes.UnderConstructionController.onPageLoad()
   }
 
   private def sponsorNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {

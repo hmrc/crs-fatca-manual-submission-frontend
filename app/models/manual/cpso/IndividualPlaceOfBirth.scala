@@ -18,11 +18,9 @@ package models.manual.cpso
 
 import play.api.libs.json.*
 
-case class IndividualName(firstName: String, lastName: String) {
-  def fullName: String = s"$firstName $lastName".trim
-}
+case class IndividualPlaceOfBirth(city: Option[String], region: Option[String], country: String)
 
-object IndividualName {
+object IndividualPlaceOfBirth {
 
-  implicit val format: OFormat[IndividualName] = Json.format
+  implicit val format: OFormat[IndividualPlaceOfBirth] = Json.format
 }

@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-package models.manual.cpso
+package forms.manual.cpso
 
-import play.api.libs.json.*
+import javax.inject.Inject
+import forms.mappings.Mappings
+import models.SubmissionsConstants.{CRS, RegimeType}
+import play.api.data.Form
 
-case class IndividualName(firstName: String, lastName: String) {
-  def fullName: String = s"$firstName $lastName".trim
-}
+class IndividualHavePlaceOfBirthFormProvider @Inject() extends Mappings {
 
-object IndividualName {
-
-  implicit val format: OFormat[IndividualName] = Json.format
+  def apply(regimeType: RegimeType): Form[Boolean] = {
+    val entityName = if regimeType == CRS then "controlling person" else "substantial owner"
+    Form(
+      "value" -> boolean(requiredKey = "cpso.individualHavePlaceOfBirth.error.required", args = Seq(entityName))
+    )
+  }
 }

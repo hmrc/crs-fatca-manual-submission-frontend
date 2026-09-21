@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package models.manual.cpso
+package pages.manual.cpso
 
-import play.api.libs.json.*
+import models.viewModels.manual.cpso.CPSOId
+import models.ReportId
+import models.manual.cpso.IndividualPlaceOfBirth
+import pages.QuestionPage
+import play.api.libs.json.JsPath
 
-case class IndividualName(firstName: String, lastName: String) {
-  def fullName: String = s"$firstName $lastName".trim
-}
+final case class IndividualPlaceOfBirthPage(currentId: CPSOId, reportId: ReportId) extends QuestionPage[IndividualPlaceOfBirth]:
 
-object IndividualName {
-
-  implicit val format: OFormat[IndividualName] = Json.format
-}
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "individualPlaceOfBirth"
