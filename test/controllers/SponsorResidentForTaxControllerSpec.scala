@@ -63,7 +63,7 @@ class SponsorResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[SponsorResidentForTaxView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, sponsorName, Countries.all)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, sponsorName, Countries.allCountries(reportId.regime))(request, messages(application)).toString
       }
     }
 
@@ -109,7 +109,9 @@ class SponsorResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, sponsorName, Countries.all)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, sponsorName, Countries.allCountries(reportId.regime))(request,
+                                                                                                                            messages(application)
+        ).toString
       }
     }
 
