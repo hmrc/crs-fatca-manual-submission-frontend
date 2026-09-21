@@ -61,13 +61,13 @@
                         <dd class="govuk-summary-list__actions hmrc-summary-list__actions" style="width:51% !important;%">
                             <ul class="govuk-summary-list__actions-list">
                                 <li class="govuk-summary-list__actions-list-item">
-                                    <a class="govuk-link" href="@row.changeUrl">
+                                    <a class="govuk-link" href="@row.changeUrl" id="change_@row.description.trim().replace(" ","_")">
                                         <span aria-hidden="true">Change</span>
                                         <span class="govuk-visually-hidden">Change @row.description payment</span>
                                     </a>
                                 </li>
                                 <li class="govuk-summary-list__actions-list-item">
-                                    <a class="govuk-link" href="@row.removeUrl">
+                                    <a class="govuk-link" href="@row.removeUrl" id="remove_@row.description.trim().replace(" ","_")">
                                         <span aria-hidden="true" >Remove</span>
                                         <span class="govuk-visually-hidden">Remove @row.description payment</span>
                                     </a>
