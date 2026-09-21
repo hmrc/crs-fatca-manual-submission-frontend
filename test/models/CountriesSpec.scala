@@ -17,7 +17,7 @@
 package models
 
 import base.SpecBase
-import models.CrsOrFatca.*
+import models.SubmissionsConstants.{CRS, FATCA}
 import models.response.Country
 import org.scalatest.freespec.AnyFreeSpec
 
@@ -28,22 +28,22 @@ class CountriesSpec extends SpecBase {
   "Countries" - {
 
     "must have unique country codes" in {
-      val codes = Countries.nonUkTerritories(Fatca).map(_.code)
+      val codes = Countries.nonUkTerritories(FATCA).map(_.code)
       codes.distinct mustEqual codes
     }
 
     "nonUkTerritories must" - {
 
       "default to CRS country list" in {
-        Countries.nonUkTerritories() mustBe Countries.nonUkTerritories(Crs)
+        Countries.nonUkTerritories() mustBe Countries.nonUkTerritories(CRS)
       }
 
       "not include 'Other country' for CRS" in {
-        Countries.nonUkTerritories(Crs) must not contain otherCountry
+        Countries.nonUkTerritories(CRS) must not contain otherCountry
       }
 
       "add 'Other country' to country list for FATCA" in {
-        Countries.nonUkTerritories(Fatca) mustBe Countries.nonUkTerritories :+ otherCountry
+        Countries.nonUkTerritories(FATCA) mustBe Countries.nonUkTerritories :+ otherCountry
       }
 
     }

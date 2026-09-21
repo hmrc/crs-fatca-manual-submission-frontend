@@ -16,7 +16,7 @@
 
 package models
 
-import models.CrsOrFatca.{Crs, Fatca}
+import models.SubmissionsConstants.*
 import models.response.Country
 
 object Countries {
@@ -1048,9 +1048,9 @@ object Countries {
 
   val all: Seq[Country] = ukTerritories ++ nonUkTerritories
 
-  def nonUkTerritories(regime: CrsOrFatca = Crs): Seq[Country] =
+  def nonUkTerritories(regime: RegimeType = CRS): Seq[Country] =
     regime match {
-      case Fatca =>
+      case FATCA =>
         nonUkTerritories ++ Seq(
           Country(
             code = "XX",
