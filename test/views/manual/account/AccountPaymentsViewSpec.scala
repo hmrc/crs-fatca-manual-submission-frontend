@@ -44,10 +44,13 @@ class AccountPaymentsViewSpec extends SpecBase {
 
   val currency           = Currency(code = "VED", displayName = "Venezuelan Bolivar (VED)")
   val accountPaymentList = Seq(AccountPayment(CRSInterest, Some(AccountPaymentsAmount(currency, "1000"))))
-  val emptyAccountList   = Seq.empty
-  val crs                = "crs"
-  val fatca              = "fatca"
-  val reportingPeriod    = "2025"
+
+  val accountPaymentMoreThanOneList =
+    Seq(AccountPayment(CRSInterest, Some(AccountPaymentsAmount(currency, "1000"))), AccountPayment(CRSInterest, Some(AccountPaymentsAmount(currency, "1000"))))
+  val emptyAccountList = Seq.empty
+  val crs              = "crs"
+  val fatca            = "fatca"
+  val reportingPeriod  = "2025"
 
   "AccountPaymentsView" - {
 
@@ -62,7 +65,7 @@ class AccountPaymentsViewSpec extends SpecBase {
         }
 
         "must display heading" in {
-          doc.select("h1").text() must include("You have added 1 payments made to this account")
+          doc.select("h1").text() must include("You have added 1 payment made to this account")
         }
 
         "must contain the correct payment info in table" in {
@@ -102,6 +105,24 @@ class AccountPaymentsViewSpec extends SpecBase {
           doc.select("legend.govuk-fieldset__legend").text() must include("Do you need to add payments for 2025?")
         }
       }
+
+      "when account payments are more than one" - {
+        val regimeType                          = CRS
+        val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, accountPaymentMoreThanOneList, reportingPeriod, crs)
+        lazy val doc                            = Jsoup.parse(renderedHtml.body)
+
+        "must display CRS title" in {
+          doc.title() must include("You have added 2 payments made to this account")
+        }
+
+        "must display heading" in {
+          doc.select("h1").text() must include("You have added 2 payments made to this account")
+        }
+
+        "must contain correct title in legend" in {
+          doc.select("legend.govuk-fieldset__legend").text() must include("Do you need to add more payments for 2025?")
+        }
+      }
     }
 
     "should render page components for fatca" - {
@@ -114,7 +135,7 @@ class AccountPaymentsViewSpec extends SpecBase {
         }
 
         "must display heading" in {
-          doc.select("h1").text() must include("You have added 1 payments made to this account")
+          doc.select("h1").text() must include("You have added 1 payment made to this account")
         }
 
         "must contain correct title in legend" in {
@@ -139,7 +160,5 @@ class AccountPaymentsViewSpec extends SpecBase {
         }
       }
     }
-
   }
-
 }

@@ -43,9 +43,9 @@
 
         @heading(if(accountPaymentsList.nonEmpty) {
             if(accountPaymentsList.size > 1) {
-                messages(s"account.payments.heading.${regime}.one.payments", accountPaymentsList.size)
+                messages(s"account.payments.heading.${regime}.more.than.one.payments", accountPaymentsList.size)
             } else {
-            messages(s"account.payments.heading.${regime}.more.than.one.payments", accountPaymentsList.size)
+                messages(s"account.payments.heading.${regime}.one.payments", accountPaymentsList.size)
             }
         } else {
             messages(s"account.payments.heading.${regime}.no.payments")
