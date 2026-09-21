@@ -1048,6 +1048,17 @@ object Countries {
 
   val all: Seq[Country] = ukTerritories ++ nonUkTerritories
 
+  def allCountries(regime: RegimeType) = regime match {
+    case FATCA =>
+      all ++ Seq(
+        Country(
+          code = "XX",
+          description = "Other country"
+        )
+      )
+    case _ => all
+  }
+
   def nonUkTerritories(regime: RegimeType = CRS): Seq[Country] =
     regime match {
       case FATCA =>

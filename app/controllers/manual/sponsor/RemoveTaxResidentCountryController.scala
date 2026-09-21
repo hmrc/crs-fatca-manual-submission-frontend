@@ -53,7 +53,8 @@ class RemoveTaxResidentCountryController @Inject() (
       request.userAnswers.get(SponsorResidentForTaxPage(request.currentId)) match {
         case None => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
         case Some(value) =>
-          Countries.all
+          Countries
+            .allCountries(reportId.regime)
             .find(_.code == value.code)
             .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())) {
               country =>
@@ -72,7 +73,8 @@ class RemoveTaxResidentCountryController @Inject() (
         .get(SponsorResidentForTaxPage(request.currentId))
         .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))) {
           country =>
-            Countries.all
+            Countries
+              .allCountries(reportId.regime)
               .find(_.code == country.code)
               .fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))) {
                 country =>
