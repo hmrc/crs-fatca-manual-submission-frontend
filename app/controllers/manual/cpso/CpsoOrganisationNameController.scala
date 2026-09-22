@@ -14,61 +14,63 @@
  * limitations under the License.
  */
 
-package controllers.manual.sponsor
+package controllers.manual.cpso
 
 import connectors.DatabaseConnector
 import controllers.actions.*
-import forms.manual.sponsor.AddressNonUkFormProvider
-import models.{Countries, Mode, ReportId}
+import forms.manual.cpso.CpsoOrganisationNameFormProvider
+import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.sponsor.AddressNonUkPage
+import pages.manual.cpso.CpsoOrganisationNamePage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.manual.sponsor.AddressNonUkView
+import views.html.CpsoOrganisationNameView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class AddressNonUkController @Inject() (
+class CpsoOrganisationNameController @Inject() (
   override val messagesApi: MessagesApi,
   repository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
   actions: Actions,
-  formProvider: AddressNonUkFormProvider,
+  fatcaOnlyFilterAction: CPSOFATCAOnlyFilterAction,
+  formProvider: CpsoOrganisationNameFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: AddressNonUkView
+  view: CpsoOrganisationNameView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequired() {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (actions.withReportIdRequiredAndCPSOIdRequired() andThen fatcaOnlyFilterAction) {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
 
-      val preparedForm = request.userAnswers.get(AddressNonUkPage()) match {
+      val preparedForm = request.userAnswers.get(CpsoOrganisationNamePage(request.cpsoId, reportId)) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
 
-      Ok(view(preparedForm, mode, request.sponsorName, Countries.nonUkTerritories(reportId.regime)))
+      Ok(view(preparedForm, mode))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequired().async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (actions.withReportIdRequiredAndCPSOIdRequired() andThen fatcaOnlyFilterAction).async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
+      val cpsoId                      = request.cpsoId
 
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, request.sponsorName, Countries.nonUkTerritories(reportId.regime)))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(AddressNonUkPage(), value))
+              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(CpsoOrganisationNamePage(cpsoId, reportId), value))
               _              <- repository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(AddressNonUkPage(), mode, updatedAnswers))
+            } yield Redirect(navigator.nextPage(CpsoOrganisationNamePage(cpsoId, reportId), mode, updatedAnswers))
         )
   }
 }

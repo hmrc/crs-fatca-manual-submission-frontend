@@ -14,23 +14,19 @@
  * limitations under the License.
  */
 
-package models.manual.account
+package controllers.actions
 
-import forms.mappings.Transforms
-import play.api.libs.json.{Json, OFormat}
+import models.SubmissionsConstants.{CRS, RegimeType}
+import models.requests.CPSOIdRequest
+import play.api.mvc.ActionFilter
 
-case class AccountPayment(paymentType: PaymentType, accountPaymentsAmount: Option[AccountPaymentsAmount] = None) extends Transforms {
+import javax.inject.Inject
+import scala.concurrent.ExecutionContext
 
-  def paymentsAmountDescription(): String =
-    accountPaymentsAmount
-      .map {
-        paymentAmount =>
-          s"${formatLargeNumber(paymentAmount.amount)} ${paymentAmount.currency.code}"
-      }
-      .getOrElse("")
+class CPSOCRSOnlyFilterActionImpl @Inject() (implicit val executionContext: ExecutionContext)
+    extends CPSOCRSOnlyFilterAction
+    with RegimeTypeFiltering[CPSOIdRequest] {
+  override val regime: RegimeType = CRS
 }
 
-object AccountPayment {
-  implicit val format: OFormat[AccountPayment] = Json.format
-
-}
+trait CPSOCRSOnlyFilterAction extends ActionFilter[CPSOIdRequest]

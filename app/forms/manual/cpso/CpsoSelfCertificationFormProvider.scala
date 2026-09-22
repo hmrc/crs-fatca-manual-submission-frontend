@@ -14,23 +14,18 @@
  * limitations under the License.
  */
 
-package models.manual.account
+package forms.manual.cpso
 
-import forms.mappings.Transforms
-import play.api.libs.json.{Json, OFormat}
+import javax.inject.Inject
 
-case class AccountPayment(paymentType: PaymentType, accountPaymentsAmount: Option[AccountPaymentsAmount] = None) extends Transforms {
+import forms.mappings.Mappings
+import play.api.data.Form
+import models.manual.cpso.CpsoSelfCertification
 
-  def paymentsAmountDescription(): String =
-    accountPaymentsAmount
-      .map {
-        paymentAmount =>
-          s"${formatLargeNumber(paymentAmount.amount)} ${paymentAmount.currency.code}"
-      }
-      .getOrElse("")
-}
+class CpsoSelfCertificationFormProvider @Inject() extends Mappings {
 
-object AccountPayment {
-  implicit val format: OFormat[AccountPayment] = Json.format
-
+  def apply(): Form[CpsoSelfCertification] =
+    Form(
+      "value" -> enumerable[CpsoSelfCertification]("cpso.selfCertification.error.required")
+    )
 }

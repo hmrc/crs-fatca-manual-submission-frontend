@@ -56,7 +56,7 @@ class SponsorResidentForTaxController @Inject() (
         case Some(value) => form.fill(value.code)
       }
 
-      Ok(view(preparedForm, mode, request.sponsorName, Countries.all))
+      Ok(view(preparedForm, mode, request.sponsorName, Countries.allCountries(reportId.regime)))
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndSponsorNameRequiredAndIdCreation().async {
@@ -65,10 +65,10 @@ class SponsorResidentForTaxController @Inject() (
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, request.sponsorName, Countries.all))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, request.sponsorName, Countries.allCountries(reportId.regime)))),
           value =>
             for {
-              selectedCountry <- Future.successful(Countries.all.find(_.code == value).get)
+              selectedCountry <- Future.successful(Countries.allCountries(reportId.regime).find(_.code == value).get)
               updatedAnswers  <- Future.fromTry(request.userAnswers.setWithReportId(SponsorResidentForTaxPage(request.currentId), selectedCountry))
               updatedAnswersWithCurrentAccountId <- Future.fromTry(updatedAnswers.setWithReportId(CurrentTaxResidentCountryIndexPage(), request.currentId))
               _                                  <- repository.set(updatedAnswersWithCurrentAccountId)

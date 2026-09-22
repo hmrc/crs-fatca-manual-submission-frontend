@@ -14,23 +14,17 @@
  * limitations under the License.
  */
 
-package models.manual.account
+package forms.manual.account
 
-import forms.mappings.Transforms
-import play.api.libs.json.{Json, OFormat}
+import javax.inject.Inject
 
-case class AccountPayment(paymentType: PaymentType, accountPaymentsAmount: Option[AccountPaymentsAmount] = None) extends Transforms {
+import forms.mappings.Mappings
+import play.api.data.Form
 
-  def paymentsAmountDescription(): String =
-    accountPaymentsAmount
-      .map {
-        paymentAmount =>
-          s"${formatLargeNumber(paymentAmount.amount)} ${paymentAmount.currency.code}"
-      }
-      .getOrElse("")
-}
+class RemovePaymentFormProvider @Inject() extends Mappings {
 
-object AccountPayment {
-  implicit val format: OFormat[AccountPayment] = Json.format
-
+  def apply(): Form[Boolean] =
+    Form(
+      "value" -> boolean("account.remove.payment.error.required")
+    )
 }

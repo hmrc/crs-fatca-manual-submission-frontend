@@ -18,6 +18,7 @@ package views.manual.sponsor
 
 import base.SpecBase
 import forms.SponsorResidentForTaxFormProvider
+import models.SubmissionsConstants.CRS
 import models.{Countries, NormalMode}
 import org.jsoup.Jsoup
 import play.api.i18n.{Lang, Messages}
@@ -41,7 +42,7 @@ class SponsorResidentForTaxViewSpec extends SpecBase {
   "SponsorResidentForTaxView" - {
     val sponsorName = "Sponsor Name"
 
-    val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, sponsorName, Countries.all)
+    val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, sponsorName, Countries.allCountries(CRS))
     lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
     "must display title" in {

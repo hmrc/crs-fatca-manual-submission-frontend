@@ -781,27 +781,69 @@ cpso.individualDateOfBirth.hint = For example, 31 3 1980.
 cpso.individualDateOfBirth.error.required.CRS = Enter the date of birth for the controlling person
 cpso.individualDateOfBirth.error.required.FATCA = Enter the date of birth for the substantial owner
 cpso.individualDateOfBirth.error.invalidCharacters = Date of birth must only include numbers 0 to 9
-
 cpso.individualDateOfBirth.error.day.required.CRS = Enter the day the controlling person was born
 cpso.individualDateOfBirth.error.day.required.FATCA = Enter the day the substantial owner was born
-
 cpso.individualDateOfBirth.error.month.required.CRS = Enter the month the controlling person was born
 cpso.individualDateOfBirth.error.month.required.FATCA = Enter the month the substantial owner was born
-
 cpso.individualDateOfBirth.error.year.required.CRS = Enter the year the controlling person was born
 cpso.individualDateOfBirth.error.year.required.FATCA = Enter the year the substantial owner was born
-
 cpso.individualDateOfBirth.error.dayMonth.required.CRS = Enter the day and month the controlling person was born
 cpso.individualDateOfBirth.error.dayMonth.required.FATCA = Enter the day and month the substantial owner was born
-
 cpso.individualDateOfBirth.error.dayYear.required.CRS = Enter the day and year the controlling person was born
 cpso.individualDateOfBirth.error.dayYear.required.FATCA = Enter the day and year the substantial owner was born
-
 cpso.individualDateOfBirth.error.monthYear.required.CRS = Enter the month and year the controlling person was born
 cpso.individualDateOfBirth.error.monthYear.required.FATCA = Enter the month and year the substantial owner was born
-
 cpso.individualDateOfBirth.error.real = Enter a real date of birth
 cpso.individualDateOfBirth.error.past = Date of birth must be after 1899
 cpso.individualDateOfBirth.error.future = Date of birth must be no later than {0}
 cpso.individualDateOfBirth.checkYourAnswersLabel = Date of birth
 cpso.individualDateOfBirth.change.hidden = date of birth
+
+cpso.organisationName.title = What is the name of the organisation?
+cpso.organisationName.heading = What is the name of the organisation?
+cpso.organisationName.error.required = Enter the name of the organisation
+cpso.organisationName.error.length = Organisation’s name must be 200 characters or less
+cpso.organisationName.error.invalid = Organisation’s name must only include letters a to z, numbers 0 to 9, ampersands (&), apostrophes, backslashes, carets (^), grave accents (`), hyphens and spaces
+cpso.organisationName.error.invalid-combination = Organisation’s name must not include a double dash (--)
+cpso.organisationName.checkYourAnswersLabel = Organisation name
+cpso.organisationName.organizationName.change.hidden = Organisation name
+cpso.organisationName.organizationName = organizationName
+cpso.organisationName.empty =
+
+cpso.selfCertification.title = Has the controlling person provided a valid self-certification?
+cpso.selfCertification.heading = Has {0} provided a valid self-certification?
+cpso.selfCertification.CRS1000 = Not reported
+cpso.selfCertification.CRS1001 = Yes
+cpso.selfCertification.CRS1002 = No
+cpso.selfCertification.checkYourAnswersLabel = Have they provided a valid self certification?
+cpso.selfCertification.error.required = Select whether the controlling person has provided a valid self-certification
+cpso.selfCertification.change.hidden = CpsoSelfCertification
+
+account.payments.title.crs.no.payments = You have not added any payments made to this account
+account.payments.title.fatca.no.payments = You have not added any payments made to this account, a payee or an owner
+account.payments.title.crs.one.payments = You have added {0} payment made to this account
+account.payments.title.fatca.one.payments = You have added {0} payment made to this account, a payee or an owner
+account.payments.title.crs.more.than.one.payments = You have added {0} payments made to this account
+account.payments.title.fatca.more.than.one.payments = You have added {0} payments made to this account, a payee or an owner
+
+account.payments.heading.crs.no.payments = You have not added any payments made to this account
+account.payments.heading.fatca.no.payments = You have not added any payments made to this account, a payee or an owner
+account.payments.heading.crs.one.payments = You have added {0} payment made to this account
+account.payments.heading.fatca.one.payments = You have added {0} payment made to this account, a payee or an owner
+account.payments.heading.crs.more.than.one.payments = You have added {0} payments made to this account
+account.payments.heading.fatca.more.than.one.payments = You have added {0} payments made to this account, a payee or an owner
+
+account.payment.form.with.payments.heading = Do you need to add more payments for {0}?
+account.payment.form.no.payments.heading = Do you need to add payments for {0}?
+account.payments.checkYourAnswersLabel = accountPayments
+account.payments.has.no.payments.error.required = Select yes if you need to add payments
+account.payments.has.payments.error.required = Select yes if you need to add more payments
+account.payments.change.hidden = AccountPayments
+
+account.remove.payment.title = Are you sure you want to remove this {0} {1} payment for this account?
+account.remove.payment.heading = Are you sure you want to remove this {0} {1} payment for this account?
+account.remove.payment.checkYourAnswersLabel = removePayment
+account.remove.payment.error.required = Select yes if you are sure you want to remove this payment for this account
+account.remove.payment.change.hidden = RemovePayment
+account.payments.removed = {0} payment removed.
+

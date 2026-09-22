@@ -24,7 +24,7 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode, sponsorName: String, country: String = "Ethopia", removeCountryMessage: RemoveCountryMessage = RemoveCountryMessage.NationsWithDefiniteArticlesMessage)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, sponsorName: String, country: String, removeCountryMessage: RemoveCountryMessage = RemoveCountryMessage.NationsWithDefiniteArticlesMessage)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, titleMessage(removeCountryMessage, country) )) {
 
