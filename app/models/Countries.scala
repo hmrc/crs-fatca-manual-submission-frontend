@@ -16,6 +16,7 @@
 
 package models
 
+import models.SubmissionsConstants.*
 import models.response.Country
 
 object Countries {
@@ -725,10 +726,6 @@ object Countries {
       description = "Mozambique"
     ),
     Country(
-      code = "XX",
-      description = "Other country"
-    ),
-    Country(
       code = "NA",
       description = "Namibia"
     ),
@@ -1050,4 +1047,28 @@ object Countries {
   )
 
   val all: Seq[Country] = ukTerritories ++ nonUkTerritories
+
+  def allCountries(regime: RegimeType) = regime match {
+    case FATCA =>
+      all ++ Seq(
+        Country(
+          code = "XX",
+          description = "Other country"
+        )
+      )
+    case _ => all
+  }
+
+  def nonUkTerritories(regime: RegimeType): Seq[Country] =
+    regime match {
+      case FATCA =>
+        nonUkTerritories ++ Seq(
+          Country(
+            code = "XX",
+            description = "Other country"
+          )
+        )
+      case _ => nonUkTerritories
+    }
+
 }

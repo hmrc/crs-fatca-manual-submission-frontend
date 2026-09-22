@@ -39,7 +39,8 @@ object AddressNonUkSummary {
 
         def formatLastLine(line: String): String = s"""<span>${HtmlFormat.escape(line)}</span><br>"""
 
-        def countryDescription(code: String): String = Countries.all
+        def countryDescription(code: String): String = Countries
+          .allCountries(reportId.regime)
           .find(_.code == code)
           .map(_.description)
           .getOrElse(throw CountryLookup_Error)
