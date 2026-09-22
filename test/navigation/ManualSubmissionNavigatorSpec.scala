@@ -24,13 +24,14 @@ import models.SubmissionsConstants.{CRS, FATCA}
 import models.manual.account.PaymentType.*
 import models.manual.account.{AccountPayment, PaymentType, WasAccountOpen, WhatAccountType}
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
-import models.manual.accountHolders.{IndividualDateOfBirth, IndividualName}
+import models.manual.cpso.CpsoSelfCertification.Yes
 import models.manual.cpso.IndividualOrOrganisation
 import models.response.{Address, AddressLookup, Country}
 import models.viewModels.manual.cpso.CPSOId
 import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
 import pages.manual.account.*
+import pages.manual.cpso.{CpsoOrganisationNamePage, CpsoSelfCertificationPage}
 import pages.manual.accountHolders.{UkAddressPage as AccountHolderUkAddressPage, *}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
@@ -568,6 +569,13 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             navigator.nextPage(pages.manual.cpso.IndividualOrOrganisationPage(currentCPSOId), NormalMode, ua) mustBe
               controllers.manual.cpso.routes.IndividualNameController.onPageLoad(NormalMode)
           }
+
+          "must go to cpo Individual organisation name page when submitted" in {
+            val ua = UserAnswers("id")
+              .withPage(pages.manual.cpso.IndividualOrOrganisationPage(currentCPSOId), models.manual.cpso.IndividualOrOrganisation.Organisation)
+            navigator.nextPage(pages.manual.cpso.IndividualOrOrganisationPage(currentCPSOId), NormalMode, ua) mustBe
+              controllers.manual.cpso.routes.CpsoOrganisationNameController.onPageLoad(NormalMode)
+          }
         }
 
         "IndividualNamePage" - {
@@ -575,6 +583,24 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             val ua = UserAnswers("id")
               .withPage(pages.manual.cpso.IndividualNamePage(currentCPSOId), models.manual.cpso.IndividualName("first-name", "last-name"))
             navigator.nextPage(pages.manual.cpso.IndividualNamePage(currentCPSOId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+        }
+
+        "CpsoOrganisationNamePage" - {
+          "must go to underconstruction page when submitted" in {
+            val ua = UserAnswers("id")
+              .withPage(CpsoOrganisationNamePage(currentCPSOId, reportId), "organisation-name")
+            navigator.nextPage(CpsoOrganisationNamePage(currentCPSOId, reportId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+        }
+
+        "CpsoSelfCertificationPage" - {
+          "must go to underconstruction page when submitted" in {
+            val ua = UserAnswers("id")
+              .withPage(CpsoSelfCertificationPage(currentCPSOId, reportId), Yes)
+            navigator.nextPage(CpsoSelfCertificationPage(currentCPSOId, reportId), NormalMode, ua) mustBe
               controllers.routes.UnderConstructionController.onPageLoad()
           }
         }
@@ -635,7 +661,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             val ua = UserAnswers("id")
               .withPage(
                 AccountHolderIndividualNamePage(currentAccountHolderId)(reportId),
-                IndividualName("firstName", "lastName")
+                models.manual.accountHolders.IndividualName("firstName", "lastName")
               )
 
             navigator.nextPage(
@@ -710,7 +736,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             val ua = UserAnswers("id")
               .withPage(
                 IndividualDateOfBirthPage(currentAccountHolderId)(reportId),
-                IndividualDateOfBirth(LocalDate.of(1996, 3, 8))
+                models.manual.accountHolders.IndividualDateOfBirth(LocalDate.of(1996, 3, 8))
               )
 
             navigator.nextPage(
