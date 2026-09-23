@@ -36,6 +36,7 @@ class Module extends AbstractModule {
     bind(classOf[AccountIdCreationAction]).to(classOf[AccountIdCreationActionImpl]).asEagerSingleton()
     bind(classOf[AccountHolderIdCreationAction]).to(classOf[AccountHolderIdCreationActionImpl]).asEagerSingleton()
     bind(classOf[CpsoIdCreationAction]).to(classOf[CpsoIdCreationActionImpl]).asEagerSingleton()
+    bind(classOf[CPSOIdRequiredAction]).to(classOf[CPSOIdRequiredActionImpl]).asEagerSingleton()
     bind(classOf[AccountIdRequiredAction]).to(classOf[AccountIdRequiredActionImpl]).asEagerSingleton()
     bind(classOf[AccountHolderIdRequiredAction]).to(classOf[AccountHolderIdRequiredActionImpl]).asEagerSingleton()
     bind(classOf[SponsorNameRequiredAction]).to(classOf[SponsorNameRequiredActionImpl]).asEagerSingleton()
@@ -45,6 +46,8 @@ class Module extends AbstractModule {
     bind(classOf[AccountCRSOnlyFilterAction]).to(classOf[AccountCRSOnlyFilterActionImpl]).asEagerSingleton()
     bind(classOf[AccountPaymentIndexCreationAction]).to(classOf[AccountPaymentIndexCreationActionImpl]).asEagerSingleton()
     bind(classOf[AccountPaymentIndexRequiredAction]).to(classOf[AccountPaymentIndexRequiredActionImpl]).asEagerSingleton()
+    bind(classOf[CPSOIdRequiredAction]).to(classOf[CPSOIdRequiredActionImpl]).asEagerSingleton()
+    bind(classOf[CPSOCRSOnlyFilterAction]).to(classOf[CPSOCRSOnlyFilterActionImpl]).asEagerSingleton()
     bind(classOf[CPSONameRequiredAction]).to(classOf[CPSONameRequiredActionImpl]).asEagerSingleton()
 
     bind(classOf[Clock]).toInstance(Clock.systemDefaultZone.withZone(ZoneOffset.UTC))

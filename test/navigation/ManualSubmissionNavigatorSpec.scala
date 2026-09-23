@@ -23,14 +23,16 @@ import models.CrsOrFatca.Fatca
 import models.SubmissionsConstants.{CRS, FATCA}
 import models.manual.account.PaymentType.*
 import models.manual.account.{AccountPayment, PaymentType, WasAccountOpen, WhatAccountType}
-import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
 import models.manual.accountHolders.{IndividualDateOfBirth, IndividualName}
+import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
+import models.manual.cpso.CpsoSelfCertification.Yes
 import models.manual.cpso.IndividualOrOrganisation
 import models.response.{Address, AddressLookup, Country}
 import models.viewModels.manual.cpso.CPSOId
 import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
 import pages.manual.account.*
+import pages.manual.cpso.{CpsoOrganisationNamePage, CpsoSelfCertificationPage}
 import pages.manual.accountHolders.{UkAddressPage as AccountHolderUkAddressPage, *}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
@@ -568,6 +570,13 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             navigator.nextPage(pages.manual.cpso.IndividualOrOrganisationPage(currentCPSOId), NormalMode, ua) mustBe
               controllers.manual.cpso.routes.IndividualNameController.onPageLoad(NormalMode)
           }
+
+          "must go to cpo Individual organisation name page when submitted" in {
+            val ua = UserAnswers("id")
+              .withPage(pages.manual.cpso.IndividualOrOrganisationPage(currentCPSOId), models.manual.cpso.IndividualOrOrganisation.Organisation)
+            navigator.nextPage(pages.manual.cpso.IndividualOrOrganisationPage(currentCPSOId), NormalMode, ua) mustBe
+              controllers.manual.cpso.routes.CpsoOrganisationNameController.onPageLoad(NormalMode)
+          }
         }
 
         "IndividualNamePage" - {
@@ -609,6 +618,24 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
                         models.manual.cpso.IndividualPlaceOfBirth(Some("city"), Some("region"), "FR")
               )
             navigator.nextPage(pages.manual.cpso.IndividualPlaceOfBirthPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+        }
+
+        "CpsoOrganisationNamePage" - {
+          "must go to underconstruction page when submitted" in {
+            val ua = UserAnswers("id")
+              .withPage(CpsoOrganisationNamePage(currentCPSOId, reportId), "organisation-name")
+            navigator.nextPage(CpsoOrganisationNamePage(currentCPSOId, reportId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+        }
+
+        "CpsoSelfCertificationPage" - {
+          "must go to underconstruction page when submitted" in {
+            val ua = UserAnswers("id")
+              .withPage(CpsoSelfCertificationPage(currentCPSOId, reportId), Yes)
+            navigator.nextPage(CpsoSelfCertificationPage(currentCPSOId, reportId), NormalMode, ua) mustBe
               controllers.routes.UnderConstructionController.onPageLoad()
           }
         }
@@ -949,6 +976,47 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               controllers.routes.UnderConstructionController.onPageLoad()
           }
 
+        }
+
+        "AccountPaymentsAmountPage" - {
+          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+          val accountId                   = AccountId("TestAccountId")
+          "must go to AccountPayments page" in {
+            val ua = UserAnswers("id")
+              .withPage(AccountPaymentListPage(accountId), Seq(AccountPayment(PaymentType.CRSDividends)))
+            navigator.nextPage(AccountPaymentsAmountPage(accountId), NormalMode, ua) mustBe
+              controllers.manual.account.routes.AccountPaymentsController.onPageLoad(NormalMode)
+          }
+        }
+
+        "DoYouNeedToAddPaymentsPage" - {
+          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+          val accountId                   = AccountId("TestAccountId")
+          "must go to CheckAccountTypeIsDepositoryController when answer is yes" in {
+            val ua = UserAnswers("id")
+              .withPage(AccountPaymentListPage(accountId), Seq(AccountPayment(PaymentType.CRSDividends)))
+              .withPage(DoYouNeedToAddPaymentsPage(accountId), true)
+            navigator.nextPage(DoYouNeedToAddPaymentsPage(accountId), NormalMode, ua) mustBe
+              controllers.manual.account.routes.CheckAccountTypeIsDepositoryController.onChangeRedirect(NormalMode)
+          }
+
+          "must go to underconstruction when answer is no" in {
+            val ua = UserAnswers("id")
+              .withPage(AccountPaymentListPage(accountId), Seq(AccountPayment(PaymentType.CRSDividends)))
+              .withPage(DoYouNeedToAddPaymentsPage(accountId), false)
+            navigator.nextPage(DoYouNeedToAddPaymentsPage(accountId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+        }
+
+        "RemovePaymentPage" - {
+          "must go to account payments" in {
+            val ua = UserAnswers("id")
+              .withPage(AccountPaymentListPage(accountId), Seq(AccountPayment(PaymentType.CRSDividends)))
+
+            navigator.nextPage(RemovePaymentPage(accountId), NormalMode, ua) mustBe
+              controllers.manual.account.routes.AccountPaymentsController.onPageLoad(NormalMode)
+          }
         }
       }
     }
