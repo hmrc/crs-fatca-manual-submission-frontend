@@ -588,6 +588,15 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           }
         }
 
+        "IndividualDateOfBirthPage" - {
+          "must go to IndividualHavePlaceOfBirth page when submitted" in {
+            val ua = UserAnswers("id")
+              .withPage(pages.manual.cpso.CPSOIndividualDateOfBirthPage(currentCPSOId, reportId), IndividualDateOfBirth(LocalDate.of(1980, 3, 31)))
+            navigator.nextPage(pages.manual.cpso.CPSOIndividualDateOfBirthPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+              controllers.manual.cpso.routes.IndividualHavePlaceOfBirthController.onPageLoad(NormalMode)
+          }
+        }
+
         "IndividualHavePlaceOfBirthPage" - {
 
           "must go to IndividualPlaceOfBirth page when answer is yes" in {

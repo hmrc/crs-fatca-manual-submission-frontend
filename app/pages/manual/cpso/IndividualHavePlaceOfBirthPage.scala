@@ -16,11 +16,21 @@
 
 package pages.manual.cpso
 
-import models.ReportId
+import models.{ReportId, UserAnswers}
 import models.viewModels.manual.cpso.CPSOId
 import pages.QuestionPage
 import play.api.libs.json.JsPath
+import scala.util.{Success, Try}
 
 final case class IndividualHavePlaceOfBirthPage(currentId: CPSOId, reportId: ReportId) extends QuestionPage[Boolean]:
 
   override def path: JsPath = JsPath \ reportId.mongoKey \ "cp-so" \ currentId.value \ "individualHavePlaceOfBirth"
+
+  override def cleanupWithReportId(
+    value: Option[Boolean],
+    userData: UserAnswers
+  )(implicit reportId: ReportId): Try[UserAnswers] =
+    value match {
+      case Some(false) => userData.remove(IndividualPlaceOfBirthPage(currentId, reportId))
+      case _           => Success(userData)
+    }
