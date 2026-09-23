@@ -794,3 +794,12 @@ cpso.selfCertification.checkYourAnswersLabel = Have they provided a valid self c
 cpso.selfCertification.error.required = Select whether the controlling person has provided a valid self-certification
 cpso.selfCertification.change.hidden = CpsoSelfCertification
 
+
+accountHolders.selfCertification.title = Has the account holder provided a valid self-certification?
+accountHolders.selfCertification.heading = Has {0} provided a valid self-certification?
+accountHolders.selfCertification.CRS900 = Not reported
+accountHolders.selfCertification.CRS901 = Yes
+accountHolders.selfCertification.CRS902 = No
+accountHolders.selfCertification.checkYourAnswersLabel = Have they provided a valid self certification?
+accountHolders.selfCertification.error.required =Select whether the account holder has provided a valid self-certification
+accountHolders.selfCertification.change.hidden = SelfCertification
