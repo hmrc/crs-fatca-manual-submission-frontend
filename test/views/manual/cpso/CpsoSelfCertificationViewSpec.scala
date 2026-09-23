@@ -17,7 +17,6 @@
 package views.manual.cpso
 
 import base.SpecBase
-import forms.IndividualNameFormProvider
 import forms.manual.cpso.CpsoSelfCertificationFormProvider
 import models.NormalMode
 import org.jsoup.Jsoup
@@ -25,7 +24,7 @@ import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
-import views.html.manual.cpso.{CpsoSelfCertificationView, IndividualNameView}
+import views.html.manual.cpso.CpsoSelfCertificationView
 
 class CpsoSelfCertificationViewSpec extends SpecBase {
 
