@@ -850,7 +850,7 @@ account.payments.removed = {0} payment removed.
 cpso.individualHavePlaceOfBirth.title = Do you want to provide the place of birth for the {0}?
 cpso.individualHavePlaceOfBirth.heading = Do you want to provide the place of birth for {0}?
 cpso.individualHavePlaceOfBirth.checkYourAnswersLabel = Do you want to provide the place of birth for {0}?
-cpso.individualHavePlaceOfBirth.error.required = Select yes if you want to provide the place of birth for the {0}?
+cpso.individualHavePlaceOfBirth.error.required = Select yes if you want to provide the place of birth for the {0}
 cpso.individualHavePlaceOfBirth.change.hidden = IndividualHavePlaceOfBirth
 
 cpso.individualPlaceOfBirth.title = What is the {0}’s place of birth?
