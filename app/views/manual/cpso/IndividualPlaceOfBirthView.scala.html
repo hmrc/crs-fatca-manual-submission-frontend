@@ -31,7 +31,7 @@
 
 @layout(pageTitle = title(form, messages("cpso.individualPlaceOfBirth.title",(if isCRS then "controlling person" else "substantial owner")))) {
 
-    @formHelper(action = controllers.manual.cpso.routes.IndividualPlaceOfBirthController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+    @formHelper(action = controllers.manual.cpso.routes.IndividualPlaceOfBirthController.onSubmit(mode), Symbol("autoComplete") -> "on") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
