@@ -24,6 +24,7 @@ import models.SubmissionsConstants.{CRS, FATCA}
 import models.manual.account.PaymentType.*
 import models.manual.account.{AccountPayment, PaymentType, WasAccountOpen, WhatAccountType}
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
+import models.manual.accountHolders.SelfCertification
 import models.manual.cpso.CpsoSelfCertification.Yes
 import models.manual.cpso.IndividualOrOrganisation
 import models.response.{Address, AddressLookup, Country}
@@ -920,14 +921,25 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           ).ukAddress
           val accountHolderId = AccountHolderId("holder-id")
 
-          "must go to under construction" in {
+          "must go to account holder self certification" in {
             val ua = UserAnswers("id")
               .withPage(AccountHolderUkAddressPage(accountHolderId, reportId), address)
 
             navigator.nextPage(AccountHolderUkAddressPage(accountHolderId, reportId), NormalMode, ua) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(NormalMode)
           }
 
+        }
+
+        "Account holder SelfCertificationPage" - {
+          val accountHolderId = AccountHolderId("holder-id")
+          "must go to account holder self certification" in {
+            val ua = UserAnswers("id")
+              .withPage(SelfCertificationPage(accountHolderId, reportId), SelfCertification.allValidValues.head)
+
+            navigator.nextPage(SelfCertificationPage(accountHolderId, reportId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
         }
 
         "AccountHolderAddressNonUk Page" - {

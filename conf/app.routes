@@ -327,7 +327,6 @@ POST        /manual/cp-so/self-certification                       controllers.m
 GET         /manual/cp-so/change-self-certification                 controllers.manual.cpso.CpsoSelfCertificationController.onPageLoad(mode: Mode = CheckMode)
 POST        /manual/cp-so/change-self-certification                  controllers.manual.cpso.CpsoSelfCertificationController.onSubmit(mode: Mode = CheckMode)
 
-
 GET        /manual/account/payments                        controllers.manual.account.AccountPaymentsController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/account/payments                        controllers.manual.account.AccountPaymentsController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/account/change-payments                  controllers.manual.account.AccountPaymentsController.onPageLoad(mode: Mode = CheckMode)
@@ -341,3 +340,7 @@ POST       /manual/account/remove-payment                        controllers.man
 GET        /manual/account/remove-payment                  controllers.manual.account.RemovePaymentController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/account/remove-payment                  controllers.manual.account.RemovePaymentController.onSubmit(mode: Mode = CheckMode)
 
+GET        /manual/account-holder/self-certification                        controllers.manual.accountHolders.SelfCertificationController.onPageLoad(mode: Mode = NormalMode)
+POST        /manual/account-holder/self-certification                    controllers.manual.accountHolders.SelfCertificationController.onSubmit(mode: Mode = NormalMode)
+GET         /manual/account-holder/change-self-certification                   controllers.manual.accountHolders.SelfCertificationController.onPageLoad(mode: Mode = CheckMode)
+POST        /manual/account-holder/change-self-certification                 controllers.manual.accountHolders.SelfCertificationController.onSubmit(mode: Mode = CheckMode)
