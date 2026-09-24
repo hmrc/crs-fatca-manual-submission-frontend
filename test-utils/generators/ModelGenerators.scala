@@ -32,7 +32,7 @@ trait ModelGenerators {
     Arbitrary {
       Gen.oneOf(SelfCertification.allValidValues)
     }
-  
+
   implicit lazy val arbitraryUkPostCodeForAccountHolder: Arbitrary[UkPostCodeForAccountHolder] =
     Arbitrary {
       for {
