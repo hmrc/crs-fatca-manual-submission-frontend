@@ -855,3 +855,25 @@ accountHolders.selfCertification.CRS902 = No
 accountHolders.selfCertification.checkYourAnswersLabel = Have they provided a valid self certification?
 accountHolders.selfCertification.error.required =Select whether the account holder has provided a valid self-certification
 accountHolders.selfCertification.change.hidden = SelfCertification
+
+cpso.individualHavePlaceOfBirth.title = Do you want to provide the place of birth for the {0}?
+cpso.individualHavePlaceOfBirth.heading = Do you want to provide the place of birth for {0}?
+cpso.individualHavePlaceOfBirth.checkYourAnswersLabel = Do you want to provide the place of birth for {0}?
+cpso.individualHavePlaceOfBirth.error.required = Select yes if you want to provide the place of birth for the {0}
+cpso.individualHavePlaceOfBirth.change.hidden = IndividualHavePlaceOfBirth
+
+cpso.individualPlaceOfBirth.title = What is the {0}’s place of birth?
+cpso.individualPlaceOfBirth.heading = What is the place of birth for {0}?
+cpso.individualPlaceOfBirth.city = City (optional)
+cpso.individualPlaceOfBirth.region = Region (optional)
+cpso.individualPlaceOfBirth.country = Country
+cpso.individualPlaceOfBirth.checkYourAnswersLabel = IndividualPlaceOfBirth
+cpso.individualPlaceOfBirth.error.country.required = Select country
+cpso.individualPlaceOfBirth.error.city.invalid = City must only include letters a to z, numbers 0 to 9, apostrophes, commas, ampersands (&), hyphens, full stops and spaces
+cpso.individualPlaceOfBirth.error.city.invalidCombination = City must not include a double dash (--)
+cpso.individualPlaceOfBirth.error.city.length = City must be 200 characters or less
+cpso.individualPlaceOfBirth.error.region.invalid = Region must only include letters a to z, numbers 0 to 9, apostrophes, commas, ampersands (&), hyphens, full stops and spaces
+cpso.individualPlaceOfBirth.error.region.invalidCombination = Region must not include a double dash (--)
+cpso.individualPlaceOfBirth.error.region.length = Region must be 200 characters or less
+cpso.individualPlaceOfBirth.city.change.hidden = City
+cpso.individualPlaceOfBirth.region.change.hidden = Region

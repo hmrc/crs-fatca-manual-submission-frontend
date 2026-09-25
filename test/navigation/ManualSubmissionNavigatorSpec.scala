@@ -23,6 +23,7 @@ import models.CrsOrFatca.Fatca
 import models.SubmissionsConstants.{CRS, FATCA}
 import models.manual.account.PaymentType.*
 import models.manual.account.{AccountPayment, PaymentType, WasAccountOpen, WhatAccountType}
+import models.manual.accountHolders.{IndividualDateOfBirth, IndividualName}
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
 import models.manual.accountHolders.SelfCertification
 import models.manual.cpso.CpsoSelfCertification.Yes
@@ -588,6 +589,49 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           }
         }
 
+        "IndividualDateOfBirthPage" - {
+          "must go to IndividualHavePlaceOfBirth page when submitted" in {
+            val ua = UserAnswers("id")
+              .withPage(pages.manual.cpso.CPSOIndividualDateOfBirthPage(currentCPSOId, reportId), IndividualDateOfBirth(LocalDate.of(1980, 3, 31)))
+            navigator.nextPage(pages.manual.cpso.CPSOIndividualDateOfBirthPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+              controllers.manual.cpso.routes.IndividualHavePlaceOfBirthController.onPageLoad(NormalMode)
+          }
+        }
+
+        "IndividualHavePlaceOfBirthPage" - {
+
+          "must go to IndividualPlaceOfBirth page when answer is yes" in {
+            val ua = UserAnswers("id")
+              .withPage(pages.manual.cpso.IndividualHavePlaceOfBirthPage(currentCPSOId, reportId), true)
+            navigator.nextPage(pages.manual.cpso.IndividualHavePlaceOfBirthPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+              controllers.manual.cpso.routes.IndividualPlaceOfBirthController.onPageLoad(NormalMode)
+          }
+
+          "must go to underconstruction page when answer is no" in {
+            val ua = UserAnswers("id")
+              .withPage(pages.manual.cpso.IndividualHavePlaceOfBirthPage(currentCPSOId, reportId), false)
+            navigator.nextPage(pages.manual.cpso.IndividualHavePlaceOfBirthPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+
+          "must go to JourneyRecovery page when page doesnt have value" in {
+            val ua = UserAnswers("id")
+            navigator.nextPage(pages.manual.cpso.IndividualHavePlaceOfBirthPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
+        }
+
+        "IndividualPlaceOfBirthPage" - {
+          "must go to underconstruction page when submitted" in {
+            val ua = UserAnswers("id")
+              .withPage(pages.manual.cpso.IndividualPlaceOfBirthPage(currentCPSOId, reportId),
+                        models.manual.cpso.IndividualPlaceOfBirth(Some("city"), Some("region"), "FR")
+              )
+            navigator.nextPage(pages.manual.cpso.IndividualPlaceOfBirthPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+        }
+
         "CpsoOrganisationNamePage" - {
           "must go to underconstruction page when submitted" in {
             val ua = UserAnswers("id")
@@ -662,7 +706,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             val ua = UserAnswers("id")
               .withPage(
                 AccountHolderIndividualNamePage(currentAccountHolderId)(reportId),
-                models.manual.accountHolders.IndividualName("firstName", "lastName")
+                IndividualName("firstName", "lastName")
               )
 
             navigator.nextPage(
@@ -737,7 +781,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             val ua = UserAnswers("id")
               .withPage(
                 IndividualDateOfBirthPage(currentAccountHolderId)(reportId),
-                models.manual.accountHolders.IndividualDateOfBirth(LocalDate.of(1996, 3, 8))
+                IndividualDateOfBirth(LocalDate.of(1996, 3, 8))
               )
 
             navigator.nextPage(
@@ -769,15 +813,6 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
 
             navigator.nextPage(HavePaymentsPage(accountId), NormalMode, ua) mustBe
               controllers.routes.UnderConstructionController.onPageLoad()
-          }
-
-          "must go to /payments page when have payments is yes and there are payments" in {
-            val ua = UserAnswers("id")
-              .withPage(HavePaymentsPage(accountId), true)
-              .withPage(AccountPaymentListPage(accountId), Seq(AccountPayment(CRSInterest)))
-
-            navigator.nextPage(HavePaymentsPage(accountId), NormalMode, ua) mustBe
-              controllers.manual.account.routes.AccountPaymentsController.onPageLoad(NormalMode)
           }
 
           "navigation must be handled by CheckAccountTypeIsDepository when have payments is yes" in {

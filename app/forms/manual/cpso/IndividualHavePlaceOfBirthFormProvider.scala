@@ -16,27 +16,17 @@
 
 package forms.manual.cpso
 
-import forms.mappings.Mappings
-import models.ErrorValidation
-import play.api.data.Form
-import play.api.data.Forms.*
-import utils.RegexConstants
-
 import javax.inject.Inject
+import forms.mappings.Mappings
+import models.SubmissionsConstants.{CRS, RegimeType}
+import play.api.data.Form
 
-class CpsoOrganisationNameFormProvider @Inject() extends Mappings {
+class IndividualHavePlaceOfBirthFormProvider @Inject() extends Mappings {
 
-  def apply(): Form[String] = Form(
-    single(
-      "value" -> defaultStringFieldFormat(
-        "cpso.organisationName.error.required",
-        200,
-        "cpso.organisationName.error.length",
-        Seq(
-          ErrorValidation(RegexConstants.DEFAULT_ALPHA_NUMERIC_FIELD_VALID, "cpso.organisationName.error.invalid"),
-          ErrorValidation(RegexConstants.DOUBLE_DASH_INVALID, "cpso.organisationName.error.invalid-combination")
-        )
-      )
+  def apply(regimeType: RegimeType): Form[Boolean] = {
+    val entityName = if regimeType == CRS then "controlling person" else "substantial owner"
+    Form(
+      "value" -> boolean(requiredKey = "cpso.individualHavePlaceOfBirth.error.required", args = Seq(entityName))
     )
-  )
+  }
 }

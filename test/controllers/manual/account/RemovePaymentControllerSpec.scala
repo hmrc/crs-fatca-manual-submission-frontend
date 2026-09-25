@@ -31,7 +31,7 @@ import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers.should
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.account.{AccountPaymentListPage, CurrentAccountIdPage, CurrentAccountPaymentIndexPage, RemovePaymentPage}
+import pages.manual.account.{AccountPaymentListPage, CurrentAccountIdPage, CurrentAccountPaymentIndexPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest

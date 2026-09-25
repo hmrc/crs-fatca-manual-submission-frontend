@@ -20,9 +20,8 @@ import models.manual.account.{PaymentType, WasAccountOpen, WhatAccountType}
 import models.manual.accountHolders.IndividualName
 import models.manual.cpso.{CpsoSelfCertification, IndividualOrOrganisation}
 import models.{CrsOrFatca, NumberType, TypeOfReport, UkAddress, UkPostCodeForAccountHolder}
-import org.scalacheck.{Arbitrary, Gen}
-
 import org.scalacheck.Arbitrary.*
+import org.scalacheck.{Arbitrary, Gen}
 
 import models.manual.accountHolders.SelfCertification
 

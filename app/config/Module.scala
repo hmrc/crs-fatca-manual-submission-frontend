@@ -49,6 +49,7 @@ class Module extends AbstractModule {
     bind(classOf[CPSOIdRequiredAction]).to(classOf[CPSOIdRequiredActionImpl]).asEagerSingleton()
     bind(classOf[CPSOCRSOnlyFilterAction]).to(classOf[CPSOCRSOnlyFilterActionImpl]).asEagerSingleton()
     bind(classOf[AccountHolderCRSOnlyFilterAction]).to(classOf[AccountHolderCRSOnlyFilterActionImpl]).asEagerSingleton()
+    bind(classOf[CPSONameRequiredAction]).to(classOf[CPSONameRequiredActionImpl]).asEagerSingleton()
 
     bind(classOf[Clock]).toInstance(Clock.systemDefaultZone.withZone(ZoneOffset.UTC))
   }

@@ -38,7 +38,7 @@ import pages.manual.accountHolders.{
   UkPostCodeForAccountHolderPage,
   WhereAreTheyBasedPage
 }
-import pages.manual.cpso.{CpsoOrganisationNamePage, CpsoSelfCertificationPage, IndividualNamePage}
+import pages.manual.cpso.{CPSOIndividualDateOfBirthPage, CpsoOrganisationNamePage, CpsoSelfCertificationPage, IndividualNamePage}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.*
@@ -196,6 +196,16 @@ class ManualSubmissionNavigator @Inject() () {
     case (pages.manual.cpso.IndividualNamePage(cpsoId), mode, ua) => routes.UnderConstructionController.onPageLoad()
     case (CpsoOrganisationNamePage(cpsoId, reportId), mode, ua)   => routes.UnderConstructionController.onPageLoad()
     case (CpsoSelfCertificationPage(cpsoId, reportId), mode, ua)  => routes.UnderConstructionController.onPageLoad()
+    case (CPSOIndividualDateOfBirthPage(cpsoId, reportId), mode, ua) =>
+      controllers.manual.cpso.routes.IndividualHavePlaceOfBirthController.onPageLoad(mode)
+    case (pages.manual.cpso.IndividualHavePlaceOfBirthPage(cpsoId, reportId), mode, ua) =>
+      ua.get(pages.manual.cpso.IndividualHavePlaceOfBirthPage(cpsoId, reportId)) match {
+        case Some(true)  => controllers.manual.cpso.routes.IndividualPlaceOfBirthController.onPageLoad(mode)
+        case Some(false) => routes.UnderConstructionController.onPageLoad()
+        case None        => routes.JourneyRecoveryController.onPageLoad()
+      }
+    case (pages.manual.cpso.IndividualPlaceOfBirthPage(cpsoId, reportId), mode, ua) =>
+      routes.UnderConstructionController.onPageLoad()
   }
 
   private def sponsorNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
