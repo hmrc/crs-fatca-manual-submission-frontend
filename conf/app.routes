@@ -353,3 +353,8 @@ GET        /manual/cp-so/individual-place-of-birth                        contro
 POST       /manual/cp-so/individual-place-of-birth                        controllers.manual.cpso.IndividualPlaceOfBirthController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/cp-so/change-individual-place-of-birth                  controllers.manual.cpso.IndividualPlaceOfBirthController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/cp-so/change-individual-place-of-birth                  controllers.manual.cpso.IndividualPlaceOfBirthController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/cp-so/uk-postcode                       controllers.manual.cpso.UkPostCodeController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/cp-so/uk-postcode                      controllers.manual.cpso.UkPostCodeController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/cp-so/change-uk-postcode                   controllers.manual.cpso.UkPostCodeController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/cp-so/change-uk-postcode                  controllers.manual.cpso.UkPostCodeController.onSubmit(mode: Mode = CheckMode)

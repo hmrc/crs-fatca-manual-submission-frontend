@@ -877,3 +877,15 @@ cpso.individualPlaceOfBirth.error.region.invalidCombination = Region must not in
 cpso.individualPlaceOfBirth.error.region.length = Region must be 200 characters or less
 cpso.individualPlaceOfBirth.city.change.hidden = City
 cpso.individualPlaceOfBirth.region.change.hidden = Region
+
+ukPostCode.title = ukPostCode
+ukPostCode.heading = ukPostCode
+ukPostCode.value = value
+ukPostCode.value2 = value2
+ukPostCode.checkYourAnswersLabel = UkPostCode
+ukPostCode.error.value.required = Enter value
+ukPostCode.error.value2.required = Enter value2
+ukPostCode.error.value.length = value must be 100 characters or less
+ukPostCode.error.value2.length = value2 must be 100 characters or less
+ukPostCode.value.change.hidden = value
+ukPostCode.value2.change.hidden = value2
