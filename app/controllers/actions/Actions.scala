@@ -69,7 +69,7 @@ class Actions @Inject() (
     identityAndRequireData andThen reportIdAction
 
   def withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequired(): ActionBuilder[CPSONameRequest, AnyContent] =
-    withReportIdRequired() andThen cpsoIdCreationAction andThen cpsoNameRequiredAction
+    withReportIdRequired() andThen cpsoIdRequiredAction andThen cpsoNameRequiredAction
 
   private def identityAndRequireData = identify andThen getData andThen requireData
 }

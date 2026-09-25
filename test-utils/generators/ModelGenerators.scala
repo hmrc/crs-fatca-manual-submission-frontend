@@ -23,7 +23,14 @@ import models.{CrsOrFatca, NumberType, TypeOfReport, UkAddress, UkPostCodeForAcc
 import org.scalacheck.Arbitrary.*
 import org.scalacheck.{Arbitrary, Gen}
 
+import models.manual.accountHolders.SelfCertification
+
 trait ModelGenerators {
+
+  implicit lazy val arbitrarySelfCertification: Arbitrary[SelfCertification] =
+    Arbitrary {
+      Gen.oneOf(SelfCertification.allValidValues)
+    }
 
   implicit lazy val arbitraryUkPostCodeForAccountHolder: Arbitrary[UkPostCodeForAccountHolder] =
     Arbitrary {

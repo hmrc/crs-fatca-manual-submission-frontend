@@ -847,6 +847,15 @@ account.remove.payment.error.required = Select yes if you are sure you want to r
 account.remove.payment.change.hidden = RemovePayment
 account.payments.removed = {0} payment removed.
 
+accountHolders.selfCertification.title = Has the account holder provided a valid self-certification?
+accountHolders.selfCertification.heading = Has {0} provided a valid self-certification?
+accountHolders.selfCertification.CRS900 = Not reported
+accountHolders.selfCertification.CRS901 = Yes
+accountHolders.selfCertification.CRS902 = No
+accountHolders.selfCertification.checkYourAnswersLabel = Have they provided a valid self certification?
+accountHolders.selfCertification.error.required =Select whether the account holder has provided a valid self-certification
+accountHolders.selfCertification.change.hidden = SelfCertification
+
 cpso.individualHavePlaceOfBirth.title = Do you want to provide the place of birth for the {0}?
 cpso.individualHavePlaceOfBirth.heading = Do you want to provide the place of birth for {0}?
 cpso.individualHavePlaceOfBirth.checkYourAnswersLabel = Do you want to provide the place of birth for {0}?

@@ -33,6 +33,7 @@ import pages.manual.accountHolders.{
   IndividualOrOrganisationPage,
   IsThisTheAddressForAccountHoldersPage,
   SelectAddressPage,
+  SelfCertificationPage as AccountHolderSelfCertificationPage,
   UkAddressPage as AccountHolderUkAddressPage,
   UkPostCodeForAccountHolderPage,
   WhereAreTheyBasedPage
@@ -178,9 +179,11 @@ class ManualSubmissionNavigator @Inject() () {
     case (UkPostCodeForAccountHolderPage(accountHolderId, reportId), mode, ua) => handleUKPostcodeNavigationForAccountHolders(ua, mode, accountHolderId)
     case (IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId), mode, ua) =>
       handleIsThisTheAddressForAccountHoldersRouting(ua, mode, accountHolderId)
-    case (AccountHolderUkAddressPage(_, _), _, _)    => controllers.routes.UnderConstructionController.onPageLoad()
-    case (SelectAddressPage(_, _), _, _)             => controllers.routes.UnderConstructionController.onPageLoad()
-    case (AccountHolderAddressNonUkPage(_, _), _, _) => controllers.routes.UnderConstructionController.onPageLoad()
+    case (AccountHolderUkAddressPage(accountHolderId, reportId), mode, _) =>
+      controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
+    case (SelectAddressPage(_, _), _, _)                  => controllers.routes.UnderConstructionController.onPageLoad()
+    case (AccountHolderAddressNonUkPage(_, _), _, _)      => controllers.routes.UnderConstructionController.onPageLoad()
+    case (AccountHolderSelfCertificationPage(_, _), _, _) => controllers.routes.UnderConstructionController.onPageLoad()
   }
 
   private def cpsoNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
