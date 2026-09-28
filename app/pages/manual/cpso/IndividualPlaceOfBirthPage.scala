@@ -24,4 +24,4 @@ import play.api.libs.json.JsPath
 
 final case class IndividualPlaceOfBirthPage(currentId: CPSOId, reportId: ReportId) extends QuestionPage[IndividualPlaceOfBirth]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "individualPlaceOfBirth"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "cp-so" \ currentId.value \ "individualPlaceOfBirth"
