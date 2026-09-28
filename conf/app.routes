@@ -358,3 +358,8 @@ GET        /manual/cp-so/uk-postcode                       controllers.manual.cp
 POST       /manual/cp-so/uk-postcode                      controllers.manual.cpso.UkPostCodeController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/cp-so/change-uk-postcode                   controllers.manual.cpso.UkPostCodeController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/cp-so/change-uk-postcode                  controllers.manual.cpso.UkPostCodeController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/cp-so/is-this-the-address                         controllers.manual.cpso.IsThisTheAddressController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/cp-so/is-this-the-address                    controllers.manual.cpso.IsThisTheAddressController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/cp-so/change-is-this-the-address                   controllers.manual.cpso.IsThisTheAddressController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/cp-so/change-is-this-the-address                   controllers.manual.cpso.IsThisTheAddressController.onSubmit(mode: Mode = CheckMode)

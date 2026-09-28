@@ -16,11 +16,40 @@
 
 package pages.manual.cpso
 
-import models.ReportId
+import models.{ReportId, UserAnswers}
 import models.viewModels.manual.cpso.CPSOId
 import pages.QuestionPage
+import play.api.Logging
 import play.api.libs.json.JsPath
 
-final case class UkPostCodePage(currentId: CPSOId, reportId: ReportId) extends QuestionPage[String]:
+import scala.util.{Failure, Success, Try}
+
+final case class UkPostCodePage(currentId: CPSOId, reportId: ReportId) extends QuestionPage[String] with Logging:
 
   override def path: JsPath = JsPath \ reportId.mongoKey \ "cp-so" \ currentId.value \ "ukPostcode"
+
+  override def cleanupWithReportId(
+                                    value: Option[String],
+                                    userData: UserAnswers
+                                  )(implicit reportId: ReportId): Try[UserAnswers] =
+    value match {
+      case Some(_) =>
+        cleanUpPages
+          .foldLeft(Try(userData))(removePage())
+          .recoverWith {
+            case e =>
+              logger.error(
+                s"Failed to clean up pages for reportId=$reportId, cpsoId=${currentId.value}",
+                e
+              )
+              Failure(e)
+          }
+      case _ => Success(userData)
+    }
+
+  private val cleanUpPages: Seq[QuestionPage[_]] = List(
+    AddressLookupPage(currentId, reportId),
+//    SelectAddressPage(currentId, reportId),
+    IsThisTheAddressPage(currentId, reportId),
+//    UkAddressPage(currentId, reportId)
+  )
