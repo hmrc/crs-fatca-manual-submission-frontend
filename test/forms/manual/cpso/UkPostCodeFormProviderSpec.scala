@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package forms.manual.cpso
 
 import forms.behaviours.StringFieldBehaviours
@@ -6,53 +22,27 @@ import play.api.data.FormError
 
 class UkPostCodeFormProviderSpec extends StringFieldBehaviours {
 
-  val form = new UkPostCodeFormProvider()()
+  val form        = new UkPostCodeFormProvider()()
+  val requiredKey = "uKPostcode.error.required"
+  val lengthKey   = "uKPostcode.error.length"
+  val maxLength   = 10
 
-  ".value" - {
+  ".postCode" - {
 
     val fieldName = "value"
-    val requiredKey = "ukPostCode.error.value.required"
-    val lengthKey = "ukPostCode.error.value.length"
-    val maxLength = 100
 
-    behave like fieldThatBindsValidData(
-      form,
-      fieldName,
-      stringsWithMaxLength(maxLength)
-    )
+    "bind valid data" in {
+      val testPostCode = "ZZ1 1ZZ"
+      val result       = form.bind(Map(fieldName -> testPostCode)).apply(fieldName)
+      result.value.value mustBe testPostCode
+      result.errors mustBe empty
+    }
 
     behave like fieldWithMaxLength(
       form,
       fieldName,
       maxLength = maxLength,
-      lengthError = FormError(fieldName, lengthKey, Seq(maxLength))
-    )
-
-    behave like mandatoryField(
-      form,
-      fieldName,
-      requiredError = FormError(fieldName, requiredKey)
-    )
-  }
-
-  ".value2" - {
-
-    val fieldName = "value2"
-    val requiredKey = "ukPostCode.error.value2.required"
-    val lengthKey = "ukPostCode.error.value2.length"
-    val maxLength = 100
-
-    behave like fieldThatBindsValidData(
-      form,
-      fieldName,
-      stringsWithMaxLength(maxLength)
-    )
-
-    behave like fieldWithMaxLength(
-      form,
-      fieldName,
-      maxLength = maxLength,
-      lengthError = FormError(fieldName, lengthKey, Seq(maxLength))
+      lengthError = FormError(fieldName, lengthKey)
     )
 
     behave like mandatoryField(

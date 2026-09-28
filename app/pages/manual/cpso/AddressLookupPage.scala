@@ -17,10 +17,11 @@
 package pages.manual.cpso
 
 import models.ReportId
+import models.response.AddressLookup
 import models.viewModels.manual.cpso.CPSOId
 import pages.QuestionPage
 import play.api.libs.json.JsPath
 
-final case class UkPostCodePage(currentId: CPSOId, reportId: ReportId) extends QuestionPage[String]:
+final case class AddressLookupPage(currentId: CPSOId, reportId: ReportId) extends QuestionPage[Seq[AddressLookup]]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "cp-so" \ currentId.value \ "ukPostcode"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "cp-so" \ currentId.value \ "addressLookup"

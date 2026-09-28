@@ -16,12 +16,13 @@
 
 package controllers.manual.cpso
 
-import connectors.DatabaseConnector
+import connectors.{AddressLookupConnector, DatabaseConnector}
 import controllers.actions.*
 import forms.manual.cpso.UkPostCodeFormProvider
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.cpso.UkPostCodePage
+import pages.manual.cpso.{AddressLookupPage, UkPostCodePage}
+import play.api.data.FormError
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -30,46 +31,56 @@ import views.html.manual.cpso.UkPostCodeView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class UkPostCodeController @Inject()(
-                                      override val messagesApi: MessagesApi,
-                                      repository: DatabaseConnector,
-                                      navigator: ManualSubmissionNavigator,
-                                      identify: IdentifierAction,
-                                      getData: DataRetrievalAction,
-                                      requireData: DataRequiredAction,
-                                      reportIdAction: ReportIdRequiredAction,
-                                      formProvider: UkPostCodeFormProvider,
-                                      val controllerComponents: MessagesControllerComponents,
-                                      view: UkPostCodeView
-                                     )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+class UkPostCodeController @Inject() (
+  override val messagesApi: MessagesApi,
+  repository: DatabaseConnector,
+  navigator: ManualSubmissionNavigator,
+  actions: Actions,
+  formProvider: UkPostCodeFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: UkPostCodeView,
+  addressLookupConnector: AddressLookupConnector
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
+    with I18nSupport {
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequired() {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
+      val regime                      = reportId.regime.value.toLowerCase()
 
-      val preparedForm = request.userAnswers.get(UkPostCodePage()) match {
-        case None => form
+      val preparedForm = request.userAnswers.get(UkPostCodePage(request.cpsoId, reportId)) match {
+        case None        => form
         case Some(value) => form.fill(value)
       }
 
-      Ok(view(preparedForm, mode))
+      Ok(view(preparedForm, mode, regime, request.cpsoName))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequired().async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
+      val regime                      = reportId.regime.value.toLowerCase()
+      val formReturned                = form.bindFromRequest()
 
-      form.bindFromRequest().fold(
-        formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors, mode))),
+      formReturned.fold(
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, regime, request.cpsoName))),
+        postcode =>
+          addressLookupConnector.findByPostCode(postcode.toUpperCase).flatMap {
+            case Nil =>
+              val formError = formReturned.withError(FormError("value", List("uKPostcode.error.notfound")))
+              Future.successful(BadRequest(view(formError, mode, regime, request.cpsoName)))
+            case address =>
+              for {
+                updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(UkPostCodePage(request.cpsoId, reportId), postcode))
+                uaWithAddressLookup <- Future
+                  .fromTry(updatedAnswers.setWithReportId(AddressLookupPage(request.cpsoId, reportId), address))
 
-        value =>
-          for {
-            updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(UkPostCodePage(), value))
-            _              <- repository.set(updatedAnswers)
-          } yield Redirect(navigator.nextPage(UkPostCodePage(), mode, updatedAnswers))
+                _ <- repository.set(uaWithAddressLookup)
+              } yield Redirect(navigator.nextPage(UkPostCodePage(request.cpsoId, reportId), mode, uaWithAddressLookup))
+          }
       )
   }
 }

@@ -16,10 +16,9 @@
 
 package models.manual.cpso
 
-import models.manual.cpso.UkPostCode
 import play.api.libs.json.*
 
-case class UkPostCode (value: String, value2: String)
+case class UkPostCode(value: String, value2: String)
 
 object UkPostCode {
 

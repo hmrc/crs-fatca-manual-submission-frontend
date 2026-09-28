@@ -17,20 +17,22 @@
 package forms.manual.cpso
 
 import forms.mappings.Mappings
-import models.manual.cpso.UkPostCode
 import play.api.data.Form
-import play.api.data.Forms.*
+import utils.RegexConstants.{POSTCODE_FORMAT, POSTCODE_VALID}
 
 import javax.inject.Inject
 
 class UkPostCodeFormProvider @Inject() extends Mappings {
 
-   def apply(): Form[UkPostCode] = Form(
-     mapping(
-      "value" -> text("ukPostCode.error.value.required")
-        .verifying(maxLength(100, "ukPostCode.error.value.length")),
-      "value2" -> text("ukPostCode.error.value2.required")
-        .verifying(maxLength(100, "ukPostCode.error.value2.length"))
-    )(UkPostCode.apply)(x => Some((x.value, x.value2)))
-   )
- }
+  def apply(): Form[String] =
+    Form(
+      "value" -> mandatoryPostcode(
+        "uKPostcode.error.required",
+        "uKPostcode.error.length",
+        POSTCODE_VALID,
+        "uKPostcode.error.invalid",
+        POSTCODE_FORMAT,
+        "uKPostcode.error.format"
+      )
+    )
+}

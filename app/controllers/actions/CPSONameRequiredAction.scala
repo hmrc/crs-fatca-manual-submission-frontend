@@ -52,9 +52,7 @@ class CPSONameRequiredActionImpl @Inject() (implicit
         logger.error("Unable to find OrganizationName in User Answer")
         Left(Redirect(routes.JourneyRecoveryController.onPageLoad()))
     }
-    
-    
-    
+
     Future.successful {
       reportId.regime match {
         case CRS => checkIndividualName

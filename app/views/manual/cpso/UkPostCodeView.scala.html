@@ -24,38 +24,36 @@
     govukButton: GovukButton,
     heading: components.Heading,
     paragraph: components.Paragraph,
+    link: components.Link
 )
 
-@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, regime: String, cpsoName: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("ukPostCode.title"))) {
+@layout(pageTitle = title(form, messages(s"cpso.${regime}.ukPostCode.title"))) {
 
-    @formHelper(action = controllers.manual.cpso.routes.UkPostCodeController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+    @formHelper(action = controllers.manual.cpso.routes.UkPostCodeController.onSubmit(mode), Symbol("autoComplete") -> "on") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
-        <h1 class="govuk-heading-xl">@messages("ukPostCode.heading")</h1>
+        @heading(headingContent = messages("cpso.ukPostCode.heading", cpsoName))
+
+        @paragraph(messageKey = messages("cpso.ukPostCode.p1"))
 
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(messages("ukPostCode.value"))
+                label = LabelViewModel(messages("cpso.ukPostCode.heading", cpsoName)).withCssClass("govuk-visually-hidden")
             )
-            .withWidth(Full)
+            .withWidth(Fixed10)
+            .withAutocomplete("postal-code")
         )
 
-        @govukInput(
-            InputViewModel(
-                field = form("value2"),
-                label = LabelViewModel(messages("ukPostCode.value2"))
-            )
-            .withWidth(Full)
-        )
+        @link( controllers.routes.UnderConstructionController.onPageLoad().url, messages("cpso.ukPostCode.p2"), id = Some("enter-manually-id"))
 
         @govukButton(
-            ButtonViewModel(messages("site.saveContinue"))
+            ButtonViewModel(messages("cpso.ukPostCode.button")).withAttribute("id" -> "submit")
         )
     }
 }
