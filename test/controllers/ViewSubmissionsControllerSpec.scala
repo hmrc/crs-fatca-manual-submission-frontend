@@ -37,13 +37,14 @@ import scala.concurrent.Future
 class ViewSubmissionsControllerSpec extends SpecBase {
 
   private val submissionCard: SubmissionCard = SubmissionCard(
-    isVoided = Some(false),
+    isVoided = false,
     messageRefId = "ref1",
     reportingYear = 2016,
     originalMessageRefId = "ref1",
     timeSent = now,
     fileType = FATCA1,
-    submissionType = SubmissionsConstants.XML
+    submissionType = SubmissionsConstants.XML,
+    isNilReport = false
   )
   private val fiName: String                                 = "fiName"
   private val fiId: String                                   = "fiId"

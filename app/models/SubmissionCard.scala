@@ -22,17 +22,24 @@ import utils.DateTimeFormats.formatTimeSent
 
 import java.time.LocalDateTime
 
-case class SubmissionCard(isVoided: Option[Boolean],
+case class SubmissionCard(isVoided: Boolean,
                           messageRefId: String,
                           reportingYear: Int,
                           originalMessageRefId: String,
                           timeSent: LocalDateTime,
                           fileType: SubmissionFileType,
-                          submissionType: SubmissionType
+                          submissionType: SubmissionType,
+                          isNilReport: Boolean
 ) {
-  val title: String = (if fileType.value.contains("CRS") then "CRS" else "FATCA") + " " + submissionType.value
+  private val NO_INFORMATION_TO_REPORT = "No information to report"
+  val title: String                    = (if fileType.value.contains("CRS") then "CRS" else "FATCA") + " " + submissionType.value
 
-  val summaryKey: String                = fileType.cardSummaryKey
+  val summaryKey: String = fileType.value match {
+    case e if e.contains("FATCA") =>
+      if isNilReport then NO_INFORMATION_TO_REPORT else fileType.cardSummaryKey
+    case _ => fileType.cardSummaryKey
+  }
+
   private val formattedDateTime: String = timeSent.formatTimeSent
   val summaryValue: Html                = if fileType != FATCA3 then Html(s"MessageRefId: $messageRefId <br> $formattedDateTime") else Html(formattedDateTime)
 }
