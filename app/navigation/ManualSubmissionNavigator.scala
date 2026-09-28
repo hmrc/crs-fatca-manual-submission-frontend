@@ -27,7 +27,19 @@ import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
 import pages.manual.account.*
 import pages.manual.cpso.{AddressLookupPage as AddressLookupPageForCPSO, UkPostCodePage as UkPostCodePageForCPSO}
-import pages.manual.accountHolders.{AccountHolderAddressNonUkPage, AccountHolderIndividualNamePage, AddressLookupForAccountHolderPage, IndividualHavePlaceOfBirthPage, IndividualOrOrganisationPage, IsThisTheAddressForAccountHoldersPage, SelectAddressPage, UkPostCodeForAccountHolderPage, WhereAreTheyBasedPage, SelfCertificationPage as AccountHolderSelfCertificationPage, UkAddressPage as AccountHolderUkAddressPage}
+import pages.manual.accountHolders.{
+  AccountHolderAddressNonUkPage,
+  AccountHolderIndividualNamePage,
+  AddressLookupForAccountHolderPage,
+  IndividualHavePlaceOfBirthPage,
+  IndividualOrOrganisationPage,
+  IsThisTheAddressForAccountHoldersPage,
+  SelectAddressPage,
+  SelfCertificationPage as AccountHolderSelfCertificationPage,
+  UkAddressPage as AccountHolderUkAddressPage,
+  UkPostCodeForAccountHolderPage,
+  WhereAreTheyBasedPage
+}
 import pages.manual.cpso.{CPSOIndividualDateOfBirthPage, CpsoOrganisationNamePage, CpsoSelfCertificationPage, IndividualNamePage}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
@@ -280,10 +292,10 @@ class ManualSubmissionNavigator @Inject() () {
 
   private def handleUKPostcodeNavigationForCPSO(userAnswers: UserAnswers, mode: Mode, cpsoId: CPSOId)(implicit reportId: ReportId) =
     userAnswers.get(AddressLookupPageForCPSO(cpsoId, reportId)) match {
-      case Some(value) if value.isEmpty => routes.JourneyRecoveryController.onPageLoad()
+      case Some(value) if value.isEmpty          => routes.JourneyRecoveryController.onPageLoad()
       case Some(value) if value.length.equals(1) => controllers.manual.cpso.routes.IsThisTheAddressController.onPageLoad(mode)
-      case Some(value) =>
-        //todo put correct cpso
+      case Some(value)                           =>
+        // todo put correct cpso
         controllers.routes.UnderConstructionController.onPageLoad()
       case None => routes.JourneyRecoveryController.onPageLoad()
     }

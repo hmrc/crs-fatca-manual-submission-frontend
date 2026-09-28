@@ -22,6 +22,6 @@ import models.viewModels.manual.cpso.CPSOId
 import pages.QuestionPage
 import play.api.libs.json.JsPath
 
-final case class WhatIsAddressPage(currentId: CPSOId,reportId: ReportId) extends QuestionPage[Address]:
+final case class WhatIsAddressPage(currentId: CPSOId, reportId: ReportId) extends QuestionPage[Address]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "cp-so" \ currentId.value \ "whatIsAddressForAccountHolder"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "cp-so" \ currentId.value \ "whatIsAddress"

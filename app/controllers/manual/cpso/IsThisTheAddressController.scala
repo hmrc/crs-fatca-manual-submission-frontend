@@ -33,70 +33,76 @@ import views.html.manual.cpso.IsThisTheAddressView
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class IsThisTheAddressController @Inject()(
-                                         override val messagesApi: MessagesApi,
-                                         repository: DatabaseConnector,
-                                         navigator: ManualSubmissionNavigator,
-                                         actions: Actions,
-                                         formProvider: IsThisTheAddressFormProvider,
-                                         val controllerComponents: MessagesControllerComponents,
-                                         view: IsThisTheAddressView
-                                 )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Logging{
+class IsThisTheAddressController @Inject() (
+  override val messagesApi: MessagesApi,
+  repository: DatabaseConnector,
+  navigator: ManualSubmissionNavigator,
+  actions: Actions,
+  formProvider: IsThisTheAddressFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: IsThisTheAddressView
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
+    with I18nSupport
+    with Logging {
 
-  
-
-  def onPageLoad(mode: Mode): Action[AnyContent] = (actions.withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequired()) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequired() {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
-      val regime = reportId.regime.value.toLowerCase()
-      val form = formProvider(reportId.regime)
+      val regime                      = reportId.regime.value.toLowerCase()
+      val form                        = formProvider(reportId.regime)
 
-      val preparedForm = request.userAnswers.get(IsThisTheAddressPage(request.cpsoId, reportId))
+      val preparedForm = request.userAnswers
+        .get(IsThisTheAddressPage(request.cpsoId, reportId))
         .fold(form)(form.fill)
 
       val address = request.userAnswers
         .get(AddressLookupPage(request.cpsoId, request.reportId))
         .flatMap(_.headOption.flatMap(_.toAddress))
-      
+
       address
-        .map(addr => Ok(view(preparedForm, mode, addr, request.cpsoName, regime)))
+        .map(
+          addr => Ok(view(preparedForm, mode, addr, request.cpsoName, regime))
+        )
         .getOrElse {
           logger.warn("Missing individual or org name")
           Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
         }
 
-     
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (actions.withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequired()).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequired().async {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
-      val regime = reportId.regime.value.toLowerCase()
-      val form = formProvider(reportId.regime)
+      val regime                      = reportId.regime.value.toLowerCase()
+      val form                        = formProvider(reportId.regime)
       val address = request.userAnswers
         .get(AddressLookupPage(request.cpsoId, request.reportId))
         .flatMap(_.headOption.flatMap(_.toAddress))
 
-      address.map { addr =>
-        form.bindFromRequest().fold(
-          formWithErrors =>
-            Future.successful(BadRequest(view(formWithErrors, mode, addr, request.cpsoName, regime))),
+      address
+        .map {
+          addr =>
+            form
+              .bindFromRequest()
+              .fold(
+                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, addr, request.cpsoName, regime))),
+                value =>
+                  for {
+                    updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(IsThisTheAddressPage(request.cpsoId, reportId), value))
+                    answersWithMaybeAddress <-
+                      if (value) { Future.fromTry(updatedAnswers.setWithReportId(WhatIsAddressPage(request.cpsoId, reportId), addr)) }
+                      else { Future.successful(updatedAnswers) }
+                    _ <- repository.set(answersWithMaybeAddress)
+                  } yield Redirect(navigator.nextPage(IsThisTheAddressPage(request.cpsoId, reportId), mode, answersWithMaybeAddress))
+              )
+        }
+        .getOrElse {
+          logger.warn("Missing individual or org name")
+          Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+        }
 
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(IsThisTheAddressPage(request.cpsoId, reportId), value))
-              answersWithMaybeAddress <-
-                if(value) { Future.fromTry(updatedAnswers.setWithReportId(WhatIsAddressPage(request.cpsoId, reportId), addr)) }
-                else { Future.successful(updatedAnswers) }
-              _ <- repository.set(answersWithMaybeAddress)
-            } yield Redirect(navigator.nextPage(IsThisTheAddressPage(request.cpsoId, reportId), mode, answersWithMaybeAddress))
-        )
-      }.getOrElse {
-        logger.warn("Missing individual or org name")
-        Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
-      }
-      
   }
 }

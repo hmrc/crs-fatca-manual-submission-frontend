@@ -29,9 +29,9 @@ final case class UkPostCodePage(currentId: CPSOId, reportId: ReportId) extends Q
   override def path: JsPath = JsPath \ reportId.mongoKey \ "cp-so" \ currentId.value \ "ukPostcode"
 
   override def cleanupWithReportId(
-                                    value: Option[String],
-                                    userData: UserAnswers
-                                  )(implicit reportId: ReportId): Try[UserAnswers] =
+    value: Option[String],
+    userData: UserAnswers
+  )(implicit reportId: ReportId): Try[UserAnswers] =
     value match {
       case Some(_) =>
         cleanUpPages
@@ -50,6 +50,6 @@ final case class UkPostCodePage(currentId: CPSOId, reportId: ReportId) extends Q
   private val cleanUpPages: Seq[QuestionPage[_]] = List(
     AddressLookupPage(currentId, reportId),
 //    SelectAddressPage(currentId, reportId),
-    IsThisTheAddressPage(currentId, reportId),
+    IsThisTheAddressPage(currentId, reportId)
 //    UkAddressPage(currentId, reportId)
   )
