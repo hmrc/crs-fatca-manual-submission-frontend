@@ -31,7 +31,7 @@ import models.viewModels.manual.cpso.CPSOId
 import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
 import pages.manual.account.*
-import pages.manual.cpso.{CpsoOrganisationNamePage, CpsoSelfCertificationPage}
+import pages.manual.cpso.{CPSOAddressNonUkPage, CPSOWhereAreTheyBasedPage, CpsoOrganisationNamePage, CpsoSelfCertificationPage}
 import pages.manual.accountHolders.{UkAddressPage as AccountHolderUkAddressPage, *}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
@@ -597,10 +597,26 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         }
 
         "CpsoSelfCertificationPage" - {
-          "must go to underconstruction page when submitted" in {
+          "must go to CPSOWhereAreTheyBased page when submitted" in {
             val ua = UserAnswers("id")
               .withPage(CpsoSelfCertificationPage(currentCPSOId, reportId), Yes)
             navigator.nextPage(CpsoSelfCertificationPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+              controllers.manual.cpso.routes.CPSOWhereAreTheyBasedController.onPageLoad(NormalMode)
+          }
+        }
+        "CPSOWhereAreTheyBased page" - {
+          "must go to CPSOAddressNonUk page when submitted" in {
+            val ua = UserAnswers("id")
+              .withPage(CPSOWhereAreTheyBasedPage(currentCPSOId, reportId), true)
+            navigator.nextPage(CPSOWhereAreTheyBasedPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+              controllers.manual.cpso.routes.CPSOAddressNonUkController.onPageLoad(NormalMode)
+          }
+        }
+        "CPSOAddressNonUk page" - {
+          "must go to resident-for-tax [under construction] page when submitted" in {
+            val ua = UserAnswers("id")
+              .withPage(CPSOAddressNonUkPage(currentCPSOId, reportId), true)
+            navigator.nextPage(CPSOAddressNonUkPage(currentCPSOId, reportId), NormalMode, ua) mustBe
               controllers.routes.UnderConstructionController.onPageLoad()
           }
         }
