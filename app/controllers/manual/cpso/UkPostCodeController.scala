@@ -76,7 +76,7 @@ class UkPostCodeController @Inject() (
               for {
                 updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(UkPostCodePage(request.cpsoId, reportId), postcode))
                 uaWithAddressLookup <- Future
-                  .fromTry(updatedAnswers.setWithReportId(AddressLookupPage(request.cpsoId, reportId), Seq(address.head)))
+                  .fromTry(updatedAnswers.setWithReportId(AddressLookupPage(request.cpsoId, reportId), address))
 
                 _ <- repository.set(uaWithAddressLookup)
               } yield Redirect(navigator.nextPage(UkPostCodePage(request.cpsoId, reportId), mode, uaWithAddressLookup))
