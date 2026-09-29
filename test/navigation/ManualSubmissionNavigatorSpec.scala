@@ -33,11 +33,17 @@ import models.viewModels.manual.cpso.CPSOId
 import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
 import pages.manual.account.*
-import pages.manual.cpso.{CpsoOrganisationNamePage, CpsoSelfCertificationPage}
+import pages.manual.cpso.{
+  AddressLookupPage as AddressLookupPageForCpso,
+  CpsoOrganisationNamePage,
+  CpsoSelfCertificationPage,
+  IsThisTheAddressPage as IsThisTheAddressPageForCpso,
+  UkPostCodePage as UkPostCodePageForCpso
+}
 import pages.manual.accountHolders.{UkAddressPage as AccountHolderUkAddressPage, *}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
-import pages.manual.sponsor.*
+import pages.manual.sponsor.{AddressLookupPage, *}
 
 import java.time.LocalDate
 
@@ -227,6 +233,56 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         "must go to JourneyRecovery Page when AddressLookupPage is missing" in {
           val userData = UserAnswers("id")
           navigator.nextPage(UkPostCodeForAccountHolderPage(accountHolderId, reportId), NormalMode, userData) mustBe
+            controllers.routes.JourneyRecoveryController.onPageLoad()
+        }
+      }
+
+      "UkPostcodePage  for cp-so" - {
+        val currentCPSOId = CPSOId("testid")
+        val addressLookup: AddressLookup =
+          AddressLookup(200000706253L,
+                        Some("1 Address line 1 Road"),
+                        None,
+                        Some("Address line 2 Road"),
+                        None,
+                        "Town",
+                        Some("County"),
+                        "zz11zz",
+                        Some(Country.GB)
+          )
+
+        "must go to IsThisAddressForCPSO when one address is found" in {
+          val address: Seq[AddressLookup] = Seq(addressLookup)
+
+          val ua = UserAnswers("id")
+            .withPage(UkPostCodePageForCpso(currentCPSOId, reportId), "ZZ1 1ZZ")
+            .withPage(AddressLookupPageForCpso(currentCPSOId, reportId), address)
+          navigator.nextPage(UkPostCodePageForCpso(currentCPSOId, reportId), NormalMode, ua) mustBe
+            controllers.manual.cpso.routes.IsThisTheAddressController.onPageLoad(NormalMode)
+        }
+
+        "must go to WhatIsAddressForCPSO when multiple addresses are found" in {
+          val addresses: Seq[AddressLookup] = Seq(addressLookup, addressLookup)
+
+          val ua = UserAnswers("id")
+            .withPage(UkPostCodePageForCpso(currentCPSOId, reportId), "ZZ1 1ZZ")
+            .withPage(AddressLookupPageForCpso(currentCPSOId, reportId), addresses)
+          navigator.nextPage(UkPostCodePageForCpso(currentCPSOId, reportId), NormalMode, ua) mustBe
+            controllers.routes.UnderConstructionController.onPageLoad()
+        }
+
+        "must go to ProblemPage when no addresses are found" in {
+          val ua = UserAnswers("id")
+            .withPage(UkPostCodePageForCpso(currentCPSOId, reportId), "ZZ1 1ZZ")
+            .withPage(AddressLookupPageForCpso(currentCPSOId, reportId), Seq.empty)
+
+          navigator.nextPage(UkPostCodePageForCpso(currentCPSOId, reportId), NormalMode, ua) mustBe
+            controllers.routes.JourneyRecoveryController.onPageLoad()
+        }
+
+        "must go to JourneyRecovery Page when AddressLookupPage is missing" in {
+          val userData = UserAnswers("id")
+          navigator.nextPage(HaveSponsorPage(), NormalMode, userData) mustBe
             controllers.routes.JourneyRecoveryController.onPageLoad()
         }
       }
@@ -916,6 +972,34 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             val ua = UserAnswers("id")
 
             navigator.nextPage(IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId), NormalMode, ua) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
+        }
+
+        "IsThisTheAddressForCPSOPage" - {
+          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+          val currentCPSOId               = CPSOId("testid")
+
+          "must go to under construction for a yes answer" in {
+            val ua = UserAnswers("id")
+              .withPage(IsThisTheAddressPageForCpso(currentCPSOId, reportId), true)
+
+            navigator.nextPage(IsThisTheAddressPageForCpso(currentCPSOId, reportId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+
+          "must go to address uk for a no answer" in {
+            val ua = UserAnswers("id")
+              .withPage(IsThisTheAddressPageForCpso(currentCPSOId, reportId), false)
+
+            navigator.nextPage(IsThisTheAddressPageForCpso(currentCPSOId, reportId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+
+          "must go to journey recovery when IsThisTheAddressPageForCpso is not present" in {
+            val ua = UserAnswers("id")
+
+            navigator.nextPage(IsThisTheAddressPageForCpso(currentCPSOId, reportId), NormalMode, ua) mustBe
               controllers.routes.JourneyRecoveryController.onPageLoad()
           }
         }
