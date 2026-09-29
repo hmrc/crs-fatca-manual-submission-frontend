@@ -46,7 +46,7 @@ class CPSOWhereAreTheyBasedController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndCPSOIdRequired() {
+  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequired() {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
@@ -65,7 +65,7 @@ class CPSOWhereAreTheyBasedController @Inject() (
       }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndCPSOIdRequired().async {
+  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequired().async {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId

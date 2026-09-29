@@ -44,48 +44,32 @@ class CPSOAddressNonUkController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndCPSOIdRequired() {
+  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequired() {
     implicit request =>
-      (for {
-        ahName <- request.userAnswers.get(IndividualNamePage(request.cpsoId)(request.reportId))
-      } yield ahName).fold(
-        Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)
-      ) {
-        case ahName =>
-          val preparedForm = request.userAnswers.get(CPSOAddressNonUkPage(request.cpsoId, request.reportId)) match {
-            case None        => form
-            case Some(value) => form.fill(value)
-          }
-          Ok(view(preparedForm, mode, ahName.fullName, request.reportId.regime, Countries.nonUkTerritories(regime = request.reportId.regime)))
+      val preparedForm = request.userAnswers.get(CPSOAddressNonUkPage(request.cpsoId, request.reportId)) match {
+        case None        => form
+        case Some(value) => form.fill(value)
       }
+      Ok(view(preparedForm, mode, request.cpsoName, request.reportId.regime, Countries.nonUkTerritories(regime = request.reportId.regime)))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndCPSOIdRequired().async {
+  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequired().async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
-      val result = for {
-        ahName <- request.userAnswers.get(IndividualNamePage(request.cpsoId)(request.reportId))
-      } yield ahName
 
-      result.fold(
-        Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))
-      ) {
-        case ahName =>
-          form
-            .bindFromRequest()
-            .fold(
-              formWithErrors =>
-                Future.successful(
-                  BadRequest(view(formWithErrors, mode, ahName.fullName, request.reportId.regime, Countries.nonUkTerritories(regime = request.reportId.regime)))
-                ),
-              value =>
-                for {
-                  updatedAnswers <- Future
-                    .fromTry(request.userAnswers.setWithReportId(CPSOAddressNonUkPage(request.cpsoId, request.reportId), value))
-                  _ <- repository.set(updatedAnswers)
-                } yield Redirect(navigator.nextPage(CPSOAddressNonUkPage(request.cpsoId, request.reportId), mode, updatedAnswers))
-            )
-      }
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors =>
+            Future.successful(
+              BadRequest(view(formWithErrors, mode, request.cpsoName, request.reportId.regime, Countries.nonUkTerritories(regime = request.reportId.regime)))
+            ),
+          value =>
+            for {
+              updatedAnswers <- Future
+                .fromTry(request.userAnswers.setWithReportId(CPSOAddressNonUkPage(request.cpsoId, request.reportId), value))
+              _ <- repository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(CPSOAddressNonUkPage(request.cpsoId, request.reportId), mode, updatedAnswers))
+        )
   }
-
 }
