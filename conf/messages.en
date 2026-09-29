@@ -891,3 +891,11 @@ cpso.isThisTheAddress.heading = Is this the address for {0}?
 cpso.crs.isThisTheAddress.error.required = Select yes if this is the controlling person’s address
 cpso.fatca.isThisTheAddress.error.required = Select yes if this is the substantial owner’s address
 cpso.isThisTheAddress.change.hidden = IsThisTheAddress
+
+cpso.crs.selectAddress.title = What is the controlling person’s address?
+cpso.fatca.selectAddress.title =   What is the csubstantial owner’s address?
+cpso.selectAddress.heading = What is the address for {0}?
+cpso.crs.selectAddress.error.required= 	Select the controlling person’s address or enter it manually
+cpso.fatca.selectAddress.error.required= Select the substantial owner’s address or enter it manually
+cpso.selectAddress.para.link = enter the address manually
+cpso.selectAddress.para = Select from the list or {0}.

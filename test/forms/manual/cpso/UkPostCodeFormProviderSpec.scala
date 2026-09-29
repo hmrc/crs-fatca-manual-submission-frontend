@@ -17,7 +17,6 @@
 package forms.manual.cpso
 
 import forms.behaviours.StringFieldBehaviours
-import forms.manual.cpso.UkPostCodeFormProvider
 import play.api.data.FormError
 
 class UkPostCodeFormProviderSpec extends StringFieldBehaviours {

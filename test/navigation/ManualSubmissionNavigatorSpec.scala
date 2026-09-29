@@ -38,6 +38,7 @@ import pages.manual.cpso.{
   CpsoOrganisationNamePage,
   CpsoSelfCertificationPage,
   IsThisTheAddressPage as IsThisTheAddressPageForCpso,
+  SelectAddressPage as SelectAddressPageForCPSO,
   UkPostCodePage as UkPostCodePageForCpso
 }
 import pages.manual.accountHolders.{UkAddressPage as AccountHolderUkAddressPage, *}
@@ -268,7 +269,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             .withPage(UkPostCodePageForCpso(currentCPSOId, reportId), "ZZ1 1ZZ")
             .withPage(AddressLookupPageForCpso(currentCPSOId, reportId), addresses)
           navigator.nextPage(UkPostCodePageForCpso(currentCPSOId, reportId), NormalMode, ua) mustBe
-            controllers.routes.UnderConstructionController.onPageLoad()
+            controllers.manual.cpso.routes.SelectAddressController.onPageLoad(NormalMode)
         }
 
         "must go to ProblemPage when no addresses are found" in {
@@ -1023,6 +1024,36 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
 
             navigator.nextPage(SelectAddressPage(accountHolderId, reportId), NormalMode, ua) mustBe
               controllers.routes.UnderConstructionController.onPageLoad()
+          }
+
+        }
+
+        "SelectAddressPage for cpso" - {
+          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+          val address = Address(uprn = None,
+                                addressLine1 = "string",
+                                addressLine2 = None,
+                                addressLine3 = Some("string"),
+                                addressLine4 = None,
+                                town = "town",
+                                postCode = None,
+                                country = Country.GB
+          )
+          val currentId = CPSOId("holder-id")
+
+          "must go to under construction" in {
+            val ua = UserAnswers("id")
+              .withPage(SelectAddressPageForCPSO(currentId, reportId), address)
+
+            navigator.nextPage(SelectAddressPageForCPSO(currentId, reportId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+
+          "must go to journey recovery if select address is absent" in {
+            val ua = UserAnswers("id")
+
+            navigator.nextPage(SelectAddressPageForCPSO(currentId, reportId), NormalMode, ua) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
           }
 
         }

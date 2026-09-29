@@ -21,22 +21,21 @@ import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.cpso.IsThisTheAddressFormProvider
 import models.SubmissionsConstants.CRS
+import models.manual.cpso.{IndividualName, IndividualOrOrganisation}
+import models.response.{AddressLookup, Country}
+import models.viewModels.manual.cpso.CPSOId
 import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.cpso.{AddressLookupPage, CurrentCPSOIdPage, IndividualNamePage, IndividualOrOrganisationPage, IsThisTheAddressPage}
+import pages.manual.cpso.*
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import views.html.manual.cpso.IsThisTheAddressView
-import models.SubmissionsConstants.CRS
-import models.manual.cpso.{IndividualName, IndividualOrOrganisation}
-import models.viewModels.manual.cpso.CPSOId
-import models.response.{AddressLookup, Country}
 
 import scala.concurrent.Future
 
