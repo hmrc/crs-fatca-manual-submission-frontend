@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-package models.manual.cpso
+package controllers.actions
 
-import play.api.libs.json.*
+import models.SubmissionsConstants.{CRS, RegimeType}
+import models.requests.AccountHolderIdRequest
+import play.api.mvc.ActionFilter
 
-case class IndividualName(firstName: String, lastName: String) {
-  def fullName: String = s"$firstName $lastName".trim
+import javax.inject.Inject
+import scala.concurrent.ExecutionContext
+
+class AccountHolderCRSOnlyFilterActionImpl @Inject() (implicit val executionContext: ExecutionContext)
+    extends AccountHolderCRSOnlyFilterAction
+    with RegimeTypeFiltering[AccountHolderIdRequest] {
+  override val regime: RegimeType = CRS
 }
 
-object IndividualName {
-
-  implicit val format: OFormat[IndividualName] = Json.format
-}
+trait AccountHolderCRSOnlyFilterAction extends ActionFilter[AccountHolderIdRequest]

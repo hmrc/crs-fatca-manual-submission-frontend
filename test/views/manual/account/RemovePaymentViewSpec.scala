@@ -17,17 +17,16 @@
 package views.manual.account
 
 import base.SpecBase
-import forms.manual.account.{PaymentTypeFormProvider, RemovePaymentFormProvider}
-import models.{Currency, NormalMode}
-import models.SubmissionsConstants.{CRS, FATCA}
+import forms.manual.account.RemovePaymentFormProvider
 import models.manual.account.PaymentType.CRSInterest
 import models.manual.account.{AccountPayment, AccountPaymentsAmount, PaymentType}
+import models.{Currency, NormalMode}
 import org.jsoup.Jsoup
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
-import views.html.manual.account.{PaymentTypeView, RemovePaymentView}
+import views.html.manual.account.RemovePaymentView
 
 class RemovePaymentViewSpec extends SpecBase {
 
@@ -47,7 +46,6 @@ class RemovePaymentViewSpec extends SpecBase {
 
     "should render page components" - {
 
-      val regimeType                          = CRS
       val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, accountPayment)
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 

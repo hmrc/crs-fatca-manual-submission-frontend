@@ -16,7 +16,7 @@
 
 package models
 
-import models.SubmissionsConstants.*
+import models.SubmissionsConstants.{FATCA, RegimeType}
 import models.response.Country
 
 object Countries {

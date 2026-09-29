@@ -351,3 +351,16 @@ POST       /manual/account/remove-payment                        controllers.man
 GET        /manual/account/remove-payment                  controllers.manual.account.RemovePaymentController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/account/remove-payment                  controllers.manual.account.RemovePaymentController.onSubmit(mode: Mode = CheckMode)
 
+GET        /manual/account-holder/self-certification                        controllers.manual.accountHolders.SelfCertificationController.onPageLoad(mode: Mode = NormalMode)
+POST        /manual/account-holder/self-certification                    controllers.manual.accountHolders.SelfCertificationController.onSubmit(mode: Mode = NormalMode)
+GET         /manual/account-holder/change-self-certification                   controllers.manual.accountHolders.SelfCertificationController.onPageLoad(mode: Mode = CheckMode)
+POST        /manual/account-holder/change-self-certification                 controllers.manual.accountHolders.SelfCertificationController.onSubmit(mode: Mode = CheckMode)
+GET        /manual/cp-so/individual-have-place-of-birth                        controllers.manual.cpso.IndividualHavePlaceOfBirthController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/cp-so/individual-have-place-of-birth                        controllers.manual.cpso.IndividualHavePlaceOfBirthController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/cp-so/change-individual-have-place-of-birth                  controllers.manual.cpso.IndividualHavePlaceOfBirthController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/cp-so/change-individual-have-place-of-birth                  controllers.manual.cpso.IndividualHavePlaceOfBirthController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/cp-so/individual-place-of-birth                        controllers.manual.cpso.IndividualPlaceOfBirthController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/cp-so/individual-place-of-birth                        controllers.manual.cpso.IndividualPlaceOfBirthController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/cp-so/change-individual-place-of-birth                  controllers.manual.cpso.IndividualPlaceOfBirthController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/cp-so/change-individual-place-of-birth                  controllers.manual.cpso.IndividualPlaceOfBirthController.onSubmit(mode: Mode = CheckMode)

@@ -56,8 +56,9 @@ trait ISpecBase
     submissionType = SubmissionsConstants.XML,
     submissionFileType = FATCA1,
     messageRefId = "ref1",
-    submissionDeleteStatus = None,
-    originalMessageRefId = None
+    submissionDeleteStatus = false,
+    originalMessageRefId = None,
+    isNilReport = false
   )
   
   val mockResponse = 

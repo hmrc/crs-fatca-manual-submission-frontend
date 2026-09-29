@@ -14,39 +14,38 @@
  * limitations under the License.
  */
 
-package views.manual.cpso
+package views.manual.accountholders
 
 import base.SpecBase
-import forms.manual.cpso.CpsoSelfCertificationFormProvider
+import forms.manual.accountHolders.SelfCertificationFormProvider
 import models.NormalMode
 import org.jsoup.Jsoup
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
-import views.html.manual.cpso.CpsoSelfCertificationView
+import views.html.manual.accountHolders.SelfCertificationView
 
-class CpsoSelfCertificationViewSpec extends SpecBase {
-
+class SelfCertificationViewSpec extends SpecBase {
   private val application = applicationBuilder().build()
 
-  private val view: CpsoSelfCertificationView                            = application.injector.instanceOf[CpsoSelfCertificationView]
+  private val view: SelfCertificationView                                = application.injector.instanceOf[SelfCertificationView]
   private val messagesControllerComponents: MessagesControllerComponents = application.injector.instanceOf[MessagesControllerComponents]
-  val formProvider                                                       = new CpsoSelfCertificationFormProvider()
+  val formProvider                                                       = new SelfCertificationFormProvider()
   implicit private val request: FakeRequest[AnyContent]                  = FakeRequest()
   implicit private val messages: Messages                                = messagesControllerComponents.messagesApi.preferred(Seq(Lang("en")))
 
-  "CpsoSelfCertificationView" - {
+  "Account holder SelfCertificationView" - {
     "should render page components" - {
-      val reportingPeriod   = 2025
-      val controllingPerson = "Some name"
+      val reportingPeriod = 2025
+      val accountHolder   = "Some name"
 
       val form                                = formProvider()
-      val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, reportingPeriod, controllingPerson)
+      val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, reportingPeriod, accountHolder)
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
       "must display title" in {
-        doc.title() must include("Has the controlling person provided a valid self-certification?")
+        doc.title() must include("Has the account holder provided a valid self-certification?")
       }
 
       "must display heading" in {
@@ -56,7 +55,7 @@ class CpsoSelfCertificationViewSpec extends SpecBase {
       "radio should display correct label and value" in {
         doc.select(".govuk-radios__input").iterator().forEachRemaining {
           elem =>
-            Seq("CRS1000", "CRS1001", "CRS1002").contains(elem.getElementsByAttribute("value").attr("value")) mustEqual true
+            Seq("CRS901", "CRS902", "CRS900").contains(elem.getElementsByAttribute("value").attr("value")) mustEqual true
         }
 
         doc.select(".govuk-radios__label").iterator().forEachRemaining {
@@ -70,15 +69,16 @@ class CpsoSelfCertificationViewSpec extends SpecBase {
       }
 
       "two radios should be displayed for reporting periods from 2026" in {
-        val renderedHtml2: HtmlFormat.Appendable = view(form, NormalMode, 2026, controllingPerson)
+        val renderedHtml2: HtmlFormat.Appendable = view(form, NormalMode, 2026, accountHolder)
         lazy val doc2                            = Jsoup.parse(renderedHtml2.body)
         doc2.select(".govuk-radios__input").size() mustEqual 2
         doc2.select(".govuk-radios__input").iterator().forEachRemaining {
           elem =>
-            Seq("CRS1001", "CRS1002").contains(elem.getElementsByAttribute("value").attr("value")) mustEqual true
-            elem.getElementsByAttribute("value").attr("value") mustNot contain("CRS1000")
+            Seq("CRS901", "CRS902").contains(elem.getElementsByAttribute("value").attr("value")) mustEqual true
+            elem.getElementsByAttribute("value").attr("value") mustNot contain("CRS900")
         }
       }
     }
   }
+
 }

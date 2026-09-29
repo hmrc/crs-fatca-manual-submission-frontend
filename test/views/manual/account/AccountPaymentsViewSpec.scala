@@ -17,9 +17,8 @@
 package views.manual.account
 
 import base.SpecBase
-import forms.manual.account.{PaymentTypeFormProvider, RemovePaymentFormProvider}
+import forms.manual.account.RemovePaymentFormProvider
 import models.{Currency, NormalMode}
-import models.SubmissionsConstants.{CRS, FATCA}
 import models.manual.account.PaymentType.CRSInterest
 import models.manual.account.{AccountPayment, AccountPaymentsAmount, PaymentType}
 import org.jsoup.Jsoup
@@ -28,7 +27,7 @@ import play.api.mvc.ControllerHelpers.request2flash
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
-import views.html.manual.account.{AccountPaymentsView, PaymentTypeView, RemovePaymentView}
+import views.html.manual.account.AccountPaymentsView
 
 class AccountPaymentsViewSpec extends SpecBase {
 
@@ -89,7 +88,6 @@ class AccountPaymentsViewSpec extends SpecBase {
       }
 
       "when account payments are not resent" - {
-        val regimeType                          = CRS
         val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, emptyAccountList, reportingPeriod, crs)
         lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
@@ -107,7 +105,6 @@ class AccountPaymentsViewSpec extends SpecBase {
       }
 
       "when account payments are more than one" - {
-        val regimeType                          = CRS
         val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, accountPaymentMoreThanOneList, reportingPeriod, crs)
         lazy val doc                            = Jsoup.parse(renderedHtml.body)
 

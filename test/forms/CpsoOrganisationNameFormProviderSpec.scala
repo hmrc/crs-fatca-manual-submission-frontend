@@ -19,7 +19,6 @@ package forms
 import forms.behaviours.StringFieldBehaviours
 import forms.manual.cpso.CpsoOrganisationNameFormProvider
 import org.scalatest.matchers.should.Matchers.shouldBe
-import play.api.data.FormError
 
 class CpsoOrganisationNameFormProviderSpec extends StringFieldBehaviours {
 

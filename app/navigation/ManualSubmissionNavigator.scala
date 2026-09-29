@@ -33,11 +33,12 @@ import pages.manual.accountHolders.{
   IndividualOrOrganisationPage,
   IsThisTheAddressForAccountHoldersPage,
   SelectAddressPage,
+  SelfCertificationPage as AccountHolderSelfCertificationPage,
   UkAddressPage as AccountHolderUkAddressPage,
   UkPostCodeForAccountHolderPage,
   WhereAreTheyBasedPage
 }
-import pages.manual.cpso.{CpsoOrganisationNamePage, CpsoSelfCertificationPage, IndividualNamePage}
+import pages.manual.cpso.*
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.*
@@ -178,9 +179,11 @@ class ManualSubmissionNavigator @Inject() () {
     case (UkPostCodeForAccountHolderPage(accountHolderId, reportId), mode, ua) => handleUKPostcodeNavigationForAccountHolders(ua, mode, accountHolderId)
     case (IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId), mode, ua) =>
       handleIsThisTheAddressForAccountHoldersRouting(ua, mode, accountHolderId)
-    case (AccountHolderUkAddressPage(_, _), _, _)    => controllers.routes.UnderConstructionController.onPageLoad()
-    case (SelectAddressPage(_, _), _, _)             => controllers.routes.UnderConstructionController.onPageLoad()
-    case (AccountHolderAddressNonUkPage(_, _), _, _) => controllers.routes.UnderConstructionController.onPageLoad()
+    case (AccountHolderUkAddressPage(accountHolderId, reportId), mode, _) =>
+      controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
+    case (SelectAddressPage(_, _), _, _)                  => controllers.routes.UnderConstructionController.onPageLoad()
+    case (AccountHolderAddressNonUkPage(_, _), _, _)      => controllers.routes.UnderConstructionController.onPageLoad()
+    case (AccountHolderSelfCertificationPage(_, _), _, _) => controllers.routes.UnderConstructionController.onPageLoad()
   }
 
   private def cpsoNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
@@ -192,7 +195,25 @@ class ManualSubmissionNavigator @Inject() () {
       }
     case (pages.manual.cpso.IndividualNamePage(cpsoId), mode, ua) => routes.UnderConstructionController.onPageLoad()
     case (CpsoOrganisationNamePage(cpsoId, reportId), mode, ua)   => routes.UnderConstructionController.onPageLoad()
-    case (CpsoSelfCertificationPage(cpsoId, reportId), mode, ua)  => routes.UnderConstructionController.onPageLoad()
+    case (CpsoSelfCertificationPage(cpsoId, reportId), mode, ua)  => controllers.manual.cpso.routes.CPSOWhereAreTheyBasedController.onPageLoad(mode)
+    case (CPSOIndividualDateOfBirthPage(cpsoId, reportId), mode, ua) =>
+      controllers.manual.cpso.routes.IndividualHavePlaceOfBirthController.onPageLoad(mode)
+    case (pages.manual.cpso.IndividualHavePlaceOfBirthPage(cpsoId, reportId), mode, ua) =>
+      ua.get(pages.manual.cpso.IndividualHavePlaceOfBirthPage(cpsoId, reportId)) match {
+        case Some(true)  => controllers.manual.cpso.routes.IndividualPlaceOfBirthController.onPageLoad(mode)
+        case Some(false) => routes.UnderConstructionController.onPageLoad()
+        case None        => routes.JourneyRecoveryController.onPageLoad()
+      }
+    case (pages.manual.cpso.IndividualPlaceOfBirthPage(cpsoId, reportId), mode, ua) =>
+      routes.UnderConstructionController.onPageLoad()
+    case (CPSOWhereAreTheyBasedPage(cpsoId, reportId), mode, ua) =>
+      ua.get(CPSOWhereAreTheyBasedPage(cpsoId, reportId)) match {
+        case Some(false) => controllers.manual.cpso.routes.CPSOAddressNonUkController.onPageLoad(mode)
+        case Some(true)  => routes.UnderConstructionController.onPageLoad()
+        case None        => routes.JourneyRecoveryController.onPageLoad()
+      }
+    case (CPSOAddressNonUkPage(cpsoId, reportId), mode, ua) =>
+      routes.UnderConstructionController.onPageLoad()
   }
 
   private def sponsorNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {

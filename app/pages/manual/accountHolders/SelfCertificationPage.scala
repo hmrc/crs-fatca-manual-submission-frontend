@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package models.manual.cpso
+package pages.manual.accountHolders
 
-import play.api.libs.json.*
+import models.ReportId
+import models.manual.accountHolders.SelfCertification
+import models.viewModels.AccountHolderId
+import pages.QuestionPage
+import play.api.libs.json.JsPath
 
-case class IndividualName(firstName: String, lastName: String) {
-  def fullName: String = s"$firstName $lastName".trim
-}
+final case class SelfCertificationPage(accountHolderId: AccountHolderId, reportId: ReportId) extends QuestionPage[SelfCertification]:
 
-object IndividualName {
-
-  implicit val format: OFormat[IndividualName] = Json.format
-}
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "accountHolder" \ accountHolderId.value \ "selfCertification"

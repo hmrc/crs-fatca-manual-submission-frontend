@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package models.manual.cpso
+package forms.manual.accountHolders
 
-import play.api.libs.json.*
+import javax.inject.Inject
 
-case class IndividualName(firstName: String, lastName: String) {
-  def fullName: String = s"$firstName $lastName".trim
-}
+import forms.mappings.Mappings
+import play.api.data.Form
+import models.manual.accountHolders.SelfCertification
 
-object IndividualName {
+class SelfCertificationFormProvider @Inject() extends Mappings {
 
-  implicit val format: OFormat[IndividualName] = Json.format
+  def apply(): Form[SelfCertification] =
+    Form(
+      "value" -> enumerable[SelfCertification]("accountHolders.selfCertification.error.required")
+    )
 }

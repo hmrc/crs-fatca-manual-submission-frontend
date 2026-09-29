@@ -20,11 +20,17 @@ import models.manual.account.{PaymentType, WasAccountOpen, WhatAccountType}
 import models.manual.accountHolders.IndividualName
 import models.manual.cpso.{CpsoSelfCertification, IndividualOrOrganisation}
 import models.{CrsOrFatca, NumberType, TypeOfReport, UkAddress, UkPostCodeForAccountHolder}
+import org.scalacheck.Arbitrary.*
 import org.scalacheck.{Arbitrary, Gen}
 
-import org.scalacheck.Arbitrary.*
+import models.manual.accountHolders.SelfCertification
 
 trait ModelGenerators {
+
+  implicit lazy val arbitrarySelfCertification: Arbitrary[SelfCertification] =
+    Arbitrary {
+      Gen.oneOf(SelfCertification.allValidValues)
+    }
 
   implicit lazy val arbitraryUkPostCodeForAccountHolder: Arbitrary[UkPostCodeForAccountHolder] =
     Arbitrary {
