@@ -98,18 +98,23 @@
                                 @cardList.head.title
                                 <strong class="govuk-tag govuk-tag--grey">@messages("viewSubmissions.voided")</strong>
                             </h2>
-                        } else {
+                        } else if(cardList.exists(_.isNilReport)) {
                             <h2 class="govuk-summary-card__title">
                             @cardList.head.title
-                            </h2>
-                            <div class="govuk-summary-card__actions">
-                                <a class="govuk-link govuk-link--no-visited-state"
-                                   href="@routes.VoidingFatcaInformationController.onPageLoad(originalMessageRefId)">
-                                    @messages("viewSubmissions.voidThisReport.link")
-                                </a>
-                                <span class="govuk-visually-hidden"> (@originalMessageRefId)</span>
-                                </a>
-                            </div>
+
+                        </h2>
+                        } else {
+                        <h2 class="govuk-summary-card__title">
+                        @cardList.head.title
+                        </h2>
+                        <div class="govuk-summary-card__actions">
+                            <a class="govuk-link govuk-link--no-visited-state"
+                               href="@routes.VoidingFatcaInformationController.onPageLoad(originalMessageRefId)">
+                                @messages("viewSubmissions.voidThisReport.link")
+                            </a>
+                            <span class="govuk-visually-hidden"> (@originalMessageRefId)</span>
+                            </a>
+                        </div>
                         }
                         </div>
                         <div class="govuk-summary-card__content">
