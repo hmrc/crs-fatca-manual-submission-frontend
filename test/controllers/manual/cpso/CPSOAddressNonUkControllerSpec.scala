@@ -90,7 +90,7 @@ class CPSOAddressNonUkControllerSpec extends SpecBase with MockitoSugar {
     .withPage(CurrentCPSOIdPage(), cpsoId)
     .withPage(IndividualNamePage(cpsoId)(reportId), individualCPSO)
 
-  "AddressNonUkController" - {
+  "CPSOAddressNonUkController" - {
 
     "must return OK and the correct view for a GET" in {
 
@@ -215,6 +215,27 @@ class CPSOAddressNonUkControllerSpec extends SpecBase with MockitoSugar {
 
       val application =
         applicationBuilder(maybeUserAnswers = None).build()
+
+      running(application) {
+        val request = FakeRequest(GET, addressNonUkRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+
+        redirectLocation(result).value mustEqual
+          routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Journey Recovery for a GET if no no cpso name is found" in {
+      val userAnswers = emptyUserAnswers
+        .withPage(ReportIdPage, reportId)
+        .withPage(CrsOrFatcaPage, Crs)
+        .withPage(CurrentCPSOIdPage(), cpsoId)
+
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, addressNonUkRoute)

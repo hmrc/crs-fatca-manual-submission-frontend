@@ -151,9 +151,12 @@ class CPSOWhereAreTheyBasedControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must redirect to Journey Recovery for a POST if no existing data is found" in {
+    "must redirect to Journey Recovery for a POST if no cpso name is found" in {
+      val ua = emptyUserAnswers
+        .withPage(ReportIdPage, reportId)
+        .withPage(CurrentCPSOIdPage()(reportId), currentCPSOId)
 
-      val application = applicationBuilder(maybeUserAnswers = None).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
 
       running(application) {
         val request =
