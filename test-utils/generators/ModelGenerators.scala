@@ -26,7 +26,18 @@ import org.scalacheck.{Arbitrary, Gen}
 import models.manual.accountHolders.SelfCertification
 import org.scalacheck.Arbitrary.*
 
+import models.AddressUk
+import org.scalacheck.Arbitrary.*
+
 trait ModelGenerators {
+
+  implicit lazy val arbitraryAddressUk: Arbitrary[AddressUk] =
+    Arbitrary {
+      for {
+        address1 <- arbitrary[String]
+        address2 <- arbitrary[String]
+      } yield AddressUk(address1, address2)
+    }
 
   implicit lazy val arbitraryUkPostCode: Arbitrary[UkPostCode] =
     Arbitrary {

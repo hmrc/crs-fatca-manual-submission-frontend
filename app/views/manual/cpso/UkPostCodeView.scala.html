@@ -50,7 +50,7 @@
             .withAutocomplete("postal-code")
         )
 
-        @link( controllers.routes.UnderConstructionController.onPageLoad().url, messages("cpso.ukPostCode.p2"), id = Some("enter-manually-id"))
+        @link( controllers.manual.cpso.routes.AddressUkController.onPageLoad(mode).url, messages("cpso.ukPostCode.p2"), id = Some("enter-manually-id"))
 
         @govukButton(
             ButtonViewModel(messages("cpso.ukPostCode.button")).withAttribute("id" -> "submit")

@@ -994,7 +994,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               .withPage(IsThisTheAddressPageForCpso(currentCPSOId, reportId), false)
 
             navigator.nextPage(IsThisTheAddressPageForCpso(currentCPSOId, reportId), NormalMode, ua) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.cpso.routes.AddressUkController.onPageLoad(NormalMode)
           }
 
           "must go to journey recovery when IsThisTheAddressPageForCpso is not present" in {

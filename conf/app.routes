@@ -368,3 +368,8 @@ GET        /manual/cp-so/select-address                       controllers.manual
 POST       /manual/cp-so/select-address                        controllers.manual.cpso.SelectAddressController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/cp-so/change-select-address                 controllers.manual.cpso.SelectAddressController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/cp-so/change-select-address                  controllers.manual.cpso.SelectAddressController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/cp-so/address-uk                        controllers.manual.cpso.AddressUkController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/cp-so/address-uk                        controllers.manual.cpso.AddressUkController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/cp-so/change-address-uk                  controllers.manual.cpso.AddressUkController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/cp-so/change-address-uk                  controllers.manual.cpso.AddressUkController.onSubmit(mode: Mode = CheckMode)

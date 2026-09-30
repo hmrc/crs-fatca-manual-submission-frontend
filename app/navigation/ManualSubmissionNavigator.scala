@@ -312,7 +312,7 @@ class ManualSubmissionNavigator @Inject() () {
   private def handleIsThisTheAddressNavigationForCPSO(userAnswers: UserAnswers, mode: Mode, cpsoId: CPSOId)(implicit reportId: ReportId) =
     userAnswers.get(IsThisTheAddressPage(cpsoId, reportId)) match {
       case Some(value) if value => controllers.routes.UnderConstructionController.onPageLoad()
-      case Some(_)              => controllers.routes.UnderConstructionController.onPageLoad()
+      case Some(_)              => controllers.manual.cpso.routes.AddressUkController.onPageLoad(mode)
       case None                 => routes.JourneyRecoveryController.onPageLoad()
     }
 

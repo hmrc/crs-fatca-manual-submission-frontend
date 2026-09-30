@@ -67,7 +67,7 @@ class SelectAddressViewSpec extends SpecBase {
       }
 
       "must display enter the manual address link" in {
-        doc.select("a#enter-address-link").attr("href") mustBe controllers.routes.UnderConstructionController.onPageLoad().url
+        doc.select("a#enter-address-link").attr("href") mustBe controllers.manual.cpso.routes.AddressUkController.onPageLoad(NormalMode).url
       }
 
     }

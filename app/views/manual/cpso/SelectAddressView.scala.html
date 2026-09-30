@@ -26,7 +26,7 @@
 )
 
 @(form: Form[_], mode: Mode, options: Seq[RadioItem], name: String, regime: String)(implicit request: Request[_], messages: Messages)
-@manualAddressLink = {@link(href=controllers.routes.UnderConstructionController.onPageLoad().url, messages("cpso.selectAddress.para.link"), id = Some("enter-address-link"), asPara = false)}
+@manualAddressLink = {@link(href=controllers.manual.cpso.routes.AddressUkController.onPageLoad(mode).url, messages("cpso.selectAddress.para.link"), id = Some("enter-address-link"), asPara = false)}
 @layout(pageTitle = title(form, messages(s"cpso.${regime}.selectAddress.title"))) {
 
     @formHelper(action = controllers.manual.cpso.routes.SelectAddressController.onSubmit(mode), Symbol("autoComplete") -> "off") {
