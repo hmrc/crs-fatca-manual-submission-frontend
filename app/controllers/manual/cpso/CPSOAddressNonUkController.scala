@@ -21,7 +21,7 @@ import controllers.actions.*
 import forms.manual.cpso.CPSOAddressNonUkFormProvider
 import models.{Countries, Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.cpso.{CPSOAddressNonUkPage, IndividualNamePage}
+import pages.manual.cpso.CPSOAddressNonUkPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController

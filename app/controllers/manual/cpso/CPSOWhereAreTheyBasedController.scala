@@ -21,7 +21,7 @@ import controllers.actions.*
 import forms.manual.cpso.CPSOWhereAreTheyBasedFormProvider
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.cpso.{CPSOWhereAreTheyBasedPage, IndividualNamePage}
+import pages.manual.cpso.CPSOWhereAreTheyBasedPage
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -51,18 +51,13 @@ class CPSOWhereAreTheyBasedController @Inject() (
 
       implicit val reportId: ReportId = request.reportId
 
-      request.userAnswers.get(IndividualNamePage(request.cpsoId)) match {
-        case Some(name) =>
-          val preparedForm = request.userAnswers.get(CPSOWhereAreTheyBasedPage(request.cpsoId, reportId)) match {
-            case None        => form
-            case Some(value) => form.fill(value)
-          }
-
-          Ok(view(preparedForm, mode, name.fullName, reportId.regime))
-        case None =>
-          logger.error("Individual Name value is missing")
-          Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+      val preparedForm = request.userAnswers.get(CPSOWhereAreTheyBasedPage(request.cpsoId, reportId)) match {
+        case None        => form
+        case Some(value) => form.fill(value)
       }
+
+      Ok(view(preparedForm, mode, request.cpsoName, reportId.regime))
+
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequired().async {
@@ -70,23 +65,16 @@ class CPSOWhereAreTheyBasedController @Inject() (
 
       implicit val reportId: ReportId = request.reportId
 
-      // TODO: ORG NAME SHOULD BE ADDED ONCE IMPLEMENTED
-      request.userAnswers.get(IndividualNamePage(request.cpsoId)) match {
-        case Some(name) =>
-          form
-            .bindFromRequest()
-            .fold(
-              formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, name.fullName, reportId.regime))),
-              value =>
-                for {
-                  updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(CPSOWhereAreTheyBasedPage(request.cpsoId, reportId), value))
-                  _              <- repository.set(updatedAnswers)
-                } yield Redirect(navigator.nextPage(CPSOWhereAreTheyBasedPage(request.cpsoId, reportId), mode, updatedAnswers))
-            )
-        case None =>
-          logger.error("Individual Name value is missing")
-          Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
-      }
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, request.cpsoName, reportId.regime))),
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(CPSOWhereAreTheyBasedPage(request.cpsoId, reportId), value))
+              _              <- repository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(CPSOWhereAreTheyBasedPage(request.cpsoId, reportId), mode, updatedAnswers))
+        )
 
   }
 }
