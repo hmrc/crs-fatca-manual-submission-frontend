@@ -16,21 +16,20 @@
 
 package controllers.manual.cpso
 
+import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.manual.cpso.IsThisTheAddressFormProvider
-
-import javax.inject.Inject
+import models.response.AddressLookup
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.cpso.{AddressLookupPage, IsThisTheAddressPage, WhatIsAddressPage}
+import pages.manual.cpso.{AddressLookupPage, AddressUkPage, IsThisTheAddressPage}
+import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import connectors.DatabaseConnector
-import models.response.AddressLookup
-import play.api.Logging
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.cpso.IsThisTheAddressView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class IsThisTheAddressController @Inject() (
@@ -93,7 +92,7 @@ class IsThisTheAddressController @Inject() (
                   for {
                     updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(IsThisTheAddressPage(request.cpsoId, reportId), value))
                     answersWithMaybeAddress <-
-                      if (value) { Future.fromTry(updatedAnswers.setWithReportId(WhatIsAddressPage(request.cpsoId, reportId), addr)) }
+                      if (value) { Future.fromTry(updatedAnswers.setWithReportId(AddressUkPage(request.cpsoId, reportId), addr.ukAddress)) }
                       else { Future.successful(updatedAnswers) }
                     _ <- repository.set(answersWithMaybeAddress)
                   } yield Redirect(navigator.nextPage(IsThisTheAddressPage(request.cpsoId, reportId), mode, answersWithMaybeAddress))

@@ -29,7 +29,7 @@
 
 @(form: Form[_], mode: Mode, regime: String, name: String, countries: Seq[Country])(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages(s"cpso.${regime}.addressUk.title "))) {
+@layout(pageTitle = title(form, messages(s"cpso.${regime}.addressUk.title"))) {
 
     @formHelper(action = controllers.manual.cpso.routes.AddressUkController.onSubmit(mode), Symbol("autoComplete") -> "on") {
 

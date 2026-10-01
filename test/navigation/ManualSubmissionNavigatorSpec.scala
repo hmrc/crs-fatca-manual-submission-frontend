@@ -35,6 +35,7 @@ import pages.*
 import pages.manual.account.*
 import pages.manual.cpso.{
   AddressLookupPage as AddressLookupPageForCpso,
+  AddressUkPage,
   CpsoOrganisationNamePage,
   CpsoSelfCertificationPage,
   IsThisTheAddressPage as IsThisTheAddressPageForCpso,
@@ -237,7 +238,27 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             controllers.routes.JourneyRecoveryController.onPageLoad()
         }
       }
+      "AddressUkPage" - {
+        val currentCPSOId               = CPSOId("testid")
+        implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+        val address = Address(uprn = None,
+                              addressLine1 = "string",
+                              addressLine2 = None,
+                              addressLine3 = Some("string"),
+                              addressLine4 = None,
+                              town = "town",
+                              postCode = None,
+                              country = Country.GB
+        ).ukAddress
 
+        "must go to under construction" in {
+          val ua = UserAnswers("id")
+            .withPage(AddressUkPage(currentCPSOId, reportId), address)
+          navigator.nextPage(AddressUkPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+            controllers.routes.UnderConstructionController.onPageLoad()
+
+        }
+      }
       "UkPostcodePage  for cp-so" - {
         val currentCPSOId = CPSOId("testid")
         val addressLookup: AddressLookup =

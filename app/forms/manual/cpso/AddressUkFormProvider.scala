@@ -20,7 +20,7 @@ import forms.mappings.Mappings
 import models.UkAddress
 import play.api.data.Form
 import play.api.data.Forms.*
-import utils.RegexConstants.{DOUBLE_DASH_INVALID, POSTCODE_FORMAT, POSTCODE_VALID, ukAddressRegex}
+import utils.RegexConstants.{ukAddressRegex, DOUBLE_DASH_INVALID, POSTCODE_FORMAT, POSTCODE_VALID}
 
 import javax.inject.Inject
 
@@ -79,7 +79,7 @@ class AddressUkFormProvider @Inject() extends Mappings {
         POSTCODE_FORMAT,
         "cpso.addressUk.error.postCode.format"
       ),
-      "country" -> text("accountHolders.ukAddress.error.country.required")
+      "country" -> text("cpso.addressUk.error.country.required")
     )(UkAddress.apply)(
       x => Some((x.addressLine1, x.addressLine2, x.city, x.county, x.postcode, x.country))
     )

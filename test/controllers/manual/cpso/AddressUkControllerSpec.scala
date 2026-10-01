@@ -21,13 +21,15 @@ import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.cpso.AddressUkFormProvider
 import models.SubmissionsConstants.CRS
-import models.{AddressUk, NormalMode, ReportId, UserAnswers}
+import models.manual.cpso.IndividualName
+import models.viewModels.manual.cpso.CPSOId
+import models.{AddressUk, Countries, NormalMode, ReportId, UkAddress, UserAnswers}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.cpso.AddressUkPage
+import pages.manual.cpso.{AddressUkPage, CurrentCPSOIdPage, IndividualNamePage}
 import play.api.inject.bind
 import play.api.libs.json.Json
 import play.api.mvc.Call
@@ -41,8 +43,11 @@ class AddressUkControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new AddressUkFormProvider()
-  val form         = formProvider()
+  val formProvider                = new AddressUkFormProvider()
+  val form                        = formProvider()
+  implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
+  val testName                    = "Some Name"
+  val countries                   = Countries.ukTerritories
 
   lazy val addressUkRoute = controllers.manual.cpso.routes.AddressUkController.onPageLoad(NormalMode).url
 
@@ -57,7 +62,11 @@ class AddressUkControllerSpec extends SpecBase with MockitoSugar {
   )
 
   "AddressUk Controller" - {
-    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
+    val cpsoId = CPSOId("some-id")
+    val ua = emptyUserAnswers
+      .withPage(ReportIdPage, reportId)
+      .withPage(CurrentCPSOIdPage(), cpsoId)
+      .withPage(IndividualNamePage(cpsoId), IndividualName("Some", "Name"))
 
     "must return OK and the correct view for a GET" in {
 
@@ -71,14 +80,31 @@ class AddressUkControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, "crs", testName, countries)(request, messages(application)).toString
+      }
+    }
+
+    "must redirect to journey recovery when name is not present for a GET" in {
+      val answer = emptyUserAnswers
+        .withPage(ReportIdPage, reportId)
+        .withPage(CurrentCPSOIdPage(), cpsoId)
+
+      val application = applicationBuilder(maybeUserAnswers = Some(answer)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, addressUkRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-      val validAnswer       = AddressUk("value 1", "value 2")
+      val validAnswer       = UkAddress("value 1", Some("value 2"), "Some City", Some("Some County"), "AA1 1AA", "GB")
       implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
-      val userAnswers       = ua.set(AddressUkPage(), validAnswer).success.value
+      val userAnswers       = ua.set(AddressUkPage(cpsoId, reportId), validAnswer).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
@@ -90,7 +116,7 @@ class AddressUkControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(AddressUk("value 1", "value 2")), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode, "crs", testName, countries)(request, messages(application)).toString
       }
     }
 
@@ -111,12 +137,49 @@ class AddressUkControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, addressUkRoute)
-            .withFormUrlEncodedBody(("address1", "value 1"), ("address2", "value 2"))
+            .withFormUrlEncodedBody(("addressLine1", "value 1"),
+                                    ("addressLine2", "value 2"),
+                                    ("city", "Some City"),
+                                    ("county", "Some County"),
+                                    ("postCode", "AA1 1AA"),
+                                    ("country", "GB")
+            )
 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
+      }
+    }
+
+    "must redirect to journey recovery when name is not present for a submit" in {
+      val answer = emptyUserAnswers
+        .withPage(ReportIdPage, reportId)
+        .withPage(CurrentCPSOIdPage(), cpsoId)
+
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(answer))
+          .overrides(
+            bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute))
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, addressUkRoute)
+            .withFormUrlEncodedBody(("addressLine1", "value 1"),
+                                    ("addressLine2", "value 2"),
+                                    ("city", "Some City"),
+                                    ("county", "Some County"),
+                                    ("postCode", "AA1 1AA"),
+                                    ("country", "GB")
+            )
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+
       }
     }
 
@@ -136,7 +199,7 @@ class AddressUkControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, "crs", testName, countries)(request, messages(application)).toString
       }
     }
 

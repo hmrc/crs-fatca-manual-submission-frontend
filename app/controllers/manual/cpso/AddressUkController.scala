@@ -48,10 +48,9 @@ class AddressUkController @Inject() (
   def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequired() {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
-      val regime = reportId.regime.value.toLowerCase
+      val regime                      = reportId.regime.value.toLowerCase
 
       val preparedForm = resolveAddress(request.userAnswers, request.cpsoId).fold(form)(form.fill)
-
 
       Ok(view(preparedForm, mode, regime, request.cpsoName, Countries.ukTerritories))
   }
@@ -60,7 +59,7 @@ class AddressUkController @Inject() (
     implicit request =>
       implicit val reportId: ReportId = request.reportId
       val cpsoId                      = request.cpsoId
-      val regime = reportId.regime.value.toLowerCase
+      val regime                      = reportId.regime.value.toLowerCase
 
       form
         .bindFromRequest()
@@ -78,7 +77,8 @@ class AddressUkController @Inject() (
     userAnswers
       .get(AddressUkPage(cpsoId, reportId))
       .orElse(
-        userAnswers.get(SelectAddressPage(cpsoId, reportId))
+        userAnswers
+          .get(SelectAddressPage(cpsoId, reportId))
           .map(_.ukAddress)
       )
       .orElse(

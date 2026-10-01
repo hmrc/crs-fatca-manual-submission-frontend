@@ -16,6 +16,7 @@
 
 package forms.manual.cpso
 
+import org.scalatest.matchers.should.Matchers.shouldBe
 import forms.behaviours.StringFieldBehaviours
 import forms.manual.cpso.AddressUkFormProvider
 import play.api.data.FormError
@@ -24,57 +25,143 @@ class AddressUkFormProviderSpec extends StringFieldBehaviours {
 
   val form = new AddressUkFormProvider()()
 
-  ".address1" - {
+  private val validData = Map(
+    "addressLine1" -> "Address Line 1",
+    "addressLine2" -> "Address Line 2",
+    "city"         -> "City",
+    "county"       -> "County",
+    "postCode"     -> "AA1 1AA",
+    "country"      -> "GB"
+  )
 
-    val fieldName   = "address1"
-    val requiredKey = "addressUk.error.address1.required"
-    val lengthKey   = "addressUk.error.address1.length"
-    val maxLength   = 100
+  "UkAddressFormProvider" - {
+    "bind valid data" in {
+      val result = form.bind(validData)
+      result.errors shouldBe empty
+    }
 
-    behave like fieldThatBindsValidData(
-      form,
-      fieldName,
-      stringsWithMaxLength(maxLength)
-    )
+    "addressLine1" - {
+      "cannot be empty" in {
+        val result = form.bind(validData.updated("addressLine1", ""))
+        result.errors("addressLine1").map(_.message) shouldBe Seq("cpso.addressUk.error.addressLine1.required")
+      }
 
-    behave like fieldWithMaxLength(
-      form,
-      fieldName,
-      maxLength = maxLength,
-      lengthError = FormError(fieldName, lengthKey, Seq(maxLength))
-    )
+      "must fail when longer than 200 characters" in {
+        val longAddressLine1 = "A" * 201
+        val result           = form.bind(validData.updated("addressLine1", longAddressLine1))
+        result.errors("addressLine1").map(_.message) shouldBe Seq("cpso.addressUk.error.addressLine1.length")
+      }
 
-    behave like mandatoryField(
-      form,
-      fieldName,
-      requiredError = FormError(fieldName, requiredKey)
-    )
+      "must fail when invalid characters are entered" in {
+        val invalidAddressLine1 = "Address Line 1!"
+        val result              = form.bind(validData.updated("addressLine1", invalidAddressLine1))
+        result.errors("addressLine1").map(_.message) shouldBe Seq("cpso.addressUk.error.addressLine1.invalid.characters")
+      }
+
+      "must fail when it contains a double dash" in {
+        val invalidAddressLine1 = "Address--Line 1"
+        val result              = form.bind(validData.updated("addressLine1", invalidAddressLine1))
+        result.errors("addressLine1").map(_.message) shouldBe Seq("cpso.addressUk.error.addressLine1.invalid.characters.combination")
+      }
+    }
+
+    "addressLine2" - {
+      "must fail when longer than 200 characters" in {
+        val longAddressLine2 = "A" * 201
+        val result           = form.bind(validData.updated("addressLine2", longAddressLine2))
+        result.errors("addressLine2").map(_.message) shouldBe Seq("cpso.addressUk.error.addressLine2.length")
+      }
+
+      "must fail when invalid characters are entered" in {
+        val invalidAddressLine2 = "Address Line 2!"
+        val result              = form.bind(validData.updated("addressLine2", invalidAddressLine2))
+        result.errors("addressLine2").map(_.message) shouldBe Seq("cpso.addressUk.error.addressLine2.invalid.characters")
+      }
+
+      "must fail when it contains a double dash" in {
+        val invalidAddressLine2 = "Address--Line 2"
+        val result              = form.bind(validData.updated("addressLine2", invalidAddressLine2))
+        result.errors("addressLine2").map(_.message) shouldBe Seq("cpso.addressUk.error.addressLine2.invalid.characters.combination")
+      }
+    }
+
+    "city" - {
+
+      "cannot be empty" in {
+        val result = form.bind(validData.updated("city", ""))
+        result.errors("city").map(_.message) shouldBe Seq("cpso.addressUk.error.city.required")
+      }
+
+      "must fail when longer than 200 characters" in {
+        val longCity = "A" * 201
+        val result   = form.bind(validData.updated("city", longCity))
+        result.errors("city").map(_.message) shouldBe Seq("cpso.addressUk.error.city.length")
+      }
+
+      "must fail when invalid characters are entered" in {
+        val invalidCity = "City!"
+        val result      = form.bind(validData.updated("city", invalidCity))
+        result.errors("city").map(_.message) shouldBe Seq("cpso.addressUk.error.city.invalid.characters")
+      }
+
+      "must fail when it contains a double dash" in {
+        val invalidCity = "City--Name"
+        val result      = form.bind(validData.updated("city", invalidCity))
+        result.errors("city").map(_.message) shouldBe Seq("cpso.addressUk.error.city.invalid.characters.combination")
+      }
+    }
+
+    "county" - {
+      "must fail when longer than 200 characters" in {
+        val longCounty = "A" * 201
+        val result     = form.bind(validData.updated("county", longCounty))
+        result.errors("county").map(_.message) shouldBe Seq("cpso.addressUk.error.county.length")
+      }
+
+      "must fail when invalid characters are entered" in {
+        val invalidCounty = "County!"
+        val result        = form.bind(validData.updated("county", invalidCounty))
+        result.errors("county").map(_.message) shouldBe Seq("cpso.addressUk.error.county.invalid.characters")
+      }
+
+      "must fail when it contains a double dash" in {
+        val invalidCounty = "County--Name"
+        val result        = form.bind(validData.updated("county", invalidCounty))
+        result.errors("county").map(_.message) shouldBe Seq("cpso.addressUk.error.county.invalid.characters.combination")
+      }
+    }
+
+    "postCode" - {
+      "cannot be empty" in {
+        val result = form.bind(validData.updated("postCode", ""))
+        result.errors("postCode").map(_.message) shouldBe Seq("cpso.addressUk.error.postCode.required")
+      }
+
+      "must fail when longer than 8 characters" in {
+        val longPostCode = "LS27 9DA" * 2
+        val result       = form.bind(validData.updated("postCode", longPostCode))
+        result.errors("postCode").map(_.message) shouldBe Seq("cpso.addressUk.error.postCode.length")
+      }
+
+      "must fail when invalid characters are entered" in {
+        val invalidPostCode = "AA1 1AA!"
+        val result          = form.bind(validData.updated("postCode", invalidPostCode))
+        result.errors("postCode").map(_.message) shouldBe Seq("cpso.addressUk.error.postCode.invalid")
+      }
+
+      "must fail when Postcode format is invalid" in {
+        val invalidPostCode = "2S23 9AB"
+        val result          = form.bind(validData.updated("postCode", invalidPostCode))
+        result.errors("postCode").map(_.message) shouldBe Seq("cpso.addressUk.error.postCode.format")
+      }
+    }
+
+    "country" - {
+      "cannot be empty" in {
+        val result = form.bind(validData.updated("country", ""))
+        result.errors("country").map(_.message) shouldBe Seq("cpso.addressUk.error.country.required")
+      }
+    }
   }
 
-  ".address2" - {
-
-    val fieldName   = "address2"
-    val requiredKey = "addressUk.error.address2.required"
-    val lengthKey   = "addressUk.error.address2.length"
-    val maxLength   = 100
-
-    behave like fieldThatBindsValidData(
-      form,
-      fieldName,
-      stringsWithMaxLength(maxLength)
-    )
-
-    behave like fieldWithMaxLength(
-      form,
-      fieldName,
-      maxLength = maxLength,
-      lengthError = FormError(fieldName, lengthKey, Seq(maxLength))
-    )
-
-    behave like mandatoryField(
-      form,
-      fieldName,
-      requiredError = FormError(fieldName, requiredKey)
-    )
-  }
 }

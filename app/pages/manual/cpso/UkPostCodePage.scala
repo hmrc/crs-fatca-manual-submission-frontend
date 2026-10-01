@@ -49,7 +49,7 @@ final case class UkPostCodePage(currentId: CPSOId, reportId: ReportId) extends Q
 
   private val cleanUpPages: Seq[QuestionPage[_]] = List(
     AddressLookupPage(currentId, reportId),
-//    SelectAddressPage(currentId, reportId),
-    IsThisTheAddressPage(currentId, reportId)
-//    UkAddressPage(currentId, reportId)
+    SelectAddressPage(currentId, reportId),
+    IsThisTheAddressPage(currentId, reportId),
+    AddressUkPage(currentId, reportId)
   )

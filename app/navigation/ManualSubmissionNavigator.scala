@@ -28,6 +28,7 @@ import pages.*
 import pages.manual.account.*
 import pages.manual.cpso.{
   AddressLookupPage as AddressLookupPageForCPSO,
+  AddressUkPage,
   CPSOIndividualDateOfBirthPage,
   CpsoOrganisationNamePage,
   CpsoSelfCertificationPage,
@@ -219,6 +220,7 @@ class ManualSubmissionNavigator @Inject() () {
     case (UkPostCodePageForCPSO(cpsoId, reportId), mode, ua)    => handleUKPostcodeNavigationForCPSO(ua, mode, cpsoId)
     case (IsThisTheAddressPage(cpsoId, reportId), mode, ua)     => handleIsThisTheAddressNavigationForCPSO(ua, mode, cpsoId)
     case (SelectAddressPageForCPSO(cpsoId, reportId), mode, ua) => handleSelectAddressNavigationForCPSO(ua, mode, cpsoId)
+    case (AddressUkPage(cpsoId, reportId), mode, ua)            => routes.UnderConstructionController.onPageLoad()
 
   }
 
