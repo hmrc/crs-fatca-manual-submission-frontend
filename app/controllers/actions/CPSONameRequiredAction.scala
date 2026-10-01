@@ -45,11 +45,11 @@ class CPSONameRequiredActionImpl @Inject() (implicit
         Left(Redirect(routes.JourneyRecoveryController.onPageLoad()))
     }
 
-    def checkOrganizationName = ua.get(CpsoOrganisationNamePage(request.cpsoId, reportId)) match {
+    def checkOrganisationName = ua.get(CpsoOrganisationNamePage(request.cpsoId, reportId)) match {
       case Some(name) =>
         Right(toRequest(request, name))
       case None =>
-        logger.error("Unable to find OrganizationName in User Answer")
+        logger.error("Unable to find OrganisationName in User Answer")
         Left(Redirect(routes.JourneyRecoveryController.onPageLoad()))
     }
 
@@ -61,7 +61,7 @@ class CPSONameRequiredActionImpl @Inject() (implicit
             case Some(IndividualOrOrganisation.Individual) =>
               checkIndividualName
             case Some(IndividualOrOrganisation.Organisation) =>
-              checkOrganizationName
+              checkOrganisationName
             case _ =>
               logger.error("Unable to find IndividualOrOrganisation-Individual value")
               Left(Redirect(routes.JourneyRecoveryController.onPageLoad()))
