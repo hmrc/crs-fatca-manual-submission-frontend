@@ -24,8 +24,7 @@ import org.jsoup.Jsoup
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.FakeRequest
-import views.html.AddressUkView
-import views.html.manual.accountHolders.UkAddressView
+import views.html.manual.cpso.AddressUkView
 
 class AddressUkViewSpec extends SpecBase {
   private val application = applicationBuilder().build()

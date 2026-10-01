@@ -35,7 +35,7 @@ import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import views.html.AddressUkView
+import views.html.manual.cpso.AddressUkView
 
 import scala.concurrent.Future
 
