@@ -877,3 +877,10 @@ cpso.individualPlaceOfBirth.error.region.invalidCombination = Region must not in
 cpso.individualPlaceOfBirth.error.region.length = Region must be 200 characters or less
 cpso.individualPlaceOfBirth.city.change.hidden = City
 cpso.individualPlaceOfBirth.region.change.hidden = Region
+
+whatIsAccountNumber.title = whatIsAccountNumber
+whatIsAccountNumber.heading = whatIsAccountNumber
+whatIsAccountNumber.checkYourAnswersLabel = whatIsAccountNumber
+whatIsAccountNumber.error.required = Enter whatIsAccountNumber
+whatIsAccountNumber.error.length = WhatIsAccountNumber must be 100 characters or less
+whatIsAccountNumber.change.hidden = WhatIsAccountNumber
