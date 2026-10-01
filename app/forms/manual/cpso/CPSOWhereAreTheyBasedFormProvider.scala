@@ -17,14 +17,15 @@
 package forms.manual.cpso
 
 import forms.mappings.Mappings
+import models.SubmissionsConstants.RegimeType
 import play.api.data.Form
 
 import javax.inject.Inject
 
 class CPSOWhereAreTheyBasedFormProvider @Inject() extends Mappings {
 
-  def apply(): Form[Boolean] =
+  def apply(regime: RegimeType): Form[Boolean] =
     Form(
-      "value" -> boolean("cpso.whereAreTheyBased.error.required")
+      "value" -> boolean(s"cpso.whereAreTheyBased.error.required.$regime")
     )
 }

@@ -851,7 +851,8 @@ cpso.whereAreTheyBased.title.CRS = Is the controlling person based in the UK, Je
 cpso.whereAreTheyBased.title.FATCA = Is the substantial owner based in the UK, Jersey, Guernsey or the Isle of Man?
 cpso.whereAreTheyBased.heading = Is {0} based in the UK, Jersey, Guernsey or the Isle of Man?
 cpso.whereAreTheyBased.checkYourAnswersLabel = Is {0} based in the UK, Jersey, Guernsey or the Isle of Man?
-cpso.whereAreTheyBased.error.required = Select yes if they are based in the UK, Jersey, Guernsey or the Isle of Man
+cpso.whereAreTheyBased.error.required.CRS = Select yes if the controlling person is based in the UK, Jersey, Guernsey or the Isle of Man
+cpso.whereAreTheyBased.error.required.FATCA = Select yes if the substantial owner is based in the UK, Jersey, Guernsey or the Isle of Man
 cpso.whereAreTheyBased.change.hidden = WhereAreTheyBased
 
 cpso.AddressNonUk.title.CRS = What is the controlling person’s address?
@@ -868,13 +869,14 @@ cpso.AddressNonUk.checkYourAnswersLabel.CRS = What is the controlling person’s
 cpso.AddressNonUk.checkYourAnswersLabel.FATCA = What is the substantial owner’s address?
 cpso.AddressNonUk.change.hidden.CRS = What is the controlling person’s address?
 cpso.AddressNonUk.change.hidden.FATCA = What is the substantial owner’s address?
+
 accountHolders.selfCertification.title = Has the account holder provided a valid self-certification?
 accountHolders.selfCertification.heading = Has {0} provided a valid self-certification?
 accountHolders.selfCertification.CRS900 = Not reported
 accountHolders.selfCertification.CRS901 = Yes
 accountHolders.selfCertification.CRS902 = No
 accountHolders.selfCertification.checkYourAnswersLabel = Have they provided a valid self certification?
-accountHolders.selfCertification.error.required =Select whether the account holder has provided a valid self-certification
+accountHolders.selfCertification.error.required = Select whether the account holder has provided a valid self-certification
 accountHolders.selfCertification.change.hidden = SelfCertification
 
 cpso.individualHavePlaceOfBirth.title = Do you want to provide the place of birth for the {0}?

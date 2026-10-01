@@ -43,7 +43,7 @@ class CPSOWhereAreTheyBasedControllerSpec extends SpecBase with MockitoSugar {
   def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new CPSOWhereAreTheyBasedFormProvider()
-  val form         = formProvider()
+  val form         = formProvider(CRS)
 
   lazy val whereAreTheyBasedRoute = controllers.manual.cpso.routes.CPSOWhereAreTheyBasedController.onPageLoad(NormalMode).url
 

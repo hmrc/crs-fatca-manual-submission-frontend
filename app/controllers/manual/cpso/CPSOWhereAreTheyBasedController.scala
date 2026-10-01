@@ -44,12 +44,10 @@ class CPSOWhereAreTheyBasedController @Inject() (
     with I18nSupport
     with Logging {
 
-  val form = formProvider()
-
   def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequired() {
     implicit request =>
-
       implicit val reportId: ReportId = request.reportId
+      val form                        = formProvider(reportId.regime)
 
       val preparedForm = request.userAnswers.get(CPSOWhereAreTheyBasedPage(request.cpsoId, reportId)) match {
         case None        => form
@@ -62,8 +60,8 @@ class CPSOWhereAreTheyBasedController @Inject() (
 
   def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequired().async {
     implicit request =>
-
       implicit val reportId: ReportId = request.reportId
+      val form                        = formProvider(reportId.regime)
 
       form
         .bindFromRequest()

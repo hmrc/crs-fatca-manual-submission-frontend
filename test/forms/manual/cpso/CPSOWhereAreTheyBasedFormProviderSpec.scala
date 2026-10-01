@@ -17,14 +17,16 @@
 package forms.manual.cpso
 
 import forms.behaviours.BooleanFieldBehaviours
+import models.SubmissionsConstants.{CRS, FATCA}
 import play.api.data.FormError
 
 class CPSOWhereAreTheyBasedFormProviderSpec extends BooleanFieldBehaviours {
 
-  val requiredKey = "cpso.whereAreTheyBased.error.required"
-  val invalidKey  = "error.boolean"
+  val requiredKeyCrs   = "cpso.whereAreTheyBased.error.required.CRS"
+  val requiredKeyFatca = "cpso.whereAreTheyBased.error.required.FATCA"
+  val invalidKey       = "error.boolean"
 
-  val form = new CPSOWhereAreTheyBasedFormProvider()()
+  val form = new CPSOWhereAreTheyBasedFormProvider()(CRS)
 
   ".value" - {
 
@@ -35,11 +37,22 @@ class CPSOWhereAreTheyBasedFormProviderSpec extends BooleanFieldBehaviours {
       fieldName,
       invalidError = FormError(fieldName, invalidKey)
     )
+    "when regime is CRS" - {
+      behave like mandatoryField(
+        form,
+        fieldName,
+        requiredError = FormError(fieldName, requiredKeyCrs)
+      )
+    }
+    "when regime is FATCA" - {
+      val form = new CPSOWhereAreTheyBasedFormProvider()(FATCA)
 
-    behave like mandatoryField(
-      form,
-      fieldName,
-      requiredError = FormError(fieldName, requiredKey)
-    )
+      behave like mandatoryField(
+        form,
+        fieldName,
+        requiredError = FormError(fieldName, requiredKeyFatca)
+      )
+    }
+
   }
 }

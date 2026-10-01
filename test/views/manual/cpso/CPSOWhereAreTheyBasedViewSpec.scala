@@ -34,7 +34,7 @@ class CPSOWhereAreTheyBasedViewSpec extends SpecBase {
   private val view: CPSOWhereAreTheyBasedView                            = application.injector.instanceOf[CPSOWhereAreTheyBasedView]
   private val messagesControllerComponents: MessagesControllerComponents = application.injector.instanceOf[MessagesControllerComponents]
   val formProvider                                                       = new CPSOWhereAreTheyBasedFormProvider()
-  val form                                                               = formProvider()
+  val form                                                               = formProvider(CRS)
 
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
   implicit private val messages: Messages               = messagesControllerComponents.messagesApi.preferred(Seq(Lang("en")))
