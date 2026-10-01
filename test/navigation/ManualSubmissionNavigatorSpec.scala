@@ -23,9 +23,8 @@ import models.CrsOrFatca.Fatca
 import models.SubmissionsConstants.{CRS, FATCA}
 import models.manual.account.PaymentType.*
 import models.manual.account.{AccountPayment, PaymentType, WasAccountOpen, WhatAccountType}
-import models.manual.accountHolders.{IndividualDateOfBirth, IndividualName}
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
-import models.manual.accountHolders.SelfCertification
+import models.manual.accountHolders.{IndividualDateOfBirth, IndividualName, SelfCertification}
 import models.manual.cpso.CpsoSelfCertification.Yes
 import models.manual.cpso.IndividualOrOrganisation
 import models.response.{Address, AddressLookup, Country}
@@ -33,8 +32,8 @@ import models.viewModels.manual.cpso.CPSOId
 import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
 import pages.manual.account.*
-import pages.manual.cpso.{CPSOAddressNonUkPage, CPSOWhereAreTheyBasedPage, CpsoOrganisationNamePage, CpsoSelfCertificationPage}
 import pages.manual.accountHolders.{UkAddressPage as AccountHolderUkAddressPage, *}
+import pages.manual.cpso.{CPSOAddressNonUkPage, CPSOWhereAreTheyBasedPage, CpsoOrganisationNamePage, CpsoSelfCertificationPage}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.*
@@ -608,19 +607,32 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         }
 
         "IndividualHavePlaceOfBirthPage" - {
-
           "must go to IndividualPlaceOfBirth page when answer is yes" in {
             val ua = UserAnswers("id")
               .withPage(pages.manual.cpso.IndividualHavePlaceOfBirthPage(currentCPSOId, reportId), true)
             navigator.nextPage(pages.manual.cpso.IndividualHavePlaceOfBirthPage(currentCPSOId, reportId), NormalMode, ua) mustBe
               controllers.manual.cpso.routes.IndividualPlaceOfBirthController.onPageLoad(NormalMode)
           }
+          "when regime is CRS" - {
+            implicit val reportId: ReportId = ReportId(CRS, 2024, None, "TestFIID")
 
-          "must go to CPSOWhereAreTheyBased page when answer is no" in {
-            val ua = UserAnswers("id")
-              .withPage(pages.manual.cpso.IndividualHavePlaceOfBirthPage(currentCPSOId, reportId), false)
-            navigator.nextPage(pages.manual.cpso.IndividualHavePlaceOfBirthPage(currentCPSOId, reportId), NormalMode, ua) mustBe
-              controllers.manual.cpso.routes.CPSOWhereAreTheyBasedController.onPageLoad(NormalMode)
+            "must go to controlling-person-type [under-construction] page when answer is no" in {
+              val ua = UserAnswers("id")
+                .withPage(pages.manual.cpso.IndividualHavePlaceOfBirthPage(currentCPSOId, reportId), false)
+              navigator.nextPage(pages.manual.cpso.IndividualHavePlaceOfBirthPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+                controllers.routes.UnderConstructionController.onPageLoad()
+            }
+          }
+          "when regime is FATCA" - {
+            implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+
+            "must go to CPSOWhereAreTheyBased page when answer is no" in {
+              val ua = UserAnswers("id")
+                .withPage(pages.manual.cpso.IndividualHavePlaceOfBirthPage(currentCPSOId, reportId), false)
+              navigator.nextPage(pages.manual.cpso.IndividualHavePlaceOfBirthPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+                controllers.manual.cpso.routes.CPSOWhereAreTheyBasedController.onPageLoad(NormalMode)
+            }
+
           }
 
           "must go to JourneyRecovery page when page doesnt have value" in {
@@ -631,13 +643,31 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         }
 
         "IndividualPlaceOfBirthPage" - {
-          "must go to CPSOWhereAreTheyBased page when submitted" in {
-            val ua = UserAnswers("id")
-              .withPage(pages.manual.cpso.IndividualPlaceOfBirthPage(currentCPSOId, reportId),
-                        models.manual.cpso.IndividualPlaceOfBirth(Some("city"), Some("region"), "FR")
-              )
-            navigator.nextPage(pages.manual.cpso.IndividualPlaceOfBirthPage(currentCPSOId, reportId), NormalMode, ua) mustBe
-              controllers.manual.cpso.routes.CPSOWhereAreTheyBasedController.onPageLoad(NormalMode)
+          "when regime is CRS" - {
+            implicit val reportId: ReportId = ReportId(CRS, 2024, None, "TestFIID")
+
+            "must go to controlling-person-type [under-construction] page when submitted" in {
+              val ua = UserAnswers("id")
+                .withPage(pages.manual.cpso.IndividualPlaceOfBirthPage(currentCPSOId, reportId),
+                          models.manual.cpso.IndividualPlaceOfBirth(Some("city"), Some("region"), "FR")
+                )
+              navigator.nextPage(pages.manual.cpso.IndividualPlaceOfBirthPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+                controllers.routes.UnderConstructionController.onPageLoad()
+            }
+
+          }
+          "when regime is FATCA" - {
+            implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+
+            "must go to CPSOWhereAreTheyBased page when submitted" in {
+              val ua = UserAnswers("id")
+                .withPage(pages.manual.cpso.IndividualPlaceOfBirthPage(currentCPSOId, reportId),
+                          models.manual.cpso.IndividualPlaceOfBirth(Some("city"), Some("region"), "FR")
+                )
+              navigator.nextPage(pages.manual.cpso.IndividualPlaceOfBirthPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+                controllers.manual.cpso.routes.CPSOWhereAreTheyBasedController.onPageLoad(NormalMode)
+            }
+
           }
         }
 
