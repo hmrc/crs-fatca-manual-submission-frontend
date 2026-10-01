@@ -877,3 +877,15 @@ cpso.individualPlaceOfBirth.error.region.invalidCombination = Region must not in
 cpso.individualPlaceOfBirth.error.region.length = Region must be 200 characters or less
 cpso.individualPlaceOfBirth.city.change.hidden = City
 cpso.individualPlaceOfBirth.region.change.hidden = Region
+
+individualPlaceOfBirth.title = individualPlaceOfBirth
+individualPlaceOfBirth.heading = individualPlaceOfBirth
+individualPlaceOfBirth.City = City
+individualPlaceOfBirth.Region = Region
+individualPlaceOfBirth.checkYourAnswersLabel = IndividualPlaceOfBirth
+individualPlaceOfBirth.error.City.required = Enter City
+individualPlaceOfBirth.error.Region.required = Enter Region
+individualPlaceOfBirth.error.City.length = City must be 100 characters or less
+individualPlaceOfBirth.error.Region.length = Region must be 100 characters or less
+individualPlaceOfBirth.City.change.hidden = City
+individualPlaceOfBirth.Region.change.hidden = Region

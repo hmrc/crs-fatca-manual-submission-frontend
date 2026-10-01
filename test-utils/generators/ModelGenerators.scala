@@ -17,15 +17,23 @@
 package generators
 
 import models.manual.account.{PaymentType, WasAccountOpen, WhatAccountType}
-import models.manual.accountHolders.IndividualName
+import models.manual.accountHolders.{IndividualName, IndividualPlaceOfBirth}
 import models.manual.cpso.{CpsoSelfCertification, IndividualOrOrganisation}
 import models.{CrsOrFatca, NumberType, TypeOfReport, UkAddress, UkPostCodeForAccountHolder}
 import org.scalacheck.Arbitrary.*
 import org.scalacheck.{Arbitrary, Gen}
 
 import models.manual.accountHolders.SelfCertification
-
+import org.scalacheck.Arbitrary.*
 trait ModelGenerators {
+
+  implicit lazy val arbitraryIndividualPlaceOfBirth: Arbitrary[IndividualPlaceOfBirth] =
+    Arbitrary {
+      for {
+        City <- arbitrary[String]
+        Region <- arbitrary[String]
+      } yield IndividualPlaceOfBirth(City, Region)
+    }
 
   implicit lazy val arbitrarySelfCertification: Arbitrary[SelfCertification] =
     Arbitrary {
