@@ -73,9 +73,9 @@ class AddressUkController @Inject() (
             } yield Redirect(navigator.nextPage(AddressUkPage(cpsoId, reportId), mode, updatedAnswers))
         )
   }
-  
+
   private def countries(regimeType: RegimeType) = regimeType match {
-    case CRS => Countries.crsUkTerritories
+    case CRS   => Countries.crsUkTerritories
     case FATCA => Countries.ukTerritories
   }
 

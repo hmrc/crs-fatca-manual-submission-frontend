@@ -41,7 +41,7 @@ object Countries {
     )
   )
 
-  val crsUkTerritories:Seq[Country] = Seq(
+  val crsUkTerritories: Seq[Country] = Seq(
     Country(
       code = "GB",
       description = "United Kingdom of Great Britain and Northern Ireland",
