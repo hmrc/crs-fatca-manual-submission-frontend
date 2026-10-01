@@ -200,12 +200,13 @@ class ManualSubmissionNavigator @Inject() () {
       controllers.manual.cpso.routes.IndividualHavePlaceOfBirthController.onPageLoad(mode)
     case (pages.manual.cpso.IndividualHavePlaceOfBirthPage(cpsoId, reportId), mode, ua) =>
       ua.get(pages.manual.cpso.IndividualHavePlaceOfBirthPage(cpsoId, reportId)) match {
-        case Some(true)  => controllers.manual.cpso.routes.IndividualPlaceOfBirthController.onPageLoad(mode)
-        case Some(false) => routes.UnderConstructionController.onPageLoad()
-        case None        => routes.JourneyRecoveryController.onPageLoad()
+        case Some(true) => controllers.manual.cpso.routes.IndividualPlaceOfBirthController.onPageLoad(mode)
+        case Some(false) =>
+          controllers.manual.cpso.routes.CPSOWhereAreTheyBasedController.onPageLoad(mode) // todo: update to handle regime specific routing in 4498
+        case None => routes.JourneyRecoveryController.onPageLoad()
       }
     case (pages.manual.cpso.IndividualPlaceOfBirthPage(cpsoId, reportId), mode, ua) =>
-      routes.UnderConstructionController.onPageLoad()
+      controllers.manual.cpso.routes.CPSOWhereAreTheyBasedController.onPageLoad(mode) // todo: update to handle regime specific routing in 4498
     case (CPSOWhereAreTheyBasedPage(cpsoId, reportId), mode, ua) =>
       ua.get(CPSOWhereAreTheyBasedPage(cpsoId, reportId)) match {
         case Some(false) => controllers.manual.cpso.routes.CPSOAddressNonUkController.onPageLoad(mode)

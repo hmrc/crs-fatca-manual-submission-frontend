@@ -616,11 +616,11 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               controllers.manual.cpso.routes.IndividualPlaceOfBirthController.onPageLoad(NormalMode)
           }
 
-          "must go to underconstruction page when answer is no" in {
+          "must go to CPSOWhereAreTheyBased page when answer is no" in {
             val ua = UserAnswers("id")
               .withPage(pages.manual.cpso.IndividualHavePlaceOfBirthPage(currentCPSOId, reportId), false)
             navigator.nextPage(pages.manual.cpso.IndividualHavePlaceOfBirthPage(currentCPSOId, reportId), NormalMode, ua) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.cpso.routes.CPSOWhereAreTheyBasedController.onPageLoad(NormalMode)
           }
 
           "must go to JourneyRecovery page when page doesnt have value" in {
@@ -631,13 +631,13 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         }
 
         "IndividualPlaceOfBirthPage" - {
-          "must go to underconstruction page when submitted" in {
+          "must go to CPSOWhereAreTheyBased page when submitted" in {
             val ua = UserAnswers("id")
               .withPage(pages.manual.cpso.IndividualPlaceOfBirthPage(currentCPSOId, reportId),
                         models.manual.cpso.IndividualPlaceOfBirth(Some("city"), Some("region"), "FR")
               )
             navigator.nextPage(pages.manual.cpso.IndividualPlaceOfBirthPage(currentCPSOId, reportId), NormalMode, ua) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.cpso.routes.CPSOWhereAreTheyBasedController.onPageLoad(NormalMode)
           }
         }
 
