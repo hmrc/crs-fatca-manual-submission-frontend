@@ -47,7 +47,7 @@ class AddressUkControllerSpec extends SpecBase with MockitoSugar {
   val form                        = formProvider()
   implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
   val testName                    = "Some Name"
-  val countries                   = Countries.ukTerritories
+  val countries                   = Countries.crsUkTerritories
 
   lazy val addressUkRoute = controllers.manual.cpso.routes.AddressUkController.onPageLoad(NormalMode).url
 
