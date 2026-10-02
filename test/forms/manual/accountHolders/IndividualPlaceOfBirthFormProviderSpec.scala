@@ -10,10 +10,10 @@ class IndividualPlaceOfBirthFormProviderSpec extends StringFieldBehaviours {
 
   ".City" - {
 
-    val fieldName = "City"
+    val fieldName   = "City"
     val requiredKey = "individualPlaceOfBirth.error.City.required"
-    val lengthKey = "individualPlaceOfBirth.error.City.length"
-    val maxLength = 100
+    val lengthKey   = "individualPlaceOfBirth.error.City.length"
+    val maxLength   = 100
 
     behave like fieldThatBindsValidData(
       form,
@@ -37,10 +37,10 @@ class IndividualPlaceOfBirthFormProviderSpec extends StringFieldBehaviours {
 
   ".Region" - {
 
-    val fieldName = "Region"
+    val fieldName   = "Region"
     val requiredKey = "individualPlaceOfBirth.error.Region.required"
-    val lengthKey = "individualPlaceOfBirth.error.Region.length"
-    val maxLength = 100
+    val lengthKey   = "individualPlaceOfBirth.error.Region.length"
+    val maxLength   = 100
 
     behave like fieldThatBindsValidData(
       form,

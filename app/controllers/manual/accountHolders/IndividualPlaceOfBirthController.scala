@@ -19,7 +19,7 @@ package controllers.manual.accountHolders
 import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.manual.accountHolders.IndividualPlaceOfBirthFormProvider
-import models.{Mode, ReportId}
+import models.{Countries, Mode, ReportId}
 import navigation.ManualSubmissionNavigator
 import pages.manual.accountHolders.IndividualPlaceOfBirthPage
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -30,46 +30,45 @@ import views.html.manual.accountHolders.IndividualPlaceOfBirthView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class IndividualPlaceOfBirthController @Inject()(
-                                      override val messagesApi: MessagesApi,
-                                      repository: DatabaseConnector,
-                                      navigator: ManualSubmissionNavigator,
-                                      identify: IdentifierAction,
-                                      getData: DataRetrievalAction,
-                                      requireData: DataRequiredAction,
-                                      reportIdAction: ReportIdRequiredAction,
-                                      formProvider: IndividualPlaceOfBirthFormProvider,
-                                      val controllerComponents: MessagesControllerComponents,
-                                      view: IndividualPlaceOfBirthView
-                                     )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+class IndividualPlaceOfBirthController @Inject() (
+  override val messagesApi: MessagesApi,
+  repository: DatabaseConnector,
+  navigator: ManualSubmissionNavigator,
+  actions: Actions,
+  formProvider: IndividualPlaceOfBirthFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: IndividualPlaceOfBirthView
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
+    with I18nSupport {
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequired() {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
 
-      val preparedForm = request.userAnswers.get(IndividualPlaceOfBirthPage()) match {
-        case None => form
+      val preparedForm = request.userAnswers.get(IndividualPlaceOfBirthPage(request.accountHolderId, reportId)) match {
+        case None        => form
         case Some(value) => form.fill(value)
       }
 
-      Ok(view(preparedForm, mode))
+      Ok(view(preparedForm, mode, Countries.allCountries(reportId.regime)))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequired().async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
 
-      form.bindFromRequest().fold(
-        formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors, mode))),
-
-        value =>
-          for {
-            updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(IndividualPlaceOfBirthPage(), value))
-            _              <- repository.set(updatedAnswers)
-          } yield Redirect(navigator.nextPage(IndividualPlaceOfBirthPage(), mode, updatedAnswers))
-      )
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, Countries.allCountries(reportId.regime)))),
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(IndividualPlaceOfBirthPage(request.accountHolderId, reportId), value))
+              _              <- repository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(IndividualPlaceOfBirthPage(request.accountHolderId, reportId), mode, updatedAnswers))
+        )
   }
 }

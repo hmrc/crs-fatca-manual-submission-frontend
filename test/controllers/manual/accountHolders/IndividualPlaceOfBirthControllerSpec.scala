@@ -27,7 +27,7 @@ class IndividualPlaceOfBirthControllerSpec extends SpecBase with MockitoSugar {
   def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new IndividualPlaceOfBirthFormProvider()
-  val form = formProvider()
+  val form         = formProvider()
 
   lazy val individualPlaceOfBirthRoute = routes.IndividualPlaceOfBirthController.onPageLoad(NormalMode).url
 
@@ -35,14 +35,14 @@ class IndividualPlaceOfBirthControllerSpec extends SpecBase with MockitoSugar {
     userAnswersId,
     Json.obj(
       IndividualPlaceOfBirthPage.toString -> Json.obj(
-        "City" -> "value 1",
+        "City"   -> "value 1",
         "Region" -> "value 2"
       )
     )
   )
 
   "IndividualPlaceOfBirth Controller" - {
-    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS,2025,None,"TestfiID"))
+    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
 
     "must return OK and the correct view for a GET" in {
 
@@ -61,9 +61,9 @@ class IndividualPlaceOfBirthControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-      val validAnswer = IndividualPlaceOfBirth("value 1", "value 2")
-      implicit val reportId = ReportId(CRS,2025,None,"TestfiID")
-      val userAnswers = ua.set(IndividualPlaceOfBirthPage(), validAnswer).success.value
+      val validAnswer       = IndividualPlaceOfBirth("value 1", "value 2")
+      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
+      val userAnswers       = ua.set(IndividualPlaceOfBirthPage(), validAnswer).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 

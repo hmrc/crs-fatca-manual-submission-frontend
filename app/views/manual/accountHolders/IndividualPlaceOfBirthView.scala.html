@@ -15,18 +15,22 @@
  *@
 
 @import viewmodels.InputWidth._
+@import models.response.Country
 
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
     govukInput: GovukInput,
-    govukButton: GovukButton
+    govukButton: GovukButton,
+    textInput: views.html.components.TextInput,
+    countrySelect: views.html.components.CountrySelect,
+    heading: views.html.components.Heading
 )
 
-@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, countries: Seq[Country])(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("individualPlaceOfBirth.title"))) {
+@layout(pageTitle = title(form, messages("accountHolder.individualPlaceOfBirth.title"))) {
 
     @formHelper(action = controllers.manual.accountHolders.routes.IndividualPlaceOfBirthController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
@@ -34,26 +38,37 @@
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
-        <h1 class="govuk-heading-xl">@messages("individualPlaceOfBirth.heading")</h1>
+        <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                <h1 class="govuk-heading-l govuk-!-margin-bottom-0 wrappable">@messages("accountHolder.individualPlaceOfBirth.heading", "name")</h1>
+            </legend>
 
-        @govukInput(
-            InputViewModel(
-                field = form("City"),
-                label = LabelViewModel(messages("individualPlaceOfBirth.City"))
+            @textInput(
+                field = form("city"),
+                label = messages("accountHolder.individualPlaceOfBirth.city"),
+                width = TwoThirds,
+                autocomplete = Some("address-level2")
             )
-            .withWidth(Full)
-        )
 
-        @govukInput(
-            InputViewModel(
-                field = form("Region"),
-                label = LabelViewModel(messages("individualPlaceOfBirth.Region"))
+            @textInput(
+                field = form("region"),
+                label = messages("accountHolder.individualPlaceOfBirth.region"),
+                width = TwoThirds,
+                autocomplete = Some("address-level1")
             )
-            .withWidth(Full)
-        )
+
+            <div class="govuk-!-width-two-thirds">
+            @countrySelect(
+                field = form("country"),
+                label = messages("accountHolder.individualPlaceOfBirth.country"),
+                countries = countries
+            )
+            </div>
+        </fieldset>
 
         @govukButton(
             ButtonViewModel(messages("site.saveContinue"))
+            .withId("submit")
         )
     }
 }

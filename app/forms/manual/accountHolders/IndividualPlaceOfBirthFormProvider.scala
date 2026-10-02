@@ -20,17 +20,36 @@ import forms.mappings.Mappings
 import models.manual.accountHolders.IndividualPlaceOfBirth
 import play.api.data.Form
 import play.api.data.Forms.*
+import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
+import utils.RegexConstants.{nonUkAddressRegex, DOUBLE_DASH_INVALID}
 
 import javax.inject.Inject
 
 class IndividualPlaceOfBirthFormProvider @Inject() extends Mappings {
 
-   def apply(): Form[IndividualPlaceOfBirth] = Form(
-     mapping(
-      "City" -> text("individualPlaceOfBirth.error.City.required")
-        .verifying(maxLength(100, "individualPlaceOfBirth.error.City.length")),
-      "Region" -> text("individualPlaceOfBirth.error.Region.required")
-        .verifying(maxLength(100, "individualPlaceOfBirth.error.Region.length"))
-    )(IndividualPlaceOfBirth.apply)(x => Some((x.City, x.Region)))
-   )
- }
+  private val maxLength = 200
+
+  def apply(): Form[IndividualPlaceOfBirth] = Form(
+    mapping(
+      "city" -> validatedOptionalText(
+        invalidKey = "accountHolder.individualPlaceOfBirth.error.city.invalid ",
+        invalidCombinationKey = "accountHolder.individualPlaceOfBirth.error.city.contains.dash",
+        lengthKey = "accountHolder.individualPlaceOfBirth.error.city.length",
+        regex = nonUkAddressRegex,
+        maxLength = maxLength
+      ),
+      "region" -> validatedOptionalText(
+        invalidKey = "accountHolder.individualPlaceOfBirth.error.region.invalid",
+        invalidCombinationKey = "accountHolder.individualPlaceOfBirth.error.region.dash",
+        lengthKey = "accountHolder.individualPlaceOfBirth.error.region.length",
+        regex = nonUkAddressRegex,
+        maxLength = maxLength
+      ),
+      "country" -> text("accountHolder.individualPlaceOfBirth.error.country.required")
+    )(
+      (city: Option[String], region: Option[String], country: String) => IndividualPlaceOfBirth.apply(city, region, country)
+    )(
+      x => Some((x.city, x.region, x.country))
+    )
+  )
+}

@@ -18,7 +18,7 @@ package models.manual.accountHolders
 
 import play.api.libs.json.*
 
-case class IndividualPlaceOfBirth (City: String, Region: String)
+case class IndividualPlaceOfBirth(city: Option[String], region: Option[String], country: String)
 
 object IndividualPlaceOfBirth {
 
