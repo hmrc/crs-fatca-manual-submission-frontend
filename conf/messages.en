@@ -930,3 +930,6 @@ cpso.addressUk.error.postCode.length = Postcode must be 10 characters or less
 cpso.addressUk.error.postCode.invalid = Postcode must only include letters a to z and numbers 0 to 9
 cpso.addressUk.error.postCode.format = Enter a real postcode
 cpso.addressUk.error.country.required = Select country
+
+cpso.whatIsAddress.checkYourAnswersLabel = Address
+cpso.whatIsAddress.change.hidden = Change Address

@@ -19,7 +19,7 @@ package controllers.manual.cpso
 import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.manual.cpso.AddressUkFormProvider
-import models.SubmissionsConstants.{CRS, FATCA, RegimeType}
+import models.SubmissionsConstants.{CRS, RegimeType}
 import models.viewModels.manual.cpso.CPSOId
 import models.{Countries, Mode, ReportId, UkAddress, UserAnswers}
 import navigation.ManualSubmissionNavigator
@@ -74,10 +74,9 @@ class AddressUkController @Inject() (
         )
   }
 
-  private def countries(regimeType: RegimeType) = regimeType match {
-    case CRS   => Countries.crsUkTerritories
-    case FATCA => Countries.ukTerritories
-  }
+  private def countries(regimeType: RegimeType) =
+    if (regimeType == CRS) Countries.crsUkTerritories
+    else Countries.ukTerritories
 
   private def resolveAddress(userAnswers: UserAnswers, cpsoId: CPSOId)(implicit reportId: ReportId): Option[UkAddress] =
     userAnswers
