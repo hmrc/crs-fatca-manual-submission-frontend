@@ -353,3 +353,8 @@ GET        /manual/cp-so/individual-place-of-birth                        contro
 POST       /manual/cp-so/individual-place-of-birth                        controllers.manual.cpso.IndividualPlaceOfBirthController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/cp-so/change-individual-place-of-birth                  controllers.manual.cpso.IndividualPlaceOfBirthController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/cp-so/change-individual-place-of-birth                  controllers.manual.cpso.IndividualPlaceOfBirthController.onSubmit(mode: Mode = CheckMode)
+
+GET         /manual/account-holder/individual-place-of-birth                        controllers.manual.accountHolders.IndividualPlaceOfBirthController.onPageLoad(mode: Mode = NormalMode)
+POST        /manual/account-holder/individual-place-of-birth                       controllers.manual.accountHolders.IndividualPlaceOfBirthController.onSubmit(mode: Mode = NormalMode)
+GET         /manual/account-holder/change-individual-place-of-birth                 controllers.manual.accountHolders.IndividualPlaceOfBirthController.onPageLoad(mode: Mode = CheckMode)
+POST        /manual/account-holder/change-individual-place-of-birth                   controllers.manual.accountHolders.IndividualPlaceOfBirthController.onSubmit(mode: Mode = CheckMode)
