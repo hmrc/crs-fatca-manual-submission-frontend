@@ -70,7 +70,7 @@ class SelectAddressController @Inject() (
 
         Ok(view(preparedForm, mode, options, request.cpsoName, regime))
       }).getOrElse {
-        logger.error(s"Unable to find address or name for cpso id ${request.cpsoId}")
+        logger.error(s"Unable to find address look up value for cpso id ${request.cpsoId}")
         Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)
       }
 
@@ -105,7 +105,7 @@ class SelectAddressController @Inject() (
               }
           )
       }).getOrElse {
-        logger.error(s"Unable to find address for cpsoId $cpsoId")
+        logger.error(s"Unable to find address lookup value for cpsoId $cpsoId")
         Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))
       }
 
