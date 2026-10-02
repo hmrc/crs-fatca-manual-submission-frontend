@@ -65,7 +65,7 @@ class IsThisTheAddressController @Inject() (
           addr => Ok(view(preparedForm, mode, addr, request.cpsoName, regime))
         )
         .getOrElse {
-          logger.error("Missing individual or org name")
+          logger.error("Missing address")
           Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
         }
 
@@ -99,7 +99,7 @@ class IsThisTheAddressController @Inject() (
               )
         }
         .getOrElse {
-          logger.error("Missing individual or org name")
+          logger.error("Missing address")
           Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
         }
 
