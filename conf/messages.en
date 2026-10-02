@@ -877,3 +877,59 @@ cpso.individualPlaceOfBirth.error.region.invalidCombination = Region must not in
 cpso.individualPlaceOfBirth.error.region.length = Region must be 200 characters or less
 cpso.individualPlaceOfBirth.city.change.hidden = City
 cpso.individualPlaceOfBirth.region.change.hidden = Region
+
+cpso.crs.ukPostCode.title = What is the postcode for the controlling person?
+cpso.fatca.ukPostCode.title = What is the postcode for the substantial owner?
+cpso.ukPostCode.heading = What is the postcode for {0}?
+cpso.ukPostCode.p1 = Enter the postcode to find the address automatically.
+cpso.ukPostCode.button = Find address
+cpso.ukPostCode.p2 = Or enter the address manually
+
+cpso.crs.isThisTheAddress.title = Is this the controlling person’s address?
+cpso.fatca.isThisTheAddress.title = Is this the substantial owner’s address?
+cpso.isThisTheAddress.heading = Is this the address for {0}?
+cpso.crs.isThisTheAddress.error.required = Select yes if this is the controlling person’s address
+cpso.fatca.isThisTheAddress.error.required = Select yes if this is the substantial owner’s address
+cpso.isThisTheAddress.change.hidden = IsThisTheAddress
+
+cpso.crs.selectAddress.title = What is the controlling person’s address?
+cpso.fatca.selectAddress.title =   What is the csubstantial owner’s address?
+cpso.selectAddress.heading = What is the address for {0}?
+cpso.crs.selectAddress.error.required= 	Select the controlling person’s address or enter it manually
+cpso.fatca.selectAddress.error.required= Select the substantial owner’s address or enter it manually
+cpso.selectAddress.para.link = enter the address manually
+cpso.selectAddress.para = Select from the list or {0}.
+
+cpso.crs.addressUk.title = What is the controlling person’s registered address?
+cpso.fatca.addressUk.title = What is the substantial owner’s registered address?
+cpso.addressUk.heading = What is the registered address for {0}?
+cpso.addressUk.addressLine1 = Address line 1
+cpso.addressUk.addressLine2 = Address line 2 (optional)
+cpso.addressUk.city = City
+cpso.addressUk.county = County (optional)
+cpso.addressUk.postCode = Postcode
+cpso.addressUk.country = Country
+
+cpso.addressUk.error.addressLine1.required = Enter address line 1
+cpso.addressUk.error.addressLine1.length = Address line 1 must be 200 characters or less
+cpso.addressUk.error.addressLine1.invalid.characters = Address line 1 must only include letters a to z, numbers 0 to 9, apostrophes, commas, ampersands (&), hyphens, full stops and spaces
+cpso.addressUk.error.addressLine1.invalid.characters.combination = Address line 1 must not include a double dash (--)
+cpso.addressUk.error.addressLine2.length = Address line 2 must be 200 characters or less
+cpso.addressUk.error.addressLine2.invalid = Address line 2 must only include letters a to z, numbers 0 to 9, apostrophes, commas, ampersands (&), hyphens, full stops and spaces"
+cpso.addressUk.error.addressLine2.invalid.characters = Address line 2 must only include letters a to z, numbers 0 to 9, apostrophes, commas, ampersands (&), hyphens, full stops and spaces
+cpso.addressUk.error.addressLine2.invalid.characters.combination = Address line 2 must not include a double dash (--)
+cpso.addressUk.error.city.required = Enter city
+cpso.addressUk.error.city.length = City must be 200 characters or less
+cpso.addressUk.error.city.invalid.characters = City must only include letters a to z, numbers 0 to 9, apostrophes, commas, ampersands (&), hyphens, full stops and spaces
+cpso.addressUk.error.city.invalid.characters.combination = City must not include a double dash (--)
+cpso.addressUk.error.county.length = County must be 200 characters or less
+cpso.addressUk.error.county.invalid.characters = County must only include letters a to z, numbers 0 to 9, apostrophes, commas, ampersands (&), hyphens, full stops and spaces
+cpso.addressUk.error.county.invalid.characters.combination = County must not include a double dash (--)
+cpso.addressUk.error.postCode.required =Enter a postcode, like AA1 1AA
+cpso.addressUk.error.postCode.length = Postcode must be 10 characters or less
+cpso.addressUk.error.postCode.invalid = Postcode must only include letters a to z and numbers 0 to 9
+cpso.addressUk.error.postCode.format = Enter a real postcode
+cpso.addressUk.error.country.required = Select country
+
+cpso.whatIsAddress.checkYourAnswersLabel = Address
+cpso.whatIsAddress.change.hidden = Change Address

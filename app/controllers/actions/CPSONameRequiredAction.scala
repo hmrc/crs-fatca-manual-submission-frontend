@@ -21,7 +21,7 @@ import models.ReportId
 import models.SubmissionsConstants.CRS
 import models.manual.cpso.IndividualOrOrganisation
 import models.requests.{CPSOIdRequest, CPSONameRequest}
-import pages.manual.cpso.{IndividualNamePage, IndividualOrOrganisationPage}
+import pages.manual.cpso.{CpsoOrganisationNamePage, IndividualNamePage, IndividualOrOrganisationPage}
 import play.api.Logging
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{ActionRefiner, Result}
@@ -44,6 +44,15 @@ class CPSONameRequiredActionImpl @Inject() (implicit
         logger.error("Unable to find IndividualName in User Answer")
         Left(Redirect(routes.JourneyRecoveryController.onPageLoad()))
     }
+
+    def checkOrganisationName = ua.get(CpsoOrganisationNamePage(request.cpsoId, reportId)) match {
+      case Some(name) =>
+        Right(toRequest(request, name))
+      case None =>
+        logger.error("Unable to find OrganisationName in User Answer")
+        Left(Redirect(routes.JourneyRecoveryController.onPageLoad()))
+    }
+
     Future.successful {
       reportId.regime match {
         case CRS => checkIndividualName
@@ -51,6 +60,8 @@ class CPSONameRequiredActionImpl @Inject() (implicit
           ua.get(IndividualOrOrganisationPage(request.cpsoId)) match {
             case Some(IndividualOrOrganisation.Individual) =>
               checkIndividualName
+            case Some(IndividualOrOrganisation.Organisation) =>
+              checkOrganisationName
             case _ =>
               logger.error("Unable to find IndividualOrOrganisation-Individual value")
               Left(Redirect(routes.JourneyRecoveryController.onPageLoad()))
