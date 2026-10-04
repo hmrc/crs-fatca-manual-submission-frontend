@@ -35,7 +35,7 @@ import services.{ConfirmationEmailRecipientsService, SubmissionHistoryService, V
 import utils.DateTimeFormats.*
 import views.html.VoidingFatcaInformationView
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.{LocalDate, LocalDateTime, ZoneId}
 import scala.concurrent.Future
 
 class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
@@ -67,8 +67,8 @@ class VoidingFatcaInformationControllerSpec extends SpecBase with MockitoSugar {
 
     val fiName          = "ABC Bank plc"
     val year            = "2027"
-    val uploadDateTime1 = LocalDateTime.of(2027, 5, 30, 11, 59)
-    val uploadDateTime2 = LocalDateTime.of(2027, 5, 28, 9, 25)
+    val uploadDateTime1 = LocalDateTime.of(2027, 5, 30, 11, 59).atZone(ZoneId.of("Europe/London")).toInstant
+    val uploadDateTime2 = LocalDateTime.of(2027, 5, 28, 9, 25).atZone(ZoneId.of("Europe/London")).toInstant
 
     val report1 =
       submittedReport.copy(

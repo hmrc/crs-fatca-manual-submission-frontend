@@ -20,13 +20,13 @@ import models.SubmissionsConstants.{FATCA3, SubmissionFileType, SubmissionType}
 import play.twirl.api.Html
 import utils.DateTimeFormats.formatTimeSent
 
-import java.time.LocalDateTime
+import java.time.Instant
 
 case class SubmissionCard(isVoided: Boolean,
                           messageRefId: String,
                           reportingYear: Int,
                           originalMessageRefId: String,
-                          timeSent: LocalDateTime,
+                          timeSent: Instant,
                           fileType: SubmissionFileType,
                           submissionType: SubmissionType,
                           isNilReport: Boolean

@@ -27,7 +27,7 @@ import utils.DateTimeFormats.formatTimeVoidSubmitted
 import utils.formatEmailList
 import views.html.InformationVoidedView
 
-import java.time.{Clock, LocalDateTime}
+import java.time.{Clock, Instant}
 import javax.inject.Inject
 
 class InformationVoidedController @Inject() (
@@ -51,7 +51,7 @@ class InformationVoidedController @Inject() (
 
         val infoVoidedViewModel = InformationVoidedViewModel(
           fiName = fiDetail.fiName,
-          dateTime = LocalDateTime.now(clock).formatTimeVoidSubmitted,
+          dateTime = Instant.now(clock).formatTimeVoidSubmitted,
           messageRefIds = voidedReport.messageRefIds.reverse,
           emailString = formatEmailList(voidedReport.emails),
           fiId = fiDetail.fiId
