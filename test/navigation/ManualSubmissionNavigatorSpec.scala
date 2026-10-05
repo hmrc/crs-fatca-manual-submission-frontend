@@ -32,17 +32,18 @@ import models.viewModels.manual.cpso.CPSOId
 import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
 import pages.manual.account.*
+import pages.manual.accountHolders.{UkAddressPage as AccountHolderUkAddressPage, *}
 import pages.manual.cpso.{
   AddressLookupPage as AddressLookupPageForCpso,
   AddressUkPage,
+  CPSOAddressNonUkPage,
+  CPSOWhereAreTheyBasedPage,
   CpsoOrganisationNamePage,
   CpsoSelfCertificationPage,
   IsThisTheAddressPage as IsThisTheAddressPageForCpso,
   SelectAddressPage as SelectAddressPageForCPSO,
   UkPostCodePage as UkPostCodePageForCpso
 }
-import pages.manual.accountHolders.{UkAddressPage as AccountHolderUkAddressPage, *}
-import pages.manual.cpso.{CPSOAddressNonUkPage, CPSOWhereAreTheyBasedPage, CpsoOrganisationNamePage, CpsoSelfCertificationPage}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.{AddressLookupPage, *}
@@ -774,11 +775,11 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             navigator.nextPage(CPSOWhereAreTheyBasedPage(currentCPSOId, reportId), NormalMode, ua) mustBe
               controllers.manual.cpso.routes.CPSOAddressNonUkController.onPageLoad(NormalMode)
           }
-          "must go to CPSO-Postcode [under construction] page when Yes is submitted" in {
+          "must go to CPSO-Postcode uk post page when Yes is submitted" in {
             val ua = UserAnswers("id")
               .withPage(CPSOWhereAreTheyBasedPage(currentCPSOId, reportId), true)
             navigator.nextPage(CPSOWhereAreTheyBasedPage(currentCPSOId, reportId), NormalMode, ua) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.cpso.routes.UkPostCodeController.onPageLoad(NormalMode)
           }
         }
         "CPSOAddressNonUk page" - {

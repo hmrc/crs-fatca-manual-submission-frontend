@@ -96,8 +96,6 @@ class IsThisTheAddressControllerSpec extends SpecBase with MockitoSugar {
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[IsThisTheAddressView]
-
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
       }
@@ -116,8 +114,6 @@ class IsThisTheAddressControllerSpec extends SpecBase with MockitoSugar {
         val request = FakeRequest(GET, isThisTheAddressRoute)
 
         val result = route(application, request).value
-
-        val view = application.injector.instanceOf[IsThisTheAddressView]
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url

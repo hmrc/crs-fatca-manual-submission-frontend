@@ -30,12 +30,14 @@ import pages.manual.cpso.{
   AddressLookupPage as AddressLookupPageForCPSO,
   AddressUkPage,
   CPSOIndividualDateOfBirthPage,
+  CPSOWhereAreTheyBasedPage,
   CpsoOrganisationNamePage,
   CpsoSelfCertificationPage,
   IndividualNamePage,
   IsThisTheAddressPage,
   SelectAddressPage as SelectAddressPageForCPSO,
-  UkPostCodePage as UkPostCodePageForCPSO
+  UkPostCodePage as UkPostCodePageForCPSO,
+  *
 }
 import pages.manual.accountHolders.{
   AccountHolderAddressNonUkPage,
@@ -227,7 +229,7 @@ class ManualSubmissionNavigator @Inject() () {
     case (CPSOWhereAreTheyBasedPage(cpsoId, reportId), mode, ua) =>
       ua.get(CPSOWhereAreTheyBasedPage(cpsoId, reportId)) match {
         case Some(false) => controllers.manual.cpso.routes.CPSOAddressNonUkController.onPageLoad(mode)
-        case Some(true)  => routes.UnderConstructionController.onPageLoad()
+        case Some(true)  => controllers.manual.cpso.routes.UkPostCodeController.onPageLoad(mode)
         case None        => routes.JourneyRecoveryController.onPageLoad()
       }
     case (CPSOAddressNonUkPage(cpsoId, reportId), mode, ua) =>

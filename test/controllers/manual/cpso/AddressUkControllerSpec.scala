@@ -23,7 +23,7 @@ import forms.manual.cpso.AddressUkFormProvider
 import models.SubmissionsConstants.CRS
 import models.manual.cpso.IndividualName
 import models.viewModels.manual.cpso.CPSOId
-import models.{AddressUk, Countries, NormalMode, ReportId, UkAddress, UserAnswers}
+import models.{Countries, NormalMode, ReportId, UkAddress, UserAnswers}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when

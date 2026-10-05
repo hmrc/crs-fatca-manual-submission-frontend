@@ -18,8 +18,6 @@ package forms.manual.cpso
 
 import org.scalatest.matchers.should.Matchers.shouldBe
 import forms.behaviours.StringFieldBehaviours
-import forms.manual.cpso.AddressUkFormProvider
-import play.api.data.FormError
 
 class AddressUkFormProviderSpec extends StringFieldBehaviours {
 

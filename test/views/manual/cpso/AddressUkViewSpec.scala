@@ -17,7 +17,6 @@
 package views.manual.cpso
 
 import base.SpecBase
-import forms.manual.accountHolders.UkAddressFormProvider
 import forms.manual.cpso.AddressUkFormProvider
 import models.{Countries, NormalMode}
 import org.jsoup.Jsoup

@@ -98,8 +98,6 @@ class UkPostCodeControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request = FakeRequest(GET, ukPostCodeRoute)
 
-        val view = application.injector.instanceOf[UkPostCodeView]
-
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
