@@ -32,7 +32,7 @@ import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mongo.test.DefaultPlayMongoRepositorySupport
 
-import java.time.LocalDateTime
+import java.time.Instant
 
 trait ISpecBase
     extends AnyFreeSpec
@@ -49,7 +49,7 @@ trait ISpecBase
     fiName = "name",
     fileName = "fileName",
     submissionStatus = PASSED,
-    uploadDateTime = LocalDateTime.now(),
+    uploadDateTime = Instant.now(),
     regime = FATCA,
     reportingYear = "2016",
     submissionCaseId = "123",
