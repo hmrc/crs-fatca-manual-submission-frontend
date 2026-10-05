@@ -41,24 +41,23 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist.*
 import viewmodels.implicits.*
 
-object IndividualPlaceOfBirthSummary  {
+object IndividualPlaceOfBirthSummary {
 
-  def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] = {
+  def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
     for {
       currentAccountHolderId <- answers.get(CurrentAccountHolderIdPage()(reportId))
-      answer <- answers.get(IndividualPlaceOfBirthPage(currentAccountHolderId, reportId))
+      answer                 <- answers.get(IndividualPlaceOfBirthPage(currentAccountHolderId, reportId))
     } yield {
 
       val value = HtmlFormat.escape(answer.city.getOrElse("")).toString + "<br/>" + HtmlFormat.escape(answer.region.getOrElse("")).toString
 
-        SummaryListRowViewModel(
-          key     = "accountholder.individualPlaceOfBirth.checkYourAnswersLabel",
-          value   = ValueViewModel(HtmlContent(value)),
-          actions = Seq(
-            ActionItemViewModel("site.change", controllers.manual.accountHolders.routes.IndividualPlaceOfBirthController.onPageLoad(CheckMode).url)
-              .withVisuallyHiddenText(messages("individualPlaceOfBirth.change.hidden"))
-          )
+      SummaryListRowViewModel(
+        key = "accountholder.individualPlaceOfBirth.checkYourAnswersLabel",
+        value = ValueViewModel(HtmlContent(value)),
+        actions = Seq(
+          ActionItemViewModel("site.change", controllers.manual.accountHolders.routes.IndividualPlaceOfBirthController.onPageLoad(CheckMode).url)
+            .withVisuallyHiddenText(messages("individualPlaceOfBirth.change.hidden"))
         )
+      )
     }
-  }
 }
