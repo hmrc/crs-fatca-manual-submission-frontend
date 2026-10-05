@@ -642,6 +642,28 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           }
         }
 
+        "IndividualHaveDateOfBirthPage" - {
+          "must go to IndividualDateOfBirth page when answer is yes" in {
+            val ua = UserAnswers("id")
+              .withPage(pages.manual.cpso.IndividualHaveDateOfBirthPage(reportId, currentCPSOId), true)
+            navigator.nextPage(pages.manual.cpso.IndividualHaveDateOfBirthPage(reportId, currentCPSOId), NormalMode, ua) mustBe
+              controllers.manual.cpso.routes.CPSOIndividualDateOfBirthController.onPageLoad(NormalMode)
+          }
+
+          "must go to IndividualDateOfBirth page when answer is no" in {
+            val ua = UserAnswers("id")
+              .withPage(pages.manual.cpso.IndividualHaveDateOfBirthPage(reportId, currentCPSOId), false)
+            navigator.nextPage(pages.manual.cpso.IndividualHaveDateOfBirthPage(reportId, currentCPSOId), NormalMode, ua) mustBe
+              controllers.manual.cpso.routes.IndividualHavePlaceOfBirthController.onPageLoad(NormalMode)
+          }
+
+          "must go to JourneyRecovery page when page doesnt have value" in {
+            val ua = UserAnswers("id")
+            navigator.nextPage(pages.manual.cpso.IndividualHaveDateOfBirthPage(reportId, currentCPSOId), NormalMode, ua) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
+        }
+
         "IndividualPlaceOfBirthPage" - {
           "when regime is CRS" - {
             implicit val reportId: ReportId = ReportId(CRS, 2024, None, "TestFIID")
