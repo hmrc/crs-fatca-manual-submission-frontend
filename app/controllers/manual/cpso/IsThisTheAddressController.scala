@@ -65,7 +65,7 @@ class IsThisTheAddressController @Inject() (
           addr => Ok(view(preparedForm, mode, addr, request.cpsoName, regime))
         )
         .getOrElse {
-          logger.error("Missing address")
+          logger.error(s"Missing address lookup value for cpso id ${request.cpsoId}")
           Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
         }
 
@@ -99,7 +99,7 @@ class IsThisTheAddressController @Inject() (
               )
         }
         .getOrElse {
-          logger.error("Missing address")
+          logger.error(s"Missing address lookup value for cpso id ${request.cpsoId}")
           Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
         }
 
