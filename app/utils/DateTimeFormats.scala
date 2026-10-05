@@ -39,7 +39,7 @@ object DateTimeFormats {
   private val voidTimeSubmittedFormat: DateTimeFormatter =
     DateTimeFormatter.ofPattern("'on' d MMMM yyyy 'at' h:mma")
 
-  private val ukZone   = ZoneId.of("Europe/London")
+  private val utc      = ZoneOffset.UTC
   private val ukLocale = Locale.UK
 
   extension (t: Instant)
@@ -51,14 +51,14 @@ object DateTimeFormats {
     def formatTimeSent: String =
       cardSummaryTimeSentFormat
         .withLocale(ukLocale)
-        .format(t.atZone(ukZone))
+        .format(t.atZone(utc))
         .replace("AM", "am")
         .replace("PM", "pm")
 
     def formatTimeVoidSubmitted: String =
       voidTimeSubmittedFormat
         .withLocale(ukLocale)
-        .format(t.atZone(ukZone))
+        .format(t.atZone(utc))
         .replace("PM", "pm")
 
 }
