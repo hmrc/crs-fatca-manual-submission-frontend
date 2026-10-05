@@ -14,48 +14,51 @@
  * limitations under the License.
  */
 
-///*
-// * Copyright 2026 HM Revenue & Customs
-// *
-// * Licensed under the Apache License, Version 2.0 (the "License");
-// * you may not use this file except in compliance with the License.
-// * You may obtain a copy of the License at
-// *
-// *     http://www.apache.org/licenses/LICENSE-2.0
-// *
-// * Unless required by applicable law or agreed to in writing, software
-// * distributed under the License is distributed on an "AS IS" BASIS,
-// * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// * See the License for the specific language governing permissions and
-// * limitations under the License.
-// */
-//
-//package viewmodels.checkAnswers.manual.accountHolders
-//
-//import models.{CheckMode, ReportId, UserAnswers}
-//import pages.manual.accountHolders.IndividualPlaceOfBirthPage
-//import play.api.i18n.Messages
-//import play.twirl.api.HtmlFormat
-//import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
-//import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
-//import viewmodels.govuk.summarylist.*
-//import viewmodels.implicits.*
-//
-//object IndividualPlaceOfBirthSummary  {
-//
-//  def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
-//    answers.get(IndividualPlaceOfBirthPage()).map {
-//      answer =>
-//
-//      val value = HtmlFormat.escape(answer.City).toString + "<br/>" + HtmlFormat.escape(answer.Region).toString
-//
-//        SummaryListRowViewModel(
-//          key     = "individualPlaceOfBirth.checkYourAnswersLabel",
-//          value   = ValueViewModel(HtmlContent(value)),
-//          actions = Seq(
-//            ActionItemViewModel("site.change", controllers.manual.accountHolders.routes.IndividualPlaceOfBirthController.onPageLoad(CheckMode).url)
-//              .withVisuallyHiddenText(messages("individualPlaceOfBirth.change.hidden"))
-//          )
-//        )
-//    }
-//}
+/*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http:www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package viewmodels.checkAnswers.manual.accountHolders
+
+import models.{CheckMode, ReportId, UserAnswers}
+import pages.manual.accountHolders.{CurrentAccountHolderIdPage, IndividualPlaceOfBirthPage}
+import play.api.i18n.Messages
+import play.twirl.api.HtmlFormat
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
+import viewmodels.govuk.summarylist.*
+import viewmodels.implicits.*
+
+object IndividualPlaceOfBirthSummary  {
+
+  def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] = {
+    for {
+      currentAccountHolderId <- answers.get(CurrentAccountHolderIdPage()(reportId))
+      answer <- answers.get(IndividualPlaceOfBirthPage(currentAccountHolderId, reportId))
+    } yield {
+
+      val value = HtmlFormat.escape(answer.city.getOrElse("")).toString + "<br/>" + HtmlFormat.escape(answer.region.getOrElse("")).toString
+
+        SummaryListRowViewModel(
+          key     = "accountholder.individualPlaceOfBirth.checkYourAnswersLabel",
+          value   = ValueViewModel(HtmlContent(value)),
+          actions = Seq(
+            ActionItemViewModel("site.change", controllers.manual.accountHolders.routes.IndividualPlaceOfBirthController.onPageLoad(CheckMode).url)
+              .withVisuallyHiddenText(messages("individualPlaceOfBirth.change.hidden"))
+          )
+        )
+    }
+  }
+}
