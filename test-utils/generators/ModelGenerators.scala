@@ -28,14 +28,6 @@ import org.scalacheck.Arbitrary.*
 
 trait ModelGenerators {
 
-  implicit lazy val arbitraryIndividualPlaceOfBirth: Arbitrary[IndividualPlaceOfBirth] =
-    Arbitrary {
-      for {
-        City   <- arbitrary[String]
-        Region <- arbitrary[String]
-      } yield IndividualPlaceOfBirth(City, Region)
-    }
-
   implicit lazy val arbitrarySelfCertification: Arbitrary[SelfCertification] =
     Arbitrary {
       Gen.oneOf(SelfCertification.allValidValues)

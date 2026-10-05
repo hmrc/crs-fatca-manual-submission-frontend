@@ -1,24 +1,41 @@
+/*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package controllers.manual.accountHolders
 
 import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.accountHolders.IndividualPlaceOfBirthFormProvider
-import models.SubmissionsConstants.CRS
-import models.manual.accountHolders.IndividualPlaceOfBirth
-import models.{NormalMode, ReportId, UserAnswers}
+import models.SubmissionsConstants.{CRS, FATCA}
+import models.manual.accountHolders.{IndividualName, IndividualPlaceOfBirth}
+import models.viewModels.AccountHolderId
+import models.{Countries, NormalMode, ReportId, UserAnswers}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.accountHolders.IndividualPlaceOfBirthPage
+import pages.manual.accountHolders.{AccountHolderIndividualNamePage, CurrentAccountHolderIdPage, IndividualPlaceOfBirthPage}
 import play.api.inject.bind
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import views.html.IndividualPlaceOfBirthView
+import views.html.manual.accountHolders.IndividualPlaceOfBirthView
 
 import scala.concurrent.Future
 
@@ -29,7 +46,7 @@ class IndividualPlaceOfBirthControllerSpec extends SpecBase with MockitoSugar {
   val formProvider = new IndividualPlaceOfBirthFormProvider()
   val form         = formProvider()
 
-  lazy val individualPlaceOfBirthRoute = routes.IndividualPlaceOfBirthController.onPageLoad(NormalMode).url
+  lazy val individualPlaceOfBirthRoute = controllers.manual.accountHolders.routes.IndividualPlaceOfBirthController.onPageLoad(NormalMode).url
 
   val userAnswers = UserAnswers(
     userAnswersId,
@@ -42,7 +59,14 @@ class IndividualPlaceOfBirthControllerSpec extends SpecBase with MockitoSugar {
   )
 
   "IndividualPlaceOfBirth Controller" - {
-    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
+    implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
+    val accountHolderId   = AccountHolderId("some-id")
+    val countries         = Countries.allCountries(CRS)
+    val name              = IndividualName("Test", "Last")
+    val ua = emptyUserAnswers
+      .withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
+      .withPage(CurrentAccountHolderIdPage(), accountHolderId)
+      .withPage(AccountHolderIndividualNamePage(accountHolderId), name)
 
     "must return OK and the correct view for a GET" in {
 
@@ -56,14 +80,30 @@ class IndividualPlaceOfBirthControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, countries, name.fullName)(request, messages(application)).toString
+      }
+    }
+
+    "must redirect to journey recovery when individual name is missing in GET" in {
+      val answer = emptyUserAnswers
+        .withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
+        .withPage(CurrentAccountHolderIdPage(), accountHolderId)
+
+      val application = applicationBuilder(maybeUserAnswers = Some(answer)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, individualPlaceOfBirthRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-      val validAnswer       = IndividualPlaceOfBirth("value 1", "value 2")
-      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
-      val userAnswers       = ua.set(IndividualPlaceOfBirthPage(), validAnswer).success.value
+      val validAnswer = IndividualPlaceOfBirth(Some("value 1"), Some("value 2"), "FX")
+      val userAnswers = ua.set(IndividualPlaceOfBirthPage(accountHolderId, reportId), validAnswer).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
@@ -75,7 +115,10 @@ class IndividualPlaceOfBirthControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(IndividualPlaceOfBirth("value 1", "value 2")), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(IndividualPlaceOfBirth(Some("value 1"), Some("value 2"), "FX")), NormalMode, countries, name.fullName)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -96,12 +139,36 @@ class IndividualPlaceOfBirthControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, individualPlaceOfBirthRoute)
-            .withFormUrlEncodedBody(("City", "value 1"), ("Region", "value 2"))
+            .withFormUrlEncodedBody(("city", "value 1"), ("region", "value 2"), ("country", "FR"))
 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
+      }
+    }
+
+    "must redirect to the next page when individual name is missing for a post" in {
+      val answer = emptyUserAnswers
+        .withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
+        .withPage(CurrentAccountHolderIdPage(), accountHolderId)
+
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(answer))
+          .overrides(
+            bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute))
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, individualPlaceOfBirthRoute)
+            .withFormUrlEncodedBody(("city", "value 1"), ("region", "value 2"), ("country", "FR"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 
@@ -121,7 +188,7 @@ class IndividualPlaceOfBirthControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, countries, name.fullName)(request, messages(application)).toString
       }
     }
 

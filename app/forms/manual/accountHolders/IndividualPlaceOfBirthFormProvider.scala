@@ -20,8 +20,7 @@ import forms.mappings.Mappings
 import models.manual.accountHolders.IndividualPlaceOfBirth
 import play.api.data.Form
 import play.api.data.Forms.*
-import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
-import utils.RegexConstants.{nonUkAddressRegex, DOUBLE_DASH_INVALID}
+import utils.RegexConstants.nonUkAddressRegex
 
 import javax.inject.Inject
 
@@ -32,7 +31,7 @@ class IndividualPlaceOfBirthFormProvider @Inject() extends Mappings {
   def apply(): Form[IndividualPlaceOfBirth] = Form(
     mapping(
       "city" -> validatedOptionalText(
-        invalidKey = "accountHolder.individualPlaceOfBirth.error.city.invalid ",
+        invalidKey = "accountHolder.individualPlaceOfBirth.error.city.invalid",
         invalidCombinationKey = "accountHolder.individualPlaceOfBirth.error.city.contains.dash",
         lengthKey = "accountHolder.individualPlaceOfBirth.error.city.length",
         regex = nonUkAddressRegex,

@@ -1,64 +1,124 @@
+/*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package forms.manual.accountHolders
 
 import forms.behaviours.StringFieldBehaviours
-import forms.manual.accountHolders.IndividualPlaceOfBirthFormProvider
-import play.api.data.FormError
+import models.manual.accountHolders.IndividualPlaceOfBirth
 
 class IndividualPlaceOfBirthFormProviderSpec extends StringFieldBehaviours {
 
   val form = new IndividualPlaceOfBirthFormProvider()()
 
-  ".City" - {
+  private val validData = Map(
+    "city"    -> "1 Test Street",
+    "region"  -> "Test Building",
+    "country" -> "FR"
+  )
 
-    val fieldName   = "City"
-    val requiredKey = "individualPlaceOfBirth.error.City.required"
-    val lengthKey   = "individualPlaceOfBirth.error.City.length"
-    val maxLength   = 100
+  private def errorMessages(
+    fieldName: String,
+    value: String
+  ): Seq[String] =
+    form
+      .bind(validData.updated(fieldName, value))
+      .errors(fieldName)
+      .map(_.message)
 
-    behave like fieldThatBindsValidData(
-      form,
-      fieldName,
-      stringsWithMaxLength(maxLength)
-    )
+  "must bind valid data" in {
 
-    behave like fieldWithMaxLength(
-      form,
-      fieldName,
-      maxLength = maxLength,
-      lengthError = FormError(fieldName, lengthKey, Seq(maxLength))
-    )
+    val result = form.bind(validData)
 
-    behave like mandatoryField(
-      form,
-      fieldName,
-      requiredError = FormError(fieldName, requiredKey)
+    result.errors mustBe empty
+
+    result.value mustBe Some(
+      IndividualPlaceOfBirth(
+        city = Some("1 Test Street"),
+        region = Some("Test Building"),
+        country = "FR"
+      )
     )
   }
 
-  ".Region" - {
+  ".city" - {
 
-    val fieldName   = "Region"
-    val requiredKey = "individualPlaceOfBirth.error.Region.required"
-    val lengthKey   = "individualPlaceOfBirth.error.Region.length"
-    val maxLength   = 100
+    "must bind an empty value as None" in {
 
-    behave like fieldThatBindsValidData(
-      form,
-      fieldName,
-      stringsWithMaxLength(maxLength)
-    )
+      val result =
+        form.bind(validData.updated("city", ""))
 
-    behave like fieldWithMaxLength(
-      form,
-      fieldName,
-      maxLength = maxLength,
-      lengthError = FormError(fieldName, lengthKey, Seq(maxLength))
-    )
+      result.errors mustBe empty
+      result.value.value.city mustBe None
+    }
 
-    behave like mandatoryField(
-      form,
-      fieldName,
-      requiredError = FormError(fieldName, requiredKey)
-    )
+    "must fail when longer than 200 characters" in {
+      errorMessages("city", "a" * 201) must contain(
+        "accountHolder.individualPlaceOfBirth.error.city.length"
+      )
+    }
+
+    "must fail when invalid characters are entered" in {
+      errorMessages("city", "Test Building!") must contain(
+        "accountHolder.individualPlaceOfBirth.error.city.invalid"
+      )
+    }
+
+    "must fail when it contains a double dash" in {
+      errorMessages("city", "Test--Building") must contain(
+        "accountHolder.individualPlaceOfBirth.error.city.contains.dash"
+      )
+    }
+  }
+
+  ".region" - {
+
+    "must bind an empty value as None" in {
+
+      val result =
+        form.bind(validData.updated("region", ""))
+
+      result.errors mustBe empty
+      result.value.value.region mustBe None
+    }
+
+    "must fail when longer than 200 characters" in {
+      errorMessages("region", "a" * 201) must contain(
+        "accountHolder.individualPlaceOfBirth.error.region.length"
+      )
+    }
+
+    "must fail when invalid characters are entered" in {
+      errorMessages("region", "Test Building!") must contain(
+        "accountHolder.individualPlaceOfBirth.error.region.invalid"
+      )
+    }
+
+    "must fail when it contains a double dash" in {
+      errorMessages("region", "Test--Building") must contain(
+        "accountHolder.individualPlaceOfBirth.error.region.dash"
+      )
+    }
+  }
+
+  ".country" - {
+
+    "must fail when empty" in {
+      errorMessages("country", "") must contain(
+        "accountHolder.individualPlaceOfBirth.error.country.required"
+      )
+    }
   }
 }

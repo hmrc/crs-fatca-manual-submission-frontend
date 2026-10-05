@@ -28,7 +28,7 @@
     heading: views.html.components.Heading
 )
 
-@(form: Form[_], mode: Mode, countries: Seq[Country])(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, countries: Seq[Country], name: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("accountHolder.individualPlaceOfBirth.title"))) {
 
@@ -40,7 +40,7 @@
 
         <fieldset class="govuk-fieldset">
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-                <h1 class="govuk-heading-l govuk-!-margin-bottom-0 wrappable">@messages("accountHolder.individualPlaceOfBirth.heading", "name")</h1>
+                <h1 class="govuk-heading-l govuk-!-margin-bottom-0 wrappable">@messages("accountHolder.individualPlaceOfBirth.heading", name)</h1>
             </legend>
 
             @textInput(
