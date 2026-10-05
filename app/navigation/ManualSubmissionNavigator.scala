@@ -194,9 +194,8 @@ class ManualSubmissionNavigator @Inject() () {
         case _                                                              => routes.JourneyRecoveryController.onPageLoad()
       }
     case (pages.manual.cpso.IndividualNamePage(cpsoId), mode, ua) => routes.UnderConstructionController.onPageLoad()
-    case (CpsoOrganisationNamePage(cpsoId, reportId), mode, ua)   => routes.UnderConstructionController.onPageLoad()
-    case (CpsoSelfCertificationPage(cpsoId, reportId), mode, ua)  => controllers.manual.cpso.routes.CPSOWhereAreTheyBasedController.onPageLoad(mode)
-
+    case (CpsoOrganisationNamePage(cpsoId, reportId), mode, ua)   => controllers.manual.cpso.routes.CPSOWhereAreTheyBasedController.onPageLoad(mode)
+    case (CpsoSelfCertificationPage(cpsoId, reportId), mode, ua) => controllers.manual.cpso.routes.CPSOWhereAreTheyBasedController.onPageLoad(mode)
     case (CPSOIndividualDateOfBirthPage(cpsoId, reportId), mode, ua) =>
       controllers.manual.cpso.routes.IndividualHavePlaceOfBirthController.onPageLoad(mode)
     case (pages.manual.cpso.IndividualHavePlaceOfBirthPage(cpsoId, reportId), mode, ua) =>
@@ -209,13 +208,11 @@ class ManualSubmissionNavigator @Inject() () {
           } // todo: update to handle CRS specific routing in 4498
         case None => routes.JourneyRecoveryController.onPageLoad()
       }
-
     case (pages.manual.cpso.IndividualPlaceOfBirthPage(cpsoId, reportId), mode, ua) =>
       reportId.regime match {
         case SubmissionsConstants.FATCA => controllers.manual.cpso.routes.CPSOWhereAreTheyBasedController.onPageLoad(mode)
         case _                          => routes.UnderConstructionController.onPageLoad()
       } // todo: update to handle CRS specific routing in 4498
-
     case (CPSOWhereAreTheyBasedPage(cpsoId, reportId), mode, ua) =>
       ua.get(CPSOWhereAreTheyBasedPage(cpsoId, reportId)) match {
         case Some(false) => controllers.manual.cpso.routes.CPSOAddressNonUkController.onPageLoad(mode)

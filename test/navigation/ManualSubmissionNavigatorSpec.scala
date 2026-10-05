@@ -672,11 +672,11 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         }
 
         "CpsoOrganisationNamePage" - {
-          "must go to underconstruction page when submitted" in {
+          "must go to CPSOWhereAreTheyBased page when submitted" in {
             val ua = UserAnswers("id")
               .withPage(CpsoOrganisationNamePage(currentCPSOId, reportId), "organisation-name")
             navigator.nextPage(CpsoOrganisationNamePage(currentCPSOId, reportId), NormalMode, ua) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.cpso.routes.CPSOWhereAreTheyBasedController.onPageLoad(NormalMode)
           }
         }
 
