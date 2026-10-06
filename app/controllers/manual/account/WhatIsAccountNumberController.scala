@@ -22,6 +22,7 @@ import forms.manual.account.WhatIsAccountNumberFormProvider
 import models.{Mode, NumberType, ReportId}
 import navigation.ManualSubmissionNavigator
 import pages.manual.account.{NumberTypePage, WhatIsAccountNumberPage}
+import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -40,7 +41,8 @@ class WhatIsAccountNumberController @Inject() (
   view: WhatIsAccountNumberView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with Logging {
 
   def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdRequired() {
     implicit request =>
@@ -48,6 +50,7 @@ class WhatIsAccountNumberController @Inject() (
 
       request.userAnswers.get(NumberTypePage(request.accountId)) match {
         case None =>
+          logger.error("Account NumberType is missing upon page load")
           Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
 
         case Some(numberType) =>
@@ -69,6 +72,7 @@ class WhatIsAccountNumberController @Inject() (
 
       request.userAnswers.get(NumberTypePage(request.accountId)) match {
         case None =>
+          logger.error("Account NumberType is missing when submitting")
           Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
 
         case Some(numberType) =>
