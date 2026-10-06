@@ -206,7 +206,7 @@ class ManualSubmissionNavigator @Inject() () {
         case Some(models.manual.cpso.IndividualOrOrganisation.Organisation) => controllers.manual.cpso.routes.CpsoOrganisationNameController.onPageLoad(mode)
         case _                                                              => routes.JourneyRecoveryController.onPageLoad()
       }
-    case (pages.manual.cpso.IndividualNamePage(cpsoId), mode, ua) => routes.UnderConstructionController.onPageLoad()
+    case (pages.manual.cpso.IndividualNamePage(cpsoId), mode, ua) => controllers.manual.cpso.routes.IndividualHaveDateOfBirthController.onPageLoad(mode)
     case (CpsoOrganisationNamePage(cpsoId, reportId), mode, ua)   => controllers.manual.cpso.routes.CPSOWhereAreTheyBasedController.onPageLoad(mode)
     case (CpsoSelfCertificationPage(cpsoId, reportId), mode, ua)  => controllers.manual.cpso.routes.CPSOWhereAreTheyBasedController.onPageLoad(mode)
     case (CPSOIndividualDateOfBirthPage(cpsoId, reportId), mode, ua) =>

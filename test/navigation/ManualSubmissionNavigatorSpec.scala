@@ -669,11 +669,11 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         }
 
         "IndividualNamePage" - {
-          "must go to underconstruction page when submitted" in {
+          "must go to individual have date of birth page when submitted" in {
             val ua = UserAnswers("id")
               .withPage(pages.manual.cpso.IndividualNamePage(currentCPSOId), models.manual.cpso.IndividualName("first-name", "last-name"))
             navigator.nextPage(pages.manual.cpso.IndividualNamePage(currentCPSOId), NormalMode, ua) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.cpso.routes.IndividualHaveDateOfBirthController.onPageLoad(NormalMode)
           }
         }
 
