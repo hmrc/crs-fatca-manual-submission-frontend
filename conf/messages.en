@@ -916,7 +916,7 @@ cpso.fatca.isThisTheAddress.error.required = Select yes if this is the substanti
 cpso.isThisTheAddress.change.hidden = IsThisTheAddress
 
 cpso.crs.selectAddress.title = What is the controlling person’s address?
-cpso.fatca.selectAddress.title =   What is the csubstantial owner’s address?
+cpso.fatca.selectAddress.title =   What is the substantial owner’s address?
 cpso.selectAddress.heading = What is the address for {0}?
 cpso.crs.selectAddress.error.required= 	Select the controlling person’s address or enter it manually
 cpso.fatca.selectAddress.error.required= Select the substantial owner’s address or enter it manually
