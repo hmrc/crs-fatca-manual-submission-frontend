@@ -16,26 +16,15 @@
 
 package forms.manual.cpso
 
-import forms.mappings.Mappings
-import models.ErrorValidation
-import play.api.data.Form
-import play.api.data.Forms.single
-import utils.RegexConstants
 import javax.inject.Inject
+import forms.mappings.Mappings
+import models.SubmissionsConstants.RegimeType
+import play.api.data.Form
 
-class CpsoOrganisationNameFormProvider @Inject() extends Mappings {
+class IsThisTheAddressFormProvider @Inject() extends Mappings {
 
-  def apply(): Form[String] = Form(
-    single(
-      "value" -> defaultStringFieldFormat(
-        "cpso.organisationName.error.required",
-        200,
-        "cpso.organisationName.error.length",
-        Seq(
-          ErrorValidation(RegexConstants.DEFAULT_ALPHA_NUMERIC_FIELD_VALID, "cpso.organisationName.error.invalid"),
-          ErrorValidation(RegexConstants.DOUBLE_DASH_INVALID, "cpso.organisationName.error.invalid-combination")
-        )
-      )
+  def apply(regime: RegimeType): Form[Boolean] =
+    Form(
+      "value" -> boolean(s"cpso.${regime.value.toLowerCase}.isThisTheAddress.error.required")
     )
-  )
 }

@@ -23,9 +23,8 @@ import models.CrsOrFatca.Fatca
 import models.SubmissionsConstants.{CRS, FATCA}
 import models.manual.account.PaymentType.*
 import models.manual.account.{AccountPayment, PaymentType, WasAccountOpen, WhatAccountType}
-import models.manual.accountHolders.{IndividualDateOfBirth, IndividualName}
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
-import models.manual.accountHolders.SelfCertification
+import models.manual.accountHolders.{IndividualDateOfBirth, IndividualName, SelfCertification}
 import models.manual.cpso.CpsoSelfCertification.Yes
 import models.manual.cpso.IndividualOrOrganisation
 import models.response.{Address, AddressLookup, Country}
@@ -33,17 +32,36 @@ import models.viewModels.manual.cpso.CPSOId
 import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
 import pages.manual.account.*
-import pages.manual.cpso.{CpsoOrganisationNamePage, CpsoSelfCertificationPage}
 import pages.manual.accountHolders.{UkAddressPage as AccountHolderUkAddressPage, *}
+import pages.manual.cpso.{
+  AddressLookupPage as AddressLookupPageForCpso,
+  AddressUkPage,
+  CPSOAddressNonUkPage,
+  CPSOWhereAreTheyBasedPage,
+  CpsoOrganisationNamePage,
+  CpsoSelfCertificationPage,
+  IsThisTheAddressPage as IsThisTheAddressPageForCpso,
+  SelectAddressPage as SelectAddressPageForCPSO,
+  UkPostCodePage as UkPostCodePageForCpso
+}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
-import pages.manual.sponsor.*
+import pages.manual.sponsor.{AddressLookupPage, *}
 
 import java.time.LocalDate
 
 class ManualSubmissionNavigatorSpec extends SpecBase {
 
   val navigator = new ManualSubmissionNavigator
+
+  val nonUkAddress = AddressNonUk(
+    addressLine1 = "string",
+    addressLine2 = None,
+    addressLine3 = "string",
+    addressLine4 = None,
+    postcode = None,
+    country = "Sweden"
+  )
 
   "ManualSubmissionNavigator in NormalMode" - {
     "nextPageWithoutReportId" - {
@@ -227,6 +245,76 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         "must go to JourneyRecovery Page when AddressLookupPage is missing" in {
           val userData = UserAnswers("id")
           navigator.nextPage(UkPostCodeForAccountHolderPage(accountHolderId, reportId), NormalMode, userData) mustBe
+            controllers.routes.JourneyRecoveryController.onPageLoad()
+        }
+      }
+      "AddressUkPage" - {
+        val currentCPSOId               = CPSOId("testid")
+        implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+        val address = Address(uprn = None,
+                              addressLine1 = "string",
+                              addressLine2 = None,
+                              addressLine3 = Some("string"),
+                              addressLine4 = None,
+                              town = "town",
+                              postCode = None,
+                              country = Country.GB
+        ).ukAddress
+
+        "must go to under construction" in {
+          val ua = UserAnswers("id")
+            .withPage(AddressUkPage(currentCPSOId, reportId), address)
+          navigator.nextPage(AddressUkPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+            controllers.routes.UnderConstructionController.onPageLoad()
+
+        }
+      }
+      "UkPostcodePage  for cp-so" - {
+        val currentCPSOId = CPSOId("testid")
+        val addressLookup: AddressLookup =
+          AddressLookup(200000706253L,
+                        Some("1 Address line 1 Road"),
+                        None,
+                        Some("Address line 2 Road"),
+                        None,
+                        "Town",
+                        Some("County"),
+                        "zz11zz",
+                        Some(Country.GB)
+          )
+
+        "must go to IsThisAddressForCPSO when one address is found" in {
+          val address: Seq[AddressLookup] = Seq(addressLookup)
+
+          val ua = UserAnswers("id")
+            .withPage(UkPostCodePageForCpso(currentCPSOId, reportId), "ZZ1 1ZZ")
+            .withPage(AddressLookupPageForCpso(currentCPSOId, reportId), address)
+          navigator.nextPage(UkPostCodePageForCpso(currentCPSOId, reportId), NormalMode, ua) mustBe
+            controllers.manual.cpso.routes.IsThisTheAddressController.onPageLoad(NormalMode)
+        }
+
+        "must go to WhatIsAddressForCPSO when multiple addresses are found" in {
+          val addresses: Seq[AddressLookup] = Seq(addressLookup, addressLookup)
+
+          val ua = UserAnswers("id")
+            .withPage(UkPostCodePageForCpso(currentCPSOId, reportId), "ZZ1 1ZZ")
+            .withPage(AddressLookupPageForCpso(currentCPSOId, reportId), addresses)
+          navigator.nextPage(UkPostCodePageForCpso(currentCPSOId, reportId), NormalMode, ua) mustBe
+            controllers.manual.cpso.routes.SelectAddressController.onPageLoad(NormalMode)
+        }
+
+        "must go to ProblemPage when no addresses are found" in {
+          val ua = UserAnswers("id")
+            .withPage(UkPostCodePageForCpso(currentCPSOId, reportId), "ZZ1 1ZZ")
+            .withPage(AddressLookupPageForCpso(currentCPSOId, reportId), Seq.empty)
+
+          navigator.nextPage(UkPostCodePageForCpso(currentCPSOId, reportId), NormalMode, ua) mustBe
+            controllers.routes.JourneyRecoveryController.onPageLoad()
+        }
+
+        "must go to JourneyRecovery Page when AddressLookupPage is missing" in {
+          val userData = UserAnswers("id")
+          navigator.nextPage(HaveSponsorPage(), NormalMode, userData) mustBe
             controllers.routes.JourneyRecoveryController.onPageLoad()
         }
       }
@@ -606,19 +694,32 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         }
 
         "IndividualHavePlaceOfBirthPage" - {
-
           "must go to IndividualPlaceOfBirth page when answer is yes" in {
             val ua = UserAnswers("id")
               .withPage(pages.manual.cpso.IndividualHavePlaceOfBirthPage(currentCPSOId, reportId), true)
             navigator.nextPage(pages.manual.cpso.IndividualHavePlaceOfBirthPage(currentCPSOId, reportId), NormalMode, ua) mustBe
               controllers.manual.cpso.routes.IndividualPlaceOfBirthController.onPageLoad(NormalMode)
           }
+          "when regime is CRS" - {
+            implicit val reportId: ReportId = ReportId(CRS, 2024, None, "TestFIID")
 
-          "must go to underconstruction page when answer is no" in {
-            val ua = UserAnswers("id")
-              .withPage(pages.manual.cpso.IndividualHavePlaceOfBirthPage(currentCPSOId, reportId), false)
-            navigator.nextPage(pages.manual.cpso.IndividualHavePlaceOfBirthPage(currentCPSOId, reportId), NormalMode, ua) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+            "must go to controlling-person-type [under-construction] page when answer is no" in {
+              val ua = UserAnswers("id")
+                .withPage(pages.manual.cpso.IndividualHavePlaceOfBirthPage(currentCPSOId, reportId), false)
+              navigator.nextPage(pages.manual.cpso.IndividualHavePlaceOfBirthPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+                controllers.routes.UnderConstructionController.onPageLoad()
+            }
+          }
+          "when regime is FATCA" - {
+            implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+
+            "must go to CPSOWhereAreTheyBased page when answer is no" in {
+              val ua = UserAnswers("id")
+                .withPage(pages.manual.cpso.IndividualHavePlaceOfBirthPage(currentCPSOId, reportId), false)
+              navigator.nextPage(pages.manual.cpso.IndividualHavePlaceOfBirthPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+                controllers.manual.cpso.routes.CPSOWhereAreTheyBasedController.onPageLoad(NormalMode)
+            }
+
           }
 
           "must go to JourneyRecovery page when page doesnt have value" in {
@@ -629,30 +730,70 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         }
 
         "IndividualPlaceOfBirthPage" - {
-          "must go to underconstruction page when submitted" in {
-            val ua = UserAnswers("id")
-              .withPage(pages.manual.cpso.IndividualPlaceOfBirthPage(currentCPSOId, reportId),
-                        models.manual.cpso.IndividualPlaceOfBirth(Some("city"), Some("region"), "FR")
-              )
-            navigator.nextPage(pages.manual.cpso.IndividualPlaceOfBirthPage(currentCPSOId, reportId), NormalMode, ua) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+          "when regime is CRS" - {
+            implicit val reportId: ReportId = ReportId(CRS, 2024, None, "TestFIID")
+
+            "must go to controlling-person-type [under-construction] page when submitted" in {
+              val ua = UserAnswers("id")
+                .withPage(pages.manual.cpso.IndividualPlaceOfBirthPage(currentCPSOId, reportId),
+                          models.manual.cpso.IndividualPlaceOfBirth(Some("city"), Some("region"), "FR")
+                )
+              navigator.nextPage(pages.manual.cpso.IndividualPlaceOfBirthPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+                controllers.routes.UnderConstructionController.onPageLoad()
+            }
+
+          }
+          "when regime is FATCA" - {
+            implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+
+            "must go to CPSOWhereAreTheyBased page when submitted" in {
+              val ua = UserAnswers("id")
+                .withPage(pages.manual.cpso.IndividualPlaceOfBirthPage(currentCPSOId, reportId),
+                          models.manual.cpso.IndividualPlaceOfBirth(Some("city"), Some("region"), "FR")
+                )
+              navigator.nextPage(pages.manual.cpso.IndividualPlaceOfBirthPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+                controllers.manual.cpso.routes.CPSOWhereAreTheyBasedController.onPageLoad(NormalMode)
+            }
+
           }
         }
 
         "CpsoOrganisationNamePage" - {
-          "must go to underconstruction page when submitted" in {
+          "must go to CPSOWhereAreTheyBased page when submitted" in {
             val ua = UserAnswers("id")
               .withPage(CpsoOrganisationNamePage(currentCPSOId, reportId), "organisation-name")
             navigator.nextPage(CpsoOrganisationNamePage(currentCPSOId, reportId), NormalMode, ua) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.cpso.routes.CPSOWhereAreTheyBasedController.onPageLoad(NormalMode)
           }
         }
 
         "CpsoSelfCertificationPage" - {
-          "must go to underconstruction page when submitted" in {
+          "must go to CPSOWhereAreTheyBased page when submitted" in {
             val ua = UserAnswers("id")
               .withPage(CpsoSelfCertificationPage(currentCPSOId, reportId), Yes)
             navigator.nextPage(CpsoSelfCertificationPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+              controllers.manual.cpso.routes.CPSOWhereAreTheyBasedController.onPageLoad(NormalMode)
+          }
+        }
+        "CPSOWhereAreTheyBased page" - {
+          "must go to CPSOAddressNonUk page when No is submitted" in {
+            val ua = UserAnswers("id")
+              .withPage(CPSOWhereAreTheyBasedPage(currentCPSOId, reportId), false)
+            navigator.nextPage(CPSOWhereAreTheyBasedPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+              controllers.manual.cpso.routes.CPSOAddressNonUkController.onPageLoad(NormalMode)
+          }
+          "must go to CPSO-Postcode uk post page when Yes is submitted" in {
+            val ua = UserAnswers("id")
+              .withPage(CPSOWhereAreTheyBasedPage(currentCPSOId, reportId), true)
+            navigator.nextPage(CPSOWhereAreTheyBasedPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+              controllers.manual.cpso.routes.UkPostCodeController.onPageLoad(NormalMode)
+          }
+        }
+        "CPSOAddressNonUk page" - {
+          "must go to resident-for-tax [under construction] page when submitted" in {
+            val ua = UserAnswers("id")
+              .withPage(CPSOAddressNonUkPage(currentCPSOId, reportId), nonUkAddress)
+            navigator.nextPage(CPSOAddressNonUkPage(currentCPSOId, reportId), NormalMode, ua) mustBe
               controllers.routes.UnderConstructionController.onPageLoad()
           }
         }
@@ -927,6 +1068,34 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           }
         }
 
+        "IsThisTheAddressForCPSOPage" - {
+          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+          val currentCPSOId               = CPSOId("testid")
+
+          "must go to under construction for a yes answer" in {
+            val ua = UserAnswers("id")
+              .withPage(IsThisTheAddressPageForCpso(currentCPSOId, reportId), true)
+
+            navigator.nextPage(IsThisTheAddressPageForCpso(currentCPSOId, reportId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+
+          "must go to address uk for a no answer" in {
+            val ua = UserAnswers("id")
+              .withPage(IsThisTheAddressPageForCpso(currentCPSOId, reportId), false)
+
+            navigator.nextPage(IsThisTheAddressPageForCpso(currentCPSOId, reportId), NormalMode, ua) mustBe
+              controllers.manual.cpso.routes.AddressUkController.onPageLoad(NormalMode)
+          }
+
+          "must go to journey recovery when IsThisTheAddressPageForCpso is not present" in {
+            val ua = UserAnswers("id")
+
+            navigator.nextPage(IsThisTheAddressPageForCpso(currentCPSOId, reportId), NormalMode, ua) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
+        }
+
         "SelectAddressPage" - {
           implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
           val address = Address(uprn = None,
@@ -946,6 +1115,36 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
 
             navigator.nextPage(SelectAddressPage(accountHolderId, reportId), NormalMode, ua) mustBe
               controllers.routes.UnderConstructionController.onPageLoad()
+          }
+
+        }
+
+        "SelectAddressPage for cpso" - {
+          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+          val address = Address(uprn = None,
+                                addressLine1 = "string",
+                                addressLine2 = None,
+                                addressLine3 = Some("string"),
+                                addressLine4 = None,
+                                town = "town",
+                                postCode = None,
+                                country = Country.GB
+          )
+          val currentId = CPSOId("holder-id")
+
+          "must go to under construction" in {
+            val ua = UserAnswers("id")
+              .withPage(SelectAddressPageForCPSO(currentId, reportId), address)
+
+            navigator.nextPage(SelectAddressPageForCPSO(currentId, reportId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+
+          "must go to journey recovery if select address is absent" in {
+            val ua = UserAnswers("id")
+
+            navigator.nextPage(SelectAddressPageForCPSO(currentId, reportId), NormalMode, ua) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
           }
 
         }
@@ -986,19 +1185,11 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
 
         "AccountHolderAddressNonUk Page" - {
           implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
-          val address = AddressNonUk(
-            addressLine1 = "string",
-            addressLine2 = None,
-            addressLine3 = "string",
-            addressLine4 = None,
-            postcode = None,
-            country = "Sweden"
-          )
-          val accountHolderId = AccountHolderId("holder-id")
+          val accountHolderId             = AccountHolderId("holder-id")
 
           "must go to under construction" in {
             val ua = UserAnswers("id")
-              .withPage(AccountHolderAddressNonUkPage(accountHolderId, reportId), address)
+              .withPage(AccountHolderAddressNonUkPage(accountHolderId, reportId), nonUkAddress)
 
             navigator.nextPage(AccountHolderAddressNonUkPage(accountHolderId, reportId), NormalMode, ua) mustBe
               controllers.routes.UnderConstructionController.onPageLoad()
