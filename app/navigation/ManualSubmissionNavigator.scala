@@ -45,6 +45,7 @@ import pages.manual.accountHolders.{
   AddressLookupForAccountHolderPage,
   IndividualHavePlaceOfBirthPage,
   IndividualOrOrganisationPage,
+  IndividualPlaceOfBirthPage,
   IsThisTheAddressForAccountHoldersPage,
   SelectAddressPage,
   SelfCertificationPage as AccountHolderSelfCertificationPage,
@@ -197,6 +198,7 @@ class ManualSubmissionNavigator @Inject() () {
     case (SelectAddressPage(_, _), _, _)                  => controllers.routes.UnderConstructionController.onPageLoad()
     case (AccountHolderAddressNonUkPage(_, _), _, _)      => controllers.routes.UnderConstructionController.onPageLoad()
     case (AccountHolderSelfCertificationPage(_, _), _, _) => controllers.routes.UnderConstructionController.onPageLoad()
+    case (IndividualPlaceOfBirthPage(_, _), mode, _)      => controllers.manual.accountHolders.routes.WhereAreTheyBasedController.onPageLoad(mode)
   }
 
   private def cpsoNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
@@ -365,7 +367,7 @@ class ManualSubmissionNavigator @Inject() () {
 
   private def handleIndividualHavePlaceOfBirthNavigation(accountId: AccountHolderId, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
     userAnswers.get(IndividualHavePlaceOfBirthPage(accountId)) match {
-      case Some(true)  => routes.UnderConstructionController.onPageLoad()
+      case Some(true)  => controllers.manual.accountHolders.routes.IndividualPlaceOfBirthController.onPageLoad(mode)
       case Some(false) => controllers.manual.accountHolders.routes.WhereAreTheyBasedController.onPageLoad(mode)
       case _           => routes.JourneyRecoveryController.onPageLoad()
     }
