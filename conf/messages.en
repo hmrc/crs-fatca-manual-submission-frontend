@@ -916,7 +916,7 @@ cpso.fatca.isThisTheAddress.error.required = Select yes if this is the substanti
 cpso.isThisTheAddress.change.hidden = IsThisTheAddress
 
 cpso.crs.selectAddress.title = What is the controlling person’s address?
-cpso.fatca.selectAddress.title =   What is the csubstantial owner’s address?
+cpso.fatca.selectAddress.title =   What is the substantial owner’s address?
 cpso.selectAddress.heading = What is the address for {0}?
 cpso.crs.selectAddress.error.required= 	Select the controlling person’s address or enter it manually
 cpso.fatca.selectAddress.error.required= Select the substantial owner’s address or enter it manually
@@ -956,6 +956,21 @@ cpso.addressUk.error.country.required = Select country
 
 cpso.whatIsAddress.checkYourAnswersLabel = Address
 cpso.whatIsAddress.change.hidden = Change Address
+
+accountHolder.individualPlaceOfBirth.title = What is the account holder’s place of birth?
+accountHolder.individualPlaceOfBirth.heading = What is the place of birth for {0}?
+accountHolder.individualPlaceOfBirth.city = City (optional)
+accountHolder.individualPlaceOfBirth.region = Region (optional)
+accountHolder.individualPlaceOfBirth.country = Country
+accountHolder.individualPlaceOfBirth.checkYourAnswersLabel = What is the place of birth for the account holder?
+accountHolder.individualPlaceOfBirth.error.city.invalid = City must only include letters a to z, numbers 0 to 9, apostrophes, commas, ampersands (&), hyphens, full stops and spaces
+accountHolder.individualPlaceOfBirth.error.city.contains.dash = City must not include a double dash (--)
+accountHolder.individualPlaceOfBirth.error.city.length = City must be 200 characters or less
+accountHolder.individualPlaceOfBirth.error.region.invalid = Region must only include letters a to z, numbers 0 to 9, apostrophes, commas, ampersands (&), hyphens, full stops and spaces
+accountHolder.individualPlaceOfBirth.error.region.dash = Region must not include a double dash (--)
+accountHolder.individualPlaceOfBirth.error.region.length = Region must be 200 characters or less
+accountHolder.individualPlaceOfBirth.error.country.required = Select country
+
 
 whatIsAccountNumber.title = What is the account or identification number?
 whatIsAccountNumber.heading = What is the account or identification number?

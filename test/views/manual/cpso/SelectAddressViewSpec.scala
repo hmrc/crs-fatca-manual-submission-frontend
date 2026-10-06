@@ -54,6 +54,12 @@ class SelectAddressViewSpec extends SpecBase {
         doc.title() must include("What is the controlling person’s address?")
       }
 
+      "must display title fatca" in {
+        val renderedHtml2: HtmlFormat.Appendable = view(form, NormalMode, addressRadios, "TestName", "fatca")
+        lazy val doc2                            = Jsoup.parse(renderedHtml2.body)
+        doc2.title() must include("What is the substantial owner’s address?")
+      }
+
       "must display heading" in {
         doc.select("h1").text() must include("What is the address for TestName?")
       }

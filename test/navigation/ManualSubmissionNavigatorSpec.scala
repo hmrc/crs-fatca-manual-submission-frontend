@@ -23,8 +23,9 @@ import models.CrsOrFatca.Fatca
 import models.SubmissionsConstants.{CRS, FATCA}
 import models.manual.account.PaymentType.*
 import models.manual.account.{AccountPayment, PaymentType, WasAccountOpen, WhatAccountType}
+import models.manual.accountHolders.{IndividualDateOfBirth, IndividualName, IndividualPlaceOfBirth, SelfCertification}
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
-import models.manual.accountHolders.{IndividualDateOfBirth, IndividualName, SelfCertification}
+
 import models.manual.cpso.CpsoSelfCertification.Yes
 import models.manual.cpso.IndividualOrOrganisation
 import models.response.{Address, AddressLookup, Country}
@@ -997,12 +998,12 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         "IndividualHavePlaceOfBirthPage" - {
           implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
           val accountId                   = AccountHolderId("TestAccountId")
-          "must go to under construction page when user selected yes" in {
+          "must go to Individual place of birth page when user selected yes" in {
             val ua = UserAnswers("id")
               .withPage(IndividualHavePlaceOfBirthPage(accountId), true)
 
             navigator.nextPage(IndividualHavePlaceOfBirthPage(accountId), NormalMode, ua) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.accountHolders.routes.IndividualPlaceOfBirthController.onPageLoad(NormalMode)
           }
 
           "must go to under construction page when user selected no" in {
@@ -1010,6 +1011,19 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               .withPage(IndividualHavePlaceOfBirthPage(accountId), false)
 
             navigator.nextPage(IndividualHavePlaceOfBirthPage(accountId), NormalMode, ua) mustBe
+              controllers.manual.accountHolders.routes.WhereAreTheyBasedController.onPageLoad(NormalMode)
+          }
+        }
+
+        "IndividualPlaceOfBirthPage" - {
+          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+          val accountId                   = AccountHolderId("TestAccountId")
+          val details                     = IndividualPlaceOfBirth(Some("value 1"), Some("value 2"), "FX")
+          "must go to Where Are They Based Page page when user submits details" in {
+            val ua = UserAnswers("id")
+              .withPage(IndividualPlaceOfBirthPage(accountId, reportId), details)
+
+            navigator.nextPage(IndividualPlaceOfBirthPage(accountId, reportId), NormalMode, ua) mustBe
               controllers.manual.accountHolders.routes.WhereAreTheyBasedController.onPageLoad(NormalMode)
           }
         }
