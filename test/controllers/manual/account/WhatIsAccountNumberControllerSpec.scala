@@ -28,12 +28,12 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
+import pages.manual.account.{CurrentAccountIdPage, NumberTypePage, WhatIsAccountNumberPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import views.html.manual.account.WhatIsAccountNumberView
-import pages.manual.account.WhatIsAccountNumberPage
 
 import scala.concurrent.Future
 
@@ -41,16 +41,18 @@ class WhatIsAccountNumberControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new WhatIsAccountNumberFormProvider()
-  val form = formProvider(Iban, CRS)
+  private val form = new WhatIsAccountNumberFormProvider()(Iban, CRS)
 
-  lazy val whatIsAccountNumberRoute = controllers.manual.account.routes.WhatIsAccountNumberController.onPageLoad(NormalMode).url
-  private val accountId: AccountId = AccountId(value = "SomeId")
-  private val numTypeString = Iban.toString
+  private lazy val whatIsAccountNumberRoute = controllers.manual.account.routes.WhatIsAccountNumberController.onPageLoad(NormalMode).url
+  private val accountId: AccountId          = AccountId(value = "SomeId")
+  private val numTypeString                 = "IBAN"
 
   "WhatIsAccountNumber Controller" - {
-
-    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS,2025,None,"TestfiID"))
+    implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
+    val ua = emptyUserAnswers
+      .withPage(CurrentAccountIdPage(), accountId)
+      .withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
+      .withPage(NumberTypePage(accountId), Iban)
 
     "must return OK and the correct view for a GET" in {
 
@@ -70,7 +72,7 @@ class WhatIsAccountNumberControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      implicit val reportId = ReportId(CRS,2025,None,"TestfiID")
+      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
 
       val userAnswers = ua.set(WhatIsAccountNumberPage(accountId, reportId), "answer").success.value
 
@@ -105,7 +107,7 @@ class WhatIsAccountNumberControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, whatIsAccountNumberRoute)
-            .withFormUrlEncodedBody(("value", "answer"))
+            .withFormUrlEncodedBody(("value", "GB29NWBK60161331926819"))
 
         val result = route(application, request).value
 
@@ -131,6 +133,36 @@ class WhatIsAccountNumberControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual view(boundForm, NormalMode, numTypeString)(request, messages(application)).toString
+      }
+    }
+
+    "must redirect to Journey Recovery for a GET if the number type is not answered" in {
+
+      val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID")))).build()
+
+      running(application) {
+        val request = FakeRequest(GET, whatIsAccountNumberRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Journey Recovery for a POST if the number type is not answered" in {
+
+      val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID")))).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, whatIsAccountNumberRoute)
+            .withFormUrlEncodedBody(("value", "answer"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 

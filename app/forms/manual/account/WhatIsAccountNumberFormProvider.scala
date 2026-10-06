@@ -42,13 +42,13 @@ class WhatIsAccountNumberFormProvider @Inject() extends Mappings {
 
     val isinValidations = Seq(
       ErrorValidation(RegexConstants.ISINlength, "whatIsAccountNumber.error.length.ISIN"),
-        ErrorValidation(RegexConstants.ISINinvalidcharacters, "whatIsAccountNumber.error.invalid.characters.ISIN"),
-        ErrorValidation(RegexConstants.ISINinvalidformat, "whatIsAccountNumber.error.invalid.format.ISIN"),
+      ErrorValidation(RegexConstants.ISINinvalidcharacters, "whatIsAccountNumber.error.invalid.characters.ISIN"),
+      ErrorValidation(RegexConstants.ISINinvalidformat, "whatIsAccountNumber.error.invalid.format.ISIN")
     )
     val ibanValidations = Seq(
       ErrorValidation(RegexConstants.IBANlength, "whatIsAccountNumber.error.length.IBAN"),
-        ErrorValidation(RegexConstants.IBANinvalidcharacters, "whatIsAccountNumber.error.invalid.characters.IBAN"),
-        ErrorValidation(RegexConstants.IBANinvalidformat, "whatIsAccountNumber.error.invalid.format.IBAN"),
+      ErrorValidation(RegexConstants.IBANinvalidcharacters, "whatIsAccountNumber.error.invalid.characters.IBAN"),
+      ErrorValidation(RegexConstants.IBANinvalidformat, "whatIsAccountNumber.error.invalid.format.IBAN")
     )
     val otherValidations = Seq(
       ErrorValidation(RegexConstants.OTHERvalidcharacters, "whatIsAccountNumber.error.invalid.characters.OTHER")
