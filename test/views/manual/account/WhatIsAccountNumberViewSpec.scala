@@ -19,6 +19,7 @@ package views.manual.account
 import base.SpecBase
 import forms.manual.account.WhatIsAccountNumberFormProvider
 import models.NormalMode
+import models.NumberType.Isin
 import models.SubmissionsConstants.CRS
 import org.jsoup.Jsoup
 import play.api.i18n.{Lang, Messages}
@@ -31,9 +32,10 @@ class WhatIsAccountNumberViewSpec extends SpecBase {
 
   private val application                                                = applicationBuilder().build()
   private val regime                                                     = CRS
-  private val view: WhatIsTheAccountNumberView                           = application.injector.instanceOf[WhatIsTheAccountNumberView]
+  private val numType                                                    = Isin
+  private val view: WhatIsAccountNumberView                              = application.injector.instanceOf[WhatIsAccountNumberView]
   private val messagesControllerComponents: MessagesControllerComponents = application.injector.instanceOf[MessagesControllerComponents]
-  val form                                                               = new WhatIsTheAccountNumberFormProvider()(regime)
+  val form                                                               = new WhatIsAccountNumberFormProvider()(numType, regime)
 
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
   implicit private val messages: Messages               = messagesControllerComponents.messagesApi.preferred(Seq(Lang("en")))
