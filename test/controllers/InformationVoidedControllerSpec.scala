@@ -32,7 +32,7 @@ import java.time.{Clock, LocalDateTime, ZoneId}
 class InformationVoidedControllerSpec extends SpecBase {
 
   private val zone               = ZoneId.of("Europe/London")
-  private val fixedDateTime      = LocalDateTime.of(2026, 4, 28, 15, 36)
+  private val fixedDateTime      = LocalDateTime.of(2026, 4, 28, 15, 36).atZone(ZoneId.of("Europe/London")).toInstant
   private val fixedClock         = Clock.fixed(fixedDateTime.atZone(zone).toInstant, zone)
   private val dateTime           = fixedDateTime.formatTimeVoidSubmitted
   private val originalMessageId  = "Some-OMRId"
