@@ -22,9 +22,23 @@ import controllers.routes
 import models.*
 import models.SubmissionsConstants.{CRS, FATCA}
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
+import models.viewModels.manual.cpso.CPSOId
 import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
 import pages.manual.account.*
+import pages.manual.cpso.{
+  AddressLookupPage as AddressLookupPageForCPSO,
+  AddressUkPage,
+  CPSOIndividualDateOfBirthPage,
+  CPSOWhereAreTheyBasedPage,
+  CpsoOrganisationNamePage,
+  CpsoSelfCertificationPage,
+  IndividualNamePage,
+  IsThisTheAddressPage,
+  SelectAddressPage as SelectAddressPageForCPSO,
+  UkPostCodePage as UkPostCodePageForCPSO,
+  *
+}
 import pages.manual.accountHolders.{
   AccountHolderAddressNonUkPage,
   AccountHolderIndividualNamePage,
@@ -38,7 +52,6 @@ import pages.manual.accountHolders.{
   UkPostCodeForAccountHolderPage,
   WhereAreTheyBasedPage
 }
-import pages.manual.cpso.*
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.*
@@ -216,11 +229,16 @@ class ManualSubmissionNavigator @Inject() () {
     case (CPSOWhereAreTheyBasedPage(cpsoId, reportId), mode, ua) =>
       ua.get(CPSOWhereAreTheyBasedPage(cpsoId, reportId)) match {
         case Some(false) => controllers.manual.cpso.routes.CPSOAddressNonUkController.onPageLoad(mode)
-        case Some(true)  => routes.UnderConstructionController.onPageLoad()
+        case Some(true)  => controllers.manual.cpso.routes.UkPostCodeController.onPageLoad(mode)
         case None        => routes.JourneyRecoveryController.onPageLoad()
       }
     case (CPSOAddressNonUkPage(cpsoId, reportId), mode, ua) =>
       routes.UnderConstructionController.onPageLoad()
+    case (UkPostCodePageForCPSO(cpsoId, reportId), mode, ua)    => handleUKPostcodeNavigationForCPSO(ua, mode, cpsoId)
+    case (IsThisTheAddressPage(cpsoId, reportId), mode, ua)     => handleIsThisTheAddressNavigationForCPSO(ua, mode, cpsoId)
+    case (SelectAddressPageForCPSO(cpsoId, reportId), mode, ua) => handleSelectAddressNavigationForCPSO(ua, mode, cpsoId)
+    case (AddressUkPage(cpsoId, reportId), mode, ua)            => routes.UnderConstructionController.onPageLoad()
+
     case (pages.manual.cpso.IndividualHaveDateOfBirthPage(reportId, cpsoId), mode, ua) =>
       ua.get(pages.manual.cpso.IndividualHaveDateOfBirthPage(reportId, cpsoId)) match {
         case Some(false) => controllers.manual.cpso.routes.IndividualHavePlaceOfBirthController.onPageLoad(mode)
@@ -293,7 +311,7 @@ class ManualSubmissionNavigator @Inject() () {
     }
 
   private def handleUKPostcodeNavigation(userAnswers: UserAnswers, mode: Mode)(implicit reportId: ReportId) =
-    userAnswers.get(AddressLookupPage()) match {
+    userAnswers.get(pages.manual.sponsor.AddressLookupPage()) match {
       case Some(value) if value.isEmpty          => routes.JourneyRecoveryController.onPageLoad()
       case Some(value) if value.length.equals(1) => controllers.manual.sponsor.routes.IsThisAddressForSponsorController.onPageLoad(mode)
       case Some(value)                           => controllers.manual.sponsor.routes.WhatIsAddressForSponsorController.onPageLoad(mode)
@@ -306,6 +324,27 @@ class ManualSubmissionNavigator @Inject() () {
       case Some(value) if value.length.equals(1) => controllers.manual.accountHolders.routes.IsThisTheAddressForAccountHoldersController.onPageLoad(mode)
       case Some(value)                           => controllers.manual.accountHolders.routes.SelectAddressController.onPageLoad(mode)
       case None                                  => routes.JourneyRecoveryController.onPageLoad()
+    }
+
+  private def handleUKPostcodeNavigationForCPSO(userAnswers: UserAnswers, mode: Mode, cpsoId: CPSOId)(implicit reportId: ReportId) =
+    userAnswers.get(AddressLookupPageForCPSO(cpsoId, reportId)) match {
+      case Some(value) if value.isEmpty          => routes.JourneyRecoveryController.onPageLoad()
+      case Some(value) if value.length.equals(1) => controllers.manual.cpso.routes.IsThisTheAddressController.onPageLoad(mode)
+      case Some(value)                           => controllers.manual.cpso.routes.SelectAddressController.onPageLoad(mode)
+      case None                                  => routes.JourneyRecoveryController.onPageLoad()
+    }
+
+  private def handleIsThisTheAddressNavigationForCPSO(userAnswers: UserAnswers, mode: Mode, cpsoId: CPSOId)(implicit reportId: ReportId) =
+    userAnswers.get(IsThisTheAddressPage(cpsoId, reportId)) match {
+      case Some(value) if value => controllers.routes.UnderConstructionController.onPageLoad()
+      case Some(_)              => controllers.manual.cpso.routes.AddressUkController.onPageLoad(mode)
+      case None                 => routes.JourneyRecoveryController.onPageLoad()
+    }
+
+  private def handleSelectAddressNavigationForCPSO(userAnswers: UserAnswers, mode: Mode, cpsoId: CPSOId)(implicit reportId: ReportId) =
+    userAnswers.get(SelectAddressPageForCPSO(cpsoId, reportId)) match {
+      case Some(value) => controllers.routes.UnderConstructionController.onPageLoad()
+      case None        => routes.JourneyRecoveryController.onPageLoad()
     }
 
   private def handleIsThisTheAddressForAccountHoldersRouting(userAnswers: UserAnswers, mode: Mode, accountHolderId: AccountHolderId)(implicit
