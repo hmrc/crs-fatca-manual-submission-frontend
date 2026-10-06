@@ -41,6 +41,26 @@ object Countries {
     )
   )
 
+  val crsUkTerritories: Seq[Country] = Seq(
+    Country(
+      code = "GB",
+      description = "United Kingdom of Great Britain and Northern Ireland",
+      alternativeName = Some("United Kingdom of Great Britain and Northern Ireland:UK:Great Britain:Northern Ireland")
+    ),
+    Country(
+      code = "GG",
+      description = "Guernsey"
+    ),
+    Country(
+      code = "IM",
+      description = "Isle of Man"
+    ),
+    Country(
+      code = "JE",
+      description = "Jersey"
+    )
+  )
+
   val nonUkTerritories: Seq[Country] = Seq(
     Country(
       code = "AE",
