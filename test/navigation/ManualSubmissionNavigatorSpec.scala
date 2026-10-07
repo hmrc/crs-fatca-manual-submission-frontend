@@ -670,11 +670,11 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         }
 
         "IndividualNamePage" - {
-          "must go to underconstruction page when submitted" in {
+          "must go to individual have date of birth page when submitted" in {
             val ua = UserAnswers("id")
               .withPage(pages.manual.cpso.IndividualNamePage(currentCPSOId), models.manual.cpso.IndividualName("first-name", "last-name"))
             navigator.nextPage(pages.manual.cpso.IndividualNamePage(currentCPSOId), NormalMode, ua) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.cpso.routes.IndividualHaveDateOfBirthController.onPageLoad(NormalMode)
           }
         }
 
@@ -719,6 +719,28 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           "must go to JourneyRecovery page when page doesnt have value" in {
             val ua = UserAnswers("id")
             navigator.nextPage(pages.manual.cpso.IndividualHavePlaceOfBirthPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
+        }
+
+        "IndividualHaveDateOfBirthPage" - {
+          "must go to IndividualDateOfBirth page when answer is yes" in {
+            val ua = UserAnswers("id")
+              .withPage(pages.manual.cpso.IndividualHaveDateOfBirthPage(reportId, currentCPSOId), true)
+            navigator.nextPage(pages.manual.cpso.IndividualHaveDateOfBirthPage(reportId, currentCPSOId), NormalMode, ua) mustBe
+              controllers.manual.cpso.routes.CPSOIndividualDateOfBirthController.onPageLoad(NormalMode)
+          }
+
+          "must go to IndividualDateOfBirth page when answer is no" in {
+            val ua = UserAnswers("id")
+              .withPage(pages.manual.cpso.IndividualHaveDateOfBirthPage(reportId, currentCPSOId), false)
+            navigator.nextPage(pages.manual.cpso.IndividualHaveDateOfBirthPage(reportId, currentCPSOId), NormalMode, ua) mustBe
+              controllers.manual.cpso.routes.IndividualHavePlaceOfBirthController.onPageLoad(NormalMode)
+          }
+
+          "must go to JourneyRecovery page when page doesnt have value" in {
+            val ua = UserAnswers("id")
+            navigator.nextPage(pages.manual.cpso.IndividualHaveDateOfBirthPage(reportId, currentCPSOId), NormalMode, ua) mustBe
               controllers.routes.JourneyRecoveryController.onPageLoad()
           }
         }
