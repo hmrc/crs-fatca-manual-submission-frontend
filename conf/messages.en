@@ -847,13 +847,36 @@ account.remove.payment.error.required = Select yes if you are sure you want to r
 account.remove.payment.change.hidden = RemovePayment
 account.payments.removed = {0} payment removed.
 
+cpso.whereAreTheyBased.title.CRS = Is the controlling person based in the UK, Jersey, Guernsey or the Isle of Man?
+cpso.whereAreTheyBased.title.FATCA = Is the substantial owner based in the UK, Jersey, Guernsey or the Isle of Man?
+cpso.whereAreTheyBased.heading = Is {0} based in the UK, Jersey, Guernsey or the Isle of Man?
+cpso.whereAreTheyBased.checkYourAnswersLabel = Is {0} based in the UK, Jersey, Guernsey or the Isle of Man?
+cpso.whereAreTheyBased.error.required.CRS = Select yes if the controlling person is based in the UK, Jersey, Guernsey or the Isle of Man
+cpso.whereAreTheyBased.error.required.FATCA = Select yes if the substantial owner is based in the UK, Jersey, Guernsey or the Isle of Man
+cpso.whereAreTheyBased.change.hidden = WhereAreTheyBased
+
+cpso.AddressNonUk.title.CRS = What is the controlling person’s address?
+cpso.AddressNonUk.title.FATCA = What is the substantial owner’s address?
+cpso.AddressNonUk.heading = What is the address for {0}?
+cpso.AddressNonUk.addressLine1 = Address line 1
+cpso.AddressNonUk.addressLine2 = Address line 2 (optional)
+cpso.AddressNonUk.addressLine3 = City
+cpso.AddressNonUk.addressLine4 = Region (optional)
+cpso.AddressNonUk.postcode = Postcode (optional)
+cpso.AddressNonUk.country = Country
+
+cpso.AddressNonUk.checkYourAnswersLabel.CRS = What is the controlling person’s address?
+cpso.AddressNonUk.checkYourAnswersLabel.FATCA = What is the substantial owner’s address?
+cpso.AddressNonUk.change.hidden.CRS = What is the controlling person’s address?
+cpso.AddressNonUk.change.hidden.FATCA = What is the substantial owner’s address?
+
 accountHolders.selfCertification.title = Has the account holder provided a valid self-certification?
 accountHolders.selfCertification.heading = Has {0} provided a valid self-certification?
 accountHolders.selfCertification.CRS900 = Not reported
 accountHolders.selfCertification.CRS901 = Yes
 accountHolders.selfCertification.CRS902 = No
 accountHolders.selfCertification.checkYourAnswersLabel = Have they provided a valid self certification?
-accountHolders.selfCertification.error.required =Select whether the account holder has provided a valid self-certification
+accountHolders.selfCertification.error.required = Select whether the account holder has provided a valid self-certification
 accountHolders.selfCertification.change.hidden = SelfCertification
 
 cpso.individualHavePlaceOfBirth.title = Do you want to provide the place of birth for the {0}?
@@ -877,6 +900,88 @@ cpso.individualPlaceOfBirth.error.region.invalidCombination = Region must not in
 cpso.individualPlaceOfBirth.error.region.length = Region must be 200 characters or less
 cpso.individualPlaceOfBirth.city.change.hidden = City
 cpso.individualPlaceOfBirth.region.change.hidden = Region
+
+cpso.crs.ukPostCode.title = What is the postcode for the controlling person?
+cpso.fatca.ukPostCode.title = What is the postcode for the substantial owner?
+cpso.ukPostCode.heading = What is the postcode for {0}?
+cpso.ukPostCode.p1 = Enter the postcode to find the address automatically.
+cpso.ukPostCode.button = Find address
+cpso.ukPostCode.p2 = Or enter the address manually
+
+cpso.crs.isThisTheAddress.title = Is this the controlling person’s address?
+cpso.fatca.isThisTheAddress.title = Is this the substantial owner’s address?
+cpso.isThisTheAddress.heading = Is this the address for {0}?
+cpso.crs.isThisTheAddress.error.required = Select yes if this is the controlling person’s address
+cpso.fatca.isThisTheAddress.error.required = Select yes if this is the substantial owner’s address
+cpso.isThisTheAddress.change.hidden = IsThisTheAddress
+
+cpso.crs.selectAddress.title = What is the controlling person’s address?
+cpso.fatca.selectAddress.title =   What is the substantial owner’s address?
+cpso.selectAddress.heading = What is the address for {0}?
+cpso.crs.selectAddress.error.required= 	Select the controlling person’s address or enter it manually
+cpso.fatca.selectAddress.error.required= Select the substantial owner’s address or enter it manually
+cpso.selectAddress.para.link = enter the address manually
+cpso.selectAddress.para = Select from the list or {0}.
+
+cpso.crs.addressUk.title = What is the controlling person’s registered address?
+cpso.fatca.addressUk.title = What is the substantial owner’s registered address?
+cpso.addressUk.heading = What is the registered address for {0}?
+cpso.addressUk.addressLine1 = Address line 1
+cpso.addressUk.addressLine2 = Address line 2 (optional)
+cpso.addressUk.city = City
+cpso.addressUk.county = County (optional)
+cpso.addressUk.postCode = Postcode
+cpso.addressUk.country = Country
+
+cpso.addressUk.error.addressLine1.required = Enter address line 1
+cpso.addressUk.error.addressLine1.length = Address line 1 must be 200 characters or less
+cpso.addressUk.error.addressLine1.invalid.characters = Address line 1 must only include letters a to z, numbers 0 to 9, apostrophes, commas, ampersands (&), hyphens, full stops and spaces
+cpso.addressUk.error.addressLine1.invalid.characters.combination = Address line 1 must not include a double dash (--)
+cpso.addressUk.error.addressLine2.length = Address line 2 must be 200 characters or less
+cpso.addressUk.error.addressLine2.invalid = Address line 2 must only include letters a to z, numbers 0 to 9, apostrophes, commas, ampersands (&), hyphens, full stops and spaces"
+cpso.addressUk.error.addressLine2.invalid.characters = Address line 2 must only include letters a to z, numbers 0 to 9, apostrophes, commas, ampersands (&), hyphens, full stops and spaces
+cpso.addressUk.error.addressLine2.invalid.characters.combination = Address line 2 must not include a double dash (--)
+cpso.addressUk.error.city.required = Enter city
+cpso.addressUk.error.city.length = City must be 200 characters or less
+cpso.addressUk.error.city.invalid.characters = City must only include letters a to z, numbers 0 to 9, apostrophes, commas, ampersands (&), hyphens, full stops and spaces
+cpso.addressUk.error.city.invalid.characters.combination = City must not include a double dash (--)
+cpso.addressUk.error.county.length = County must be 200 characters or less
+cpso.addressUk.error.county.invalid.characters = County must only include letters a to z, numbers 0 to 9, apostrophes, commas, ampersands (&), hyphens, full stops and spaces
+cpso.addressUk.error.county.invalid.characters.combination = County must not include a double dash (--)
+cpso.addressUk.error.postCode.required =Enter a postcode, like AA1 1AA
+cpso.addressUk.error.postCode.length = Postcode must be 10 characters or less
+cpso.addressUk.error.postCode.invalid = Postcode must only include letters a to z and numbers 0 to 9
+cpso.addressUk.error.postCode.format = Enter a real postcode
+cpso.addressUk.error.country.required = Select country
+
+cpso.whatIsAddress.checkYourAnswersLabel = Address
+cpso.whatIsAddress.change.hidden = Change Address
+
+accountHolder.individualPlaceOfBirth.title = What is the account holder’s place of birth?
+accountHolder.individualPlaceOfBirth.heading = What is the place of birth for {0}?
+accountHolder.individualPlaceOfBirth.city = City (optional)
+accountHolder.individualPlaceOfBirth.region = Region (optional)
+accountHolder.individualPlaceOfBirth.country = Country
+accountHolder.individualPlaceOfBirth.checkYourAnswersLabel = What is the place of birth for the account holder?
+accountHolder.individualPlaceOfBirth.error.city.invalid = City must only include letters a to z, numbers 0 to 9, apostrophes, commas, ampersands (&), hyphens, full stops and spaces
+accountHolder.individualPlaceOfBirth.error.city.contains.dash = City must not include a double dash (--)
+accountHolder.individualPlaceOfBirth.error.city.length = City must be 200 characters or less
+accountHolder.individualPlaceOfBirth.error.region.invalid = Region must only include letters a to z, numbers 0 to 9, apostrophes, commas, ampersands (&), hyphens, full stops and spaces
+accountHolder.individualPlaceOfBirth.error.region.dash = Region must not include a double dash (--)
+accountHolder.individualPlaceOfBirth.error.region.length = Region must be 200 characters or less
+accountHolder.individualPlaceOfBirth.error.country.required = Select country
+
+cpso.individualHaveDateOfBirth.title = Date of birth for the {0}
+cpso.individualHaveDateOfBirth.heading = Date of birth for the {0}
+cpso.individualHaveDateOfBirth.checkYourAnswersLabel = individualHaveDateOfBirth
+cpso.individualHaveDateOfBirth.error.required = Select yes if you need to provide the date of birth for the {0}
+cpso.individualHaveDateOfBirth.change.hidden = IndividualHaveDateOfBirth
+cpso.individualHaveDateOfBirth.crs.paragraph=You must provide the date of birth for {0} for new accounts. For pre-existing accounts, you must provide the date of birth if it’s:
+cpso.individualHaveDateOfBirth.fatca.paragraph=You must provide the date of birth for {0} for pre-existing accounts if it’s:
+cpso.individualHaveDateOfBirth.bullet1=in records maintained by {0}
+cpso.individualHaveDateOfBirth.bullet2=required for {0} to collect it
+cpso.individualHaveDateOfBirth.bullet3=required for {0} to update account information under anti-money laundering and Know Your Customer procedures
+cpso.individualHaveDateOfBirth.question=Do you need to provide the date of birth for {0}?
 
 organisationName.title = What is the name of the account holder?
 organisationName.heading = What is the name of the account holder?

@@ -17,25 +17,22 @@
 package forms.manual.cpso
 
 import forms.mappings.Mappings
-import models.ErrorValidation
 import play.api.data.Form
-import play.api.data.Forms.single
-import utils.RegexConstants
+import utils.RegexConstants.{POSTCODE_FORMAT, POSTCODE_VALID}
+
 import javax.inject.Inject
 
-class CpsoOrganisationNameFormProvider @Inject() extends Mappings {
+class UkPostCodeFormProvider @Inject() extends Mappings {
 
-  def apply(): Form[String] = Form(
-    single(
-      "value" -> defaultStringFieldFormat(
-        "cpso.organisationName.error.required",
-        200,
-        "cpso.organisationName.error.length",
-        Seq(
-          ErrorValidation(RegexConstants.DEFAULT_ALPHA_NUMERIC_FIELD_VALID, "cpso.organisationName.error.invalid"),
-          ErrorValidation(RegexConstants.DOUBLE_DASH_INVALID, "cpso.organisationName.error.invalid-combination")
-        )
+  def apply(): Form[String] =
+    Form(
+      "value" -> mandatoryPostcode(
+        "uKPostcode.error.required",
+        "uKPostcode.error.length",
+        POSTCODE_VALID,
+        "uKPostcode.error.invalid",
+        POSTCODE_FORMAT,
+        "uKPostcode.error.format"
       )
     )
-  )
 }
