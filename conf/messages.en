@@ -956,3 +956,15 @@ cpso.addressUk.error.country.required = Select country
 
 cpso.whatIsAddress.checkYourAnswersLabel = Address
 cpso.whatIsAddress.change.hidden = Change Address
+
+residentTax.title = residentTax
+residentTax.heading = residentTax
+residentTax.country = country
+residentTax.blank = blank
+residentTax.checkYourAnswersLabel = ResidentTax
+residentTax.error.country.required = Enter country
+residentTax.error.blank.required = Enter blank
+residentTax.error.country.length = country must be 100 characters or less
+residentTax.error.blank.length = blank must be 100 characters or less
+residentTax.country.change.hidden = country
+residentTax.blank.change.hidden = blank

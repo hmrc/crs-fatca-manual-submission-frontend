@@ -26,7 +26,17 @@ import models.manual.accountHolders.SelfCertification
 import models.AddressUk
 import org.scalacheck.Arbitrary.*
 
+import models.ResidentTax
+import org.scalacheck.Arbitrary.*
 trait ModelGenerators {
+
+  implicit lazy val arbitraryResidentTax: Arbitrary[ResidentTax] =
+    Arbitrary {
+      for {
+        country <- arbitrary[String]
+        blank <- arbitrary[String]
+      } yield ResidentTax(country, blank)
+    }
 
   implicit lazy val arbitraryAddressUk: Arbitrary[AddressUk] =
     Arbitrary {
