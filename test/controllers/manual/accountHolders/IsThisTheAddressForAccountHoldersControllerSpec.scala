@@ -22,6 +22,7 @@ import controllers.routes
 import forms.manual.accountHolders.IsThisTheAddressForAccountHoldersFormProvider
 import models.SubmissionsConstants.CRS
 import models.manual.accountHolders.IndividualName
+import models.manual.accountHolders.IndividualOrOrganisation.Individual
 import models.response.{AddressLookup, Country}
 import models.viewModels.AccountHolderId
 import models.{NormalMode, ReportId}
@@ -34,6 +35,7 @@ import pages.manual.accountHolders.{
   AccountHolderIndividualNamePage,
   AddressLookupForAccountHolderPage,
   CurrentAccountHolderIdPage,
+  IndividualOrOrganisationPage,
   IsThisTheAddressForAccountHoldersPage
 }
 import play.api.inject.bind
@@ -64,9 +66,11 @@ class IsThisTheAddressForAccountHoldersControllerSpec extends SpecBase with Mock
     controllers.manual.accountHolders.routes.IsThisTheAddressForAccountHoldersController.onPageLoad(NormalMode).url
 
   "IsThisTheAddressForAccountHolders Controller" - {
+
     val ua = emptyUserAnswers
-      .withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
+      .withPage(ReportIdPage, reportId)
       .withPage(CurrentAccountHolderIdPage(), accountHolderId)
+      .withPage(IndividualOrOrganisationPage(accountHolderId), Individual)
       .withPage(AccountHolderIndividualNamePage(accountHolderId), individualName)
       .withPage(AddressLookupForAccountHolderPage(accountHolderId, reportId), Seq(addressLookup))
 
@@ -76,10 +80,8 @@ class IsThisTheAddressForAccountHoldersControllerSpec extends SpecBase with Mock
 
       running(application) {
         val request = FakeRequest(GET, isThisTheAddressForAccountHoldersRoute)
-
-        val result = route(application, request).value
-
-        val view = application.injector.instanceOf[IsThisTheAddressForAccountHoldersView]
+        val result  = route(application, request).value
+        val view    = application.injector.instanceOf[IsThisTheAddressForAccountHoldersView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form, NormalMode, address, accountHolderName)(request, messages(application)).toString
@@ -88,17 +90,13 @@ class IsThisTheAddressForAccountHoldersControllerSpec extends SpecBase with Mock
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = ua
-        .withPage(IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId), true)
-
+      val userAnswers = ua.withPage(IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId), true)
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, isThisTheAddressForAccountHoldersRoute)
-
-        val view = application.injector.instanceOf[IsThisTheAddressForAccountHoldersView]
-
-        val result = route(application, request).value
+        val view    = application.injector.instanceOf[IsThisTheAddressForAccountHoldersView]
+        val result  = route(application, request).value
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form.fill(true), NormalMode, address, accountHolderName)(request, messages(application)).toString
@@ -108,7 +106,6 @@ class IsThisTheAddressForAccountHoldersControllerSpec extends SpecBase with Mock
     "must redirect to the next page when valid data is submitted" in {
 
       val mockSessionRepository = mock[DatabaseConnector]
-
       when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
 
       val application =
@@ -120,11 +117,8 @@ class IsThisTheAddressForAccountHoldersControllerSpec extends SpecBase with Mock
           .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, isThisTheAddressForAccountHoldersRoute)
-            .withFormUrlEncodedBody(("value", "true"))
-
-        val result = route(application, request).value
+        val request = FakeRequest(POST, isThisTheAddressForAccountHoldersRoute).withFormUrlEncodedBody(("value", "true"))
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
@@ -136,15 +130,10 @@ class IsThisTheAddressForAccountHoldersControllerSpec extends SpecBase with Mock
       val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, isThisTheAddressForAccountHoldersRoute)
-            .withFormUrlEncodedBody(("value", ""))
-
+        val request   = FakeRequest(POST, isThisTheAddressForAccountHoldersRoute).withFormUrlEncodedBody(("value", ""))
         val boundForm = form.bind(Map("value" -> ""))
-
-        val view = application.injector.instanceOf[IsThisTheAddressForAccountHoldersView]
-
-        val result = route(application, request).value
+        val view      = application.injector.instanceOf[IsThisTheAddressForAccountHoldersView]
+        val result    = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual view(boundForm, NormalMode, address, accountHolderName)(request, messages(application)).toString
@@ -157,8 +146,7 @@ class IsThisTheAddressForAccountHoldersControllerSpec extends SpecBase with Mock
 
       running(application) {
         val request = FakeRequest(GET, isThisTheAddressForAccountHoldersRoute)
-
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
@@ -166,17 +154,18 @@ class IsThisTheAddressForAccountHoldersControllerSpec extends SpecBase with Mock
     }
 
     "must redirect to Journey Recovery for a GET if individual name is not provided" in {
+
       val answers = emptyUserAnswers
-        .withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
+        .withPage(ReportIdPage, reportId)
         .withPage(CurrentAccountHolderIdPage(), accountHolderId)
+        .withPage(IndividualOrOrganisationPage(accountHolderId), Individual)
         .withPage(AddressLookupForAccountHolderPage(accountHolderId, reportId), Seq(addressLookup))
 
       val application = applicationBuilder(maybeUserAnswers = Some(answers)).build()
 
       running(application) {
         val request = FakeRequest(GET, isThisTheAddressForAccountHoldersRoute)
-
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
@@ -184,17 +173,18 @@ class IsThisTheAddressForAccountHoldersControllerSpec extends SpecBase with Mock
     }
 
     "must redirect to Journey Recovery for a GET if address is not present" in {
+
       val answers = emptyUserAnswers
-        .withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
+        .withPage(ReportIdPage, reportId)
         .withPage(CurrentAccountHolderIdPage(), accountHolderId)
+        .withPage(IndividualOrOrganisationPage(accountHolderId), Individual)
         .withPage(AccountHolderIndividualNamePage(accountHolderId), individualName)
 
       val application = applicationBuilder(maybeUserAnswers = Some(answers)).build()
 
       running(application) {
         val request = FakeRequest(GET, isThisTheAddressForAccountHoldersRoute)
-
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
@@ -206,11 +196,8 @@ class IsThisTheAddressForAccountHoldersControllerSpec extends SpecBase with Mock
       val application = applicationBuilder(maybeUserAnswers = None).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, isThisTheAddressForAccountHoldersRoute)
-            .withFormUrlEncodedBody(("value", "true"))
-
-        val result = route(application, request).value
+        val request = FakeRequest(POST, isThisTheAddressForAccountHoldersRoute).withFormUrlEncodedBody(("value", "true"))
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
@@ -218,19 +205,18 @@ class IsThisTheAddressForAccountHoldersControllerSpec extends SpecBase with Mock
     }
 
     "must redirect to Journey Recovery for a POST if individual name is not provided" in {
-      val answer = emptyUserAnswers
-        .withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
+
+      val answers = emptyUserAnswers
+        .withPage(ReportIdPage, reportId)
         .withPage(CurrentAccountHolderIdPage(), accountHolderId)
+        .withPage(IndividualOrOrganisationPage(accountHolderId), Individual)
         .withPage(AddressLookupForAccountHolderPage(accountHolderId, reportId), Seq(addressLookup))
 
-      val application = applicationBuilder(maybeUserAnswers = Some(answer)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(answers)).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, isThisTheAddressForAccountHoldersRoute)
-            .withFormUrlEncodedBody(("value", "true"))
-
-        val result = route(application, request).value
+        val request = FakeRequest(POST, isThisTheAddressForAccountHoldersRoute).withFormUrlEncodedBody(("value", "true"))
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
@@ -238,24 +224,22 @@ class IsThisTheAddressForAccountHoldersControllerSpec extends SpecBase with Mock
     }
 
     "must redirect to Journey Recovery for a POST if address is not provided" in {
-      val answer = emptyUserAnswers
-        .withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
+
+      val answers = emptyUserAnswers
+        .withPage(ReportIdPage, reportId)
         .withPage(CurrentAccountHolderIdPage(), accountHolderId)
+        .withPage(IndividualOrOrganisationPage(accountHolderId), Individual)
         .withPage(AccountHolderIndividualNamePage(accountHolderId), individualName)
 
-      val application = applicationBuilder(maybeUserAnswers = Some(answer)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(answers)).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, isThisTheAddressForAccountHoldersRoute)
-            .withFormUrlEncodedBody(("value", "true"))
-
-        val result = route(application, request).value
+        val request = FakeRequest(POST, isThisTheAddressForAccountHoldersRoute).withFormUrlEncodedBody(("value", "true"))
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
-
   }
 }

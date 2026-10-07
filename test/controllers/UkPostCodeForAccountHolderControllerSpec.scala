@@ -21,6 +21,7 @@ import connectors.{AddressLookupConnector, DatabaseConnector}
 import forms.manual.accountHolders.UkPostCodeForAccountHolderFormProvider
 import models.SubmissionsConstants.CRS
 import models.manual.accountHolders.IndividualName
+import models.manual.accountHolders.IndividualOrOrganisation.Individual
 import models.response.{AddressLookup, Country}
 import models.viewModels.AccountHolderId
 import models.{NormalMode, ReportId, UserAnswers}
@@ -29,7 +30,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.accountHolders.{AccountHolderIndividualNamePage, CurrentAccountHolderIdPage, UkPostCodeForAccountHolderPage}
+import pages.manual.accountHolders.{AccountHolderIndividualNamePage, CurrentAccountHolderIdPage, IndividualOrOrganisationPage, UkPostCodeForAccountHolderPage}
 import play.api.data.FormError
 import play.api.inject.bind
 import play.api.libs.json.Json
@@ -54,7 +55,8 @@ class UkPostCodeForAccountHolderControllerSpec extends SpecBase with MockitoSuga
   val addressLookup =
     AddressLookup(990091234514L, Some("2 Other place"), None, Some("Some District"), None, "Town", Some("County"), "postcode", Some(Country.GB))
 
-  lazy val ukPostCodeForAccountHolderRoute = controllers.manual.accountHolders.routes.UkPostCodeForAccountHolderController.onPageLoad(NormalMode).url
+  lazy val ukPostCodeForAccountHolderRoute =
+    controllers.manual.accountHolders.routes.UkPostCodeForAccountHolderController.onPageLoad(NormalMode).url
 
   val userAnswers = UserAnswers(
     userAnswersId,
@@ -67,21 +69,20 @@ class UkPostCodeForAccountHolderControllerSpec extends SpecBase with MockitoSuga
   )
 
   "UkPostCodeForAccountHolder Controller" - {
+
     val ua = emptyUserAnswers
-      .withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
+      .withPage(ReportIdPage, reportId)
       .withPage(CurrentAccountHolderIdPage(), accountHolderId)
+      .withPage(IndividualOrOrganisationPage(accountHolderId), Individual)
       .withPage(AccountHolderIndividualNamePage(accountHolderId), individualName)
 
     "must return OK and the correct view for a GET" in {
-
       val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
 
       running(application) {
         val request = FakeRequest(GET, ukPostCodeForAccountHolderRoute)
-
-        val view = application.injector.instanceOf[UkPostCodeForAccountHolderView]
-
-        val result = route(application, request).value
+        val view    = application.injector.instanceOf[UkPostCodeForAccountHolderView]
+        val result  = route(application, request).value
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form, NormalMode, accountHolderName)(request, messages(application)).toString
@@ -91,8 +92,9 @@ class UkPostCodeForAccountHolderControllerSpec extends SpecBase with MockitoSuga
     "must populate the view correctly on a GET when the question has previously been answered" in {
       val validAnswer = "some-post-code"
       val userAnswers = emptyUserAnswers
-        .withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
+        .withPage(ReportIdPage, reportId)
         .withPage(CurrentAccountHolderIdPage(), accountHolderId)
+        .withPage(IndividualOrOrganisationPage(accountHolderId), Individual)
         .withPage(AccountHolderIndividualNamePage(accountHolderId), individualName)
         .withPage(UkPostCodeForAccountHolderPage(accountHolderId, reportId), validAnswer)
 
@@ -100,10 +102,8 @@ class UkPostCodeForAccountHolderControllerSpec extends SpecBase with MockitoSuga
 
       running(application) {
         val request = FakeRequest(GET, ukPostCodeForAccountHolderRoute)
-
-        val view = application.injector.instanceOf[UkPostCodeForAccountHolderView]
-
-        val result = route(application, request).value
+        val view    = application.injector.instanceOf[UkPostCodeForAccountHolderView]
+        val result  = route(application, request).value
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode, accountHolderName)(request, messages(application)).toString
@@ -112,15 +112,15 @@ class UkPostCodeForAccountHolderControllerSpec extends SpecBase with MockitoSuga
 
     "must redirect to Journey Recovery for a GET if individual name is not present" in {
       val userAnswers = emptyUserAnswers
-        .withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
+        .withPage(ReportIdPage, reportId)
         .withPage(CurrentAccountHolderIdPage(), accountHolderId)
+        .withPage(IndividualOrOrganisationPage(accountHolderId), Individual)
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, ukPostCodeForAccountHolderRoute)
-
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
@@ -129,8 +129,9 @@ class UkPostCodeForAccountHolderControllerSpec extends SpecBase with MockitoSuga
 
     "must redirect to the next page when valid data is submitted" in {
       val userAnswers = emptyUserAnswers
-        .withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
+        .withPage(ReportIdPage, reportId)
         .withPage(CurrentAccountHolderIdPage(), accountHolderId)
+        .withPage(IndividualOrOrganisationPage(accountHolderId), Individual)
         .withPage(AccountHolderIndividualNamePage(accountHolderId), individualName)
 
       val mockSessionRepository = mock[DatabaseConnector]
@@ -149,11 +150,8 @@ class UkPostCodeForAccountHolderControllerSpec extends SpecBase with MockitoSuga
           .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, ukPostCodeForAccountHolderRoute)
-            .withFormUrlEncodedBody(("value", "ls23 5ed"))
-
-        val result = route(application, request).value
+        val request = FakeRequest(POST, ukPostCodeForAccountHolderRoute).withFormUrlEncodedBody(("value", "ls23 5ed"))
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
@@ -162,8 +160,9 @@ class UkPostCodeForAccountHolderControllerSpec extends SpecBase with MockitoSuga
 
     "must return a bad request when addressLookup does not return an address" in {
       val userAnswers = emptyUserAnswers
-        .withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
+        .withPage(ReportIdPage, reportId)
         .withPage(CurrentAccountHolderIdPage(), accountHolderId)
+        .withPage(IndividualOrOrganisationPage(accountHolderId), Individual)
         .withPage(AccountHolderIndividualNamePage(accountHolderId), individualName)
 
       val mockSessionRepository = mock[DatabaseConnector]
@@ -187,32 +186,22 @@ class UkPostCodeForAccountHolderControllerSpec extends SpecBase with MockitoSuga
         .withError(FormError("value", List("uKPostcode.error.notfound")))
 
       running(application) {
-        val request =
-          FakeRequest(POST, ukPostCodeForAccountHolderRoute)
-            .withFormUrlEncodedBody(("value", "ls23 5ed"))
-
-        val result = route(application, request).value
+        val request = FakeRequest(POST, ukPostCodeForAccountHolderRoute).withFormUrlEncodedBody(("value", "ls23 5ed"))
+        val result  = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual view(boundForm, NormalMode, accountHolderName)(request, messages(application)).toString
-
       }
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
-
       val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, ukPostCodeForAccountHolderRoute)
-            .withFormUrlEncodedBody(("value", "invalid value"))
-
+        val request   = FakeRequest(POST, ukPostCodeForAccountHolderRoute).withFormUrlEncodedBody(("value", "invalid value"))
         val boundForm = form.bind(Map("value" -> "invalid value"))
-
-        val view = application.injector.instanceOf[UkPostCodeForAccountHolderView]
-
-        val result = route(application, request).value
+        val view      = application.injector.instanceOf[UkPostCodeForAccountHolderView]
+        val result    = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual view(boundForm, NormalMode, accountHolderName)(request, messages(application)).toString
@@ -220,13 +209,11 @@ class UkPostCodeForAccountHolderControllerSpec extends SpecBase with MockitoSuga
     }
 
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
-
       val application = applicationBuilder(maybeUserAnswers = None).build()
 
       running(application) {
         val request = FakeRequest(GET, ukPostCodeForAccountHolderRoute)
-
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
@@ -234,15 +221,11 @@ class UkPostCodeForAccountHolderControllerSpec extends SpecBase with MockitoSuga
     }
 
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
-
       val application = applicationBuilder(maybeUserAnswers = None).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, ukPostCodeForAccountHolderRoute)
-            .withFormUrlEncodedBody(("value", "value 1"))
-
-        val result = route(application, request).value
+        val request = FakeRequest(POST, ukPostCodeForAccountHolderRoute).withFormUrlEncodedBody(("value", "value 1"))
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
@@ -251,17 +234,15 @@ class UkPostCodeForAccountHolderControllerSpec extends SpecBase with MockitoSuga
 
     "must redirect to Journey Recovery for a POST if individual name is not provided" in {
       val userAnswers = emptyUserAnswers
-        .withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
+        .withPage(ReportIdPage, reportId)
         .withPage(CurrentAccountHolderIdPage(), accountHolderId)
+        .withPage(IndividualOrOrganisationPage(accountHolderId), Individual)
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, ukPostCodeForAccountHolderRoute)
-            .withFormUrlEncodedBody(("value", "value 1"))
-
-        val result = route(application, request).value
+        val request = FakeRequest(POST, ukPostCodeForAccountHolderRoute).withFormUrlEncodedBody(("value", "value 1"))
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url

@@ -21,6 +21,7 @@ import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.accountHolders.OrganisationFatcaFormProvider
 import models.SubmissionsConstants.CRS
+import models.manual.accountHolders.IndividualOrOrganisation.Organisation
 import models.manual.accountHolders.OrganisationFatca
 import models.viewModels.AccountHolderId
 import models.{NormalMode, ReportId}
@@ -29,7 +30,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.accountHolders.{AccountHolderOrganisationNamePage, CurrentAccountHolderIdPage, OrganisationFatcaPage}
+import pages.manual.accountHolders.{AccountHolderOrganisationNamePage, CurrentAccountHolderIdPage, IndividualOrOrganisationPage, OrganisationFatcaPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -58,53 +59,38 @@ class OrganisationFatcaControllerSpec extends SpecBase with MockitoSugar {
     val ua = emptyUserAnswers
       .withPage(ReportIdPage, reportId)
       .withPage(CurrentAccountHolderIdPage()(reportId), accountHolderId)
+      .withPage(IndividualOrOrganisationPage(accountHolderId)(reportId), Organisation)
       .withPage(AccountHolderOrganisationNamePage(accountHolderId)(reportId), organisationName)
 
     "must return OK and the correct view for a GET" in {
-
       val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
 
       running(application) {
         val request = FakeRequest(GET, organisationFatcaRoute)
-
-        val result = route(application, request).value
-
-        val view = application.injector.instanceOf[OrganisationFatcaView]
+        val result  = route(application, request).value
+        val view    = application.injector.instanceOf[OrganisationFatcaView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual
-          view(form, NormalMode, organisationName)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, organisationName)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-
-      val userAnswers =
-        ua.set(
-          OrganisationFatcaPage(accountHolderId)(reportId),
-          answer
-        ).success
-          .value
-
+      val userAnswers = ua.set(OrganisationFatcaPage(accountHolderId)(reportId), answer).success.value
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, organisationFatcaRoute)
-
-        val view = application.injector.instanceOf[OrganisationFatcaView]
-
-        val result = route(application, request).value
+        val view    = application.injector.instanceOf[OrganisationFatcaView]
+        val result  = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual
-          view(form.fill(answer), NormalMode, organisationName)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(answer), NormalMode, organisationName)(request, messages(application)).toString
       }
     }
 
     "must redirect to the next page when valid data is submitted" in {
-
       val mockSessionRepository = mock[DatabaseConnector]
-
       when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
 
       val application =
@@ -116,11 +102,8 @@ class OrganisationFatcaControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, organisationFatcaRoute)
-            .withFormUrlEncodedBody(("value", answer.toString))
-
-        val result = route(application, request).value
+        val request = FakeRequest(POST, organisationFatcaRoute).withFormUrlEncodedBody(("value", answer.toString))
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
@@ -128,95 +111,74 @@ class OrganisationFatcaControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
-
       val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, organisationFatcaRoute)
-            .withFormUrlEncodedBody(("value", "invalid value"))
-
+        val request   = FakeRequest(POST, organisationFatcaRoute).withFormUrlEncodedBody(("value", "invalid value"))
         val boundForm = form.bind(Map("value" -> "invalid value"))
-
-        val view = application.injector.instanceOf[OrganisationFatcaView]
-
-        val result = route(application, request).value
+        val view      = application.injector.instanceOf[OrganisationFatcaView]
+        val result    = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual
-          view(boundForm, NormalMode, organisationName)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, organisationName)(request, messages(application)).toString
       }
     }
 
     "must redirect to Journey Recovery for a GET when the organisation name is missing" in {
-
       val userAnswers = emptyUserAnswers
         .withPage(ReportIdPage, reportId)
         .withPage(CurrentAccountHolderIdPage()(reportId), accountHolderId)
+        .withPage(IndividualOrOrganisationPage(accountHolderId)(reportId), Organisation)
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, organisationFatcaRoute)
-
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual
-          routes.JourneyRecoveryController.onPageLoad().url
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 
     "must redirect to Journey Recovery for a POST when the organisation name is missing" in {
-
       val userAnswers = emptyUserAnswers
         .withPage(ReportIdPage, reportId)
         .withPage(CurrentAccountHolderIdPage()(reportId), accountHolderId)
+        .withPage(IndividualOrOrganisationPage(accountHolderId)(reportId), Organisation)
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, organisationFatcaRoute)
-            .withFormUrlEncodedBody(("value", answer.toString))
-
-        val result = route(application, request).value
+        val request = FakeRequest(POST, organisationFatcaRoute).withFormUrlEncodedBody(("value", answer.toString))
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual
-          routes.JourneyRecoveryController.onPageLoad().url
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
-
       val application = applicationBuilder(maybeUserAnswers = None).build()
 
       running(application) {
         val request = FakeRequest(GET, organisationFatcaRoute)
-
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual
-          routes.JourneyRecoveryController.onPageLoad().url
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
-
       val application = applicationBuilder(maybeUserAnswers = None).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, organisationFatcaRoute)
-            .withFormUrlEncodedBody(("value", answer.toString))
-
-        val result = route(application, request).value
+        val request = FakeRequest(POST, organisationFatcaRoute).withFormUrlEncodedBody(("value", answer.toString))
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual
-          routes.JourneyRecoveryController.onPageLoad().url
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
   }

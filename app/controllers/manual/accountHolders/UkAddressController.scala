@@ -17,21 +17,13 @@
 package controllers.manual.accountHolders
 
 import connectors.DatabaseConnector
-import controllers.actions.*
+import controllers.actions.Actions
 import forms.manual.accountHolders.UkAddressFormProvider
 import models.UkAddress.from
-import models.response.{Address, AddressLookup}
 import models.viewModels.AccountHolderId
 import models.{Countries, Mode, ReportId, UkAddress, UserAnswers}
 import navigation.ManualSubmissionNavigator
-import pages.manual.accountHolders.{
-  AccountHolderIndividualNamePage,
-  AddressLookupForAccountHolderPage,
-  SelectAddressPage,
-  UkAddressPage,
-  UkPostCodeForAccountHolderPage
-}
-import play.api.Logging
+import pages.manual.accountHolders.{AddressLookupForAccountHolderPage, SelectAddressPage, UkAddressPage, UkPostCodeForAccountHolderPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -50,62 +42,47 @@ class UkAddressController @Inject() (
   view: UkAddressView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport
-    with Logging {
+    with I18nSupport {
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequired() {
-    implicit request =>
-      implicit val reportId: ReportId = request.reportId
-      request.userAnswers.get(AccountHolderIndividualNamePage(request.accountHolderId)) match {
-        case Some(name) =>
-          val preparedForm = resolveAddress(request.userAnswers, request.accountHolderId).fold(form)(form.fill)
-          Ok(view(preparedForm, mode, name.fullName, Countries.ukTerritories))
-        case None =>
-          logger.error("Account Holder Name is missing")
-          Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
-      }
-  }
+  def onPageLoad(mode: Mode): Action[AnyContent] =
+    actions.withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired() {
+      implicit request =>
+        implicit val reportId: ReportId = request.reportId
+
+        val preparedForm = resolveAddress(request.userAnswers, request.accountHolderId).fold(form)(form.fill)
+        Ok(view(preparedForm, mode, request.accountHolderName, Countries.ukTerritories))
+    }
 
   private def resolveAddress(userAnswers: UserAnswers, accountHolderId: AccountHolderId)(implicit reportId: ReportId): Option[UkAddress] =
     userAnswers
       .get(UkAddressPage(accountHolderId, reportId))
-      .orElse(
-        userAnswers.get(SelectAddressPage(accountHolderId, reportId)).map(_.ukAddress)
-      )
+      .orElse(userAnswers.get(SelectAddressPage(accountHolderId, reportId)).map(_.ukAddress))
       .orElse(
         userAnswers
           .get(AddressLookupForAccountHolderPage(accountHolderId, reportId))
           .collect {
-            case Seq(singleAddress) =>
-              singleAddress.toAddress.map(_.ukAddress)
+            case Seq(singleAddress) => singleAddress.toAddress.map(_.ukAddress)
           }
           .flatten
       )
-      .orElse(
-        userAnswers.get(UkPostCodeForAccountHolderPage(accountHolderId, reportId)).map(from)
-      )
+      .orElse(userAnswers.get(UkPostCodeForAccountHolderPage(accountHolderId, reportId)).map(from))
 
-  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequired().async {
-    implicit request =>
-      implicit val reportId: ReportId = request.reportId
-      request.userAnswers.get(AccountHolderIndividualNamePage(request.accountHolderId)) match {
-        case Some(name) =>
-          form
-            .bindFromRequest()
-            .fold(
-              formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, name.fullName, Countries.ukTerritories))),
-              value =>
-                for {
-                  updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(UkAddressPage(request.accountHolderId, reportId), value))
-                  _              <- repository.set(updatedAnswers)
-                } yield Redirect(navigator.nextPage(UkAddressPage(request.accountHolderId, reportId), mode, updatedAnswers))
-            )
-        case None =>
-          logger.error("Account Holder Name is missing")
-          Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
-      }
+  def onSubmit(mode: Mode): Action[AnyContent] =
+    actions.withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired().async {
+      implicit request =>
+        implicit val reportId: ReportId = request.reportId
 
-  }
+        form
+          .bindFromRequest()
+          .fold(
+            formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, request.accountHolderName, Countries.ukTerritories))),
+            value =>
+              for {
+                updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(UkAddressPage(request.accountHolderId, reportId), value))
+                _              <- repository.set(updatedAnswers)
+              } yield Redirect(navigator.nextPage(UkAddressPage(request.accountHolderId, reportId), mode, updatedAnswers))
+          )
+    }
 }

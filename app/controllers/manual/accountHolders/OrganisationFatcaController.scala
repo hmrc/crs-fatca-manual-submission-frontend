@@ -17,12 +17,11 @@
 package controllers.manual.accountHolders
 
 import connectors.DatabaseConnector
-import controllers.actions.*
+import controllers.actions.Actions
 import forms.manual.accountHolders.OrganisationFatcaFormProvider
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.accountHolders.{AccountHolderOrganisationNamePage, OrganisationFatcaPage}
-import play.api.Logging
+import pages.manual.accountHolders.OrganisationFatcaPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -35,59 +34,66 @@ class OrganisationFatcaController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
-  identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  reportIdAction: ReportIdRequiredAction,
-  accountHolderIdCreationAction: AccountHolderIdCreationAction,
+  actions: Actions,
   formProvider: OrganisationFatcaFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: OrganisationFatcaView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport
-    with Logging {
+    with I18nSupport {
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction andThen accountHolderIdCreationAction) {
-    implicit request =>
-      implicit val reportId: ReportId = request.reportId
-      val preparedForm = request.userAnswers.get(OrganisationFatcaPage(request.accountHolderId)) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
-      val organisationName = request.userAnswers.get(AccountHolderOrganisationNamePage(request.accountHolderId))
-      organisationName match {
-        case Some(orgName) => Ok(view(preparedForm, mode, orgName))
-        case _ =>
-          logger.warn("Missing organisation name")
-          Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
-      }
+  def onPageLoad(mode: Mode): Action[AnyContent] =
+    actions.withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired() {
+      implicit request =>
 
-  }
+        implicit val reportId: ReportId = request.reportId
+
+        val preparedForm =
+          request.userAnswers.get(OrganisationFatcaPage(request.accountHolderId)) match {
+            case None        => form
+            case Some(value) => form.fill(value)
+          }
+
+        Ok(view(preparedForm, mode, request.accountHolderName))
+    }
 
   def onSubmit(mode: Mode): Action[AnyContent] =
-    (identify andThen getData andThen requireData andThen reportIdAction andThen accountHolderIdCreationAction).async {
+    actions.withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired().async {
       implicit request =>
-        implicit val reportId: ReportId = request.reportId
-        val organisationName            = request.userAnswers.get(AccountHolderOrganisationNamePage(request.accountHolderId))
-        organisationName match {
-          case Some(orgName) =>
-            form
-              .bindFromRequest()
-              .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, orgName))),
-                value =>
-                  for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(OrganisationFatcaPage(request.accountHolderId), value))
-                    _              <- sessionRepository.set(updatedAnswers)
-                  } yield Redirect(navigator.nextPage(OrganisationFatcaPage(request.accountHolderId), mode, updatedAnswers))
-              )
-          case _ =>
-            logger.warn("Missing organisation name")
-            Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
-        }
 
+        implicit val reportId: ReportId = request.reportId
+
+        form
+          .bindFromRequest()
+          .fold(
+            formWithErrors =>
+              Future.successful(
+                BadRequest(
+                  view(
+                    formWithErrors,
+                    mode,
+                    request.accountHolderName
+                  )
+                )
+              ),
+            value =>
+              for {
+                updatedAnswers <- Future.fromTry(
+                  request.userAnswers.setWithReportId(
+                    OrganisationFatcaPage(request.accountHolderId),
+                    value
+                  )
+                )
+                _ <- sessionRepository.set(updatedAnswers)
+              } yield Redirect(
+                navigator.nextPage(
+                  OrganisationFatcaPage(request.accountHolderId),
+                  mode,
+                  updatedAnswers
+                )
+              )
+          )
     }
 }
