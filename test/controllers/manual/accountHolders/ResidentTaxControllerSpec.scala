@@ -14,25 +14,27 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.manual.accountHolders
 
 import base.SpecBase
-import models.ResidentTax
+import connectors.DatabaseConnector
+import controllers.routes
+import forms.manual.accountHolders.ResidentTaxFormProvider
+import models.SubmissionsConstants.CRS
+import models.manual.accountHolders.IndividualName
+import models.response.Country
+import models.viewModels.AccountHolderId
+import models.{Countries, NormalMode, ReportId}
+import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
+import pages.ReportIdPage
+import pages.manual.accountHolders.{AccountHolderIndividualNamePage, CurrentAccountHolderIdPage, ResidentTaxPage}
 import play.api.inject.bind
-import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import connectors.DatabaseConnector
-import forms.manual.accountHolders.ResidentTaxFormProvider
-import models.SubmissionsConstants.CRS
-import models.{NormalMode, ReportId, UserAnswers}
-import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
-import pages.ReportIdPage
-import pages.manual.accountHolders.ResidentTaxPage
 import views.html.manual.accountHolders.ResidentTaxView
 
 import scala.concurrent.Future
@@ -41,23 +43,21 @@ class ResidentTaxControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new ResidentTaxFormProvider()
-  val form = formProvider()
+  private val currentAccountHolderId = AccountHolderId("testid")
+  private val reportId               = ReportId(CRS, 2025, None, "TestfiID")
+  private val individualName         = IndividualName("test", "last")
 
-  lazy val residentTaxRoute = controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(NormalMode).url
+  private val formProvider = new ResidentTaxFormProvider()
+  private val form         = formProvider()
 
-  val userAnswers = UserAnswers(
-    userAnswersId,
-    Json.obj(
-      ResidentTaxPage.toString -> Json.obj(
-        "country" -> "value 1",
-        "blank" -> "value 2"
-      )
-    )
-  )
+  private lazy val residentTaxRoute = controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(NormalMode).url
 
   "ResidentTax Controller" - {
-    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS,2025,None,"TestfiID"))
+
+    val ua = emptyUserAnswers
+      .withPage(ReportIdPage, reportId)
+      .withPage(CurrentAccountHolderIdPage()(reportId), currentAccountHolderId)
+      .withPage(AccountHolderIndividualNamePage(currentAccountHolderId)(reportId), individualName)
 
     "must return OK and the correct view for a GET" in {
 
@@ -66,31 +66,49 @@ class ResidentTaxControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request = FakeRequest(GET, residentTaxRoute)
 
+        val result = route(application, request).value
+
         val view = application.injector.instanceOf[ResidentTaxView]
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(form, NormalMode, individualName.fullName, Countries.allCountries(reportId.regime))(request, messages(application)).toString
+      }
+    }
+
+    "must redirect to journey recovery when account holder name is not present for a GET" in {
+      val answer = emptyUserAnswers
+        .withPage(ReportIdPage, reportId)
+        .withPage(CurrentAccountHolderIdPage()(reportId), currentAccountHolderId)
+
+      val application = applicationBuilder(maybeUserAnswers = Some(answer)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, residentTaxRoute)
 
         val result = route(application, request).value
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        val view = application.injector.instanceOf[ResidentTaxView]
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-      val validAnswer = ResidentTax("value 1", "value 2")
-      implicit val reportId = ReportId(CRS,2025,None,"TestfiID")
-      val userAnswers = ua.set(ResidentTaxPage(), validAnswer).success.value
+
+      val userAnswers = ua.set(ResidentTaxPage(currentAccountHolderId, reportId), Country.GB).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, residentTaxRoute)
 
-        val view = application.injector.instanceOf[ResidentTaxView]
-
         val result = route(application, request).value
 
+        val view = application.injector.instanceOf[ResidentTaxView]
+
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(ResidentTax("value 1", "value 2")), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill("GB"), NormalMode, individualName.fullName, Countries.allCountries(reportId.regime))(request, messages(application)).toString
       }
     }
 
@@ -111,7 +129,7 @@ class ResidentTaxControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, residentTaxRoute)
-            .withFormUrlEncodedBody(("country", "value 1"), ("blank", "value 2"))
+            .withFormUrlEncodedBody(("country", "GB"))
 
         val result = route(application, request).value
 
@@ -127,16 +145,16 @@ class ResidentTaxControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, residentTaxRoute)
-            .withFormUrlEncodedBody(("value", "invalid value"))
+            .withFormUrlEncodedBody(("country", ""))
 
-        val boundForm = form.bind(Map("value" -> "invalid value"))
+        val boundForm = form.bind(Map("country" -> ""))
 
         val view = application.injector.instanceOf[ResidentTaxView]
 
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, individualName.fullName, Countries.allCountries(reportId.regime))(request, messages(application)).toString
       }
     }
 
@@ -161,7 +179,26 @@ class ResidentTaxControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, residentTaxRoute)
-            .withFormUrlEncodedBody(("country", "value 1"), ("blank", "value 2"))
+            .withFormUrlEncodedBody(("country", "GB"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Journey Recovery for a POST if no account holder name is found" in {
+      val answer = emptyUserAnswers
+        .withPage(ReportIdPage, reportId)
+        .withPage(CurrentAccountHolderIdPage()(reportId), currentAccountHolderId)
+
+      val application = applicationBuilder(maybeUserAnswers = Some(answer)).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, residentTaxRoute)
+            .withFormUrlEncodedBody(("country", "GB"))
 
         val result = route(application, request).value
 
