@@ -209,7 +209,7 @@ class ManualSubmissionNavigator @Inject() () {
         case Some(models.manual.cpso.IndividualOrOrganisation.Organisation) => controllers.manual.cpso.routes.CpsoOrganisationNameController.onPageLoad(mode)
         case _                                                              => routes.JourneyRecoveryController.onPageLoad()
       }
-    case (pages.manual.cpso.IndividualNamePage(cpsoId), mode, ua) => routes.UnderConstructionController.onPageLoad()
+    case (pages.manual.cpso.IndividualNamePage(cpsoId), mode, ua) => controllers.manual.cpso.routes.IndividualHaveDateOfBirthController.onPageLoad(mode)
     case (CpsoOrganisationNamePage(cpsoId, reportId), mode, ua)   => controllers.manual.cpso.routes.CPSOWhereAreTheyBasedController.onPageLoad(mode)
     case (CpsoSelfCertificationPage(cpsoId, reportId), mode, ua)  => controllers.manual.cpso.routes.CPSOWhereAreTheyBasedController.onPageLoad(mode)
     case (CPSOIndividualDateOfBirthPage(cpsoId, reportId), mode, ua) =>
@@ -242,6 +242,12 @@ class ManualSubmissionNavigator @Inject() () {
     case (SelectAddressPageForCPSO(cpsoId, reportId), mode, ua) => handleSelectAddressNavigationForCPSO(ua, mode, cpsoId)
     case (AddressUkPage(cpsoId, reportId), mode, ua)            => routes.UnderConstructionController.onPageLoad()
 
+    case (pages.manual.cpso.IndividualHaveDateOfBirthPage(reportId, cpsoId), mode, ua) =>
+      ua.get(pages.manual.cpso.IndividualHaveDateOfBirthPage(reportId, cpsoId)) match {
+        case Some(false) => controllers.manual.cpso.routes.IndividualHavePlaceOfBirthController.onPageLoad(mode)
+        case Some(true)  => controllers.manual.cpso.routes.CPSOIndividualDateOfBirthController.onPageLoad(mode)
+        case None        => routes.JourneyRecoveryController.onPageLoad()
+      }
   }
 
   private def sponsorNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
@@ -308,7 +314,7 @@ class ManualSubmissionNavigator @Inject() () {
     }
 
   private def handleUKPostcodeNavigation(userAnswers: UserAnswers, mode: Mode)(implicit reportId: ReportId) =
-    userAnswers.get(AddressLookupPage()) match {
+    userAnswers.get(pages.manual.sponsor.AddressLookupPage()) match {
       case Some(value) if value.isEmpty          => routes.JourneyRecoveryController.onPageLoad()
       case Some(value) if value.length.equals(1) => controllers.manual.sponsor.routes.IsThisAddressForSponsorController.onPageLoad(mode)
       case Some(value)                           => controllers.manual.sponsor.routes.WhatIsAddressForSponsorController.onPageLoad(mode)

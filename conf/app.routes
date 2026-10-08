@@ -354,6 +354,7 @@ GET        /manual/account-holder/self-certification                        cont
 POST        /manual/account-holder/self-certification                    controllers.manual.accountHolders.SelfCertificationController.onSubmit(mode: Mode = NormalMode)
 GET         /manual/account-holder/change-self-certification                   controllers.manual.accountHolders.SelfCertificationController.onPageLoad(mode: Mode = CheckMode)
 POST        /manual/account-holder/change-self-certification                 controllers.manual.accountHolders.SelfCertificationController.onSubmit(mode: Mode = CheckMode)
+
 GET        /manual/cp-so/individual-have-place-of-birth                        controllers.manual.cpso.IndividualHavePlaceOfBirthController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/cp-so/individual-have-place-of-birth                        controllers.manual.cpso.IndividualHavePlaceOfBirthController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/cp-so/change-individual-have-place-of-birth                  controllers.manual.cpso.IndividualHavePlaceOfBirthController.onPageLoad(mode: Mode = CheckMode)
@@ -389,6 +390,10 @@ POST        /manual/account-holder/individual-place-of-birth                    
 GET         /manual/account-holder/change-individual-place-of-birth                 controllers.manual.accountHolders.IndividualPlaceOfBirthController.onPageLoad(mode: Mode = CheckMode)
 POST        /manual/account-holder/change-individual-place-of-birth                   controllers.manual.accountHolders.IndividualPlaceOfBirthController.onSubmit(mode: Mode = CheckMode)
 
+GET        /manual/cp-so/individual-have-date-of-birth                        controllers.manual.cpso.IndividualHaveDateOfBirthController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/cp-so/individual-have-date-of-birth                        controllers.manual.cpso.IndividualHaveDateOfBirthController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/cp-so/change-individual-have-date-of-birth                  controllers.manual.cpso.IndividualHaveDateOfBirthController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/cp-so/change-individual-have-date-of-birth                  controllers.manual.cpso.IndividualHaveDateOfBirthController.onSubmit(mode: Mode = CheckMode)
 
 GET        /manual/account/number                                                 controllers.manual.account.WhatIsAccountNumberController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/account/number                                                 controllers.manual.account.WhatIsAccountNumberController.onSubmit(mode: Mode = NormalMode)
