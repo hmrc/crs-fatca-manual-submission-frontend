@@ -19,12 +19,11 @@ package pages.manual.cpso
 import models.viewModels.manual.cpso.CPSOId
 import models.{ReportId, UkAddress, UserAnswers}
 import pages.QuestionPage
-import play.api.Logging
 import play.api.libs.json.JsPath
 
 import scala.util.{Success, Try}
 
-final case class AddressUkPage(currentId: CPSOId, reportId: ReportId) extends QuestionPage[UkAddress] with Logging:
+final case class AddressUkPage(currentId: CPSOId, reportId: ReportId) extends QuestionPage[UkAddress]:
 
   override def path: JsPath = JsPath \ reportId.mongoKey \ "cp-so" \ currentId.value \ "ukAddress"
 
