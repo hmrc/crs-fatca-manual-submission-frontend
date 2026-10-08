@@ -31,6 +31,7 @@ import scala.concurrent.Future
 class TaxResidentCountryIdCreationForAccountHolderActionSpec extends SpecBase with MockitoSugar {
 
   class Harness extends TaxResidentCountryIdCreationForAccountHolderActionImpl() {
+
     def callTransform[A](request: AccountHolderIdRequest[A]): Future[TaxResidentCountryIdForAccountHolderRequest[A]] =
       transform(request)
   }
@@ -80,7 +81,7 @@ class TaxResidentCountryIdCreationForAccountHolderActionSpec extends SpecBase wi
       }
 
       "must set currentIndex to the size of the existing tax resident countries list" in {
-        val action      = new Harness()
+        val action = new Harness()
         val userAnswers = emptyUserAnswers
           .withPage(TaxResidentCountriesListPage(accountHolderId, reportId), taxResidentCountries)
 
@@ -98,7 +99,7 @@ class TaxResidentCountryIdCreationForAccountHolderActionSpec extends SpecBase wi
     "when there is a currentTaxResidentCountryId in the userAnswers" - {
 
       "must use the existing id as the currentIndex" in {
-        val action      = new Harness()
+        val action = new Harness()
         val userAnswers = emptyUserAnswers
           .withPage(CurrentTaxResidentCountryIndexPage(accountHolderId, reportId), 2)
           .withPage(TaxResidentCountriesListPage(accountHolderId, reportId), taxResidentCountries)
