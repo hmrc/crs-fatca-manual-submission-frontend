@@ -26,7 +26,7 @@ class ResidentTaxFormProviderSpec extends StringFieldBehaviours {
 
   ".country" - {
 
-    val fieldName = "country"
+    val fieldName   = "country"
     val requiredKey = "accountHolders.country.error.required"
 
     behave like mandatoryField(

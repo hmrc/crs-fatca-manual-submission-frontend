@@ -31,28 +31,31 @@ import views.html.manual.accountHolders.ResidentTaxView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ResidentTaxController @Inject()(
-                                      override val messagesApi: MessagesApi,
-                                      repository: DatabaseConnector,
-                                      navigator: ManualSubmissionNavigator,
-                                      actions: Actions,
-                                      formProvider: ResidentTaxFormProvider,
-                                      val controllerComponents: MessagesControllerComponents,
-                                      view: ResidentTaxView
-                                     )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Logging{
+class ResidentTaxController @Inject() (
+  override val messagesApi: MessagesApi,
+  repository: DatabaseConnector,
+  navigator: ManualSubmissionNavigator,
+  actions: Actions,
+  formProvider: ResidentTaxFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: ResidentTaxView
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
+    with I18nSupport
+    with Logging {
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (actions.withReportIdRequiredAndAccountHolderIdRequired()) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequired() {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
 
       val preparedForm = request.userAnswers.get(ResidentTaxPage(request.accountHolderId, reportId)) match {
-        case None => form
+        case None        => form
         case Some(value) => form.fill(value.code)
       }
 
-      request.userAnswers.get(AccountHolderIndividualNamePage(request.accountHolderId)(reportId)) match { //todo need to cater for organization
+      request.userAnswers.get(AccountHolderIndividualNamePage(request.accountHolderId)(reportId)) match { // todo need to cater for organization
         case None =>
           logger.error(s"Missing account holder name for ${request.accountHolderId}")
           Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)
@@ -61,7 +64,7 @@ class ResidentTaxController @Inject()(
       }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (actions.withReportIdRequiredAndAccountHolderIdRequired()).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequired().async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
 
@@ -70,16 +73,17 @@ class ResidentTaxController @Inject()(
           logger.error(s"Missing account holder name for ${request.accountHolderId}")
           Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))
         case Some(indvName) =>
-          form.bindFromRequest().fold(
-            formWithErrors =>
-              Future.successful(BadRequest(view(formWithErrors, mode, indvName.fullName, Countries.allCountries(reportId.regime)))),
-            value =>
-              for {
-                selectedCountry <- Future.successful(Countries.allCountries(reportId.regime).find(_.code == value).get)
-                updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(ResidentTaxPage(request.accountHolderId, reportId), selectedCountry))
-                _              <- repository.set(updatedAnswers)
-              } yield Redirect(navigator.nextPage(ResidentTaxPage(request.accountHolderId, reportId), mode, updatedAnswers))
-          )
+          form
+            .bindFromRequest()
+            .fold(
+              formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, indvName.fullName, Countries.allCountries(reportId.regime)))),
+              value =>
+                for {
+                  selectedCountry <- Future.successful(Countries.allCountries(reportId.regime).find(_.code == value).get)
+                  updatedAnswers  <- Future.fromTry(request.userAnswers.setWithReportId(ResidentTaxPage(request.accountHolderId, reportId), selectedCountry))
+                  _               <- repository.set(updatedAnswers)
+                } yield Redirect(navigator.nextPage(ResidentTaxPage(request.accountHolderId, reportId), mode, updatedAnswers))
+            )
       }
   }
 }

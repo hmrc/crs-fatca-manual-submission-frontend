@@ -18,7 +18,7 @@ package models
 
 import play.api.libs.json._
 
-case class ResidentTax (country: String, blank: String)
+case class ResidentTax(country: String, blank: String)
 
 object ResidentTax {
 

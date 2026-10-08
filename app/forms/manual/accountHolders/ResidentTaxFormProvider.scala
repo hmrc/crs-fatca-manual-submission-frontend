@@ -25,9 +25,9 @@ import javax.inject.Inject
 
 class ResidentTaxFormProvider @Inject() extends Mappings {
 
-   def apply(): Form[String] =
-     Form(
-       "country" -> text("accountHolders.country.error.required")
-     )
+  def apply(): Form[String] =
+    Form(
+      "country" -> text("accountHolders.country.error.required")
+    )
 
- }
+}

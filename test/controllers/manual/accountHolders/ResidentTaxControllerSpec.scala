@@ -71,7 +71,9 @@ class ResidentTaxControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[ResidentTaxView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, individualName.fullName, Countries.allCountries(reportId.regime))(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, individualName.fullName, Countries.allCountries(reportId.regime))(request,
+                                                                                                                                   messages(application)
+        ).toString
       }
     }
 
@@ -108,7 +110,10 @@ class ResidentTaxControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[ResidentTaxView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill("GB"), NormalMode, individualName.fullName, Countries.allCountries(reportId.regime))(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill("GB"), NormalMode, individualName.fullName, Countries.allCountries(reportId.regime))(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -154,7 +159,9 @@ class ResidentTaxControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, individualName.fullName, Countries.allCountries(reportId.regime))(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, individualName.fullName, Countries.allCountries(reportId.regime))(request,
+                                                                                                                                        messages(application)
+        ).toString
       }
     }
 
