@@ -20,7 +20,7 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.accountHolders.IndividualPlaceOfBirthFormProvider
-import models.SubmissionsConstants.{CRS, FATCA}
+import models.SubmissionsConstants.CRS
 import models.manual.accountHolders.{IndividualName, IndividualPlaceOfBirth}
 import models.viewModels.AccountHolderId
 import models.{Countries, NormalMode, ReportId, UserAnswers}
