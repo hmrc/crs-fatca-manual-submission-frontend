@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-package forms.manual.accountHolders
+package pages.manual.accountHolders
 
-import forms.mappings.Mappings
-import play.api.data.Form
+import models.ReportId
+import models.response.Country
+import models.viewModels.AccountHolderId
+import pages.QuestionPage
+import play.api.libs.json.JsPath
 
-import javax.inject.Inject
+final case class TaxResidentCountriesListPage(accountHolderId: AccountHolderId, reportId: ReportId) extends QuestionPage[Seq[Country]]:
 
-class ResidentTaxFormProvider @Inject() extends Mappings {
-
-  def apply(): Form[String] =
-    Form(
-      "country" -> text("accountHolders.country.error.required")
-    )
-
-}
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "accountHolder" \ accountHolderId.value \ "taxResidentCountries"

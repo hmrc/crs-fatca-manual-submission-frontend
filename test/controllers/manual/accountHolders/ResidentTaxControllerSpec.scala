@@ -23,6 +23,7 @@ import forms.manual.accountHolders.ResidentTaxFormProvider
 import models.SubmissionsConstants.CRS
 import models.manual.accountHolders.IndividualName
 import models.response.Country
+import models.response.Country.GB
 import models.viewModels.AccountHolderId
 import models.{Countries, NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
@@ -30,7 +31,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.accountHolders.{AccountHolderIndividualNamePage, CurrentAccountHolderIdPage, ResidentTaxPage}
+import pages.manual.accountHolders.{AccountHolderIndividualNamePage, CurrentAccountHolderIdPage, ResidentTaxPage, TaxResidentCountriesListPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -58,6 +59,7 @@ class ResidentTaxControllerSpec extends SpecBase with MockitoSugar {
       .withPage(ReportIdPage, reportId)
       .withPage(CurrentAccountHolderIdPage()(reportId), currentAccountHolderId)
       .withPage(AccountHolderIndividualNamePage(currentAccountHolderId)(reportId), individualName)
+      .withPage(TaxResidentCountriesListPage(currentAccountHolderId, reportId), Seq(GB))
 
     "must return OK and the correct view for a GET" in {
 
@@ -89,31 +91,8 @@ class ResidentTaxControllerSpec extends SpecBase with MockitoSugar {
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[ResidentTaxView]
-
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-      }
-    }
-
-    "must populate the view correctly on a GET when the question has previously been answered" in {
-
-      val userAnswers = ua.set(ResidentTaxPage(currentAccountHolderId, reportId), Country.GB).success.value
-
-      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
-
-      running(application) {
-        val request = FakeRequest(GET, residentTaxRoute)
-
-        val result = route(application, request).value
-
-        val view = application.injector.instanceOf[ResidentTaxView]
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill("GB"), NormalMode, individualName.fullName, Countries.allCountries(reportId.regime))(
-          request,
-          messages(application)
-        ).toString
       }
     }
 

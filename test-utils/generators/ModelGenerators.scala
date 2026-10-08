@@ -17,17 +17,11 @@
 package generators
 
 import models.manual.account.{PaymentType, WasAccountOpen, WhatAccountType}
-import models.manual.accountHolders.IndividualName
+import models.manual.accountHolders.{IndividualName, SelfCertification}
 import models.manual.cpso.{CpsoSelfCertification, IndividualOrOrganisation, UkPostCode}
-import models.{CrsOrFatca, NumberType, TypeOfReport, UkAddress, UkPostCodeForAccountHolder}
+import models.{AddressUk, CrsOrFatca, NumberType, ResidentTax, TypeOfReport, UkAddress, UkPostCodeForAccountHolder}
+import org.scalacheck.Arbitrary.*
 import org.scalacheck.{Arbitrary, Gen}
-import models.manual.accountHolders.SelfCertification
-
-import models.AddressUk
-import org.scalacheck.Arbitrary.*
-
-import models.ResidentTax
-import org.scalacheck.Arbitrary.*
 
 trait ModelGenerators {
 

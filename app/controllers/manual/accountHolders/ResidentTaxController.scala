@@ -21,7 +21,7 @@ import controllers.actions.*
 import forms.manual.accountHolders.ResidentTaxFormProvider
 import models.{Countries, Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.accountHolders.{AccountHolderIndividualNamePage, ResidentTaxPage}
+import pages.manual.accountHolders.{AccountHolderIndividualNamePage, CurrentTaxResidentCountryIndexPage, ResidentTaxPage}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -46,11 +46,11 @@ class ResidentTaxController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequired() {
+  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequiredAndTaxResidentIdCreation() {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
 
-      val preparedForm = request.userAnswers.get(ResidentTaxPage(request.accountHolderId, reportId)) match {
+      val preparedForm = request.userAnswers.get(ResidentTaxPage(request.currentIndex, request.accountHolderId, reportId)) match {
         case None        => form
         case Some(value) => form.fill(value.code)
       }
@@ -64,7 +64,7 @@ class ResidentTaxController @Inject() (
       }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequired().async {
+  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequiredAndTaxResidentIdCreation().async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
 
@@ -80,9 +80,12 @@ class ResidentTaxController @Inject() (
               value =>
                 for {
                   selectedCountry <- Future.successful(Countries.allCountries(reportId.regime).find(_.code == value).get)
-                  updatedAnswers  <- Future.fromTry(request.userAnswers.setWithReportId(ResidentTaxPage(request.accountHolderId, reportId), selectedCountry))
-                  _               <- repository.set(updatedAnswers)
-                } yield Redirect(navigator.nextPage(ResidentTaxPage(request.accountHolderId, reportId), mode, updatedAnswers))
+                  updatedAnswers <- Future
+                    .fromTry(request.userAnswers.setWithReportId(ResidentTaxPage(request.currentIndex, request.accountHolderId, reportId), selectedCountry))
+                  updatedAnswersWithCurrentIndex <- Future
+                    .fromTry(updatedAnswers.setWithReportId(CurrentTaxResidentCountryIndexPage(request.accountHolderId, reportId), request.currentIndex))
+                  _ <- repository.set(updatedAnswersWithCurrentIndex)
+                } yield Redirect(navigator.nextPage(ResidentTaxPage(request.currentIndex, request.accountHolderId, reportId), mode, updatedAnswers))
             )
       }
   }

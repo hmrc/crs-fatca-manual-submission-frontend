@@ -483,7 +483,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               val ua = UserAnswers("id")
                 .withPage(IsThisAddressForSponsorPage(), isThisAddressForSponsor)
                 .withPage(WhatIsAddressForSponsorPage(), address)
-                .withPage(TaxResidentCountriesListPage(), Seq(Country.GB))
+                .withPage(pages.manual.sponsor.TaxResidentCountriesListPage(), Seq(Country.GB))
               navigator.nextPage(WhatIsAddressForSponsorPage(), NormalMode, ua) mustBe
                 controllers.manual.sponsor.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
 
@@ -526,7 +526,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               val ua = UserAnswers("id")
                 .withPage(IsThisAddressForSponsorPage(), isThisAddressForSponsor)
                 .withPage(WhatIsAddressForSponsorPage(), address)
-                .withPage(TaxResidentCountriesListPage(), Seq(Country.GB))
+                .withPage(pages.manual.sponsor.TaxResidentCountriesListPage(), Seq(Country.GB))
               navigator.nextPage(WhatIsAddressForSponsorPage(), NormalMode, ua) mustBe
                 controllers.manual.sponsor.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
 

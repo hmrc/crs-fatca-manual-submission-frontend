@@ -22,6 +22,6 @@ import models.viewModels.AccountHolderId
 import pages.QuestionPage
 import play.api.libs.json.JsPath
 
-final case class ResidentTaxPage(currentId: AccountHolderId, reportId: ReportId) extends QuestionPage[Country]:
+final case class ResidentTaxPage(index: Int, currentId: AccountHolderId, reportId: ReportId) extends QuestionPage[Country]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "accountHolder" \ currentId.value \ "residentTax"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "accountHolder" \ currentId.value \ "taxResidentCountries" \ index
