@@ -19,9 +19,10 @@ package controllers.manual.accountHolders
 import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.manual.accountHolders.ResidentTaxFormProvider
-import models.{Mode, ReportId}
+import models.{Countries, Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.accountHolders.ResidentTaxPage
+import pages.manual.accountHolders.{AccountHolderIndividualNamePage, ResidentTaxPage}
+import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -38,7 +39,7 @@ class ResidentTaxController @Inject()(
                                       formProvider: ResidentTaxFormProvider,
                                       val controllerComponents: MessagesControllerComponents,
                                       view: ResidentTaxView
-                                     )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+                                     )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Logging{
 
   val form = formProvider()
 
@@ -51,22 +52,34 @@ class ResidentTaxController @Inject()(
         case Some(value) => form.fill(value.code)
       }
 
-      Ok(view(preparedForm, mode))
+      request.userAnswers.get(AccountHolderIndividualNamePage(request.accountHolderId)(reportId)) match { //todo need to cater for organization
+        case None =>
+          logger.error(s"Missing account holder name for ${request.accountHolderId}")
+          Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)
+        case Some(indvName) =>
+          Ok(view(preparedForm, mode, indvName.fullName, Countries.allCountries(reportId.regime)))
+      }
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (actions.withReportIdRequiredAndAccountHolderIdRequired()).async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
 
-      form.bindFromRequest().fold(
-        formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors, mode))),
-
-        value =>
-          for {
-            updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(ResidentTaxPage(request.accountHolderId, reportId), value))
-            _              <- repository.set(updatedAnswers)
-          } yield Redirect(navigator.nextPage(ResidentTaxPage(request.accountHolderId, reportId), mode, updatedAnswers))
-      )
+      request.userAnswers.get(AccountHolderIndividualNamePage(request.accountHolderId)(reportId)) match {
+        case None =>
+          logger.error(s"Missing account holder name for ${request.accountHolderId}")
+          Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))
+        case Some(indvName) =>
+          form.bindFromRequest().fold(
+            formWithErrors =>
+              Future.successful(BadRequest(view(formWithErrors, mode, indvName.fullName, Countries.allCountries(reportId.regime)))),
+            value =>
+              for {
+                selectedCountry <- Future.successful(Countries.allCountries(reportId.regime).find(_.code == value).get)
+                updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(ResidentTaxPage(request.accountHolderId, reportId), selectedCountry))
+                _              <- repository.set(updatedAnswers)
+              } yield Redirect(navigator.nextPage(ResidentTaxPage(request.accountHolderId, reportId), mode, updatedAnswers))
+          )
+      }
   }
 }

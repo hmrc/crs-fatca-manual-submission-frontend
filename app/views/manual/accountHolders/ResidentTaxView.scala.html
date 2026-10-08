@@ -15,18 +15,22 @@
  *@
 
 @import viewmodels.InputWidth._
+@import models.response.Country
 
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
     govukInput: GovukInput,
-    govukButton: GovukButton
+    govukButton: GovukButton,
+    countrySelect: views.html.components.CountrySelect,
+    heading: views.html.components.Heading,
+    paragraph: views.html.components.Paragraph
 )
 
-@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, accountHolder: String, countries: Seq[Country])(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("residentTax.title"))) {
+@layout(pageTitle = title(form, messages("accountHolders.residentTax.title"))) {
 
     @formHelper(action = controllers.manual.accountHolders.routes.ResidentTaxController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
@@ -34,23 +38,18 @@
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
-        <h1 class="govuk-heading-xl">@messages("residentTax.heading")</h1>
+        @heading(messages("accountHolders.residentTax.heading", accountHolder))
 
-        @govukInput(
-            InputViewModel(
-                field = form("country"),
-                label = LabelViewModel(messages("residentTax.country"))
-            )
-            .withWidth(Full)
-        )
+        @paragraph(messages("sponsorResidentForTax.paragraph"))
 
-        @govukInput(
-            InputViewModel(
-                field = form("blank"),
-                label = LabelViewModel(messages("residentTax.blank"))
-            )
-            .withWidth(Full)
+        <div class="govuk-!-width-two-thirds">
+        @countrySelect(
+            field = form("country"),
+            label = messages("accountHolders.residentTax.heading", accountHolder),
+            countries = countries,
+            labelClasses = "govuk-label govuk-visually-hidden"
         )
+        </div>
 
         @govukButton(
             ButtonViewModel(messages("site.saveContinue"))
