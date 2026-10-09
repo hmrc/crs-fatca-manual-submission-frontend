@@ -46,7 +46,7 @@ class ResidentTaxController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequiredAndTaxResidentIdCreation() {
+  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderNameRequiredAndTaxResidentIdCreation() {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
 
@@ -55,38 +55,26 @@ class ResidentTaxController @Inject() (
         case Some(value) => form.fill(value.code)
       }
 
-      request.userAnswers.get(AccountHolderIndividualNamePage(request.accountHolderId)(reportId)) match { // todo need to cater for organization
-        case None =>
-          logger.error(s"Missing account holder name for ${request.accountHolderId}")
-          Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)
-        case Some(indvName) =>
-          Ok(view(preparedForm, mode, indvName.fullName, Countries.allCountries(reportId.regime)))
-      }
+      Ok(view(preparedForm, mode, request.accountHolderName, Countries.allCountries(reportId.regime)))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequiredAndTaxResidentIdCreation().async {
+  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderNameRequiredAndTaxResidentIdCreation().async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
 
-      request.userAnswers.get(AccountHolderIndividualNamePage(request.accountHolderId)(reportId)) match {
-        case None =>
-          logger.error(s"Missing account holder name for ${request.accountHolderId}")
-          Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))
-        case Some(indvName) =>
-          form
-            .bindFromRequest()
-            .fold(
-              formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, indvName.fullName, Countries.allCountries(reportId.regime)))),
-              value =>
-                for {
-                  selectedCountry <- Future.successful(Countries.allCountries(reportId.regime).find(_.code == value).get)
-                  updatedAnswers <- Future
-                    .fromTry(request.userAnswers.setWithReportId(ResidentTaxPage(request.currentIndex, request.accountHolderId, reportId), selectedCountry))
-                  updatedAnswersWithCurrentIndex <- Future
-                    .fromTry(updatedAnswers.setWithReportId(CurrentTaxResidentCountryIndexPage(request.accountHolderId, reportId), request.currentIndex))
-                  _ <- repository.set(updatedAnswersWithCurrentIndex)
-                } yield Redirect(navigator.nextPage(ResidentTaxPage(request.currentIndex, request.accountHolderId, reportId), mode, updatedAnswers))
-            )
-      }
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, request.accountHolderName, Countries.allCountries(reportId.regime)))),
+          value =>
+            for {
+              selectedCountry <- Future.successful(Countries.allCountries(reportId.regime).find(_.code == value).get)
+              updatedAnswers <- Future
+                .fromTry(request.userAnswers.setWithReportId(ResidentTaxPage(request.currentIndex, request.accountHolderId, reportId), selectedCountry))
+              updatedAnswersWithCurrentIndex <- Future
+                .fromTry(updatedAnswers.setWithReportId(CurrentTaxResidentCountryIndexPage(request.accountHolderId, reportId), request.currentIndex))
+              _ <- repository.set(updatedAnswersWithCurrentIndex)
+            } yield Redirect(navigator.nextPage(ResidentTaxPage(request.currentIndex, request.accountHolderId, reportId), mode, updatedAnswers))
+        )
   }
 }

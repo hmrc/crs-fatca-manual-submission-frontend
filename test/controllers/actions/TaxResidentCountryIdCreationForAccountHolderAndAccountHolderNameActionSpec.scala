@@ -19,7 +19,7 @@ package controllers.actions
 import base.SpecBase
 import models.SubmissionsConstants.FATCA
 import models.manual.accountHolders.TaxResidentInformation
-import models.requests.{AccountHolderIdRequest, AccountHolderNameRequest, TaxResidentCountryIdForAccountHolderRequest}
+import models.requests.{AccountHolderNameRequest, TaxResidentCountryIdForAccountHolderRequest}
 import models.response.Country
 import models.viewModels.AccountHolderId
 import models.{ReportId, UserAnswers}
@@ -37,9 +37,10 @@ class TaxResidentCountryIdCreationForAccountHolderAndAccountHolderNameActionSpec
       transform(request)
   }
 
-  private val userId          = "user-id"
-  private val fatcaId         = "FATCAID"
-  private val accountHolderId = AccountHolderId("holder-id")
+  private val userId            = "user-id"
+  private val fatcaId           = "FATCAID"
+  private val accountHolderId   = AccountHolderId("holder-id")
+  private val accountHolderName = "Test Account Holder"
 
   private val reportId = ReportId(
     regime = FATCA,
@@ -53,17 +54,18 @@ class TaxResidentCountryIdCreationForAccountHolderAndAccountHolderNameActionSpec
     TaxResidentInformation(Country("US", "United States"))
   )
 
-  private def accountHolderIdRequest(userAnswers: UserAnswers): AccountHolderIdRequest[_] =
-    AccountHolderIdRequest(
+  private def accountHolderNameRequest(userAnswers: UserAnswers): AccountHolderNameRequest[_] =
+    AccountHolderNameRequest(
       request = FakeRequest(),
       userId = userId,
       userAnswers = userAnswers,
       fatcaId = fatcaId,
       reportId = reportId,
-      accountHolderId = accountHolderId
+      accountHolderId = accountHolderId,
+      accountHolderName = accountHolderName
     )
 
-  "TaxResidentCountryIdCreationForAccountHolderAction" - {
+  "TaxResidentCountryIdCreationForAccountHolderAndAccountHolderNameAction" - {
 
     "when there is no currentTaxResidentCountryId in the userAnswers" - {
 
@@ -71,13 +73,14 @@ class TaxResidentCountryIdCreationForAccountHolderAndAccountHolderNameActionSpec
         val action      = new Harness()
         val userAnswers = emptyUserAnswers
 
-        val result = action.callTransform(accountHolderIdRequest(userAnswers)).futureValue
+        val result = action.callTransform(accountHolderNameRequest(userAnswers)).futureValue
 
         result.userId mustBe userId
         result.userAnswers mustBe userAnswers
         result.fatcaId mustBe fatcaId
         result.reportId mustBe reportId
         result.accountHolderId mustBe accountHolderId
+        result.accountHolderName mustBe accountHolderName
         result.currentIndex mustBe 0
       }
 
@@ -86,13 +89,14 @@ class TaxResidentCountryIdCreationForAccountHolderAndAccountHolderNameActionSpec
         val userAnswers = emptyUserAnswers
           .withPage(TaxResidentCountriesListPage(accountHolderId, reportId), taxResidentCountries)
 
-        val result = action.callTransform(accountHolderIdRequest(userAnswers)).futureValue
+        val result = action.callTransform(accountHolderNameRequest(userAnswers)).futureValue
 
         result.userId mustBe userId
         result.userAnswers mustBe userAnswers
         result.fatcaId mustBe fatcaId
         result.reportId mustBe reportId
         result.accountHolderId mustBe accountHolderId
+        result.accountHolderName mustBe accountHolderName
         result.currentIndex mustBe taxResidentCountries.size
       }
     }
@@ -105,13 +109,14 @@ class TaxResidentCountryIdCreationForAccountHolderAndAccountHolderNameActionSpec
           .withPage(CurrentTaxResidentCountryIndexPage(accountHolderId, reportId), 2)
           .withPage(TaxResidentCountriesListPage(accountHolderId, reportId), taxResidentCountries)
 
-        val result = action.callTransform(accountHolderIdRequest(userAnswers)).futureValue
+        val result = action.callTransform(accountHolderNameRequest(userAnswers)).futureValue
 
         result.userId mustBe userId
         result.userAnswers mustBe userAnswers
         result.fatcaId mustBe fatcaId
         result.reportId mustBe reportId
         result.accountHolderId mustBe accountHolderId
+        result.accountHolderName mustBe accountHolderName
         result.currentIndex mustBe 2
       }
     }

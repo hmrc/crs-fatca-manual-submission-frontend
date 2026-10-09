@@ -22,23 +22,23 @@ import play.api.mvc.{ActionBuilder, AnyContent}
 import javax.inject.Inject
 
 class Actions @Inject() (
-                          identify: IdentifierAction,
-                          getData: DataRetrievalAction,
-                          requireData: DataRequiredAction,
-                          reportIdAction: ReportIdRequiredAction,
-                          accountIdCreationAction: AccountIdCreationAction,
-                          accountIdRequiredAction: AccountIdRequiredAction,
-                          accountHolderIdRequiredAction: AccountHolderIdRequiredAction,
-                          sponsorNameRequiredAction: SponsorNameRequiredAction,
-                          cpsoIdCreationAction: CpsoIdCreationAction,
-                          cpsoIdRequiredAction: CPSOIdRequiredAction,
-                          taxResidentCountryIdCreationAction: TaxResidentCountryIdCreationAction,
-                          accountPaymentIndexCreationAction: AccountPaymentIndexCreationAction,
-                          accountPaymentIndexRequiredAction: AccountPaymentIndexRequiredAction,
-                          cpsoNameRequiredAction: CPSONameRequiredAction,
-                          taxResidentCountryIdCreationForAccountHolderAction: TaxResidentCountryIdCreationForAccountHolderAndAccountHolderNameAction,
-                          accountHolderNameRequiredAction: AccountHolderNameRequiredAction,
-                          accountHolderCRSOnlyFilterAction: AccountHolderCRSOnlyFilterAction
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
+  reportIdAction: ReportIdRequiredAction,
+  accountIdCreationAction: AccountIdCreationAction,
+  accountIdRequiredAction: AccountIdRequiredAction,
+  accountHolderIdRequiredAction: AccountHolderIdRequiredAction,
+  sponsorNameRequiredAction: SponsorNameRequiredAction,
+  cpsoIdCreationAction: CpsoIdCreationAction,
+  cpsoIdRequiredAction: CPSOIdRequiredAction,
+  taxResidentCountryIdCreationAction: TaxResidentCountryIdCreationAction,
+  accountPaymentIndexCreationAction: AccountPaymentIndexCreationAction,
+  accountPaymentIndexRequiredAction: AccountPaymentIndexRequiredAction,
+  cpsoNameRequiredAction: CPSONameRequiredAction,
+  taxResidentCountryIdCreationForAccountHolderAction: TaxResidentCountryIdCreationForAccountHolderAndAccountHolderNameAction,
+  accountHolderNameRequiredAction: AccountHolderNameRequiredAction,
+  accountHolderCRSOnlyFilterAction: AccountHolderCRSOnlyFilterAction
 ) {
 
   def withReportIdRequiredAndAccountIdCreation(): ActionBuilder[AccountIdRequest, AnyContent] =
@@ -56,7 +56,7 @@ class Actions @Inject() (
   def withReportIdRequiredAndAccountHolderIdRequired(): ActionBuilder[AccountHolderIdRequest, AnyContent] =
     withReportIdRequired() andThen accountHolderIdRequiredAction
 
-  def withReportIdRequiredAndAccountHolderIdRequiredAndTaxResidentIdCreation(): ActionBuilder[TaxResidentCountryIdForAccountHolderRequest, AnyContent] =
+  def withReportIdRequiredAndAccountHolderNameRequiredAndTaxResidentIdCreation(): ActionBuilder[TaxResidentCountryIdForAccountHolderRequest, AnyContent] =
     withReportIdRequired() andThen withReportIdRequiredAndAccountHolderIdRequired() andThen withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired() andThen taxResidentCountryIdCreationForAccountHolderAction
 
   def withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired(): ActionBuilder[AccountHolderNameRequest, AnyContent] =

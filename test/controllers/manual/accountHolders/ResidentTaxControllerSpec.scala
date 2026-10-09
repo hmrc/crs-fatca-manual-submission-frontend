@@ -21,6 +21,7 @@ import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.accountHolders.ResidentTaxFormProvider
 import models.SubmissionsConstants.CRS
+import models.manual.accountHolders.IndividualOrOrganisation.Individual
 import models.manual.accountHolders.{IndividualName, TaxResidentInformation}
 import models.response.Country
 import models.viewModels.AccountHolderId
@@ -30,7 +31,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.accountHolders.{AccountHolderIndividualNamePage, CurrentAccountHolderIdPage, TaxResidentCountriesListPage}
+import pages.manual.accountHolders.{AccountHolderIndividualNamePage, CurrentAccountHolderIdPage, IndividualOrOrganisationPage, TaxResidentCountriesListPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -43,9 +44,9 @@ class ResidentTaxControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  private val currentAccountHolderId = AccountHolderId("testid")
-  private val reportId               = ReportId(CRS, 2025, None, "TestfiID")
-  private val individualName         = IndividualName("test", "last")
+  private val currentAccountHolderId      = AccountHolderId("testid")
+  implicit private val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
+  private val individualName              = IndividualName("test", "last")
 
   private val formProvider = new ResidentTaxFormProvider()
   private val form         = formProvider()
@@ -57,7 +58,8 @@ class ResidentTaxControllerSpec extends SpecBase with MockitoSugar {
     val taxResidentInformation = TaxResidentInformation(country)
     val ua = emptyUserAnswers
       .withPage(ReportIdPage, reportId)
-      .withPage(CurrentAccountHolderIdPage()(reportId), currentAccountHolderId)
+      .withPage(CurrentAccountHolderIdPage(), currentAccountHolderId)
+      .withPage(IndividualOrOrganisationPage(currentAccountHolderId), Individual)
       .withPage(AccountHolderIndividualNamePage(currentAccountHolderId)(reportId), individualName)
       .withPage(TaxResidentCountriesListPage(currentAccountHolderId, reportId), Seq(taxResidentInformation))
 

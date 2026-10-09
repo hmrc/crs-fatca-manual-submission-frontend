@@ -66,4 +66,5 @@ class TaxResidentCountryIdCreationForAccountHolderActionImpl @Inject() (implicit
   }
 }
 
-trait TaxResidentCountryIdCreationForAccountHolderAndAccountHolderNameAction extends ActionTransformer[AccountHolderNameRequest, TaxResidentCountryIdForAccountHolderRequest]
+trait TaxResidentCountryIdCreationForAccountHolderAndAccountHolderNameAction
+    extends ActionTransformer[AccountHolderNameRequest, TaxResidentCountryIdForAccountHolderRequest]
