@@ -75,6 +75,7 @@ case class TaxResidentCountryIdForAccountHolderRequest[A](request: Request[A],
                                                           fatcaId: String,
                                                           reportId: ReportId,
                                                           accountHolderId: AccountHolderId,
+                                                          accountHolderName: String,
                                                           currentIndex: Int
 ) extends WrappedRequest[A](request)
     with HasReportIdRequest[A]

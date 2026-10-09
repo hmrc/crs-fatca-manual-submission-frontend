@@ -17,7 +17,7 @@
 package controllers.actions
 
 import models.ReportId
-import models.requests.{AccountHolderIdRequest, TaxResidentCountryIdForAccountHolderRequest}
+import models.requests.{AccountHolderIdRequest, AccountHolderNameRequest, TaxResidentCountryIdForAccountHolderRequest}
 import pages.manual.accountHolders.{CurrentTaxResidentCountryIndexPage, TaxResidentCountriesListPage}
 import play.api.mvc.ActionTransformer
 
@@ -25,9 +25,9 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class TaxResidentCountryIdCreationForAccountHolderActionImpl @Inject() (implicit val executionContext: ExecutionContext)
-    extends TaxResidentCountryIdCreationForAccountHolderAction {
+    extends TaxResidentCountryIdCreationForAccountHolderAndAccountHolderNameAction {
 
-  override protected def transform[A](request: AccountHolderIdRequest[A]): Future[TaxResidentCountryIdForAccountHolderRequest[A]] = {
+  override protected def transform[A](request: AccountHolderNameRequest[A]): Future[TaxResidentCountryIdForAccountHolderRequest[A]] = {
     given reportId: ReportId = request.reportId
 
     val accountHolderId = request.accountHolderId
@@ -45,6 +45,7 @@ class TaxResidentCountryIdCreationForAccountHolderActionImpl @Inject() (implicit
             fatcaId = request.fatcaId,
             reportId = request.reportId,
             accountHolderId = request.accountHolderId,
+            accountHolderName = request.accountHolderName,
             currentIndex = currentIndex
           )
         )
@@ -57,6 +58,7 @@ class TaxResidentCountryIdCreationForAccountHolderActionImpl @Inject() (implicit
             fatcaId = request.fatcaId,
             reportId = request.reportId,
             accountHolderId = request.accountHolderId,
+            accountHolderName = request.accountHolderName,
             currentIndex = id
           )
         )
@@ -64,4 +66,4 @@ class TaxResidentCountryIdCreationForAccountHolderActionImpl @Inject() (implicit
   }
 }
 
-trait TaxResidentCountryIdCreationForAccountHolderAction extends ActionTransformer[AccountHolderIdRequest, TaxResidentCountryIdForAccountHolderRequest]
+trait TaxResidentCountryIdCreationForAccountHolderAndAccountHolderNameAction extends ActionTransformer[AccountHolderNameRequest, TaxResidentCountryIdForAccountHolderRequest]

@@ -19,7 +19,7 @@ package controllers.actions
 import base.SpecBase
 import models.SubmissionsConstants.FATCA
 import models.manual.accountHolders.TaxResidentInformation
-import models.requests.{AccountHolderIdRequest, TaxResidentCountryIdForAccountHolderRequest}
+import models.requests.{AccountHolderIdRequest, AccountHolderNameRequest, TaxResidentCountryIdForAccountHolderRequest}
 import models.response.Country
 import models.viewModels.AccountHolderId
 import models.{ReportId, UserAnswers}
@@ -29,11 +29,11 @@ import play.api.test.FakeRequest
 
 import scala.concurrent.Future
 
-class TaxResidentCountryIdCreationForAccountHolderActionSpec extends SpecBase with MockitoSugar {
+class TaxResidentCountryIdCreationForAccountHolderAndAccountHolderNameActionSpec extends SpecBase with MockitoSugar {
 
   class Harness extends TaxResidentCountryIdCreationForAccountHolderActionImpl() {
 
-    def callTransform[A](request: AccountHolderIdRequest[A]): Future[TaxResidentCountryIdForAccountHolderRequest[A]] =
+    def callTransform[A](request: AccountHolderNameRequest[A]): Future[TaxResidentCountryIdForAccountHolderRequest[A]] =
       transform(request)
   }
 
