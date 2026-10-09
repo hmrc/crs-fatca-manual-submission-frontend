@@ -19,11 +19,19 @@ package generators
 import models.manual.account.{PaymentType, WasAccountOpen, WhatAccountType}
 import models.manual.accountHolders.{IndividualName, SelfCertification}
 import models.manual.cpso.{CpsoSelfCertification, IndividualOrOrganisation, UkPostCode}
-import models.{AddressUk, CrsOrFatca, NumberType, TypeOfReport, UkAddress, UkPostCodeForAccountHolder}
+import models.{AddressUk, CrsOrFatca, NumberType, ResidentTax, TypeOfReport, UkAddress, UkPostCodeForAccountHolder}
 import org.scalacheck.Arbitrary.*
 import org.scalacheck.{Arbitrary, Gen}
 
 trait ModelGenerators {
+
+  implicit lazy val arbitraryResidentTax: Arbitrary[ResidentTax] =
+    Arbitrary {
+      for {
+        country <- arbitrary[String]
+        blank   <- arbitrary[String]
+      } yield ResidentTax(country, blank)
+    }
 
   implicit lazy val arbitraryAddressUk: Arbitrary[AddressUk] =
     Arbitrary {

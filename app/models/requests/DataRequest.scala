@@ -69,6 +69,17 @@ case class AccountHolderIdRequest[A](request: Request[A],
 ) extends WrappedRequest[A](request)
     with HasReportIdRequest[A]
 
+case class TaxResidentCountryIdForAccountHolderRequest[A](request: Request[A],
+                                                          userId: String,
+                                                          userAnswers: UserAnswers,
+                                                          fatcaId: String,
+                                                          reportId: ReportId,
+                                                          accountHolderId: AccountHolderId,
+                                                          accountHolderName: String,
+                                                          currentIndex: Int
+) extends WrappedRequest[A](request)
+    with HasReportIdRequest[A]
+
 case class SponsorNameRequest[A](request: Request[A], userId: String, userAnswers: UserAnswers, fatcaId: String, reportId: ReportId, sponsorName: String)
     extends WrappedRequest[A](request)
 

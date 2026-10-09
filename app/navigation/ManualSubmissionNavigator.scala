@@ -50,6 +50,7 @@ import pages.manual.accountHolders.{
   IsThisTheAddressForAccountHoldersPage,
   OrganisationCrsPage,
   OrganisationFatcaPage,
+  ResidentTaxPage,
   SelectAddressPage,
   SelfCertificationPage as AccountHolderSelfCertificationPage,
   UkAddressPage as AccountHolderUkAddressPage,
@@ -226,12 +227,15 @@ class ManualSubmissionNavigator @Inject() () {
     case (UkPostCodeForAccountHolderPage(accountHolderId, reportId), mode, ua) => handleUKPostcodeNavigationForAccountHolders(ua, mode, accountHolderId)
     case (IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId), mode, ua) =>
       handleIsThisTheAddressForAccountHoldersRouting(ua, mode, accountHolderId)
-    case (AccountHolderUkAddressPage(accountHolderId, reportId), mode, _) =>
-      controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
-    case (SelectAddressPage(_, _), _, _)                  => controllers.routes.UnderConstructionController.onPageLoad()
-    case (AccountHolderAddressNonUkPage(_, _), _, _)      => controllers.routes.UnderConstructionController.onPageLoad()
-    case (AccountHolderSelfCertificationPage(_, _), _, _) => controllers.routes.UnderConstructionController.onPageLoad()
-    case (IndividualPlaceOfBirthPage(_, _), mode, _)      => controllers.manual.accountHolders.routes.WhereAreTheyBasedController.onPageLoad(mode)
+    case (AccountHolderUkAddressPage(accountHolderId, reportId), mode, ua) =>
+      handleAddressUKPageNavigationForAccountHolders(ua, mode, accountHolderId)
+    case (SelectAddressPage(accountHolderId, reportId), mode, ua) => handleSelectAddressPageNavigationForAccountHolders(ua, mode, accountHolderId)
+    case (AccountHolderAddressNonUkPage(accountHolderId, reportId), mode, ua) =>
+      handleAccountHolderAddressNonUkPageNavigationForAccountHolders(ua, mode, accountHolderId)
+    case (AccountHolderSelfCertificationPage(accountHolderId, reportId), mode, ua) =>
+      handleAccountHolderSelfCertificationPageNavigationForAccountHolders(ua, mode, accountHolderId)
+    case (IndividualPlaceOfBirthPage(_, _), mode, _)               => controllers.manual.accountHolders.routes.WhereAreTheyBasedController.onPageLoad(mode)
+    case (ResidentTaxPage(_, accountHolderId, reportId), mode, ua) => handleResidentTaxPageNavigationForAccountHolders(ua, mode)
   }
 
   private def cpsoNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
@@ -353,6 +357,56 @@ class ManualSubmissionNavigator @Inject() () {
       case None                                  => routes.JourneyRecoveryController.onPageLoad()
     }
 
+  private def handleAccountHolderAddressNonUkPageNavigationForAccountHolders(userAnswers: UserAnswers, mode: Mode, accountHolderId: AccountHolderId)(implicit
+    reportId: ReportId
+  ) =
+    if (reportId.regime == FATCA) {
+      userAnswers.get(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId)) match {
+        case Some(countries) if countries.isEmpty => controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(mode)
+        case Some(_)                              => controllers.routes.UnderConstructionController.onPageLoad()
+        case None                                 => controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(mode)
+      }
+    } else {
+      controllers.routes.UnderConstructionController.onPageLoad()
+    }
+
+  private def handleSelectAddressPageNavigationForAccountHolders(userAnswers: UserAnswers, mode: Mode, accountHolderId: AccountHolderId)(implicit
+    reportId: ReportId
+  ) =
+    userAnswers.get(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId)) match {
+      case Some(countries) if countries.isEmpty => controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(mode)
+      case Some(_)                              => controllers.routes.UnderConstructionController.onPageLoad()
+      case None                                 => controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(mode)
+    }
+
+  private def handleResidentTaxPageNavigationForAccountHolders(userAnswers: UserAnswers, mode: Mode)(implicit
+    reportId: ReportId
+  ) =
+    if (reportId.regime == CRS) controllers.manual.accountHolders.routes.HaveTaxIdenticationNumberController.onPageLoad(mode)
+    else controllers.routes.UnderConstructionController.onPageLoad()
+
+  private def handleAccountHolderSelfCertificationPageNavigationForAccountHolders(userAnswers: UserAnswers, mode: Mode, accountHolderId: AccountHolderId)(
+    implicit reportId: ReportId
+  ) =
+    userAnswers.get(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId)) match {
+      case Some(countries) if countries.isEmpty => controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(mode)
+      case Some(_)                              => controllers.routes.UnderConstructionController.onPageLoad()
+      case None                                 => controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(mode)
+    }
+
+  private def handleAddressUKPageNavigationForAccountHolders(userAnswers: UserAnswers, mode: Mode, accountHolderId: AccountHolderId)(implicit
+    reportId: ReportId
+  ) =
+    if (reportId.regime == FATCA) {
+      userAnswers.get(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId)) match {
+        case Some(countries) if countries.isEmpty => controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(mode)
+        case Some(_)                              => controllers.routes.UnderConstructionController.onPageLoad()
+        case None                                 => controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(mode)
+      }
+    } else {
+      controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
+    }
+
   private def handleUKPostcodeNavigationForAccountHolders(userAnswers: UserAnswers, mode: Mode, accountHolderId: AccountHolderId)(implicit reportId: ReportId) =
     userAnswers.get(AddressLookupForAccountHolderPage(accountHolderId, reportId)) match {
       case Some(value) if value.isEmpty          => routes.JourneyRecoveryController.onPageLoad()
@@ -386,7 +440,17 @@ class ManualSubmissionNavigator @Inject() () {
     reportId: ReportId
   ) =
     userAnswers.get(IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId)) match {
-      case Some(true)  => routes.UnderConstructionController.onPageLoad()
+      case Some(true) =>
+        if (reportId.regime == CRS)
+          routes.UnderConstructionController.onPageLoad()
+        else {
+          userAnswers.get(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId)) match {
+            case Some(countries) if countries.isEmpty => controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(mode)
+            case Some(_)                              => controllers.routes.UnderConstructionController.onPageLoad()
+            case None                                 => controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(mode)
+          }
+        }
+
       case Some(false) => controllers.manual.accountHolders.routes.UkAddressController.onPageLoad(mode)
       case None        => routes.JourneyRecoveryController.onPageLoad()
     }

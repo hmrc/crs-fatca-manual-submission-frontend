@@ -36,8 +36,10 @@ class Actions @Inject() (
   accountPaymentIndexCreationAction: AccountPaymentIndexCreationAction,
   accountPaymentIndexRequiredAction: AccountPaymentIndexRequiredAction,
   cpsoNameRequiredAction: CPSONameRequiredAction,
+  taxResidentCountryIdCreationForAccountHolderAction: TaxResidentCountryIdCreationForAccountHolderAction,
   accountHolderNameRequiredAction: AccountHolderNameRequiredAction,
-  accountHolderCRSOnlyFilterAction: AccountHolderCRSOnlyFilterAction
+  accountHolderCRSOnlyFilterAction: AccountHolderCRSOnlyFilterAction,
+  taxResidentIdRequiredForAccountHolderAction: TaxResidentIdRequiredForAccountHolderAction
 ) {
 
   def withReportIdRequiredAndAccountIdCreation(): ActionBuilder[AccountIdRequest, AnyContent] =
@@ -54,6 +56,17 @@ class Actions @Inject() (
 
   def withReportIdRequiredAndAccountHolderIdRequired(): ActionBuilder[AccountHolderIdRequest, AnyContent] =
     withReportIdRequired() andThen accountHolderIdRequiredAction
+
+  def withReportIdRequiredAndAccountHolderNameRequiredAndTaxResidentIdCreation(): ActionBuilder[TaxResidentCountryIdForAccountHolderRequest, AnyContent] =
+    withReportIdRequired() andThen withReportIdRequiredAndAccountHolderIdRequired() andThen withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired() andThen taxResidentCountryIdCreationForAccountHolderAction
+
+  def withReportIdRequiredAndAccountHolderNameRequiredAndTaxResidentIdRequiredCreation()
+    : ActionBuilder[TaxResidentCountryIdForAccountHolderRequest, AnyContent] =
+    withReportIdRequired() andThen withReportIdRequiredAndAccountHolderIdRequired() andThen withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired() andThen taxResidentIdRequiredForAccountHolderAction
+
+  def withReportIdRequiredAndAccountHolderNameRequiredAndTaxResidentIdRequiredAndCRSOnlyCreation()
+    : ActionBuilder[TaxResidentCountryIdForAccountHolderRequest, AnyContent] =
+    withReportIdRequired() andThen withReportIdRequiredAndAccountHolderIdRequired() andThen accountHolderCRSOnlyFilterAction andThen withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired() andThen taxResidentIdRequiredForAccountHolderAction
 
   def withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired(): ActionBuilder[AccountHolderNameRequest, AnyContent] =
     withReportIdRequired() andThen accountHolderIdRequiredAction andThen accountHolderNameRequiredAction

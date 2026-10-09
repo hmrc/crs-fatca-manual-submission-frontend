@@ -1013,3 +1013,16 @@ organisationCrs.passiveWithMultiplePersons = Passive non-financial entity with o
 organisationCrs.crsReportable = CRS reportable person
 organisationCrs.passiveCrsPerson = Passive non-financial entity that is a CRS reportable person
 organisationCrs.empty =
+
+accountHolders.residentTax.title = Where is the account holder resident for tax?
+accountHolders.residentTax.heading = Where is {0} resident for tax?
+accountHolders.residentTax.paragraph = If they are resident for tax in more than one country, then you can add other countries after this one.
+accountHolders.country.error.required = Select where the account holder is resident for tax
+accountHolders.residentTax.checkYourAnswersLabel = ResidentTax
+
+accountHolders.haveTaxIdenticationNumber.title = Do you have a tax identification number for the account holder for the country?
+accountHolders.haveTaxIdenticationNumber.heading = Do you have a tax identification number for {0} for {1}?
+accountHolders.haveTaxIdenticationNumber.other.heading = Do you have a tax identification number for {0} for {1}?
+accountHolders.haveTaxIdenticationNumber.checkYourAnswersLabel = haveTaxIdenticationNumber
+accountHolders.haveTaxIdenticationNumber.error.required = 	Select yes if you have a tax identification number
+accountHolders.haveTaxIdenticationNumber.change.hidden = HaveTaxIdenticationNumber
