@@ -43,6 +43,7 @@ class HaveTaxIdenticationNumberViewSpec extends SpecBase {
 
   private val accountHolder = "Some Name"
   private val country       = Country.GB
+  private val other         = Country(code = "XX", description = "Other country")
 
   private val expectedTitle   = "Do you have a tax identification number for the account holder for the country?"
   private val expectedHeading = s"Do you have a tax identification number for $accountHolder for ${country.description}?"
@@ -60,6 +61,12 @@ class HaveTaxIdenticationNumberViewSpec extends SpecBase {
 
       "must display the heading with the account holder name and the country" in {
         doc.select("h1").text() mustBe expectedHeading
+      }
+
+      "must display the heading with the account holder name and the country for an XX" in {
+        val renderedHtml2: HtmlFormat.Appendable = view(form, NormalMode, accountHolder, other)
+        lazy val doc2                            = Jsoup.parse(renderedHtml2.body)
+        doc2.select("h1").text() mustBe s"Do you have a tax identification number for $accountHolder for 'Other country'?"
       }
 
       "must display the heading as the page heading legend of the radios" in {

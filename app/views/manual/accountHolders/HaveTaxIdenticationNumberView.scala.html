@@ -36,7 +36,14 @@
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = LegendViewModel(messages("accountHolders.haveTaxIdenticationNumber.heading", accountHolderName, country.description)).asPageHeading()
+                legend = LegendViewModel(
+                    if(country.code == "XX") {
+                        messages("accountHolders.haveTaxIdenticationNumber.other.heading", accountHolderName, s"'${country.description}'")
+                    }
+                    else{
+                        messages("accountHolders.haveTaxIdenticationNumber.heading", accountHolderName, country.description)
+                    }
+                ).asPageHeading()
             )
         )
 
