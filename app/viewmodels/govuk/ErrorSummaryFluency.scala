@@ -30,22 +30,25 @@ trait ErrorSummaryFluency {
 
     def withProtectedTokens(msg: String): Content =
       HtmlContent(
-        HtmlFormat.escape(msg).body
+        HtmlFormat
+          .escape(msg)
+          .body
           .replace("(--),", "<span class='nobreak'>(--),</span>")
           .replace("(&amp;#)", "<span class='nobreak'>(&amp;#)</span>")
           .replace("(/*)", "<span class='nobreak'>(/*)</span>")
       )
 
     def apply(
-               form: Form[_],
-               errorLinkOverrides: Map[String, String] = Map.empty
-             )(implicit messages: Messages): ErrorSummary = {
+      form: Form[_],
+      errorLinkOverrides: Map[String, String] = Map.empty
+    )(implicit messages: Messages): ErrorSummary = {
 
-      val errors = form.errors.map { error =>
-        ErrorLink(
-          href = Some(s"#${errorLinkOverrides.getOrElse(error.key, error.key)}"),
-          content = withProtectedTokens(messages(error.message, error.args: _*))
-        )
+      val errors = form.errors.map {
+        error =>
+          ErrorLink(
+            href = Some(s"#${errorLinkOverrides.getOrElse(error.key, error.key)}"),
+            content = withProtectedTokens(messages(error.message, error.args: _*))
+          )
       }
 
       ErrorSummary(
