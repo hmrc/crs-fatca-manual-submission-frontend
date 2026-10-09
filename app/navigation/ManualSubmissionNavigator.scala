@@ -233,7 +233,7 @@ class ManualSubmissionNavigator @Inject() () {
       handleAccountHolderAddressNonUkPageNavigationForAccountHolders(ua, mode, accountHolderId)
     case (AccountHolderSelfCertificationPage(accountHolderId, reportId), mode, ua) =>
       handleAccountHolderSelfCertificationPageNavigationForAccountHolders(ua, mode, accountHolderId)
-     case (IndividualPlaceOfBirthPage(_, _), mode, _)      => controllers.manual.accountHolders.routes.WhereAreTheyBasedController.onPageLoad(mode)
+    case (IndividualPlaceOfBirthPage(_, _), mode, _) => controllers.manual.accountHolders.routes.WhereAreTheyBasedController.onPageLoad(mode)
   }
 
   private def cpsoNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {

@@ -58,7 +58,7 @@ class Actions @Inject() (
 
   def withReportIdRequiredAndAccountHolderIdRequiredAndTaxResidentIdCreation(): ActionBuilder[TaxResidentCountryIdForAccountHolderRequest, AnyContent] =
     withReportIdRequired() andThen withReportIdRequiredAndAccountHolderIdRequired() andThen taxResidentCountryIdCreationForAccountHolderAction
-  
+
   def withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired(): ActionBuilder[AccountHolderNameRequest, AnyContent] =
     withReportIdRequired() andThen accountHolderIdRequiredAction andThen accountHolderNameRequiredAction
 
