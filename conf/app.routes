@@ -395,3 +395,17 @@ GET        /manual/cp-so/individual-have-date-of-birth                        co
 POST       /manual/cp-so/individual-have-date-of-birth                        controllers.manual.cpso.IndividualHaveDateOfBirthController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/cp-so/change-individual-have-date-of-birth                  controllers.manual.cpso.IndividualHaveDateOfBirthController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/cp-so/change-individual-have-date-of-birth                  controllers.manual.cpso.IndividualHaveDateOfBirthController.onSubmit(mode: Mode = CheckMode)
+GET        /manual/account-holder/organisation-name                       controllers.manual.accountHolders.OrganisationNameController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account-holder/organisation-name                       controllers.manual.accountHolders.OrganisationNameController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account-holder/change-organisation-name                 controllers.manual.accountHolders.OrganisationNameController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account-holder/change-organisation-name                 controllers.manual.accountHolders.OrganisationNameController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/account-holder/organisation-fatca-type                       controllers.manual.accountHolders.OrganisationFatcaController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account-holder/organisation-fatca-type                       controllers.manual.accountHolders.OrganisationFatcaController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account-holder/change-organisation-fatca-type                controllers.manual.accountHolders.OrganisationFatcaController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account-holder/change-organisation-fatca-type                controllers.manual.accountHolders.OrganisationFatcaController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/account-holder/organisation-crs-type                       controllers.manual.accountHolders.OrganisationCrsController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account-holder/organisation-crs-type                       controllers.manual.accountHolders.OrganisationCrsController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account-holder/change-organisation-crs-type                controllers.manual.accountHolders.OrganisationCrsController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account-holder/change-organisation-crs-type                controllers.manual.accountHolders.OrganisationCrsController.onSubmit(mode: Mode = CheckMode)

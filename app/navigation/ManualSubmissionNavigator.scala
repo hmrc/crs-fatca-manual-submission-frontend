@@ -42,11 +42,14 @@ import pages.manual.cpso.{
 import pages.manual.accountHolders.{
   AccountHolderAddressNonUkPage,
   AccountHolderIndividualNamePage,
+  AccountHolderOrganisationNamePage,
   AddressLookupForAccountHolderPage,
   IndividualHavePlaceOfBirthPage,
   IndividualOrOrganisationPage,
   IndividualPlaceOfBirthPage,
   IsThisTheAddressForAccountHoldersPage,
+  OrganisationCrsPage,
+  OrganisationFatcaPage,
   SelectAddressPage,
   SelfCertificationPage as AccountHolderSelfCertificationPage,
   UkAddressPage as AccountHolderUkAddressPage,
@@ -159,7 +162,7 @@ class ManualSubmissionNavigator @Inject() () {
           case Individual =>
             controllers.manual.accountHolders.routes.IndividualNameController.onPageLoad(mode)
           case Organisation =>
-            controllers.routes.UnderConstructionController.onPageLoad()
+            controllers.manual.accountHolders.routes.OrganisationNameController.onPageLoad(mode)
         }
     case (AccountHolderIndividualNamePage(id), mode, ua) =>
       ua.get(AccountHolderIndividualNamePage(id)) match {
@@ -168,6 +171,36 @@ class ManualSubmissionNavigator @Inject() () {
         case None =>
           controllers.routes.JourneyRecoveryController.onPageLoad()
       }
+
+    case (AccountHolderOrganisationNamePage(id), mode, ua) =>
+      ua.get(AccountHolderOrganisationNamePage(id)) match {
+        case Some(_) =>
+          reportId.regime match {
+            case CRS =>
+              controllers.manual.accountHolders.routes.OrganisationCrsController.onPageLoad(mode)
+
+            case FATCA =>
+              controllers.manual.accountHolders.routes.OrganisationFatcaController.onPageLoad(mode)
+          }
+
+        case None =>
+          controllers.routes.JourneyRecoveryController.onPageLoad()
+      }
+    case (OrganisationCrsPage(id), mode, ua) =>
+      ua.get(OrganisationCrsPage(id)) match {
+        case Some(_) =>
+          controllers.manual.accountHolders.routes.WhereAreTheyBasedController.onPageLoad(mode)
+        case None =>
+          controllers.routes.JourneyRecoveryController.onPageLoad()
+      }
+    case (OrganisationFatcaPage(id), mode, ua) =>
+      ua.get(OrganisationFatcaPage(id)) match {
+        case Some(_) =>
+          controllers.manual.accountHolders.routes.WhereAreTheyBasedController.onPageLoad(mode)
+        case None =>
+          controllers.routes.JourneyRecoveryController.onPageLoad()
+      }
+
     case (pages.manual.accountHolders.IndividualHavePlaceOfBirthPage(id), mode, ua) => handleIndividualHavePlaceOfBirthNavigation(id, mode, ua)
     case (pages.manual.accountHolders.WhereAreTheyBasedPage(id), mode, ua) =>
       ua.get(WhereAreTheyBasedPage(id)) match {

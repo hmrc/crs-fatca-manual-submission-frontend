@@ -982,3 +982,34 @@ cpso.individualHaveDateOfBirth.bullet1=in records maintained by {0}
 cpso.individualHaveDateOfBirth.bullet2=required for {0} to collect it
 cpso.individualHaveDateOfBirth.bullet3=required for {0} to update account information under anti-money laundering and Know Your Customer procedures
 cpso.individualHaveDateOfBirth.question=Do you need to provide the date of birth for {0}?
+
+organisationName.title = What is the name of the account holder?
+organisationName.heading = What is the name of the account holder?
+organisationName.checkYourAnswersLabel = What is the name of the account holder?
+organisationName.error.required = Enter the name of the account holder
+organisationName.error.length = Account holder name must be 200 characters or less
+organisationName.error.invalid = Account holder name must only include letters a to z, numbers 0 to 9, ampersands (&), apostrophes, backslashes, carets (^), grave accents (`), hyphens and spaces
+organisationName.error.invalid-combination = Account holder name must not include a double dash (--)
+organisationName.change.hidden = OrganisationName
+organisationName.empty =
+
+organisationFatca.title = What type of account holder is this?
+organisationFatca.heading = What type of account holder is {0}?
+organisationFatca.checkYourAnswersLabel = What type of account holder is {0}?
+organisationFatca.error.required = Select what type of account holder this is
+organisationFatca.change.hidden = organisationFatca
+organisationFatca.ownerDocumented = Owner-documented foreign financial institution with specified US owners
+organisationFatca.passive = Passive non-financial foreign entity with substantial US owners, or controlling persons
+organisationFatca.nonParticipating = Non-participating foreign financial institution
+organisationFatca.specifiedPerson = Specified US person
+organisationFatca.empty =
+
+organisationCrs.title = What type of account holder is this?
+organisationCrs.heading = What type of account holder is {0}?
+organisationCrs.checkYourAnswersLabel = What type of account holder is {0}?
+organisationCrs.error.required = Select what type of account holder this is
+organisationCrs.change.hidden = organisationCrs
+organisationCrs.passiveWithMultiplePersons = Passive non-financial entity with one or more controlling reportable persons
+organisationCrs.crsReportable = CRS reportable person
+organisationCrs.passiveCrsPerson = Passive non-financial entity that is a CRS reportable person
+organisationCrs.empty =

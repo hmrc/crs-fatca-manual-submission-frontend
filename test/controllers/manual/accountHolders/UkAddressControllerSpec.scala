@@ -21,6 +21,7 @@ import connectors.DatabaseConnector
 import forms.manual.accountHolders.UkAddressFormProvider
 import models.SubmissionsConstants.CRS
 import models.manual.accountHolders.IndividualName
+import models.manual.accountHolders.IndividualOrOrganisation.Individual
 import models.response.AddressLookup
 import models.viewModels.AccountHolderId
 import models.{Countries, NormalMode, ReportId, UkAddress, UserAnswers}
@@ -29,7 +30,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.accountHolders._
+import pages.manual.accountHolders.*
 import play.api.inject.bind
 import play.api.libs.json.Json
 import play.api.mvc.Call
@@ -62,9 +63,11 @@ class UkAddressControllerSpec extends SpecBase with MockitoSugar {
 
   "UkAddress Controller" - {
     val accountHolderId = AccountHolderId("TestId")
+
     val ua = emptyUserAnswers
       .withPage(ReportIdPage, reportId)
       .withPage(CurrentAccountHolderIdPage(), accountHolderId)
+      .withPage(IndividualOrOrganisationPage(accountHolderId), Individual)
 
     "must return OK and the correct view for a GET" in {
       val userAnswers = ua.withPage(AccountHolderIndividualNamePage(accountHolderId), testName)
@@ -72,10 +75,8 @@ class UkAddressControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request = FakeRequest(GET, ukAddressRoute)
-
-        val view = application.injector.instanceOf[UkAddressView]
-
-        val result = route(application, request).value
+        val view    = application.injector.instanceOf[UkAddressView]
+        val result  = route(application, request).value
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form, NormalMode, testName.fullName, countries)(request, messages(application)).toString
@@ -87,8 +88,7 @@ class UkAddressControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request = FakeRequest(GET, ukAddressRoute)
-
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
@@ -96,18 +96,18 @@ class UkAddressControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must populate the view correctly on a GET when UK Address page has previously been answered" in {
-      val validAnswer       = UkAddress("value 1", Some("value 2"), "Some City", Some("Some County"), "AA1 1AA", "GB")
-      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
-      val userAnswers = ua.withPage(UkAddressPage(accountHolderId, reportId), validAnswer).withPage(AccountHolderIndividualNamePage(accountHolderId), testName)
+      val validAnswer = UkAddress("value 1", Some("value 2"), "Some City", Some("Some County"), "AA1 1AA", "GB")
+
+      val userAnswers = ua
+        .withPage(UkAddressPage(accountHolderId, reportId), validAnswer)
+        .withPage(AccountHolderIndividualNamePage(accountHolderId), testName)
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, ukAddressRoute)
-
-        val view = application.injector.instanceOf[UkAddressView]
-
-        val result = route(application, request).value
+        val view    = application.injector.instanceOf[UkAddressView]
+        val result  = route(application, request).value
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode, testName.fullName, countries)(request, messages(application)).toString
@@ -115,8 +115,8 @@ class UkAddressControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must populate the view correctly on a GET when AddressLookUp page has one address" in {
-      val validAnswer       = UkAddress("value 1", Some("value 2"), "Some City", None, "AA1 1AA", "GB")
-      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
+      val validAnswer = UkAddress("value 1", Some("value 2"), "Some City", None, "AA1 1AA", "GB")
+
       val userAnswers = ua
         .withPage(
           AddressLookupForAccountHolderPage(accountHolderId, reportId),
@@ -140,10 +140,8 @@ class UkAddressControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request = FakeRequest(GET, ukAddressRoute)
-
-        val view = application.injector.instanceOf[UkAddressView]
-
-        val result = route(application, request).value
+        val view    = application.injector.instanceOf[UkAddressView]
+        val result  = route(application, request).value
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode, testName.fullName, countries)(request, messages(application)).toString
@@ -151,8 +149,8 @@ class UkAddressControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must populate the view correctly on a GET when PostCode page has value" in {
-      val validAnswer       = UkAddress("", None, "", None, "AA1 1AA", "")
-      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
+      val validAnswer = UkAddress("", None, "", None, "AA1 1AA", "")
+
       val userAnswers = ua
         .withPage(UkPostCodeForAccountHolderPage(accountHolderId, reportId), "AA1 1AA")
         .withPage(AccountHolderIndividualNamePage(accountHolderId), testName)
@@ -161,10 +159,8 @@ class UkAddressControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request = FakeRequest(GET, ukAddressRoute)
-
-        val view = application.injector.instanceOf[UkAddressView]
-
-        val result = route(application, request).value
+        val view    = application.injector.instanceOf[UkAddressView]
+        val result  = route(application, request).value
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode, testName.fullName, countries)(request, messages(application)).toString
@@ -188,12 +184,13 @@ class UkAddressControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, ukAddressRoute)
-            .withFormUrlEncodedBody(("addressLine1", "value 1"),
-                                    ("addressLine2", "value 2"),
-                                    ("city", "Some City"),
-                                    ("county", "Some County"),
-                                    ("postCode", "AA1 1AA"),
-                                    ("country", "GB")
+            .withFormUrlEncodedBody(
+              ("addressLine1", "value 1"),
+              ("addressLine2", "value 2"),
+              ("city", "Some City"),
+              ("county", "Some County"),
+              ("postCode", "AA1 1AA"),
+              ("country", "GB")
             )
 
         val result = route(application, request).value
@@ -208,15 +205,10 @@ class UkAddressControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, ukAddressRoute)
-            .withFormUrlEncodedBody(("value", "invalid value"))
-
+        val request   = FakeRequest(POST, ukAddressRoute).withFormUrlEncodedBody(("value", "invalid value"))
         val boundForm = form.bind(Map("value" -> "invalid value"))
-
-        val view = application.injector.instanceOf[UkAddressView]
-
-        val result = route(application, request).value
+        val view      = application.injector.instanceOf[UkAddressView]
+        val result    = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual view(boundForm, NormalMode, testName.fullName, countries)(request, messages(application)).toString
@@ -224,13 +216,11 @@ class UkAddressControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
-
       val application = applicationBuilder(maybeUserAnswers = None).build()
 
       running(application) {
         val request = FakeRequest(GET, ukAddressRoute)
-
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
@@ -238,7 +228,6 @@ class UkAddressControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
-
       val application = applicationBuilder(maybeUserAnswers = None).build()
 
       running(application) {
@@ -253,8 +242,7 @@ class UkAddressControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must redirect to to Journey Recovery for a POST when Account Holder name is not provided" in {
-
+    "must redirect to Journey Recovery for a POST when Account Holder name is not provided" in {
       val mockSessionRepository = mock[DatabaseConnector]
 
       when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())

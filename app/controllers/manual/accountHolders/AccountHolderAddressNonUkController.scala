@@ -17,11 +17,11 @@
 package controllers.manual.accountHolders
 
 import connectors.DatabaseConnector
-import controllers.actions.*
+import controllers.actions.Actions
 import forms.manual.accountHolders.AccountHolderAddressNonUkFormProvider
 import models.{Countries, Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.accountHolders.{AccountHolderAddressNonUkPage, AccountHolderIndividualNamePage}
+import pages.manual.accountHolders.AccountHolderAddressNonUkPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -44,46 +44,73 @@ class AccountHolderAddressNonUkController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequired() {
-    implicit request =>
-      (for {
-        ahName <- request.userAnswers.get(AccountHolderIndividualNamePage(request.accountHolderId)(request.reportId))
-      } yield ahName).fold(
-        Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)
-      ) {
-        case ahName =>
-          val preparedForm = request.userAnswers.get(AccountHolderAddressNonUkPage(request.accountHolderId, request.reportId)) match {
+  def onPageLoad(mode: Mode): Action[AnyContent] =
+    actions.withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired() {
+      implicit request =>
+
+        val preparedForm =
+          request.userAnswers.get(
+            AccountHolderAddressNonUkPage(
+              request.accountHolderId,
+              request.reportId
+            )
+          ) match {
             case None        => form
             case Some(value) => form.fill(value)
           }
-          Ok(view(preparedForm, mode, ahName.fullName, Countries.nonUkTerritories(regime = request.reportId.regime)))
-      }
-  }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequired().async {
-    implicit request =>
-      implicit val reportId: ReportId = request.reportId
-      val result = for {
-        ahName <- request.userAnswers.get(AccountHolderIndividualNamePage(request.accountHolderId)(request.reportId))
-      } yield ahName
+        Ok(
+          view(
+            preparedForm,
+            mode,
+            request.accountHolderName,
+            Countries.nonUkTerritories(regime = request.reportId.regime)
+          )
+        )
+    }
 
-      result.fold(
-        Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))
-      ) {
-        case ahName =>
-          form
-            .bindFromRequest()
-            .fold(
-              formWithErrors =>
-                Future.successful(BadRequest(view(formWithErrors, mode, ahName.fullName, Countries.nonUkTerritories(regime = request.reportId.regime)))),
-              value =>
-                for {
-                  updatedAnswers <- Future
-                    .fromTry(request.userAnswers.setWithReportId(AccountHolderAddressNonUkPage(request.accountHolderId, request.reportId), value))
-                  _ <- repository.set(updatedAnswers)
-                } yield Redirect(navigator.nextPage(AccountHolderAddressNonUkPage(request.accountHolderId, request.reportId), mode, updatedAnswers))
-            )
-      }
-  }
+  def onSubmit(mode: Mode): Action[AnyContent] =
+    actions.withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired().async {
+      implicit request =>
 
+        implicit val reportId: ReportId = request.reportId
+
+        form
+          .bindFromRequest()
+          .fold(
+            formWithErrors =>
+              Future.successful(
+                BadRequest(
+                  view(
+                    formWithErrors,
+                    mode,
+                    request.accountHolderName,
+                    Countries.nonUkTerritories(regime = request.reportId.regime)
+                  )
+                )
+              ),
+            value =>
+              for {
+                updatedAnswers <- Future.fromTry(
+                  request.userAnswers.setWithReportId(
+                    AccountHolderAddressNonUkPage(
+                      request.accountHolderId,
+                      request.reportId
+                    ),
+                    value
+                  )
+                )
+                _ <- repository.set(updatedAnswers)
+              } yield Redirect(
+                navigator.nextPage(
+                  AccountHolderAddressNonUkPage(
+                    request.accountHolderId,
+                    request.reportId
+                  ),
+                  mode,
+                  updatedAnswers
+                )
+              )
+          )
+    }
 }

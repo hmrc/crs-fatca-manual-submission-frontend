@@ -821,7 +821,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
 
         "IndividualOrOrganisationPage" - {
 
-          "must go to UnderConstruction page when organisation is selected" in {
+          "must go to organisation name page when organisation is selected" in {
             val ua = UserAnswers("id")
               .withPage(
                 IndividualOrOrganisationPage(currentAccountHolderId)(reportId),
@@ -833,7 +833,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               NormalMode,
               ua
             ) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.accountHolders.routes.OrganisationNameController.onPageLoad(NormalMode)
           }
 
           "must go to AccountHolder IndividualName page when individual is selected" in {
@@ -887,6 +887,58 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
 
             navigator.nextPage(
               AccountHolderIndividualNamePage(currentAccountHolderId),
+              NormalMode,
+              ua
+            ) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
+        }
+
+        "AccountHolderOrganisationNamePage" - {
+
+          "must go to OrganisationCrs page when the organisation name exists and regime is CRS" in {
+            implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestFIID")
+
+            val ua = UserAnswers("id")
+              .withPage(
+                AccountHolderOrganisationNamePage(currentAccountHolderId)(reportId),
+                "Test Organisation"
+              )
+
+            navigator.nextPage(
+              AccountHolderOrganisationNamePage(currentAccountHolderId),
+              NormalMode,
+              ua
+            ) mustBe
+              controllers.manual.accountHolders.routes.OrganisationCrsController
+                .onPageLoad(NormalMode)
+          }
+
+          "must go to OrganisationFatca page when the organisation name exists and regime is FATCA" in {
+            implicit val reportId: ReportId = ReportId(FATCA, 2025, None, "TestFIID")
+
+            val ua = UserAnswers("id")
+              .withPage(
+                AccountHolderOrganisationNamePage(currentAccountHolderId)(reportId),
+                "Test Organisation"
+              )
+
+            navigator.nextPage(
+              AccountHolderOrganisationNamePage(currentAccountHolderId),
+              NormalMode,
+              ua
+            ) mustBe
+              controllers.manual.accountHolders.routes.OrganisationFatcaController
+                .onPageLoad(NormalMode)
+          }
+
+          "must go to Journey Recovery when the organisation name is missing" in {
+            implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestFIID")
+
+            val ua = UserAnswers("id")
+
+            navigator.nextPage(
+              AccountHolderOrganisationNamePage(currentAccountHolderId),
               NormalMode,
               ua
             ) mustBe
