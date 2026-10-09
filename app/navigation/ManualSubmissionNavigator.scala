@@ -26,19 +26,6 @@ import models.viewModels.manual.cpso.CPSOId
 import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
 import pages.manual.account.*
-import pages.manual.cpso.{
-  AddressLookupPage as AddressLookupPageForCPSO,
-  AddressUkPage,
-  CPSOIndividualDateOfBirthPage,
-  CPSOWhereAreTheyBasedPage,
-  CpsoOrganisationNamePage,
-  CpsoSelfCertificationPage,
-  IndividualNamePage,
-  IsThisTheAddressPage,
-  SelectAddressPage as SelectAddressPageForCPSO,
-  UkPostCodePage as UkPostCodePageForCPSO,
-  *
-}
 import pages.manual.accountHolders.{
   AccountHolderAddressNonUkPage,
   AccountHolderIndividualNamePage,
@@ -55,6 +42,19 @@ import pages.manual.accountHolders.{
   UkAddressPage as AccountHolderUkAddressPage,
   UkPostCodeForAccountHolderPage,
   WhereAreTheyBasedPage
+}
+import pages.manual.cpso.{
+  AddressLookupPage as AddressLookupPageForCPSO,
+  AddressUkPage,
+  CPSOIndividualDateOfBirthPage,
+  CPSOWhereAreTheyBasedPage,
+  CpsoOrganisationNamePage,
+  CpsoSelfCertificationPage,
+  IndividualNamePage,
+  IsThisTheAddressPage,
+  SelectAddressPage as SelectAddressPageForCPSO,
+  UkPostCodePage as UkPostCodePageForCPSO,
+  *
 }
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}

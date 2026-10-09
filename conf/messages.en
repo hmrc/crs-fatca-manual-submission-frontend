@@ -1013,6 +1013,7 @@ organisationCrs.passiveWithMultiplePersons = Passive non-financial entity with o
 organisationCrs.crsReportable = CRS reportable person
 organisationCrs.passiveCrsPerson = Passive non-financial entity that is a CRS reportable person
 organisationCrs.empty =
+
 whatIsAccountNumber.title = What is the account or identification number?
 whatIsAccountNumber.heading = What is the account or identification number?
 whatIsAccountNumber.error.required = Enter the account or identification number
@@ -1034,3 +1035,4 @@ whatIsAccountNumber.error.invalid.countryCode.ISIN = ISIN must include a real co
 
 whatIsAccountNumber.checkYourAnswersLabel = Account or identification number
 whatIsAccountNumber.change.hidden = Change account or identification number
+
