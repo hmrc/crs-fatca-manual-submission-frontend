@@ -17,17 +17,16 @@
 package controllers.manual.accountHolders
 
 import connectors.DatabaseConnector
-import controllers.actions.*
+import controllers.actions.Actions
 import forms.manual.accountHolders.SelectAddressFormProvider
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
 import pages.manual.accountHolders.{AddressLookupForAccountHolderPage, SelectAddressPage}
-import pages.manual.accountHolders.AccountHolderIndividualNamePage
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
+import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.accountHolders.SelectAddressView
 
@@ -49,67 +48,126 @@ class SelectAddressController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequired() {
-    implicit request =>
+  def onPageLoad(mode: Mode): Action[AnyContent] =
+    actions.withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired() {
+      implicit request =>
 
-      val reportId: ReportId = request.reportId
+        val reportId: ReportId = request.reportId
 
-      (for {
-        addresses <- request.userAnswers.get(AddressLookupForAccountHolderPage(request.accountHolderId, reportId))
-        name      <- request.userAnswers.get(AccountHolderIndividualNamePage(request.accountHolderId)(reportId)) // TODO : Need to implement Organisation Name
-      } yield {
-        val preparedForm = request.userAnswers.get(SelectAddressPage(request.accountHolderId, reportId)) match {
-          case None => form
-          case Some(savedAddress) =>
-            addresses.find(_.toAddress.contains(savedAddress)) match {
-              case Some(matched) => form.fill(matched.format)
-              case None          => form
-            }
-        }
+        request.userAnswers
+          .get(AddressLookupForAccountHolderPage(request.accountHolderId, reportId))
+          .map {
+            addresses =>
+              val preparedForm =
+                request.userAnswers.get(SelectAddressPage(request.accountHolderId, reportId)) match {
+                  case None =>
+                    form
 
-        val options: Seq[RadioItem] = addresses.map(
-          address => RadioItem(content = Text(s"${address.formatRadios}"), value = Some(s"${address.format}"))
-        )
+                  case Some(savedAddress) =>
+                    addresses.find(_.toAddress.contains(savedAddress)) match {
+                      case Some(matched) => form.fill(matched.format)
+                      case None          => form
+                    }
+                }
 
-        Ok(view(preparedForm, mode, name.fullName, options))
-      }).getOrElse {
-        logger.error(s"Unable to find address or name for account holder id ${request.accountHolderId}")
-        Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url)
-      }
-  }
+              val options: Seq[RadioItem] =
+                addresses.map(
+                  address =>
+                    RadioItem(
+                      content = Text(address.formatRadios),
+                      value = Some(address.format)
+                    )
+                )
 
-  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequired().async {
-    implicit request =>
+              Ok(
+                view(
+                  preparedForm,
+                  mode,
+                  request.accountHolderName,
+                  options
+                )
+              )
+          }
+          .getOrElse {
+            logger.error(
+              s"Unable to find addresses for account holder id ${request.accountHolderId}"
+            )
+            Redirect(
+              controllers.routes.JourneyRecoveryController.onPageLoad().url
+            )
+          }
+    }
 
-      implicit val reportId: ReportId = request.reportId
+  def onSubmit(mode: Mode): Action[AnyContent] =
+    actions.withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired().async {
+      implicit request =>
 
-      (for {
-        addresses <- request.userAnswers.get(AddressLookupForAccountHolderPage(request.accountHolderId, reportId))
-        name      <- request.userAnswers.get(AccountHolderIndividualNamePage(request.accountHolderId)) // TODO : Need to implement Organisation Name
-      } yield {
-        val options: Seq[RadioItem] = addresses.map(
-          address => RadioItem(content = Text(s"${address.formatRadios}"), value = Some(s"${address.format}"))
-        )
+        implicit val reportId: ReportId = request.reportId
 
-        form
-          .bindFromRequest()
-          .fold(
-            formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, name.fullName, options))),
-            selectedValue =>
-              addresses.find(_.format == selectedValue).flatMap(_.toAddress) match {
-                case None =>
-                  Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))
-                case Some(address) =>
-                  for {
-                    updatedAnswers <-
-                      Future.fromTry(request.userAnswers.setWithReportId(SelectAddressPage(request.accountHolderId, reportId), address))
-                    _ <- repository.set(updatedAnswers)
-                  } yield Redirect(navigator.nextPage(SelectAddressPage(request.accountHolderId, reportId), mode, updatedAnswers))
-              }
-          )
-      }).getOrElse {
-        logger.error(s"Unable to find address or name for account holder id ${request.accountHolderId}")
-        Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))
-      }
-  }
+        request.userAnswers
+          .get(AddressLookupForAccountHolderPage(request.accountHolderId, reportId))
+          .map {
+            addresses =>
+              val options: Seq[RadioItem] =
+                addresses.map(
+                  address =>
+                    RadioItem(
+                      content = Text(address.formatRadios),
+                      value = Some(address.format)
+                    )
+                )
+
+              form
+                .bindFromRequest()
+                .fold(
+                  formWithErrors =>
+                    Future.successful(
+                      BadRequest(
+                        view(
+                          formWithErrors,
+                          mode,
+                          request.accountHolderName,
+                          options
+                        )
+                      )
+                    ),
+                  selectedValue =>
+                    addresses.find(_.format == selectedValue).flatMap(_.toAddress) match {
+                      case None =>
+                        Future.successful(
+                          Redirect(
+                            controllers.routes.JourneyRecoveryController.onPageLoad().url
+                          )
+                        )
+
+                      case Some(address) =>
+                        for {
+                          updatedAnswers <- Future.fromTry(
+                            request.userAnswers.setWithReportId(
+                              SelectAddressPage(request.accountHolderId, reportId),
+                              address
+                            )
+                          )
+                          _ <- repository.set(updatedAnswers)
+                        } yield Redirect(
+                          navigator.nextPage(
+                            SelectAddressPage(request.accountHolderId, reportId),
+                            mode,
+                            updatedAnswers
+                          )
+                        )
+                    }
+                )
+          }
+          .getOrElse {
+            logger.error(
+              s"Unable to find addresses for account holder id ${request.accountHolderId}"
+            )
+            Future.successful(
+              Redirect(
+                controllers.routes.JourneyRecoveryController.onPageLoad().url
+              )
+            )
+          }
+    }
 }

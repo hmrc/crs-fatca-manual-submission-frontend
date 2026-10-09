@@ -17,13 +17,11 @@
 package controllers.manual.accountHolders
 
 import connectors.DatabaseConnector
-import controllers.actions.*
+import controllers.actions.Actions
 import forms.manual.accountHolders.SelfCertificationFormProvider
-import models.manual.accountHolders.IndividualName
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.accountHolders.{AccountHolderIndividualNamePage, SelfCertificationPage}
-import play.api.Logging
+import pages.manual.accountHolders.SelfCertificationPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -39,59 +37,43 @@ class SelfCertificationController @Inject() (
   actions: Actions,
   formProvider: SelfCertificationFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  accountHolderCRSOnlyFilterAction: AccountHolderCRSOnlyFilterAction,
   view: SelfCertificationView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport
-    with Logging {
+    with I18nSupport {
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (actions.withReportIdRequiredAndAccountHolderIdRequired() andThen accountHolderCRSOnlyFilterAction) {
-    implicit request =>
-      implicit val reportId: ReportId = request.reportId
-      val reportingPeriod             = reportId.reportingYear
-      val accountHolderId             = request.accountHolderId
+  def onPageLoad(mode: Mode): Action[AnyContent] =
+    actions.withReportIdRequiredAndAccountHolderIdRequiredAndCRSOnlyAndAccountHolderNameRequired() {
+      implicit request =>
+        implicit val reportId: ReportId = request.reportId
+        val reportingPeriod             = reportId.reportingYear
+        val accountHolderId             = request.accountHolderId
 
-      val preparedForm = request.userAnswers
-        .get(SelfCertificationPage(accountHolderId, reportId))
-        .fold(form)(form.fill)
+        val preparedForm = request.userAnswers
+          .get(SelfCertificationPage(accountHolderId, reportId))
+          .fold(form)(form.fill)
 
-      // todo will need to cater for organization name
-      val individualName: Option[IndividualName] = request.userAnswers.get(AccountHolderIndividualNamePage(request.accountHolderId))
+        Ok(view(preparedForm, mode, reportingPeriod, request.accountHolderName))
+    }
 
-      individualName match {
-        case Some(indName) => Ok(view(preparedForm, mode, reportingPeriod, indName.fullName))
-        case _ =>
-          logger.warn("Missing individual name")
-          Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
-      }
-  }
+  def onSubmit(mode: Mode): Action[AnyContent] =
+    actions.withReportIdRequiredAndAccountHolderIdRequiredAndCRSOnlyAndAccountHolderNameRequired().async {
+      implicit request =>
+        implicit val reportId: ReportId = request.reportId
+        val accountHolderId             = request.accountHolderId
+        val reportingPeriod             = reportId.reportingYear
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (actions.withReportIdRequiredAndAccountHolderIdRequired() andThen accountHolderCRSOnlyFilterAction).async {
-    implicit request =>
-      implicit val reportId: ReportId            = request.reportId
-      val accountHolderId                        = request.accountHolderId
-      val reportingPeriod                        = reportId.reportingYear
-      val individualName: Option[IndividualName] = request.userAnswers.get(AccountHolderIndividualNamePage(request.accountHolderId))
-
-      individualName match {
-        case None =>
-          logger.warn("Missing individual name")
-          Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
-        case Some(indName) =>
-          form
-            .bindFromRequest()
-            .fold(
-              formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, reportingPeriod, indName.fullName))),
-              value =>
-                for {
-                  updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(SelfCertificationPage(accountHolderId, reportId), value))
-                  _              <- sessionRepository.set(updatedAnswers)
-                } yield Redirect(navigator.nextPage(SelfCertificationPage(accountHolderId, reportId), mode, updatedAnswers))
-            )
-      }
-
-  }
+        form
+          .bindFromRequest()
+          .fold(
+            formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, reportingPeriod, request.accountHolderName))),
+            value =>
+              for {
+                updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(SelfCertificationPage(accountHolderId, reportId), value))
+                _              <- sessionRepository.set(updatedAnswers)
+              } yield Redirect(navigator.nextPage(SelfCertificationPage(accountHolderId, reportId), mode, updatedAnswers))
+          )
+    }
 }

@@ -39,6 +39,7 @@ class Module extends AbstractModule {
     bind(classOf[CPSOIdRequiredAction]).to(classOf[CPSOIdRequiredActionImpl]).asEagerSingleton()
     bind(classOf[AccountIdRequiredAction]).to(classOf[AccountIdRequiredActionImpl]).asEagerSingleton()
     bind(classOf[AccountHolderIdRequiredAction]).to(classOf[AccountHolderIdRequiredActionImpl]).asEagerSingleton()
+    bind(classOf[AccountHolderNameRequiredAction]).to(classOf[AccountHolderNameRequiredActionImpl]).asEagerSingleton()
     bind(classOf[SponsorNameRequiredAction]).to(classOf[SponsorNameRequiredActionImpl]).asEagerSingleton()
     bind(classOf[TaxResidentCountryIdCreationAction]).to(classOf[TaxResidentCountryIdCreationActionImpl]).asEagerSingleton()
     bind(classOf[ElectionIdRequiredAction]).to(classOf[ElectionIdRequiredActionImpl]).asEagerSingleton()

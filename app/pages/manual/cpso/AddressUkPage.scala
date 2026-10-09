@@ -32,6 +32,8 @@ final case class AddressUkPage(currentId: CPSOId, reportId: ReportId) extends Qu
     userData: UserAnswers
   )(implicit reportId: ReportId): Try[UserAnswers] =
     value match {
-      case Some(_) => userData.remove(SelectAddressPage(currentId, reportId))
-      case _       => Success(userData)
+      case Some(_) =>
+        List(UkPostCodePage(currentId, reportId), SelectAddressPage(currentId, reportId))
+          .foldLeft(Try(userData))(removePage())
+      case _ => Success(userData)
     }

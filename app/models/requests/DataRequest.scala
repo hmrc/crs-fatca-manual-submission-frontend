@@ -99,3 +99,14 @@ case class CPSONameRequest[A](request: Request[A],
                               cpsoId: CPSOId,
                               cpsoName: String
 ) extends WrappedRequest[A](request)
+
+case class AccountHolderNameRequest[A](
+  request: Request[A],
+  userId: String,
+  userAnswers: UserAnswers,
+  fatcaId: String,
+  reportId: ReportId,
+  accountHolderId: AccountHolderId,
+  accountHolderName: String
+) extends WrappedRequest[A](request)
+    with HasReportIdRequest[A]

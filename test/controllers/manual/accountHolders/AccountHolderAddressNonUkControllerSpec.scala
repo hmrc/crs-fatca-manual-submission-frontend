@@ -23,6 +23,7 @@ import forms.manual.accountHolders.AccountHolderAddressNonUkFormProvider
 import models.CrsOrFatca.Crs
 import models.SubmissionsConstants.CRS
 import models.manual.accountHolders.IndividualName
+import models.manual.accountHolders.IndividualOrOrganisation.Individual
 import models.viewModels.AccountHolderId
 import models.{AddressNonUk, Countries, NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
@@ -30,7 +31,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.accountHolders.{AccountHolderAddressNonUkPage, AccountHolderIndividualNamePage, CurrentAccountHolderIdPage}
+import pages.manual.accountHolders.{AccountHolderAddressNonUkPage, AccountHolderIndividualNamePage, CurrentAccountHolderIdPage, IndividualOrOrganisationPage}
 import pages.manual.reportdetails.CrsOrFatcaPage
 import play.api.inject.bind
 import play.api.mvc.Call
@@ -88,81 +89,55 @@ class AccountHolderAddressNonUkControllerSpec extends SpecBase with MockitoSugar
     .withPage(ReportIdPage, reportId)
     .withPage(CrsOrFatcaPage, Crs)
     .withPage(CurrentAccountHolderIdPage(), accountHolderId)
+    .withPage(IndividualOrOrganisationPage(accountHolderId)(reportId), Individual)
     .withPage(AccountHolderIndividualNamePage(accountHolderId)(reportId), individualAccountHolder)
 
   "AddressNonUkController" - {
 
     "must return OK and the correct view for a GET" in {
-
-      val application =
-        applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, addressNonUkRoute)
-
-        val view =
-          application.injector.instanceOf[AccountHolderAddressNonUkView]
-
-        val result = route(application, request).value
+        val view    = application.injector.instanceOf[AccountHolderAddressNonUkView]
+        val result  = route(application, request).value
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual
-          view(
-            form,
-            NormalMode,
-            individualAccountHolder.fullName,
-            countries
-          )(request, messages(application)).toString
+          view(form, NormalMode, individualAccountHolder.fullName, countries)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-
       val answers =
         userAnswers
           .set(AccountHolderAddressNonUkPage(accountHolderId, reportId), validAddress)
           .success
           .value
 
-      val application =
-        applicationBuilder(maybeUserAnswers = Some(answers)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(answers)).build()
 
       running(application) {
         val request = FakeRequest(GET, addressNonUkRoute)
-
-        val view =
-          application.injector.instanceOf[AccountHolderAddressNonUkView]
-
-        val result = route(application, request).value
+        val view    = application.injector.instanceOf[AccountHolderAddressNonUkView]
+        val result  = route(application, request).value
 
         status(result) mustEqual OK
-
         contentAsString(result) mustEqual
-          view(
-            form.fill(validAddress),
-            NormalMode,
-            individualAccountHolder.fullName,
-            countries
-          )(request, messages(application)).toString
+          view(form.fill(validAddress), NormalMode, individualAccountHolder.fullName, countries)(request, messages(application)).toString
       }
     }
 
     "must redirect to the next page when valid data is submitted" in {
-
       val mockDatabaseConnector = mock[DatabaseConnector]
 
-      when(mockDatabaseConnector.set(any())(any()))
-        .thenReturn(Future.successful(()))
+      when(mockDatabaseConnector.set(any())(any())).thenReturn(Future.successful(()))
 
       val application =
         applicationBuilder(maybeUserAnswers = Some(userAnswers))
           .overrides(
-            bind[ManualSubmissionNavigator]
-              .toInstance(
-                new FakeManualSubmissionNavigator(onwardRoute)
-              ),
-            bind[DatabaseConnector]
-              .toInstance(mockDatabaseConnector)
+            bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
+            bind[DatabaseConnector].toInstance(mockDatabaseConnector)
           )
           .build()
 
@@ -179,56 +154,37 @@ class AccountHolderAddressNonUkControllerSpec extends SpecBase with MockitoSugar
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
-
-      val application =
-        applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
         val request =
           FakeRequest(POST, addressNonUkRoute)
             .withFormUrlEncodedBody(invalidFormData.toSeq*)
 
-        val boundForm =
-          form.bind(invalidFormData)
-
-        val view =
-          application.injector.instanceOf[AccountHolderAddressNonUkView]
-
-        val result = route(application, request).value
+        val boundForm = form.bind(invalidFormData)
+        val view      = application.injector.instanceOf[AccountHolderAddressNonUkView]
+        val result    = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-
         contentAsString(result) mustEqual
-          view(
-            boundForm,
-            NormalMode,
-            individualAccountHolder.fullName,
-            countries
-          )(request, messages(application)).toString
+          view(boundForm, NormalMode, individualAccountHolder.fullName, countries)(request, messages(application)).toString
       }
     }
 
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
-
-      val application =
-        applicationBuilder(maybeUserAnswers = None).build()
+      val application = applicationBuilder(maybeUserAnswers = None).build()
 
       running(application) {
         val request = FakeRequest(GET, addressNonUkRoute)
-
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-
-        redirectLocation(result).value mustEqual
-          routes.JourneyRecoveryController.onPageLoad().url
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
-
-      val application =
-        applicationBuilder(maybeUserAnswers = None).build()
+      val application = applicationBuilder(maybeUserAnswers = None).build()
 
       running(application) {
         val request =
@@ -238,9 +194,7 @@ class AccountHolderAddressNonUkControllerSpec extends SpecBase with MockitoSugar
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-
-        redirectLocation(result).value mustEqual
-          routes.JourneyRecoveryController.onPageLoad().url
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
   }

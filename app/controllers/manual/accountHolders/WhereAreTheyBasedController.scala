@@ -17,12 +17,11 @@
 package controllers.manual.accountHolders
 
 import connectors.DatabaseConnector
-import controllers.actions.*
+import controllers.actions.Actions
 import forms.manual.accountHolders.WhereAreTheyBasedFormProvider
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.accountHolders.{AccountHolderIndividualNamePage, WhereAreTheyBasedPage}
-import play.api.Logging
+import pages.manual.accountHolders.WhereAreTheyBasedPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -41,52 +40,60 @@ class WhereAreTheyBasedController @Inject() (
   view: WhereAreTheyBasedView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport
-    with Logging {
+    with I18nSupport {
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequired() {
-    implicit request =>
+  def onPageLoad(mode: Mode): Action[AnyContent] =
+    actions.withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired() {
+      implicit request =>
 
-      implicit val reportId: ReportId = request.reportId
+        implicit val reportId: ReportId = request.reportId
 
-      request.userAnswers.get(AccountHolderIndividualNamePage(request.accountHolderId)) match {
-        case Some(name) =>
-          val preparedForm = request.userAnswers.get(WhereAreTheyBasedPage(request.accountHolderId)) match {
+        val preparedForm =
+          request.userAnswers.get(WhereAreTheyBasedPage(request.accountHolderId)) match {
             case None        => form
             case Some(value) => form.fill(value)
           }
 
-          Ok(view(preparedForm, mode, name.fullName))
-        case None =>
-          logger.error("Individual Name value is missing")
-          Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
-      }
-  }
+        Ok(view(preparedForm, mode, request.accountHolderName))
+    }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequired().async {
-    implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] =
+    actions.withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired().async {
+      implicit request =>
 
-      implicit val reportId: ReportId = request.reportId
+        implicit val reportId: ReportId = request.reportId
 
-      // TODO: ORG NAME SHOULD BE ADDED ONCE IMPLEMENTED
-      request.userAnswers.get(AccountHolderIndividualNamePage(request.accountHolderId)) match {
-        case Some(name) =>
-          form
-            .bindFromRequest()
-            .fold(
-              formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, name.fullName))),
-              value =>
-                for {
-                  updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(WhereAreTheyBasedPage(request.accountHolderId), value))
-                  _              <- repository.set(updatedAnswers)
-                } yield Redirect(navigator.nextPage(WhereAreTheyBasedPage(request.accountHolderId), mode, updatedAnswers))
-            )
-        case None =>
-          logger.error("Individual Name value is missing")
-          Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
-      }
-
-  }
+        form
+          .bindFromRequest()
+          .fold(
+            formWithErrors =>
+              Future.successful(
+                BadRequest(
+                  view(
+                    formWithErrors,
+                    mode,
+                    request.accountHolderName
+                  )
+                )
+              ),
+            value =>
+              for {
+                updatedAnswers <- Future.fromTry(
+                  request.userAnswers.setWithReportId(
+                    WhereAreTheyBasedPage(request.accountHolderId),
+                    value
+                  )
+                )
+                _ <- repository.set(updatedAnswers)
+              } yield Redirect(
+                navigator.nextPage(
+                  WhereAreTheyBasedPage(request.accountHolderId),
+                  mode,
+                  updatedAnswers
+                )
+              )
+          )
+    }
 }

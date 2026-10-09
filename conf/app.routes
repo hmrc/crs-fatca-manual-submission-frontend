@@ -355,6 +355,7 @@ GET        /manual/account-holder/self-certification                        cont
 POST        /manual/account-holder/self-certification                    controllers.manual.accountHolders.SelfCertificationController.onSubmit(mode: Mode = NormalMode)
 GET         /manual/account-holder/change-self-certification                   controllers.manual.accountHolders.SelfCertificationController.onPageLoad(mode: Mode = CheckMode)
 POST        /manual/account-holder/change-self-certification                 controllers.manual.accountHolders.SelfCertificationController.onSubmit(mode: Mode = CheckMode)
+
 GET        /manual/cp-so/individual-have-place-of-birth                        controllers.manual.cpso.IndividualHavePlaceOfBirthController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/cp-so/individual-have-place-of-birth                        controllers.manual.cpso.IndividualHavePlaceOfBirthController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/cp-so/change-individual-have-place-of-birth                  controllers.manual.cpso.IndividualHavePlaceOfBirthController.onPageLoad(mode: Mode = CheckMode)
@@ -385,7 +386,32 @@ POST       /manual/cp-so/address-uk                        controllers.manual.cp
 GET        /manual/cp-so/change-address-uk                  controllers.manual.cpso.AddressUkController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/cp-so/change-address-uk                  controllers.manual.cpso.AddressUkController.onSubmit(mode: Mode = CheckMode)
 
+GET         /manual/account-holder/individual-place-of-birth                        controllers.manual.accountHolders.IndividualPlaceOfBirthController.onPageLoad(mode: Mode = NormalMode)
+POST        /manual/account-holder/individual-place-of-birth                       controllers.manual.accountHolders.IndividualPlaceOfBirthController.onSubmit(mode: Mode = NormalMode)
+GET         /manual/account-holder/change-individual-place-of-birth                 controllers.manual.accountHolders.IndividualPlaceOfBirthController.onPageLoad(mode: Mode = CheckMode)
+POST        /manual/account-holder/change-individual-place-of-birth                   controllers.manual.accountHolders.IndividualPlaceOfBirthController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/cp-so/individual-have-date-of-birth                        controllers.manual.cpso.IndividualHaveDateOfBirthController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/cp-so/individual-have-date-of-birth                        controllers.manual.cpso.IndividualHaveDateOfBirthController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/cp-so/change-individual-have-date-of-birth                  controllers.manual.cpso.IndividualHaveDateOfBirthController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/cp-so/change-individual-have-date-of-birth                  controllers.manual.cpso.IndividualHaveDateOfBirthController.onSubmit(mode: Mode = CheckMode)
+GET        /manual/account-holder/organisation-name                       controllers.manual.accountHolders.OrganisationNameController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account-holder/organisation-name                       controllers.manual.accountHolders.OrganisationNameController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account-holder/change-organisation-name                 controllers.manual.accountHolders.OrganisationNameController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account-holder/change-organisation-name                 controllers.manual.accountHolders.OrganisationNameController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/account-holder/organisation-fatca-type                       controllers.manual.accountHolders.OrganisationFatcaController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account-holder/organisation-fatca-type                       controllers.manual.accountHolders.OrganisationFatcaController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account-holder/change-organisation-fatca-type                controllers.manual.accountHolders.OrganisationFatcaController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account-holder/change-organisation-fatca-type                controllers.manual.accountHolders.OrganisationFatcaController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/account-holder/organisation-crs-type                       controllers.manual.accountHolders.OrganisationCrsController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account-holder/organisation-crs-type                       controllers.manual.accountHolders.OrganisationCrsController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account-holder/change-organisation-crs-type                controllers.manual.accountHolders.OrganisationCrsController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account-holder/change-organisation-crs-type                controllers.manual.accountHolders.OrganisationCrsController.onSubmit(mode: Mode = CheckMode)
+
 GET        /manual/account-holder/resident-for-tax                        controllers.manual.accountHolders.ResidentTaxController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/account-holder/resident-for-tax                         controllers.manual.accountHolders.ResidentTaxController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/account-holder/change-resident-for-tax                   controllers.manual.accountHolders.ResidentTaxController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/account-holder/change-resident-for-tax                   controllers.manual.accountHolders.ResidentTaxController.onSubmit(mode: Mode = CheckMode)
+

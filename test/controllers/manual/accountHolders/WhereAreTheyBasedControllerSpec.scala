@@ -22,6 +22,7 @@ import controllers.routes
 import forms.manual.accountHolders.WhereAreTheyBasedFormProvider
 import models.SubmissionsConstants.CRS
 import models.manual.accountHolders.IndividualName
+import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
 import models.viewModels.AccountHolderId
 import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
@@ -29,7 +30,13 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.accountHolders.{AccountHolderIndividualNamePage, CurrentAccountHolderIdPage, WhereAreTheyBasedPage}
+import pages.manual.accountHolders.{
+  AccountHolderIndividualNamePage,
+  AccountHolderOrganisationNamePage,
+  CurrentAccountHolderIdPage,
+  IndividualOrOrganisationPage,
+  WhereAreTheyBasedPage
+}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -45,19 +52,29 @@ class WhereAreTheyBasedControllerSpec extends SpecBase with MockitoSugar {
   val formProvider = new WhereAreTheyBasedFormProvider()
   val form         = formProvider()
 
-  lazy val whereAreTheyBasedRoute = controllers.manual.accountHolders.routes.WhereAreTheyBasedController.onPageLoad(NormalMode).url
+  lazy val whereAreTheyBasedRoute =
+    controllers.manual.accountHolders.routes.WhereAreTheyBasedController.onPageLoad(NormalMode).url
 
   "WhereAreTheyBased Controller" - {
 
     val currentAccountHolderId = AccountHolderId("testid")
     val reportId               = ReportId(CRS, 2025, None, "TestfiID")
     val individualName         = IndividualName("test", "last")
+    val organisationName       = "Test Organisation"
+
     val ua = emptyUserAnswers
       .withPage(ReportIdPage, reportId)
       .withPage(CurrentAccountHolderIdPage()(reportId), currentAccountHolderId)
-      .withPage(AccountHolderIndividualNamePage(currentAccountHolderId)(reportId), individualName)
+      .withPage(
+        IndividualOrOrganisationPage(currentAccountHolderId)(reportId),
+        Individual
+      )
+      .withPage(
+        AccountHolderIndividualNamePage(currentAccountHolderId)(reportId),
+        individualName
+      )
 
-    "must return OK and the correct view for a GET" in {
+    "must return OK and the correct view for a GET for an individual" in {
 
       val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
 
@@ -69,15 +86,59 @@ class WhereAreTheyBasedControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[WhereAreTheyBasedView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, individualName.fullName)(request, messages(application)).toString
+        contentAsString(result) mustEqual
+          view(
+            form,
+            NormalMode,
+            individualName.fullName
+          )(request, messages(application)).toString
+      }
+    }
+
+    "must return OK and the correct view for a GET for an organisation" in {
+
+      val userAnswers = emptyUserAnswers
+        .withPage(ReportIdPage, reportId)
+        .withPage(CurrentAccountHolderIdPage()(reportId), currentAccountHolderId)
+        .withPage(
+          IndividualOrOrganisationPage(currentAccountHolderId)(reportId),
+          Organisation
+        )
+        .withPage(
+          AccountHolderOrganisationNamePage(currentAccountHolderId)(reportId),
+          organisationName
+        )
+
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, whereAreTheyBasedRoute)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[WhereAreTheyBasedView]
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual
+          view(
+            form,
+            NormalMode,
+            organisationName
+          )(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = ua.set(WhereAreTheyBasedPage(currentAccountHolderId)(reportId), true).success.value
+      val userAnswers =
+        ua.set(
+          WhereAreTheyBasedPage(currentAccountHolderId)(reportId),
+          true
+        ).success
+          .value
 
-      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, whereAreTheyBasedRoute)
@@ -87,7 +148,12 @@ class WhereAreTheyBasedControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode, individualName.fullName)(request, messages(application)).toString
+        contentAsString(result) mustEqual
+          view(
+            form.fill(true),
+            NormalMode,
+            individualName.fullName
+          )(request, messages(application)).toString
       }
     }
 
@@ -100,7 +166,47 @@ class WhereAreTheyBasedControllerSpec extends SpecBase with MockitoSugar {
       val application =
         applicationBuilder(maybeUserAnswers = Some(ua))
           .overrides(
-            bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
+            bind[ManualSubmissionNavigator]
+              .toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
+            bind[DatabaseConnector].toInstance(mockSessionRepository)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, whereAreTheyBasedRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual onwardRoute.url
+      }
+    }
+
+    "must redirect to the next page when valid data is submitted for an organisation" in {
+
+      val mockSessionRepository = mock[DatabaseConnector]
+
+      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+
+      val userAnswers = emptyUserAnswers
+        .withPage(ReportIdPage, reportId)
+        .withPage(CurrentAccountHolderIdPage()(reportId), currentAccountHolderId)
+        .withPage(
+          IndividualOrOrganisationPage(currentAccountHolderId)(reportId),
+          Organisation
+        )
+        .withPage(
+          AccountHolderOrganisationNamePage(currentAccountHolderId)(reportId),
+          organisationName
+        )
+
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(userAnswers))
+          .overrides(
+            bind[ManualSubmissionNavigator]
+              .toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
             bind[DatabaseConnector].toInstance(mockSessionRepository)
           )
           .build()
@@ -133,7 +239,150 @@ class WhereAreTheyBasedControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, individualName.fullName)(request, messages(application)).toString
+        contentAsString(result) mustEqual
+          view(
+            boundForm,
+            NormalMode,
+            individualName.fullName
+          )(request, messages(application)).toString
+      }
+    }
+
+    "must return a Bad Request and errors when invalid data is submitted for an organisation" in {
+
+      val userAnswers = emptyUserAnswers
+        .withPage(ReportIdPage, reportId)
+        .withPage(CurrentAccountHolderIdPage()(reportId), currentAccountHolderId)
+        .withPage(
+          IndividualOrOrganisationPage(currentAccountHolderId)(reportId),
+          Organisation
+        )
+        .withPage(
+          AccountHolderOrganisationNamePage(currentAccountHolderId)(reportId),
+          organisationName
+        )
+
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, whereAreTheyBasedRoute)
+            .withFormUrlEncodedBody(("value", ""))
+
+        val boundForm = form.bind(Map("value" -> ""))
+
+        val view = application.injector.instanceOf[WhereAreTheyBasedView]
+
+        val result = route(application, request).value
+
+        status(result) mustEqual BAD_REQUEST
+        contentAsString(result) mustEqual
+          view(
+            boundForm,
+            NormalMode,
+            organisationName
+          )(request, messages(application)).toString
+      }
+    }
+
+    "must redirect to Journey Recovery for a GET when the individual name is missing" in {
+
+      val userAnswers = emptyUserAnswers
+        .withPage(ReportIdPage, reportId)
+        .withPage(CurrentAccountHolderIdPage()(reportId), currentAccountHolderId)
+        .withPage(
+          IndividualOrOrganisationPage(currentAccountHolderId)(reportId),
+          Individual
+        )
+
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, whereAreTheyBasedRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual
+          routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Journey Recovery for a GET when the organisation name is missing" in {
+
+      val userAnswers = emptyUserAnswers
+        .withPage(ReportIdPage, reportId)
+        .withPage(CurrentAccountHolderIdPage()(reportId), currentAccountHolderId)
+        .withPage(
+          IndividualOrOrganisationPage(currentAccountHolderId)(reportId),
+          Organisation
+        )
+
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, whereAreTheyBasedRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual
+          routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Journey Recovery for a POST when the individual name is missing" in {
+
+      val userAnswers = emptyUserAnswers
+        .withPage(ReportIdPage, reportId)
+        .withPage(CurrentAccountHolderIdPage()(reportId), currentAccountHolderId)
+        .withPage(
+          IndividualOrOrganisationPage(currentAccountHolderId)(reportId),
+          Individual
+        )
+
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, whereAreTheyBasedRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual
+          routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Journey Recovery for a POST when the organisation name is missing" in {
+
+      val userAnswers = emptyUserAnswers
+        .withPage(ReportIdPage, reportId)
+        .withPage(CurrentAccountHolderIdPage()(reportId), currentAccountHolderId)
+        .withPage(
+          IndividualOrOrganisationPage(currentAccountHolderId)(reportId),
+          Organisation
+        )
+
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, whereAreTheyBasedRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual
+          routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 
@@ -147,7 +396,8 @@ class WhereAreTheyBasedControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        redirectLocation(result).value mustEqual
+          routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 
@@ -163,7 +413,8 @@ class WhereAreTheyBasedControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        redirectLocation(result).value mustEqual
+          routes.JourneyRecoveryController.onPageLoad().url
       }
     }
   }

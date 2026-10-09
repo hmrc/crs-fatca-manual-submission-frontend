@@ -36,7 +36,9 @@ class Actions @Inject() (
   accountPaymentIndexCreationAction: AccountPaymentIndexCreationAction,
   accountPaymentIndexRequiredAction: AccountPaymentIndexRequiredAction,
   cpsoNameRequiredAction: CPSONameRequiredAction,
-  taxResidentCountryIdCreationForAccountHolderAction: TaxResidentCountryIdCreationForAccountHolderAction
+  taxResidentCountryIdCreationForAccountHolderAction: TaxResidentCountryIdCreationForAccountHolderAction,
+  accountHolderNameRequiredAction: AccountHolderNameRequiredAction,
+  accountHolderCRSOnlyFilterAction: AccountHolderCRSOnlyFilterAction
 ) {
 
   def withReportIdRequiredAndAccountIdCreation(): ActionBuilder[AccountIdRequest, AnyContent] =
@@ -56,6 +58,12 @@ class Actions @Inject() (
 
   def withReportIdRequiredAndAccountHolderIdRequiredAndTaxResidentIdCreation(): ActionBuilder[TaxResidentCountryIdForAccountHolderRequest, AnyContent] =
     withReportIdRequired() andThen withReportIdRequiredAndAccountHolderIdRequired() andThen taxResidentCountryIdCreationForAccountHolderAction
+  
+  def withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired(): ActionBuilder[AccountHolderNameRequest, AnyContent] =
+    withReportIdRequired() andThen accountHolderIdRequiredAction andThen accountHolderNameRequiredAction
+
+  def withReportIdRequiredAndAccountHolderIdRequiredAndCRSOnlyAndAccountHolderNameRequired(): ActionBuilder[AccountHolderNameRequest, AnyContent] =
+    withReportIdRequired() andThen accountHolderIdRequiredAction andThen accountHolderCRSOnlyFilterAction andThen accountHolderNameRequiredAction
 
   def withReportIdRequiredAndCPSOIdCreation(): ActionBuilder[CPSOIdRequest, AnyContent] =
     withReportIdRequired() andThen cpsoIdCreationAction

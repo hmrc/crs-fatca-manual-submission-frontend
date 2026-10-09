@@ -957,8 +957,66 @@ cpso.addressUk.error.country.required = Select country
 cpso.whatIsAddress.checkYourAnswersLabel = Address
 cpso.whatIsAddress.change.hidden = Change Address
 
+accountHolder.individualPlaceOfBirth.title = What is the account holder’s place of birth?
+accountHolder.individualPlaceOfBirth.heading = What is the place of birth for {0}?
+accountHolder.individualPlaceOfBirth.city = City (optional)
+accountHolder.individualPlaceOfBirth.region = Region (optional)
+accountHolder.individualPlaceOfBirth.country = Country
+accountHolder.individualPlaceOfBirth.checkYourAnswersLabel = What is the place of birth for the account holder?
+accountHolder.individualPlaceOfBirth.error.city.invalid = City must only include letters a to z, numbers 0 to 9, apostrophes, commas, ampersands (&), hyphens, full stops and spaces
+accountHolder.individualPlaceOfBirth.error.city.contains.dash = City must not include a double dash (--)
+accountHolder.individualPlaceOfBirth.error.city.length = City must be 200 characters or less
+accountHolder.individualPlaceOfBirth.error.region.invalid = Region must only include letters a to z, numbers 0 to 9, apostrophes, commas, ampersands (&), hyphens, full stops and spaces
+accountHolder.individualPlaceOfBirth.error.region.dash = Region must not include a double dash (--)
+accountHolder.individualPlaceOfBirth.error.region.length = Region must be 200 characters or less
+accountHolder.individualPlaceOfBirth.error.country.required = Select country
+
+cpso.individualHaveDateOfBirth.title = Date of birth for the {0}
+cpso.individualHaveDateOfBirth.heading = Date of birth for the {0}
+cpso.individualHaveDateOfBirth.checkYourAnswersLabel = individualHaveDateOfBirth
+cpso.individualHaveDateOfBirth.error.required = Select yes if you need to provide the date of birth for the {0}
+cpso.individualHaveDateOfBirth.change.hidden = IndividualHaveDateOfBirth
+cpso.individualHaveDateOfBirth.crs.paragraph=You must provide the date of birth for {0} for new accounts. For pre-existing accounts, you must provide the date of birth if it’s:
+cpso.individualHaveDateOfBirth.fatca.paragraph=You must provide the date of birth for {0} for pre-existing accounts if it’s:
+cpso.individualHaveDateOfBirth.bullet1=in records maintained by {0}
+cpso.individualHaveDateOfBirth.bullet2=required for {0} to collect it
+cpso.individualHaveDateOfBirth.bullet3=required for {0} to update account information under anti-money laundering and Know Your Customer procedures
+cpso.individualHaveDateOfBirth.question=Do you need to provide the date of birth for {0}?
+
+organisationName.title = What is the name of the account holder?
+organisationName.heading = What is the name of the account holder?
+organisationName.checkYourAnswersLabel = What is the name of the account holder?
+organisationName.error.required = Enter the name of the account holder
+organisationName.error.length = Account holder name must be 200 characters or less
+organisationName.error.invalid = Account holder name must only include letters a to z, numbers 0 to 9, ampersands (&), apostrophes, backslashes, carets (^), grave accents (`), hyphens and spaces
+organisationName.error.invalid-combination = Account holder name must not include a double dash (--)
+organisationName.change.hidden = OrganisationName
+organisationName.empty =
+
+organisationFatca.title = What type of account holder is this?
+organisationFatca.heading = What type of account holder is {0}?
+organisationFatca.checkYourAnswersLabel = What type of account holder is {0}?
+organisationFatca.error.required = Select what type of account holder this is
+organisationFatca.change.hidden = organisationFatca
+organisationFatca.ownerDocumented = Owner-documented foreign financial institution with specified US owners
+organisationFatca.passive = Passive non-financial foreign entity with substantial US owners, or controlling persons
+organisationFatca.nonParticipating = Non-participating foreign financial institution
+organisationFatca.specifiedPerson = Specified US person
+organisationFatca.empty =
+
+organisationCrs.title = What type of account holder is this?
+organisationCrs.heading = What type of account holder is {0}?
+organisationCrs.checkYourAnswersLabel = What type of account holder is {0}?
+organisationCrs.error.required = Select what type of account holder this is
+organisationCrs.change.hidden = organisationCrs
+organisationCrs.passiveWithMultiplePersons = Passive non-financial entity with one or more controlling reportable persons
+organisationCrs.crsReportable = CRS reportable person
+organisationCrs.passiveCrsPerson = Passive non-financial entity that is a CRS reportable person
+organisationCrs.empty =
+
 accountHolders.residentTax.title = Where is the account holder resident for tax?
 accountHolders.residentTax.heading = Where is {0} resident for tax?
 accountHolders.residentTax.paragraph = If they are resident for tax in more than one country, then you can add other countries after this one.
 accountHolders.country.error.required = Select where the account holder is resident for tax
 accountHolders.residentTax.checkYourAnswersLabel = ResidentTax
+

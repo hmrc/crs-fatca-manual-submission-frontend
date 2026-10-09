@@ -23,6 +23,7 @@ import models.CrsOrFatca.Fatca
 import models.SubmissionsConstants.{CRS, FATCA}
 import models.manual.account.PaymentType.*
 import models.manual.account.{AccountPayment, PaymentType, WasAccountOpen, WhatAccountType}
+import models.manual.accountHolders.{IndividualDateOfBirth, IndividualName, IndividualPlaceOfBirth, SelfCertification}
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
 import models.manual.accountHolders.{IndividualDateOfBirth, IndividualName, SelfCertification, TaxResidentInformation}
 import models.manual.cpso.CpsoSelfCertification.Yes
@@ -669,11 +670,11 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         }
 
         "IndividualNamePage" - {
-          "must go to underconstruction page when submitted" in {
+          "must go to individual have date of birth page when submitted" in {
             val ua = UserAnswers("id")
               .withPage(pages.manual.cpso.IndividualNamePage(currentCPSOId), models.manual.cpso.IndividualName("first-name", "last-name"))
             navigator.nextPage(pages.manual.cpso.IndividualNamePage(currentCPSOId), NormalMode, ua) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.cpso.routes.IndividualHaveDateOfBirthController.onPageLoad(NormalMode)
           }
         }
 
@@ -718,6 +719,28 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           "must go to JourneyRecovery page when page doesnt have value" in {
             val ua = UserAnswers("id")
             navigator.nextPage(pages.manual.cpso.IndividualHavePlaceOfBirthPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
+        }
+
+        "IndividualHaveDateOfBirthPage" - {
+          "must go to IndividualDateOfBirth page when answer is yes" in {
+            val ua = UserAnswers("id")
+              .withPage(pages.manual.cpso.IndividualHaveDateOfBirthPage(reportId, currentCPSOId), true)
+            navigator.nextPage(pages.manual.cpso.IndividualHaveDateOfBirthPage(reportId, currentCPSOId), NormalMode, ua) mustBe
+              controllers.manual.cpso.routes.CPSOIndividualDateOfBirthController.onPageLoad(NormalMode)
+          }
+
+          "must go to IndividualDateOfBirth page when answer is no" in {
+            val ua = UserAnswers("id")
+              .withPage(pages.manual.cpso.IndividualHaveDateOfBirthPage(reportId, currentCPSOId), false)
+            navigator.nextPage(pages.manual.cpso.IndividualHaveDateOfBirthPage(reportId, currentCPSOId), NormalMode, ua) mustBe
+              controllers.manual.cpso.routes.IndividualHavePlaceOfBirthController.onPageLoad(NormalMode)
+          }
+
+          "must go to JourneyRecovery page when page doesnt have value" in {
+            val ua = UserAnswers("id")
+            navigator.nextPage(pages.manual.cpso.IndividualHaveDateOfBirthPage(reportId, currentCPSOId), NormalMode, ua) mustBe
               controllers.routes.JourneyRecoveryController.onPageLoad()
           }
         }
@@ -798,7 +821,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
 
         "IndividualOrOrganisationPage" - {
 
-          "must go to UnderConstruction page when organisation is selected" in {
+          "must go to organisation name page when organisation is selected" in {
             val ua = UserAnswers("id")
               .withPage(
                 IndividualOrOrganisationPage(currentAccountHolderId)(reportId),
@@ -810,7 +833,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               NormalMode,
               ua
             ) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.accountHolders.routes.OrganisationNameController.onPageLoad(NormalMode)
           }
 
           "must go to AccountHolder IndividualName page when individual is selected" in {
@@ -864,6 +887,58 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
 
             navigator.nextPage(
               AccountHolderIndividualNamePage(currentAccountHolderId),
+              NormalMode,
+              ua
+            ) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
+        }
+
+        "AccountHolderOrganisationNamePage" - {
+
+          "must go to OrganisationCrs page when the organisation name exists and regime is CRS" in {
+            implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestFIID")
+
+            val ua = UserAnswers("id")
+              .withPage(
+                AccountHolderOrganisationNamePage(currentAccountHolderId)(reportId),
+                "Test Organisation"
+              )
+
+            navigator.nextPage(
+              AccountHolderOrganisationNamePage(currentAccountHolderId),
+              NormalMode,
+              ua
+            ) mustBe
+              controllers.manual.accountHolders.routes.OrganisationCrsController
+                .onPageLoad(NormalMode)
+          }
+
+          "must go to OrganisationFatca page when the organisation name exists and regime is FATCA" in {
+            implicit val reportId: ReportId = ReportId(FATCA, 2025, None, "TestFIID")
+
+            val ua = UserAnswers("id")
+              .withPage(
+                AccountHolderOrganisationNamePage(currentAccountHolderId)(reportId),
+                "Test Organisation"
+              )
+
+            navigator.nextPage(
+              AccountHolderOrganisationNamePage(currentAccountHolderId),
+              NormalMode,
+              ua
+            ) mustBe
+              controllers.manual.accountHolders.routes.OrganisationFatcaController
+                .onPageLoad(NormalMode)
+          }
+
+          "must go to Journey Recovery when the organisation name is missing" in {
+            implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestFIID")
+
+            val ua = UserAnswers("id")
+
+            navigator.nextPage(
+              AccountHolderOrganisationNamePage(currentAccountHolderId),
               NormalMode,
               ua
             ) mustBe
@@ -990,12 +1065,12 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         "IndividualHavePlaceOfBirthPage" - {
           implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
           val accountId                   = AccountHolderId("TestAccountId")
-          "must go to under construction page when user selected yes" in {
+          "must go to Individual place of birth page when user selected yes" in {
             val ua = UserAnswers("id")
               .withPage(IndividualHavePlaceOfBirthPage(accountId), true)
 
             navigator.nextPage(IndividualHavePlaceOfBirthPage(accountId), NormalMode, ua) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.accountHolders.routes.IndividualPlaceOfBirthController.onPageLoad(NormalMode)
           }
 
           "must go to under construction page when user selected no" in {
@@ -1003,6 +1078,19 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               .withPage(IndividualHavePlaceOfBirthPage(accountId), false)
 
             navigator.nextPage(IndividualHavePlaceOfBirthPage(accountId), NormalMode, ua) mustBe
+              controllers.manual.accountHolders.routes.WhereAreTheyBasedController.onPageLoad(NormalMode)
+          }
+        }
+
+        "IndividualPlaceOfBirthPage" - {
+          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+          val accountId                   = AccountHolderId("TestAccountId")
+          val details                     = IndividualPlaceOfBirth(Some("value 1"), Some("value 2"), "FX")
+          "must go to Where Are They Based Page page when user submits details" in {
+            val ua = UserAnswers("id")
+              .withPage(IndividualPlaceOfBirthPage(accountId, reportId), details)
+
+            navigator.nextPage(IndividualPlaceOfBirthPage(accountId, reportId), NormalMode, ua) mustBe
               controllers.manual.accountHolders.routes.WhereAreTheyBasedController.onPageLoad(NormalMode)
           }
         }
