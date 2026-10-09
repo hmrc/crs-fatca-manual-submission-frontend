@@ -41,17 +41,17 @@ class WhatIsAccountNumberFormProvider @Inject() extends Mappings {
       input.length >= 2 && Countries.allCountries(regime).map(_.code).toSet.contains(input.take(2).toUpperCase)
 
     val isinValidations = Seq(
-      ErrorValidation(RegexConstants.ISINlength, "whatIsAccountNumber.error.length.ISIN"),
-      ErrorValidation(RegexConstants.ISINinvalidcharacters, "whatIsAccountNumber.error.invalid.characters.ISIN"),
-      ErrorValidation(RegexConstants.ISINinvalidformat, "whatIsAccountNumber.error.invalid.format.ISIN")
+      ErrorValidation(RegexConstants.ISINLength, "whatIsAccountNumber.error.length.ISIN"),
+      ErrorValidation(RegexConstants.ISINValidCharactersRegex, "whatIsAccountNumber.error.invalid.characters.ISIN"),
+      ErrorValidation(RegexConstants.ISINValidFormatRegex, "whatIsAccountNumber.error.invalid.format.ISIN")
     )
     val ibanValidations = Seq(
-      ErrorValidation(RegexConstants.IBANlength, "whatIsAccountNumber.error.length.IBAN"),
-      ErrorValidation(RegexConstants.IBANinvalidcharacters, "whatIsAccountNumber.error.invalid.characters.IBAN"),
-      ErrorValidation(RegexConstants.IBANinvalidformat, "whatIsAccountNumber.error.invalid.format.IBAN")
+      ErrorValidation(RegexConstants.IBANLength, "whatIsAccountNumber.error.length.IBAN"),
+      ErrorValidation(RegexConstants.IBANValidCharactersRegex, "whatIsAccountNumber.error.invalid.characters.IBAN"),
+      ErrorValidation(RegexConstants.IBANValidFormatRegex, "whatIsAccountNumber.error.invalid.format.IBAN")
     )
     val otherValidations = Seq(
-      ErrorValidation(RegexConstants.OTHERvalidcharacters, "whatIsAccountNumber.error.invalid.characters.OTHER")
+      ErrorValidation(RegexConstants.OTHERInvalidCharactersRegex, "whatIsAccountNumber.error.invalid.characters.OTHER")
     )
 
     val errorValidations = numType match {

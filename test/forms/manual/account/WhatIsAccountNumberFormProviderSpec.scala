@@ -40,7 +40,7 @@ class WhatIsAccountNumberFormProviderSpec extends StringFieldBehaviours {
       val formFATCA = formFor(Iban, FATCA)
 
       "must bind a valid IBAN" in {
-        val result = form.bind(Map(fieldName -> "GB29NWBK60161331926819"))
+        val result = form.bind(Map(fieldName -> "GB12ABCD12345678901234"))
         result.hasErrors shouldBe false
         result.hasGlobalErrors shouldBe false
       }
@@ -56,7 +56,7 @@ class WhatIsAccountNumberFormProviderSpec extends StringFieldBehaviours {
       }
 
       "must fail when it contains non-alphanumeric characters" in {
-        val result = form.bind(Map(fieldName -> "GB29-NWBK-6016"))
+        val result = form.bind(Map(fieldName -> "GB12-abcd-1234"))
         result.errors(fieldName).map(_.message) shouldBe Seq("whatIsAccountNumber.error.invalid.characters.IBAN")
       }
 
@@ -70,8 +70,8 @@ class WhatIsAccountNumberFormProviderSpec extends StringFieldBehaviours {
         result.errors(fieldName).map(_.message) shouldBe Seq("whatIsAccountNumber.error.invalid.countryCode.IBAN")
       }
 
-      "bind a lowercase country code (case-insensitive lookup)" in {
-        val result = form.bind(Map(fieldName -> "gb29nwbk60161331926819"))
+      "bind a lowercase" in {
+        val result = form.bind(Map(fieldName -> "gb29abcd12345678901234"))
         result.hasErrors shouldBe false
         result.hasGlobalErrors shouldBe false
       }
@@ -88,7 +88,7 @@ class WhatIsAccountNumberFormProviderSpec extends StringFieldBehaviours {
       val form = formFor(Isin)
 
       "must bind a valid ISIN" in {
-        val result = form.bind(Map(fieldName -> "GB0002654949"))
+        val result = form.bind(Map(fieldName -> "GB1234567890"))
         result.hasErrors shouldBe false
         result.hasGlobalErrors shouldBe false
       }
@@ -99,27 +99,27 @@ class WhatIsAccountNumberFormProviderSpec extends StringFieldBehaviours {
       }
 
       "must fail when the value is not exactly 12 characters" in {
-        val result = form.bind(Map(fieldName -> "GB000265494"))
+        val result = form.bind(Map(fieldName -> "GB123456789"))
         result.errors(fieldName).map(_.message) shouldBe Seq("whatIsAccountNumber.error.length.ISIN")
       }
 
       "must fail when it contains non-alphanumeric characters" in {
-        val result = form.bind(Map(fieldName -> "GB00-2654949"))
+        val result = form.bind(Map(fieldName -> "GB00-1234567"))
         result.errors(fieldName).map(_.message) shouldBe Seq("whatIsAccountNumber.error.invalid.characters.ISIN")
       }
 
       "must fail when the last character is not a digit" in {
-        val result = form.bind(Map(fieldName -> "GB000265494X"))
+        val result = form.bind(Map(fieldName -> "GB123456789X"))
         result.errors(fieldName).map(_.message) shouldBe Seq("whatIsAccountNumber.error.invalid.format.ISIN")
       }
 
       "must fail when the value does not start with two letters" in {
-        val result = form.bind(Map(fieldName -> "120002654949"))
+        val result = form.bind(Map(fieldName -> "123456789012"))
         result.errors(fieldName).map(_.message) shouldBe Seq("whatIsAccountNumber.error.invalid.format.ISIN")
       }
 
       "must fail when the first two characters are not a valid country code" in {
-        val result = form.bind(Map(fieldName -> "ZZ0002654949"))
+        val result = form.bind(Map(fieldName -> "ZZ1234567890"))
         result.errors(fieldName).map(_.message) shouldBe Seq("whatIsAccountNumber.error.invalid.countryCode.ISIN")
       }
     }

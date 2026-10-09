@@ -30,11 +30,11 @@ object RegexConstants:
   val nonUkPostcodeRegex: String =
     """^[A-Za-z0-9 ./-]*$"""
 
-  val IBANinvalidcharacters = "^[A-Za-z0-9]*$"
-  val IBANinvalidformat     = "^[A-Za-z]{2}[0-9]{2}[A-Za-z0-9]{1,30}$"
-  val IBANlength            = "^.{5,34}$"
+  val IBANValidCharactersRegex = "^[A-Za-z0-9]*$"
+  val IBANValidFormatRegex     = "^[A-Za-z]{2}[0-9]{2}[A-Za-z0-9]+$"
+  val IBANLength               = "^.{5,34}$"
 
-  val ISINinvalidcharacters = "^[A-Za-z0-9]*$"
-  val ISINinvalidformat     = "^[A-Za-z]{2}[A-Za-z0-9]{9}[0-9]$"
-  val ISINlength            = "^.{12}$"
-  val OTHERvalidcharacters  = "^(?:(?!--|&#|/\\*).)*$"
+  val ISINValidCharactersRegex    = "^[A-Za-z0-9]*$"
+  val ISINValidFormatRegex        = "^[A-Za-z]{2}[A-Za-z0-9]{9}[0-9]$"
+  val ISINLength                  = "^.{12}$"
+  val OTHERInvalidCharactersRegex = "^(?:(?!--|&#|/\\*).)*$"

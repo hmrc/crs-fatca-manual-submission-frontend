@@ -34,14 +34,19 @@
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
-        @govukInput(
-            InputViewModel(
-                field = form("value"),
-                label = LabelViewModel(messages("whatIsAccountNumber.heading")).asPageHeading()
-            )
-            .withWidth(Fixed20)
-            .withHint(HintViewModel(HtmlContent(messages(s"whatIsAccountNumber.hint.$numberType"))))
-        )
+        @{
+            val model =
+                InputViewModel(
+                    field = form("value"),
+                    label = LabelViewModel(messages("whatIsAccountNumber.heading")).asPageHeading()
+                )
+                .withWidth(Fixed20)
+
+            if (Set("ISIN", "IBAN").contains(numberType))
+                govukInput(model.withHint(HintViewModel(HtmlContent(messages(s"whatIsAccountNumber.hint.$numberType")))))
+            else
+                govukInput(model)
+        }
 
         @govukButton(
             ButtonViewModel(messages("site.saveContinue"))

@@ -59,6 +59,31 @@ class WhatIsAccountNumberViewSpec extends SpecBase {
         doc.select("#submit").text() mustBe "Save and continue"
       }
 
+      "hint" - {
+        "must exist for IBAN" in {
+          val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, "IBAN")
+          lazy val doc                            = Jsoup.parse(renderedHtml.body)
+          doc.select("#value-hint").text() must include("For example")
+        }
+
+        "must exist for ISIN" in {
+          val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, "ISIN")
+          lazy val doc                            = Jsoup.parse(renderedHtml.body)
+          doc.select("#value-hint").text() must include("For example")
+        }
+
+        "must not exist for other types" - {
+          List("OBAN", "OSIN", "SEMP", "OTHER") foreach {
+            numberType =>
+              s"must not exist for $numberType" in {
+                val renderedHtml: HtmlFormat.Appendable = view(form, NormalMode, numberType)
+                lazy val doc                            = Jsoup.parse(renderedHtml.body)
+                doc.select("#value-hint") must be(empty)
+              }
+          }
+        }
+      }
+
     }
 
   }
