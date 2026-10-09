@@ -1013,3 +1013,26 @@ organisationCrs.passiveWithMultiplePersons = Passive non-financial entity with o
 organisationCrs.crsReportable = CRS reportable person
 organisationCrs.passiveCrsPerson = Passive non-financial entity that is a CRS reportable person
 organisationCrs.empty =
+
+whatIsAccountNumber.title = What is the account or identification number?
+whatIsAccountNumber.heading = What is the account or identification number?
+whatIsAccountNumber.error.required = Enter the account or identification number
+
+whatIsAccountNumber.error.length.OTHER = Account or identification number must be 200 characters or less
+whatIsAccountNumber.error.invalid.characters.OTHER = Account or identification number must not include a double dash (--), ampersand hash (&#) or forward slash asterisk (/*)
+
+whatIsAccountNumber.hint.IBAN = For example, GB33BUKB20201555555555.
+whatIsAccountNumber.error.length.IBAN = IBAN must be from 5 to 34 characters
+whatIsAccountNumber.error.invalid.characters.IBAN = IBAN must only include letters a to z and numbers 0 to 9
+whatIsAccountNumber.error.invalid.format.IBAN = IBAN must be in the right format
+whatIsAccountNumber.error.invalid.countryCode.IBAN = IBAN must include a real country code for the first 2 letters
+
+whatIsAccountNumber.hint.ISIN = For example, US0378331005.
+whatIsAccountNumber.error.length.ISIN = ISIN must be 12 characters
+whatIsAccountNumber.error.invalid.characters.ISIN = ISIN must only include letters a to z and numbers 0 to 9
+whatIsAccountNumber.error.invalid.format.ISIN = ISIN must be in the right format
+whatIsAccountNumber.error.invalid.countryCode.ISIN = ISIN must include a real country code for the first 2 letters
+
+whatIsAccountNumber.checkYourAnswersLabel = Account or identification number
+whatIsAccountNumber.change.hidden = Change account or identification number
+

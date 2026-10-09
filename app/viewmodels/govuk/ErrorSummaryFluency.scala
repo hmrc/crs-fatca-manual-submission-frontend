@@ -18,7 +18,8 @@ package viewmodels.govuk
 
 import play.api.data.Form
 import play.api.i18n.Messages
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{Content, Text}
+import play.twirl.api.HtmlFormat
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{Content, HtmlContent, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.errorsummary.{ErrorLink, ErrorSummary}
 
 object errorsummary extends ErrorSummaryFluency
@@ -26,6 +27,16 @@ object errorsummary extends ErrorSummaryFluency
 trait ErrorSummaryFluency {
 
   object ErrorSummaryViewModel {
+
+    def withProtectedTokens(msg: String): Content =
+      HtmlContent(
+        HtmlFormat
+          .escape(msg)
+          .body
+          .replace("(--),", "<span class='nobreak'>(--),</span>")
+          .replace("(&amp;#)", "<span class='nobreak'>(&amp;#)</span>")
+          .replace("(/*)", "<span class='nobreak'>(/*)</span>")
+      )
 
     def apply(
       form: Form[_],
@@ -36,7 +47,7 @@ trait ErrorSummaryFluency {
         error =>
           ErrorLink(
             href = Some(s"#${errorLinkOverrides.getOrElse(error.key, error.key)}"),
-            content = Text(messages(error.message, error.args: _*))
+            content = withProtectedTokens(messages(error.message, error.args: _*))
           )
       }
 

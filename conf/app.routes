@@ -337,7 +337,6 @@ POST        /manual/cp-so/address-non-uk                           controllers.m
 GET         /manual/cp-so/change-address-non-uk                    controllers.manual.cpso.CPSOAddressNonUkController.onPageLoad(mode: Mode = CheckMode)
 POST        /manual/cp-so/change-address-non-uk                    controllers.manual.cpso.CPSOAddressNonUkController.onSubmit(mode: Mode = CheckMode)
 
-
 GET        /manual/account/payments                        controllers.manual.account.AccountPaymentsController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/account/payments                        controllers.manual.account.AccountPaymentsController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/account/change-payments                  controllers.manual.account.AccountPaymentsController.onPageLoad(mode: Mode = CheckMode)
@@ -395,6 +394,12 @@ GET        /manual/cp-so/individual-have-date-of-birth                        co
 POST       /manual/cp-so/individual-have-date-of-birth                        controllers.manual.cpso.IndividualHaveDateOfBirthController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/cp-so/change-individual-have-date-of-birth                  controllers.manual.cpso.IndividualHaveDateOfBirthController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/cp-so/change-individual-have-date-of-birth                  controllers.manual.cpso.IndividualHaveDateOfBirthController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/account/number                                                 controllers.manual.account.WhatIsAccountNumberController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account/number                                                 controllers.manual.account.WhatIsAccountNumberController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account/change-number                                          controllers.manual.account.WhatIsAccountNumberController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account/change-number                                          controllers.manual.account.WhatIsAccountNumberController.onSubmit(mode: Mode = CheckMode)
+
 GET        /manual/account-holder/organisation-name                       controllers.manual.accountHolders.OrganisationNameController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/account-holder/organisation-name                       controllers.manual.accountHolders.OrganisationNameController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/account-holder/change-organisation-name                 controllers.manual.accountHolders.OrganisationNameController.onPageLoad(mode: Mode = CheckMode)

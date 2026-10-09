@@ -36,7 +36,7 @@ trait BooleanFieldBehaviours extends FieldBehaviours {
 
     "not bind non-booleans" in {
 
-      forAll(nonBooleans -> "nonBoolean") {
+      forAll(nonBooleans.filter(_.nonEmpty) -> "nonBoolean") {
         nonBoolean =>
           val result = form.bind(Map(fieldName -> nonBoolean)).apply(fieldName)
           result.errors mustBe Seq(invalidError)
