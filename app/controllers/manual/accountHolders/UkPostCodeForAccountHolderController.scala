@@ -17,12 +17,11 @@
 package controllers.manual.accountHolders
 
 import connectors.{AddressLookupConnector, DatabaseConnector}
-import controllers.actions.*
+import controllers.actions.Actions
 import forms.manual.accountHolders.UkPostCodeForAccountHolderFormProvider
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
 import pages.manual.accountHolders.*
-import play.api.Logging
 import play.api.data.FormError
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -43,73 +42,79 @@ class UkPostCodeForAccountHolderController @Inject() (
   addressLookupConnector: AddressLookupConnector
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport
-    with Logging {
+    with I18nSupport {
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequired() {
-    implicit request =>
-      implicit val reportId: ReportId = request.reportId
+  def onPageLoad(mode: Mode): Action[AnyContent] =
+    actions.withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired() {
+      implicit request =>
 
-      val preparedForm = request.userAnswers
-        .get(UkPostCodeForAccountHolderPage(request.accountHolderId, reportId))
-        .fold(form)(form.fill)
+        implicit val reportId: ReportId = request.reportId
 
-      // Todo in the future we should cater for organisation-name too
-      request.userAnswers
-        .get(AccountHolderIndividualNamePage(request.accountHolderId)) match {
-        case Some(individualName) =>
-          val accountHolderName = s"${individualName.firstName} ${individualName.lastName}".trim
-          Ok(view(preparedForm, mode, accountHolderName))
-        case None =>
-          logger.warn("Mandatory individual name is missing from User Answers")
-          Redirect(
-            controllers.routes.JourneyRecoveryController.onPageLoad()
-          )
+        val preparedForm =
+          request.userAnswers
+            .get(UkPostCodeForAccountHolderPage(request.accountHolderId, reportId))
+            .fold(form)(form.fill)
 
-      }
+        Ok(view(preparedForm, mode, request.accountHolderName))
+    }
 
-  }
+  def onSubmit(mode: Mode): Action[AnyContent] =
+    actions.withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired().async {
+      implicit request =>
+        implicit val reportId: ReportId = request.reportId
+        val formReturned                = form.bindFromRequest()
+        formReturned.fold(
+          formWithErrors =>
+            Future.successful(
+              BadRequest(view(formWithErrors, mode, request.accountHolderName))
+            ),
+          postcode =>
+            addressLookupConnector.findByPostCode(postcode.toUpperCase).flatMap {
+              case Nil =>
+                val formError =
+                  formReturned.withError(
+                    FormError(
+                      "value",
+                      List("uKPostcode.error.notfound")
+                    )
+                  )
 
-  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequired().async {
-    implicit request =>
-      implicit val reportId: ReportId = request.reportId
+                Future.successful(BadRequest(view(formError, mode, request.accountHolderName)))
 
-      request.userAnswers
-        .get(AccountHolderIndividualNamePage(request.accountHolderId)) match {
-        case None =>
-          logger.warn("Mandatory individual name is missing from User Answers")
-          Future.successful(
-            Redirect(
-              controllers.routes.JourneyRecoveryController.onPageLoad()
-            )
-          )
-        case Some(individualName) =>
-          val accountHolderName = s"${individualName.firstName} ${individualName.lastName}".trim
-          val formReturned      = form.bindFromRequest()
-
-          formReturned
-            .fold(
-              formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, accountHolderName))),
-              postcode =>
-                addressLookupConnector.findByPostCode(postcode.toUpperCase).flatMap {
-                  case Nil =>
-                    val formError = formReturned.withError(FormError("value", List("uKPostcode.error.notfound")))
-                    Future.successful(BadRequest(view(formError, mode, accountHolderName)))
-
-                  case address =>
-                    for {
-                      updatedAnswers <- Future
-                        .fromTry(request.userAnswers.setWithReportId(UkPostCodeForAccountHolderPage(request.accountHolderId, reportId), postcode))
-                      uaWithAddressLookup <- Future
-                        .fromTry(updatedAnswers.setWithReportId(AddressLookupForAccountHolderPage(request.accountHolderId, reportId), address))
-                      _ <- repository.set(uaWithAddressLookup)
-                    } yield Redirect(navigator.nextPage(UkPostCodeForAccountHolderPage(request.accountHolderId, reportId), mode, uaWithAddressLookup))
-
-                }
-            )
-      }
-
-  }
+              case address =>
+                for {
+                  updatedAnswers <- Future.fromTry(
+                    request.userAnswers.setWithReportId(
+                      UkPostCodeForAccountHolderPage(
+                        request.accountHolderId,
+                        reportId
+                      ),
+                      postcode
+                    )
+                  )
+                  uaWithAddressLookup <- Future.fromTry(
+                    updatedAnswers.setWithReportId(
+                      AddressLookupForAccountHolderPage(
+                        request.accountHolderId,
+                        reportId
+                      ),
+                      address
+                    )
+                  )
+                  _ <- repository.set(uaWithAddressLookup)
+                } yield Redirect(
+                  navigator.nextPage(
+                    UkPostCodeForAccountHolderPage(
+                      request.accountHolderId,
+                      reportId
+                    ),
+                    mode,
+                    uaWithAddressLookup
+                  )
+                )
+            }
+        )
+    }
 }

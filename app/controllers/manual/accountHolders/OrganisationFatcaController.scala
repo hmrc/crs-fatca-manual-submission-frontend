@@ -18,26 +18,26 @@ package controllers.manual.accountHolders
 
 import connectors.DatabaseConnector
 import controllers.actions.Actions
-import forms.manual.accountHolders.WhereAreTheyBasedFormProvider
+import forms.manual.accountHolders.OrganisationFatcaFormProvider
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.accountHolders.WhereAreTheyBasedPage
+import pages.manual.accountHolders.OrganisationFatcaPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.manual.accountHolders.WhereAreTheyBasedView
+import views.html.manual.accountHolders.OrganisationFatcaView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class WhereAreTheyBasedController @Inject() (
+class OrganisationFatcaController @Inject() (
   override val messagesApi: MessagesApi,
-  repository: DatabaseConnector,
+  sessionRepository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
   actions: Actions,
-  formProvider: WhereAreTheyBasedFormProvider,
+  formProvider: OrganisationFatcaFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: WhereAreTheyBasedView
+  view: OrganisationFatcaView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -51,7 +51,7 @@ class WhereAreTheyBasedController @Inject() (
         implicit val reportId: ReportId = request.reportId
 
         val preparedForm =
-          request.userAnswers.get(WhereAreTheyBasedPage(request.accountHolderId)) match {
+          request.userAnswers.get(OrganisationFatcaPage(request.accountHolderId)) match {
             case None        => form
             case Some(value) => form.fill(value)
           }
@@ -82,14 +82,14 @@ class WhereAreTheyBasedController @Inject() (
               for {
                 updatedAnswers <- Future.fromTry(
                   request.userAnswers.setWithReportId(
-                    WhereAreTheyBasedPage(request.accountHolderId),
+                    OrganisationFatcaPage(request.accountHolderId),
                     value
                   )
                 )
-                _ <- repository.set(updatedAnswers)
+                _ <- sessionRepository.set(updatedAnswers)
               } yield Redirect(
                 navigator.nextPage(
-                  WhereAreTheyBasedPage(request.accountHolderId),
+                  OrganisationFatcaPage(request.accountHolderId),
                   mode,
                   updatedAnswers
                 )
