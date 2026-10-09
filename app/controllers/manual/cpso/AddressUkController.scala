@@ -19,7 +19,6 @@ package controllers.manual.cpso
 import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.manual.cpso.AddressUkFormProvider
-import models.SubmissionsConstants.{CRS, RegimeType}
 import models.viewModels.manual.cpso.CPSOId
 import models.{Countries, Mode, ReportId, UkAddress, UserAnswers}
 import navigation.ManualSubmissionNavigator
@@ -53,7 +52,7 @@ class AddressUkController @Inject() (
 
       val preparedForm = resolveAddress(request.userAnswers, request.cpsoId).fold(form)(form.fill)
 
-      Ok(view(preparedForm, mode, regime, request.cpsoName, countries(reportId.regime)))
+      Ok(view(preparedForm, mode, regime, request.cpsoName, Countries.ukTerritories))
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequired().async {
@@ -65,7 +64,7 @@ class AddressUkController @Inject() (
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, regime, request.cpsoName, countries(reportId.regime)))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, regime, request.cpsoName, Countries.ukTerritories))),
           value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(AddressUkPage(cpsoId, reportId), value))
@@ -73,10 +72,6 @@ class AddressUkController @Inject() (
             } yield Redirect(navigator.nextPage(AddressUkPage(cpsoId, reportId), mode, updatedAnswers))
         )
   }
-
-  private def countries(regimeType: RegimeType) =
-    if (regimeType == CRS) Countries.crsUkTerritories
-    else Countries.ukTerritories
 
   private def resolveAddress(userAnswers: UserAnswers, cpsoId: CPSOId)(implicit reportId: ReportId): Option[UkAddress] =
     userAnswers
