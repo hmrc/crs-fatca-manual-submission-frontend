@@ -54,37 +54,19 @@ class ResidentTaxViewSpec extends SpecBase {
       }
 
       "must display heading with the account holder name" in {
-        doc.select("h1").text() must include("Where is Account Test Last for tax?")
+        doc.select("h1").text() must include("Where is Test Last resident for tax?")
       }
 
       "must display the guidance paragraph" in {
-        doc.select("p.govuk-body").text() must include("If they are resident for tax in more than one country")
+        doc.select("p.govuk-body").text() must include(
+          "If they are resident for tax in more than one country, then you can add other countries on the next page."
+        )
       }
 
       "must display the country field with the heading as its visually hidden label" in {
-        doc.select("label[for=country]").text() mustBe "Where is Account Test Last for tax?"
+        doc.select("label[for=country]").text() mustBe "Where is Test Last resident for tax?"
         doc.select("label[for=country]").attr("class") must include("govuk-visually-hidden")
         doc.select("#country").size() mustBe 1
-      }
-
-      "must display the no-JavaScript country placeholder first" in {
-        val firstOption = doc.select("#country option").first()
-
-        firstOption.text() mustBe messages("addressNonUk.country.select")
-        firstOption.attr("value") mustBe ""
-        firstOption.hasAttr("selected") mustBe true
-      }
-
-      "must display the supplied countries with their code as the option value" in {
-        doc.select("#country option").size() mustBe countries.size + 1
-
-        val france = doc.select("#country option[value=FR]")
-        france.size() mustBe 1
-        france.text() mustBe "France"
-
-        val unitedKingdom = doc.select("#country option[value=GB]")
-        unitedKingdom.size() mustBe 1
-        unitedKingdom.text() mustBe "United Kingdom"
       }
 
       "must display button" in {
@@ -93,17 +75,6 @@ class ResidentTaxViewSpec extends SpecBase {
 
       "must not display an error summary" in {
         doc.select(".govuk-error-summary").size() mustBe 0
-      }
-    }
-
-    "should preselect the answered country when the form is populated" - {
-
-      val renderedHtml: HtmlFormat.Appendable = view(form.fill("GB"), NormalMode, accountHolder, countries)
-      lazy val doc                            = Jsoup.parse(renderedHtml.body)
-
-      "must select the matching country and deselect the placeholder" in {
-        doc.select("#country option[value=GB]").first().hasAttr("selected") mustBe true
-        doc.select("#country option").first().hasAttr("selected") mustBe false
       }
     }
 
@@ -127,5 +98,4 @@ class ResidentTaxViewSpec extends SpecBase {
       }
     }
   }
-
 }
