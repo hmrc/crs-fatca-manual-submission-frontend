@@ -21,7 +21,7 @@ import play.api.data.FormError
 
 class HaveTaxIdenticationNumberFormProviderSpec extends BooleanFieldBehaviours {
 
-  val requiredKey = "haveTaxIdenticationNumber.error.required"
+  val requiredKey = "accountHolders.haveTaxIdenticationNumber.error.required"
   val invalidKey  = "error.boolean"
 
   val form = new HaveTaxIdenticationNumberFormProvider()()

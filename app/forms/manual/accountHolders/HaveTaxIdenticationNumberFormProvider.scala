@@ -25,6 +25,6 @@ class HaveTaxIdenticationNumberFormProvider @Inject() extends Mappings {
 
   def apply(): Form[Boolean] =
     Form(
-      "value" -> boolean("haveTaxIdenticationNumber.error.required")
+      "value" -> boolean("accountHolders.haveTaxIdenticationNumber.error.required")
     )
 }

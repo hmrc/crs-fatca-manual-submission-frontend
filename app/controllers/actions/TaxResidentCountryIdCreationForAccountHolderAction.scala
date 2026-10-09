@@ -17,7 +17,7 @@
 package controllers.actions
 
 import models.ReportId
-import models.requests.{AccountHolderIdRequest, AccountHolderNameRequest, TaxResidentCountryIdForAccountHolderRequest}
+import models.requests.{AccountHolderNameRequest, TaxResidentCountryIdForAccountHolderRequest}
 import pages.manual.accountHolders.{CurrentTaxResidentCountryIndexPage, TaxResidentCountriesListPage}
 import play.api.mvc.ActionTransformer
 

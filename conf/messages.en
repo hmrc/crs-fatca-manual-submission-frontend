@@ -1020,8 +1020,8 @@ accountHolders.residentTax.paragraph = If they are resident for tax in more than
 accountHolders.country.error.required = Select where the account holder is resident for tax
 accountHolders.residentTax.checkYourAnswersLabel = ResidentTax
 
-haveTaxIdenticationNumber.title = haveTaxIdenticationNumber
-haveTaxIdenticationNumber.heading = haveTaxIdenticationNumber
-haveTaxIdenticationNumber.checkYourAnswersLabel = haveTaxIdenticationNumber
-haveTaxIdenticationNumber.error.required = Select yes if haveTaxIdenticationNumber
-haveTaxIdenticationNumber.change.hidden = HaveTaxIdenticationNumber
+accountHolders.haveTaxIdenticationNumber.title = Do you have a tax identification number for the account holder for the country?
+accountHolders.haveTaxIdenticationNumber.heading = Do you have a tax identification number for {0} for {1}?
+accountHolders.haveTaxIdenticationNumber.checkYourAnswersLabel = haveTaxIdenticationNumber
+accountHolders.haveTaxIdenticationNumber.error.required = 	Select yes if you have a tax identification number
+accountHolders.haveTaxIdenticationNumber.change.hidden = HaveTaxIdenticationNumber

@@ -21,7 +21,7 @@ import controllers.actions.*
 import forms.manual.accountHolders.ResidentTaxFormProvider
 import models.{Countries, Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.accountHolders.{AccountHolderIndividualNamePage, CurrentTaxResidentCountryIndexPage, ResidentTaxPage}
+import pages.manual.accountHolders.{CurrentTaxResidentCountryIndexPage, ResidentTaxPage}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}

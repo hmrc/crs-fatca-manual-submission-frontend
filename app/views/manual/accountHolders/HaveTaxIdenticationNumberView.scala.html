@@ -14,6 +14,7 @@
  * limitations under the License.
  *@
 
+@import models.response.Country
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
@@ -22,9 +23,9 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, accountHolderName: String, country: Country)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("haveTaxIdenticationNumber.title"))) {
+@layout(pageTitle = title(form, messages("accountHolders.haveTaxIdenticationNumber.title"))) {
 
     @formHelper(action = controllers.manual.accountHolders.routes.HaveTaxIdenticationNumberController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
@@ -35,12 +36,12 @@
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = LegendViewModel(messages("haveTaxIdenticationNumber.heading")).asPageHeading()
+                legend = LegendViewModel(messages("accountHolders.haveTaxIdenticationNumber.heading", accountHolderName, country.description)).asPageHeading()
             )
         )
 
         @govukButton(
-            ButtonViewModel(messages("site.saveContinue"))
+            ButtonViewModel(messages("site.saveContinue")).withId("submit")
         )
     }
 }

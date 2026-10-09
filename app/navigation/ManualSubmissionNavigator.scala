@@ -50,6 +50,7 @@ import pages.manual.accountHolders.{
   IsThisTheAddressForAccountHoldersPage,
   OrganisationCrsPage,
   OrganisationFatcaPage,
+  ResidentTaxPage,
   SelectAddressPage,
   SelfCertificationPage as AccountHolderSelfCertificationPage,
   UkAddressPage as AccountHolderUkAddressPage,
@@ -233,7 +234,8 @@ class ManualSubmissionNavigator @Inject() () {
       handleAccountHolderAddressNonUkPageNavigationForAccountHolders(ua, mode, accountHolderId)
     case (AccountHolderSelfCertificationPage(accountHolderId, reportId), mode, ua) =>
       handleAccountHolderSelfCertificationPageNavigationForAccountHolders(ua, mode, accountHolderId)
-    case (IndividualPlaceOfBirthPage(_, _), mode, _) => controllers.manual.accountHolders.routes.WhereAreTheyBasedController.onPageLoad(mode)
+    case (IndividualPlaceOfBirthPage(_, _), mode, _)               => controllers.manual.accountHolders.routes.WhereAreTheyBasedController.onPageLoad(mode)
+    case (ResidentTaxPage(_, accountHolderId, reportId), mode, ua) => handleResidentTaxPageNavigationForAccountHolders(ua, mode)
   }
 
   private def cpsoNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
@@ -376,6 +378,12 @@ class ManualSubmissionNavigator @Inject() () {
       case Some(_)                              => controllers.routes.UnderConstructionController.onPageLoad()
       case None                                 => controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(mode)
     }
+
+  private def handleResidentTaxPageNavigationForAccountHolders(userAnswers: UserAnswers, mode: Mode)(implicit
+    reportId: ReportId
+  ) =
+    if (reportId.regime == CRS) controllers.manual.accountHolders.routes.HaveTaxIdenticationNumberController.onPageLoad(mode)
+    else controllers.routes.UnderConstructionController.onPageLoad()
 
   private def handleAccountHolderSelfCertificationPageNavigationForAccountHolders(userAnswers: UserAnswers, mode: Mode, accountHolderId: AccountHolderId)(
     implicit reportId: ReportId
