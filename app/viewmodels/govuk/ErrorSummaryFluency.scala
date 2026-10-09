@@ -18,7 +18,8 @@ package viewmodels.govuk
 
 import play.api.data.Form
 import play.api.i18n.Messages
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{Content, Text}
+import play.twirl.api.HtmlFormat
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{Content, HtmlContent, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.errorsummary.{ErrorLink, ErrorSummary}
 
 object errorsummary extends ErrorSummaryFluency
@@ -27,17 +28,24 @@ trait ErrorSummaryFluency {
 
   object ErrorSummaryViewModel {
 
-    def apply(
-      form: Form[_],
-      errorLinkOverrides: Map[String, String] = Map.empty
-    )(implicit messages: Messages): ErrorSummary = {
+    def withProtectedTokens(msg: String): Content =
+      HtmlContent(
+        HtmlFormat.escape(msg).body
+          .replace("(--),", "<span class='nobreak'>(--),</span>")
+          .replace("(&amp;#)", "<span class='nobreak'>(&amp;#)</span>")
+          .replace("(/*)", "<span class='nobreak'>(/*)</span>")
+      )
 
-      val errors = form.errors.map {
-        error =>
-          ErrorLink(
-            href = Some(s"#${errorLinkOverrides.getOrElse(error.key, error.key)}"),
-            content = Text(messages(error.message, error.args: _*))
-          )
+    def apply(
+               form: Form[_],
+               errorLinkOverrides: Map[String, String] = Map.empty
+             )(implicit messages: Messages): ErrorSummary = {
+
+      val errors = form.errors.map { error =>
+        ErrorLink(
+          href = Some(s"#${errorLinkOverrides.getOrElse(error.key, error.key)}"),
+          content = withProtectedTokens(messages(error.message, error.args: _*))
+        )
       }
 
       ErrorSummary(
