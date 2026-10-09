@@ -818,6 +818,34 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
 
         val currentAccountHolderId = AccountHolderId("01")
 
+        "ResidentTaxPage" - {
+          implicit val reportId: ReportId = ReportId(CRS, 2024, None, "TestFIID")
+
+          "must go to have tax identification page when regime is crs" in {
+
+            val ua = UserAnswers("id")
+
+            navigator.nextPage(
+              ResidentTaxPage(0, currentAccountHolderId, reportId),
+              NormalMode,
+              ua
+            ) mustBe
+              controllers.manual.accountHolders.routes.HaveTaxIdenticationNumberController.onPageLoad(NormalMode)
+          }
+
+          "must go to underconstruction page page when regime is fatca" in {
+            implicit val reportId2: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+            val ua                           = UserAnswers("id")
+
+            navigator.nextPage(
+              ResidentTaxPage(0, currentAccountHolderId, reportId2),
+              NormalMode,
+              ua
+            )(reportId2) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+        }
+
         "IndividualOrOrganisationPage" - {
 
           "must go to organisation name page when organisation is selected" in {
