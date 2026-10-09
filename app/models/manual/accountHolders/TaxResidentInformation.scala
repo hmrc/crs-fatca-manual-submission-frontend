@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package pages.manual.accountHolders
+package models.manual.accountHolders
 
-import models.ReportId
 import models.response.Country
-import models.viewModels.AccountHolderId
-import pages.QuestionPage
-import play.api.libs.json.JsPath
+import play.api.libs.json.{Json, OFormat}
 
-final case class ResidentTaxPage(index: Int, currentId: AccountHolderId, reportId: ReportId) extends QuestionPage[Country]:
+case class TaxResidentInformation(country: Country, hasTaxIdenticationNumber: Option[Boolean] = None, taxIdentifierNumbers: Option[String] = None)
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "accountHolder" \ currentId.value \ "taxResidentCountries" \ index \ "country"
+object TaxResidentInformation {
+
+  implicit val format: OFormat[TaxResidentInformation] = Json.format
+}

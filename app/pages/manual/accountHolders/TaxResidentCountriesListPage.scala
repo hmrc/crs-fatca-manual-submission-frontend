@@ -17,11 +17,11 @@
 package pages.manual.accountHolders
 
 import models.ReportId
-import models.response.Country
+import models.manual.accountHolders.TaxResidentInformation
 import models.viewModels.AccountHolderId
 import pages.QuestionPage
 import play.api.libs.json.JsPath
 
-final case class TaxResidentCountriesListPage(accountHolderId: AccountHolderId, reportId: ReportId) extends QuestionPage[Seq[Country]]:
+final case class TaxResidentCountriesListPage(accountHolderId: AccountHolderId, reportId: ReportId) extends QuestionPage[Seq[TaxResidentInformation]]:
 
   override def path: JsPath = JsPath \ reportId.mongoKey \ "accountHolder" \ accountHolderId.value \ "taxResidentCountries"

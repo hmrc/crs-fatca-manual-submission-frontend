@@ -18,6 +18,7 @@ package controllers.actions
 
 import base.SpecBase
 import models.SubmissionsConstants.FATCA
+import models.manual.accountHolders.TaxResidentInformation
 import models.requests.{AccountHolderIdRequest, TaxResidentCountryIdForAccountHolderRequest}
 import models.response.Country
 import models.viewModels.AccountHolderId
@@ -48,8 +49,8 @@ class TaxResidentCountryIdCreationForAccountHolderActionSpec extends SpecBase wi
   )
 
   private val taxResidentCountries = Seq(
-    Country("GB", "United Kingdom"),
-    Country("US", "United States")
+    TaxResidentInformation(Country("GB", "United Kingdom")),
+    TaxResidentInformation(Country("US", "United States"))
   )
 
   private def accountHolderIdRequest(userAnswers: UserAnswers): AccountHolderIdRequest[_] =

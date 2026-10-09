@@ -21,9 +21,8 @@ import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.accountHolders.ResidentTaxFormProvider
 import models.SubmissionsConstants.CRS
-import models.manual.accountHolders.IndividualName
+import models.manual.accountHolders.{IndividualName, TaxResidentInformation}
 import models.response.Country
-import models.response.Country.GB
 import models.viewModels.AccountHolderId
 import models.{Countries, NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
@@ -31,7 +30,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.accountHolders.{AccountHolderIndividualNamePage, CurrentAccountHolderIdPage, ResidentTaxPage, TaxResidentCountriesListPage}
+import pages.manual.accountHolders.{AccountHolderIndividualNamePage, CurrentAccountHolderIdPage, TaxResidentCountriesListPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -54,12 +53,13 @@ class ResidentTaxControllerSpec extends SpecBase with MockitoSugar {
   private lazy val residentTaxRoute = controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(NormalMode).url
 
   "ResidentTax Controller" - {
-
+    val country                = Country("GB", "UK")
+    val taxResidentInformation = TaxResidentInformation(country)
     val ua = emptyUserAnswers
       .withPage(ReportIdPage, reportId)
       .withPage(CurrentAccountHolderIdPage()(reportId), currentAccountHolderId)
       .withPage(AccountHolderIndividualNamePage(currentAccountHolderId)(reportId), individualName)
-      .withPage(TaxResidentCountriesListPage(currentAccountHolderId, reportId), Seq(GB))
+      .withPage(TaxResidentCountriesListPage(currentAccountHolderId, reportId), Seq(taxResidentInformation))
 
     "must return OK and the correct view for a GET" in {
 

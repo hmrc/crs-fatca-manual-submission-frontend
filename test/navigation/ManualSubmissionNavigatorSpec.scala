@@ -24,10 +24,9 @@ import models.SubmissionsConstants.{CRS, FATCA}
 import models.manual.account.PaymentType.*
 import models.manual.account.{AccountPayment, PaymentType, WasAccountOpen, WhatAccountType}
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
-import models.manual.accountHolders.{IndividualDateOfBirth, IndividualName, SelfCertification}
+import models.manual.accountHolders.{IndividualDateOfBirth, IndividualName, SelfCertification, TaxResidentInformation}
 import models.manual.cpso.CpsoSelfCertification.Yes
 import models.manual.cpso.IndividualOrOrganisation
-import models.response.Country.GB
 import models.response.{Address, AddressLookup, Country}
 import models.viewModels.manual.cpso.CPSOId
 import models.viewModels.{AccountHolderId, AccountId}
@@ -1035,6 +1034,8 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         }
 
         "IsThisTheAddressForAccountHoldersPage" - {
+          val country                     = Country("GB", "UK")
+          val taxResidentInformation      = TaxResidentInformation(country)
           implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
           val accountHolderId             = AccountHolderId("holder-id")
 
@@ -1058,7 +1059,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           "must go to under construction page for a yes answer when regime is FATCA when tax resident countries are present" in {
             val ua = UserAnswers("id")
               .withPage(IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId), true)
-              .withPage(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId), Seq(GB))
+              .withPage(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId), Seq(taxResidentInformation))
 
             navigator.nextPage(IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId), NormalMode, ua) mustBe
               controllers.routes.UnderConstructionController.onPageLoad()
@@ -1068,7 +1069,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             val reportId2: ReportId = ReportId(CRS, 2024, None, "TestFIID")
             val ua = UserAnswers("id")
               .withPage(IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId2), true)
-              .withPage(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId2), Seq(GB))
+              .withPage(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId2), Seq(taxResidentInformation))
 
             navigator.nextPage(IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId2), NormalMode, ua)(reportId2) mustBe
               controllers.routes.UnderConstructionController.onPageLoad()
@@ -1119,6 +1120,8 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         }
 
         "SelectAddressPage" - {
+          val country                     = Country("GB", "UK")
+          val taxResidentInformation      = TaxResidentInformation(country)
           implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
           val address = Address(uprn = None,
                                 addressLine1 = "string",
@@ -1134,7 +1137,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           "must go to under construction if there are tax residents specified" in {
             val ua = UserAnswers("id")
               .withPage(SelectAddressPage(accountHolderId, reportId), address)
-              .withPage(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId), Seq(Country.GB))
+              .withPage(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId), Seq(taxResidentInformation))
 
             navigator.nextPage(SelectAddressPage(accountHolderId, reportId), NormalMode, ua) mustBe
               controllers.routes.UnderConstructionController.onPageLoad()
@@ -1190,6 +1193,8 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         }
 
         "UKAddressPage" - {
+          val country                     = Country("GB", "UK")
+          val taxResidentInformation      = TaxResidentInformation(country)
           implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
           val address = Address(uprn = None,
                                 addressLine1 = "string",
@@ -1231,7 +1236,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           "must go to under construction page when regime is FATCA and there are  tax resident countries specified" in {
             val ua = UserAnswers("id")
               .withPage(AccountHolderUkAddressPage(accountHolderId, reportId), address)
-              .withPage(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId), Seq(GB))
+              .withPage(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId), Seq(taxResidentInformation))
 
             navigator.nextPage(AccountHolderUkAddressPage(accountHolderId, reportId), NormalMode, ua) mustBe
               controllers.routes.UnderConstructionController.onPageLoad()
@@ -1240,7 +1245,9 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         }
 
         "Account holder SelfCertificationPage" - {
-          val accountHolderId = AccountHolderId("holder-id")
+          val country                = Country("GB", "UK")
+          val taxResidentInformation = TaxResidentInformation(country)
+          val accountHolderId        = AccountHolderId("holder-id")
           "must go to resident tax country when no countries are not present" in {
             val ua = UserAnswers("id")
               .withPage(SelfCertificationPage(accountHolderId, reportId), SelfCertification.allValidValues.head)
@@ -1261,7 +1268,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           "must go to under construction when countries are present" in {
             val ua = UserAnswers("id")
               .withPage(SelfCertificationPage(accountHolderId, reportId), SelfCertification.allValidValues.head)
-              .withPage(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId), Seq(GB))
+              .withPage(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId), Seq(taxResidentInformation))
 
             navigator.nextPage(SelfCertificationPage(accountHolderId, reportId), NormalMode, ua) mustBe
               controllers.routes.UnderConstructionController.onPageLoad()
@@ -1270,6 +1277,8 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         }
 
         "AccountHolderAddressNonUk Page" - {
+          val country                     = Country("GB", "UK")
+          val taxResidentInformation      = TaxResidentInformation(country)
           implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
           val accountHolderId             = AccountHolderId("holder-id")
 
@@ -1293,7 +1302,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           "must go to under construction page when regime is FATCA and tax residents are populated" in {
             val ua = UserAnswers("id")
               .withPage(AccountHolderAddressNonUkPage(accountHolderId, reportId), nonUkAddress)
-              .withPage(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId), Seq(GB))
+              .withPage(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId), Seq(taxResidentInformation))
 
             navigator.nextPage(AccountHolderAddressNonUkPage(accountHolderId, reportId), NormalMode, ua) mustBe
               controllers.routes.UnderConstructionController.onPageLoad()
@@ -1303,7 +1312,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             implicit val reportId2: ReportId = ReportId(CRS, 2024, None, "TestFIID")
             val ua = UserAnswers("id")
               .withPage(AccountHolderAddressNonUkPage(accountHolderId, reportId2), nonUkAddress)
-              .withPage(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId2), Seq(GB))
+              .withPage(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId2), Seq(taxResidentInformation))
 
             navigator.nextPage(AccountHolderAddressNonUkPage(accountHolderId, reportId2), NormalMode, ua)(reportId2) mustBe
               controllers.routes.UnderConstructionController.onPageLoad()
