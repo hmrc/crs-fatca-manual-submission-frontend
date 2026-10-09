@@ -36,7 +36,7 @@ class Actions @Inject() (
   accountPaymentIndexCreationAction: AccountPaymentIndexCreationAction,
   accountPaymentIndexRequiredAction: AccountPaymentIndexRequiredAction,
   cpsoNameRequiredAction: CPSONameRequiredAction,
-  taxResidentCountryIdCreationForAccountHolderAction: TaxResidentCountryIdCreationForAccountHolderAndAccountHolderNameAction,
+  taxResidentCountryIdCreationForAccountHolderAction: TaxResidentCountryIdCreationForAccountHolderAction,
   accountHolderNameRequiredAction: AccountHolderNameRequiredAction,
   accountHolderCRSOnlyFilterAction: AccountHolderCRSOnlyFilterAction
 ) {

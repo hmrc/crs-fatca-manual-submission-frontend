@@ -25,7 +25,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class TaxResidentCountryIdCreationForAccountHolderActionImpl @Inject() (implicit val executionContext: ExecutionContext)
-    extends TaxResidentCountryIdCreationForAccountHolderAndAccountHolderNameAction {
+    extends TaxResidentCountryIdCreationForAccountHolderAction {
 
   override protected def transform[A](request: AccountHolderNameRequest[A]): Future[TaxResidentCountryIdForAccountHolderRequest[A]] = {
     given reportId: ReportId = request.reportId
@@ -66,5 +66,4 @@ class TaxResidentCountryIdCreationForAccountHolderActionImpl @Inject() (implicit
   }
 }
 
-trait TaxResidentCountryIdCreationForAccountHolderAndAccountHolderNameAction
-    extends ActionTransformer[AccountHolderNameRequest, TaxResidentCountryIdForAccountHolderRequest]
+trait TaxResidentCountryIdCreationForAccountHolderAction extends ActionTransformer[AccountHolderNameRequest, TaxResidentCountryIdForAccountHolderRequest]

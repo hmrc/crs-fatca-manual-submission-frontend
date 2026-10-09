@@ -29,7 +29,7 @@ import play.api.test.FakeRequest
 
 import scala.concurrent.Future
 
-class TaxResidentCountryIdCreationForAccountHolderAndAccountHolderNameActionSpec extends SpecBase with MockitoSugar {
+class TaxResidentCountryIdCreationForAccountHolderActionSpec extends SpecBase with MockitoSugar {
 
   class Harness extends TaxResidentCountryIdCreationForAccountHolderActionImpl() {
 
