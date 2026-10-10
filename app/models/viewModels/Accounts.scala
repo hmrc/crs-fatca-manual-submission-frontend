@@ -16,9 +16,53 @@
 
 package models.viewModels
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.*
 
-case class Accounts(accounts: Map[String, Account])
+case class Accounts(
+  currentAccountId: Option[AccountId],
+  accounts: Map[String, Account]
+)
 
-object Accounts:
-  implicit val format: OFormat[Accounts] = Json.format[Accounts]
+object Accounts {
+
+  private val CurrentAccountId = "currentAccountId"
+
+  implicit val format: OFormat[Accounts] = new OFormat[Accounts] {
+
+    override def reads(json: JsValue): JsResult[Accounts] =
+      json.validate[JsObject].flatMap {
+        obj =>
+
+          val currentAccountId =
+            (obj \ CurrentAccountId).validateOpt[AccountId]
+
+          val accountEntries =
+            JsObject(
+              obj.fields.filterNot(_._1 == CurrentAccountId)
+            ).validate[Map[String, Account]]
+
+          for {
+            currentId <- currentAccountId
+            accounts  <- accountEntries
+          } yield Accounts(currentId, accounts)
+      }
+
+    override def writes(value: Accounts): JsObject = {
+      val accountJson =
+        JsObject(
+          value.accounts.map {
+            case (id, account) =>
+              id -> Json.toJson(account)
+          }
+        )
+
+      value.currentAccountId match {
+        case Some(id) =>
+          accountJson + (CurrentAccountId -> Json.toJson(id))
+
+        case None =>
+          accountJson
+      }
+    }
+  }
+}

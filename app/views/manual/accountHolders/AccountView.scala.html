@@ -1,0 +1,74 @@
+@*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@this(
+    layout: templates.Layout,
+    formHelper: FormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    govukCheckboxes: GovukCheckboxes,
+    heading: components.Heading,
+    link: components.Link,
+    paragraph: components.ParagraphWithHtml,
+    govukButton: GovukButton
+)
+
+@(form: Form[_], mode: Mode, fiName: String, options: Seq[CheckboxItem], isCRS: Boolean)(implicit request: Request[_], messages: Messages)
+
+@changeLink = {
+    @link(
+        href = routes.UnderConstructionController.onPageLoad().url,
+        message= messages("accountHolder.account.para.link"),
+        asPara = false
+    )
+}
+
+@term(isCRS: Boolean) = @{if (isCRS) "CRS" else "FATCA"}
+
+@layout(pageTitle = title(form, messages("accountHolder.account.title"))) {
+
+    @formHelper(action = controllers.manual.accountHolders.routes.AccountController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "value_0")))
+        }
+
+    @heading(messages("accountHolder.account.heading"))
+
+    @paragraph(Html(messages("accountHolder.account.para" ,changeLink)))
+
+    @if(options.isEmpty){
+        @link(
+            href = controllers.manual.routes.SendAReportController.onPageLoad().url,
+            message= messages("accountHolder.account.sendAReport.link", term(isCRS), fiName),
+            asPara = true
+        )
+    }else{
+        @govukCheckboxes(
+            CheckboxesViewModel(
+            form   = form,
+            name   = "value",
+            legend = LegendViewModel(messages("accountHolder.account.question")).withCssClass("govuk-fieldset__legend--m wrappable"),
+            items  = options
+            ).withHint(HintViewModel(messages("accountHolder.account.question.hint")))
+        )
+
+        @govukButton(
+            ButtonViewModel(messages("site.saveContinue"))
+            .withAttribute("id" -> "submit")
+        )
+    }
+    }
+}
