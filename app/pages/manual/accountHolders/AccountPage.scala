@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-package models.viewModels
+package pages.manual.accountHolders
 
-import models.NumberType
-import play.api.libs.json.{Json, OFormat}
+import models.ReportId
+import models.viewModels.{AccountHolderId, AccountId}
+import pages.QuestionPage
+import play.api.libs.json.JsPath
 
-case class Account(haveNumber: Option[Boolean] = None, identifier: Option[String] = None, numberType: Option[NumberType] = None, accountId: AccountId) {
+final case class AccountPage(reportId: ReportId, accountHolderId: AccountHolderId) extends QuestionPage[Set[AccountId]]:
 
-  def accountNumber: Option[String] =
-    (haveNumber, identifier, numberType) match {
-      case (Some(false), Some(value), None) => Some(value)
-      case _                                => None
-    }
-}
-
-object Account {
-  implicit val format: OFormat[Account] = Json.format[Account]
-}
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "accountHolder" \ accountHolderId.value \ "account"
