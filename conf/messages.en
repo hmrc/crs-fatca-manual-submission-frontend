@@ -1014,7 +1014,7 @@ organisationCrs.crsReportable = CRS reportable person
 organisationCrs.passiveCrsPerson = Passive non-financial entity that is a CRS reportable person
 organisationCrs.empty =
 
-cpso.controllingPersonType.title = What type of controlling person is {0}?
+cpso.controllingPersonType.title = What type of controlling person are they?
 cpso.controllingPersonType.heading = What type of controlling person is {0}?
 cpso.controllingPersonType.hint = Select all that apply.
 

@@ -26,7 +26,7 @@
 
 @import models.manual.cpso.ControllingPersonType
 
-@layout(pageTitle = title(form, messages("cpso.controllingPersonType.title", name))) {
+@layout(pageTitle = title(form, messages("cpso.controllingPersonType.title"))) {
 
     @formHelper(action = controllers.manual.cpso.routes.ControllingPersonTypeController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
