@@ -252,15 +252,17 @@ class ManualSubmissionNavigator @Inject() () {
         case Some(false) =>
           reportId.regime match {
             case SubmissionsConstants.FATCA => controllers.manual.cpso.routes.CPSOWhereAreTheyBasedController.onPageLoad(mode)
+            case SubmissionsConstants.CRS   => controllers.manual.cpso.routes.ControllingPersonTypeController.onPageLoad(mode)
             case _                          => routes.UnderConstructionController.onPageLoad()
-          } // todo: update to handle CRS specific routing in 4498
+          }
         case None => routes.JourneyRecoveryController.onPageLoad()
       }
     case (pages.manual.cpso.IndividualPlaceOfBirthPage(cpsoId, reportId), mode, ua) =>
       reportId.regime match {
         case SubmissionsConstants.FATCA => controllers.manual.cpso.routes.CPSOWhereAreTheyBasedController.onPageLoad(mode)
+        case SubmissionsConstants.CRS   => controllers.manual.cpso.routes.ControllingPersonTypeController.onPageLoad(mode)
         case _                          => routes.UnderConstructionController.onPageLoad()
-      } // todo: update to handle CRS specific routing in 4498
+      }
     case (CPSOWhereAreTheyBasedPage(cpsoId, reportId), mode, ua) =>
       ua.get(CPSOWhereAreTheyBasedPage(cpsoId, reportId)) match {
         case Some(false) => controllers.manual.cpso.routes.CPSOAddressNonUkController.onPageLoad(mode)
@@ -280,6 +282,8 @@ class ManualSubmissionNavigator @Inject() () {
         case Some(true)  => controllers.manual.cpso.routes.CPSOIndividualDateOfBirthController.onPageLoad(mode)
         case None        => routes.JourneyRecoveryController.onPageLoad()
       }
+    case (pages.manual.cpso.ControllingPersonTypePage(reportId, cpsoId), mode, ua) =>
+      controllers.manual.cpso.routes.CpsoSelfCertificationController.onPageLoad(mode)
   }
 
   private def sponsorNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {

@@ -1013,3 +1013,24 @@ organisationCrs.passiveWithMultiplePersons = Passive non-financial entity with o
 organisationCrs.crsReportable = CRS reportable person
 organisationCrs.passiveCrsPerson = Passive non-financial entity that is a CRS reportable person
 organisationCrs.empty =
+
+cpso.controllingPersonType.title = What type of controlling person is {0}?
+cpso.controllingPersonType.heading = What type of controlling person is {0}?
+cpso.controllingPersonType.hint = Select all that apply.
+
+cpso.controllingPersonType.ownershipOfLegalPerson = Ownership of a legal person
+cpso.controllingPersonType.otherMeansOfControl = Other means of control of a legal person
+cpso.controllingPersonType.seniorManagingOfficial = Senior managing official of a legal person
+cpso.controllingPersonType.settlorOfTrust = Settlor of a trust
+cpso.controllingPersonType.trusteeOfTrust = Trustee of a trust
+cpso.controllingPersonType.protectorOfTrust = Protector of a trust
+cpso.controllingPersonType.beneficiaryOfTrust = Beneficiary of a trust
+cpso.controllingPersonType.otherControllingPersonOfTrust = Other type of controlling person of a trust
+cpso.controllingPersonType.settlorEquivalent = Settlor-equivalent of another legal arrangement
+cpso.controllingPersonType.trusteeEquivalent = Trustee-equivalent of another legal arrangement
+cpso.controllingPersonType.protectorEquivalent = Protector-equivalent of another legal arrangement
+cpso.controllingPersonType.beneficiaryEquivalent = Beneficiary-equivalent of another legal arrangement
+cpso.controllingPersonType.otherLegalArrangementEquivalent = Other equivalent of another legal arrangement
+cpso.controllingPersonType.notReported = Not reported
+
+cpso.controllingPersonType.error.required = Select what type of controlling person they are
