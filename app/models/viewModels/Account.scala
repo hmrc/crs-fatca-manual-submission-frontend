@@ -19,12 +19,18 @@ package models.viewModels
 import models.NumberType
 import play.api.libs.json.{Json, OFormat}
 
-case class Account(haveNumber: Option[Boolean] = None, identifier: Option[String] = None, numberType: Option[NumberType] = None, accountId: AccountId) {
+case class Account(haveNumber: Option[Boolean] = None,
+                   identifier: Option[String] = None,
+                   numberType: Option[NumberType] = None,
+                   whatIsAccountNumber: Option[String] = None,
+                   accountId: AccountId
+) {
 
   def accountNumber: Option[String] =
-    (haveNumber, identifier, numberType) match {
+    (haveNumber, identifier, whatIsAccountNumber) match {
       case (Some(false), Some(value), None) => Some(value)
-      case _                                => None
+      case (Some(true), None, Some(value))  => Some(value)
+      case (_, _, _)                        => None
     }
 }
 

@@ -22,18 +22,14 @@ import forms.manual.accountHolders.AccountFormProvider
 import models.ServiceErrors.NoFiDetailFound
 import models.SubmissionsConstants.CRS
 import models.viewModels.{AccountId, Accounts}
-import models.{Mode, ReportId, UserAnswers}
+import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.account.AccountsPage
 import pages.manual.accountHolders.AccountPage
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.ViewFIService
-import uk.gov.hmrc.govukfrontend.views.viewmodels.checkboxes.CheckboxItem
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.govuk.all.CheckboxItemViewModel
 import views.html.manual.accountHolders.AccountView
 
 import javax.inject.Inject
@@ -53,7 +49,7 @@ class AccountController @Inject() (
     with I18nSupport
     with Logging {
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequired().async {
+  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdCreation().async {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
@@ -62,13 +58,13 @@ class AccountController @Inject() (
         .getFIDetail(request.fatcaId, reportId.fiId)
         .map {
           fiDetail =>
-            val accounts    = existingAccounts(request.userAnswers, reportId)
+            val accounts    = Accounts.existingAccounts(request.userAnswers, reportId)
             val existingIds = accounts.map(_._1).toSet
             val preparedForm = request.userAnswers
               .get(AccountPage(reportId, request.accountHolderId))
               .map(_ intersect existingIds)
               .fold(formProvider(existingIds.toSeq))(formProvider(existingIds.toSeq).fill)
-            Ok(view(preparedForm, mode, fiDetail.FIName, checkboxOptions(accounts), reportId.regime == CRS))
+            Ok(view(preparedForm, mode, fiDetail.FIName, Accounts.checkboxOptions(accounts), reportId.regime == CRS))
         }
         .recover {
           case NoFiDetailFound =>
@@ -78,7 +74,7 @@ class AccountController @Inject() (
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] =
-    actions.withReportIdRequiredAndAccountHolderIdRequired().async {
+    actions.withReportIdRequiredAndAccountHolderIdCreation().async {
       implicit request =>
 
         implicit val reportId: ReportId = request.reportId
@@ -86,11 +82,11 @@ class AccountController @Inject() (
           .getFIDetail(request.fatcaId, reportId.fiId)
           .flatMap {
             fiDetail =>
-              val accounts    = existingAccounts(request.userAnswers, reportId)
+              val accounts    = Accounts.existingAccounts(request.userAnswers, reportId)
               val existingIds = accounts.map(_._1)
 
               val form    = formProvider(existingIds)
-              val options = checkboxOptions(accounts)
+              val options = Accounts.checkboxOptions(accounts)
 
               form
                 .bindFromRequest()
@@ -119,34 +115,5 @@ class AccountController @Inject() (
               logger.error(s"Failed to retrieve FIDetail for FiID ${reportId.fiId}")
               Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
           }
-    }
-
-  private def existingAccounts(
-    userAnswers: UserAnswers,
-    reportId: ReportId
-  ): Seq[(AccountId, String)] =
-    userAnswers
-      .get(AccountsPage(reportId))
-      .map(
-        _.accounts.values
-          .flatMap {
-            account =>
-              account.accountNumber.map(account.accountId -> _)
-          }
-          .toSeq
-      )
-      .getOrElse(Seq.empty)
-
-  private def checkboxOptions(
-    accounts: Seq[(AccountId, String)]
-  ): Seq[CheckboxItem] =
-    accounts.zipWithIndex.map {
-      case ((accountId, accountNumber), index) =>
-        CheckboxItemViewModel(
-          content = Text(accountNumber),
-          fieldId = "value",
-          index = index,
-          value = accountId.value
-        ).copy(name = Some(s"value[$index]"))
     }
 }

@@ -16,7 +16,12 @@
 
 package models.viewModels
 
+import models.{ReportId, UserAnswers}
+import pages.manual.account.AccountsPage
 import play.api.libs.json.*
+import uk.gov.hmrc.govukfrontend.views.viewmodels.checkboxes.CheckboxItem
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
+import viewmodels.govuk.all.CheckboxItemViewModel
 
 case class Accounts(
   currentAccountId: Option[AccountId],
@@ -65,4 +70,33 @@ object Accounts {
       }
     }
   }
+
+  def existingAccounts(
+    userAnswers: UserAnswers,
+    reportId: ReportId
+  ): Seq[(AccountId, String)] =
+    userAnswers
+      .get(AccountsPage(reportId))
+      .map(
+        _.accounts.values
+          .flatMap {
+            account =>
+              account.accountNumber.map(account.accountId -> _)
+          }
+          .toSeq
+      )
+      .getOrElse(Seq.empty)
+
+  def checkboxOptions(
+    accounts: Seq[(AccountId, String)]
+  ): Seq[CheckboxItem] =
+    accounts.zipWithIndex.map {
+      case ((accountId, accountNumber), index) =>
+        CheckboxItemViewModel(
+          content = Text(accountNumber),
+          fieldId = "value",
+          index = index,
+          value = accountId.value
+        ).copy(name = Some(s"value[$index]"))
+    }
 }
