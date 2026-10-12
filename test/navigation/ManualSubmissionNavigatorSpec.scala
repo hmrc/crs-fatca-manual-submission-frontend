@@ -357,9 +357,16 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
       }
 
       "NumberTypePage" - {
-        "must go to AccountClosed Page" in { // will go to account/number when built
+        "must go to WhatIsAccountNumber Page" in {
           val userData = UserAnswers("id").withPage(NumberTypePage(accountId), NumberType.Iban)
           navigator.nextPage(NumberTypePage(accountId), NormalMode, userData) mustBe
+            controllers.manual.account.routes.WhatIsAccountNumberController.onPageLoad(NormalMode)
+        }
+      }
+      "WhatIsAccountNumberPage" - {
+        "must go to AccountClosed Page" in {
+          val userData = UserAnswers("id").withPage(WhatIsAccountNumberPage(accountId, reportId), "GB29NWBK60161331926819")
+          navigator.nextPage(WhatIsAccountNumberPage(accountId, reportId), NormalMode, userData) mustBe
             controllers.manual.account.routes.AccountClosedController.onPageLoad(NormalMode)
         }
       }
