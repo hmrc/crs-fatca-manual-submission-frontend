@@ -19,6 +19,7 @@ package utils
 import models.{ReportId, UserAnswers}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
+import viewmodels.checkAnswers.manual.account.*
 import viewmodels.checkAnswers.manual.filercategory.{WhatTypeOfFilerIsSponsorSummary, WhatTypeOfFilerSummary}
 import viewmodels.checkAnswers.{CrsOrFatcaSummary, ReportingYearSummary, TypeOfReportSummary}
 import viewmodels.govuk.all.SummaryListViewModel
@@ -38,5 +39,28 @@ class CheckAnswersUtil @Inject() {
     SummaryListViewModel(
       rows = Seq(WhatTypeOfFilerIsSponsorSummary.row(ua), WhatTypeOfFilerSummary.row(ua)).flatten
     ).withCssClass("govuk-!-margin-bottom-9")
+
+  def getAccountRows(ua: UserAnswers)(implicit messages: Messages, reportId: ReportId): SummaryList = {
+//TODO WIP
+    val paymentSummaries =
+      Seq(HowManyJointAccountHoldersSummary.row(ua), IdentifierSummary.row(ua), NumberTypeSummary.row(ua), WhatWasTheAccountCurrencySummary.row(ua)).flatten
+
+    val allSummaries = Seq(
+      HaveNumberSummary.row(ua),
+      WhatIsAccountNumberSummary.row(ua),
+      AccountClosedSummary.row(ua),
+      WhatWasTheAccountBalanceSummary.row(ua),
+      IsUndocumentedAccountSummary.row(ua),
+      IsDormantAccountSummary.row(ua),
+      WasAccountOpenSummary.row(ua),
+      IsJointAccountSummary.row(ua),
+      WhatAccountTypeSummary.row(ua),
+      HavePaymentsSummary.row(ua)
+    ).flatten
+
+    SummaryListViewModel(
+      rows = allSummaries
+    ).withCssClass("govuk-!-margin-bottom-9")
+  }
 
 }

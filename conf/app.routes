@@ -414,3 +414,6 @@ GET        /manual/account-holder/organisation-crs-type                       co
 POST       /manual/account-holder/organisation-crs-type                       controllers.manual.accountHolders.OrganisationCrsController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/account-holder/change-organisation-crs-type                controllers.manual.accountHolders.OrganisationCrsController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/account-holder/change-organisation-crs-type                controllers.manual.accountHolders.OrganisationCrsController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/account/check-answers                                      controllers.manual.account.AccountCheckAnswersController.onPageLoad()
+POST       /manual/account/check-answers                                      controllers.manual.account.AccountCheckAnswersController.onSubmit()

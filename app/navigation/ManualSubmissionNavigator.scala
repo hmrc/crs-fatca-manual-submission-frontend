@@ -66,7 +66,8 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class ManualSubmissionNavigator @Inject() () {
 
-  def nextPageWithoutReportId(page: Page, mode: Mode): Call = mode match {
+  def nextPageWithoutReportId(page: Page, mode: Mode): Call =
+    mode match {
     case NormalMode =>
       normalRoutes(page)
     case CheckMode =>
@@ -75,11 +76,19 @@ class ManualSubmissionNavigator @Inject() () {
 
   private def normalRoutes(page: Page): Call =
     page match {
-      case CrsOrFatcaPage    => ReportingYearController.onPageLoad(NormalMode)
+      case CrsOrFatcaPage => ReportingYearController.onPageLoad(NormalMode)
       case ReportingYearPage => TypeOfReportController.onPageLoad(NormalMode)
-      case TypeOfReportPage  => ReportDetailsCheckAnswersController.onPageLoad()
-      case _                 => routes.IndexController.onPageLoad()
+      case TypeOfReportPage => ReportDetailsCheckAnswersController.onPageLoad()
+      case _ => routes.IndexController.onPageLoad()
     }
+
+  def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId): Call =
+    sectionNavigation
+      .lift((page, mode, userAnswers))
+      .getOrElse(routes.IndexController.onPageLoad())
+
+  private def sectionNavigation(implicit reportId: ReportId) =
+    accountNavigation orElse sponsorNavigation orElse fillerNavigation orElse accountHolderNavigation orElse cpsoNavigation
 
   private def accountNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
     case (HaveNumberPage(accountId), mode, ua)                    => haveNumberNavigation(accountId, mode, ua)
@@ -116,7 +125,7 @@ class ManualSubmissionNavigator @Inject() () {
   private def havePaymentRouteLogic(mode: Mode, ua: UserAnswers, accountId: AccountId)(implicit reportId: ReportId) = {
     val hasAnyPayments = ua.get(AccountPaymentListPage(accountId)).getOrElse(Seq.empty).nonEmpty
     ua.get(HavePaymentsPage(accountId)) match {
-      case Some(havePayment) if !havePayment => routes.UnderConstructionController.onPageLoad()
+      case Some(false) =>  controllers.manual.account.routes.AccountCheckAnswersController.onPageLoad()
       case Some(havePayment) if havePayment && hasAnyPayments =>
         controllers.manual.account.routes.AccountPaymentsController.onPageLoad(mode)
       case _ =>
@@ -134,7 +143,7 @@ class ManualSubmissionNavigator @Inject() () {
     ua.get(DoYouNeedToAddPaymentsPage(accountId)) match {
       case Some(true) =>
         controllers.manual.account.routes.CheckAccountTypeIsDepositoryController.onChangeRedirect(mode)
-      case _ => routes.UnderConstructionController.onPageLoad()
+      case _ => controllers.manual.account.routes.AccountCheckAnswersController.onPageLoad()
     }
 
   private def fillerNavigation: PartialFunction[(Page, Mode, UserAnswers), Call] = {
@@ -308,14 +317,6 @@ class ManualSubmissionNavigator @Inject() () {
     val currentIndex = ua.get(TaxResidentCountriesListPage()).getOrElse(Seq.empty).size
     if currentIndex > 0 then controllers.manual.sponsor.routes.TaxResidentCountriesController.onPageLoad(mode)
     else controllers.manual.sponsor.routes.SponsorResidentForTaxController.onPageLoad(mode)
-
-  private def navigation(implicit reportId: ReportId) =
-    accountNavigation orElse sponsorNavigation orElse fillerNavigation orElse accountHolderNavigation orElse cpsoNavigation
-
-  def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId): Call =
-    navigation
-      .lift((page, mode, userAnswers))
-      .getOrElse(routes.IndexController.onPageLoad())
 
   private def haveSponsorNavigation(mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
     userAnswers.get(HaveSponsorPage()) match {

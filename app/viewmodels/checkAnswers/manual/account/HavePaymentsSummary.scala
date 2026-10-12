@@ -34,11 +34,11 @@ object HavePaymentsSummary {
       val value = if (answer) "site.yes" else "site.no"
 
       SummaryListRowViewModel(
-        key = "havePayments.checkYourAnswersLabel",
+        key = messages("account.havePayments.checkYourAnswersLabel", reportId.reportingYear.toString),
         value = ValueViewModel(value),
         actions = Seq(
           ActionItemViewModel("site.change", routes.HavePaymentsController.onPageLoad(CheckMode).url)
-            .withVisuallyHiddenText(messages("havePayments.change.hidden"))
+            .withVisuallyHiddenText(messages("account.havePayments.change.hidden", reportId.reportingYear.toString))
         )
       )
     }
