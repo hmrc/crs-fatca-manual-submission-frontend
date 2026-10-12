@@ -19,6 +19,7 @@ package controllers.manual.accountHolders
 import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.manual.accountHolders.AccountFormProvider
+import models.ServiceErrors.NoFiDetailFound
 import models.SubmissionsConstants.CRS
 import models.viewModels.{AccountId, Accounts}
 import models.{Mode, ReportId, UserAnswers}
@@ -70,7 +71,7 @@ class AccountController @Inject() (
             Ok(view(preparedForm, mode, fiDetail.FIName, checkboxOptions(accounts), reportId.regime == CRS))
         }
         .recover {
-          case e =>
+          case NoFiDetailFound =>
             logger.error(s"Failed to retrieve FIDetail for FiID ${reportId.fiId}")
             Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
         }
@@ -114,7 +115,7 @@ class AccountController @Inject() (
                 )
           }
           .recover {
-            case e =>
+            case NoFiDetailFound =>
               logger.error(s"Failed to retrieve FIDetail for FiID ${reportId.fiId}")
               Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
           }

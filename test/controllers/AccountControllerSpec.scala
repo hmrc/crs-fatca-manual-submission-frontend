@@ -17,28 +17,28 @@
 package controllers
 
 import base.SpecBase
+import connectors.DatabaseConnector
+import forms.manual.accountHolders.AccountFormProvider
+import models.ServiceErrors.NoFiDetailFound
 import models.SubmissionsConstants.{CRS, FATCA}
+import models.viewModels.{Account, AccountHolderId, AccountId, Accounts}
 import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
+import pages.manual.account.AccountsPage
+import pages.manual.accountHolders.{AccountPage, CurrentAccountHolderIdPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import connectors.DatabaseConnector
-import forms.manual.accountHolders.AccountFormProvider
-import models.viewModels.{Account, AccountHolderId, AccountId, Accounts}
-import pages.manual.account.AccountsPage
-import pages.manual.accountHolders.{AccountPage, CurrentAccountHolderIdPage}
 import services.ViewFIService
 import uk.gov.hmrc.govukfrontend.views.viewmodels.checkboxes.CheckboxItem
-import views.html.manual.accountHolders.AccountView
-import viewmodels.govuk.all.CheckboxItemViewModel
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
-import uk.gov.hmrc.http.InternalServerException
+import viewmodels.govuk.all.CheckboxItemViewModel
+import views.html.manual.accountHolders.AccountView
 
 import scala.concurrent.Future
 
@@ -137,15 +137,13 @@ class AccountControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(maybeUserAnswers = Some(ua))
         .overrides(bind[ViewFIService].toInstance(mockFiService))
         .build()
-      when(mockFiService.getFIDetail(any(), any())(using any())).thenReturn(Future.failed(InternalServerException("Failed")))
+      when(mockFiService.getFIDetail(any(), any())(using any())).thenReturn(Future.failed(NoFiDetailFound))
 
       running(application) {
         val request = FakeRequest(GET, accountRoute)
 
         val result = route(application, request).value
-
-        val view = application.injector.instanceOf[AccountView]
-
+        
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
