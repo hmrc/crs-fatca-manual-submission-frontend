@@ -143,7 +143,7 @@ class AccountControllerSpec extends SpecBase with MockitoSugar {
         val request = FakeRequest(GET, accountRoute)
 
         val result = route(application, request).value
-        
+
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
