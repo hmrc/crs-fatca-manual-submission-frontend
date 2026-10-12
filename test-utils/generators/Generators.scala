@@ -78,12 +78,18 @@ trait Generators extends ModelGenerators {
 
   def nonBooleans: Gen[String] =
     arbitrary[String]
-      .suchThat(_.nonEmpty)
+      .suchThat(_.trim.nonEmpty)
       .suchThat(_ != "true")
       .suchThat(_ != "false")
 
   def nonEmptyString: Gen[String] =
     arbitrary[String] suchThat (_.nonEmpty)
+
+  def blankString: Gen[String] =
+    for {
+      n <- Gen.chooseNum(1, 10)
+      s <- Gen.listOfN(n, Gen.oneOf(' ', '\t', '\n', '\r'))
+    } yield s.mkString
 
   def stringsWithMaxLength(maxLength: Int): Gen[String] =
     for {
