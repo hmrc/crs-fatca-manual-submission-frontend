@@ -24,7 +24,7 @@
 
 @(form: Form[_], mode: Mode, reportingYear: Int, name: String)(implicit request: Request[_], messages: Messages)
 
-@import models.manual.cpso.ControllingPersonType
+@import models.viewModels.manual.cpso.ControllingPersonTypeViewModel
 
 @layout(pageTitle = title(form, messages("cpso.controllingPersonType.title"))) {
 
@@ -46,18 +46,10 @@
                     ))
                 )),
                 hint = Some(Hint(content = Text(messages("cpso.controllingPersonType.hint")))),
-                items = ControllingPersonType.values
-                .filter(personType => reportingYear <= 2025 || personType != ControllingPersonType.NotReported)
-                .zipWithIndex
-                .map { case (personType, index) =>
-                    CheckboxItem(
-                        name = Some(s"types[$index]"),
-                        content = Text(messages(s"cpso.controllingPersonType.${personType.toString}")),
-                        value = personType.toString,
-                        checked = form.data.values.exists(_ == personType.toString)
-                    )
-                },
-                errorMessage = form("types").error.map(error => ErrorMessage(content = Text(messages(error.message))))
+                items = ControllingPersonTypeViewModel.items(form, reportingYear),
+                errorMessage = form("types").error.map(error =>
+                    ErrorMessage(content = Text(messages(error.message)))
+                )
             )
         )
 

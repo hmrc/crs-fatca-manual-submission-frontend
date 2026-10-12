@@ -1002,7 +1002,6 @@ organisationFatca.ownerDocumented = Owner-documented foreign financial instituti
 organisationFatca.passive = Passive non-financial foreign entity with substantial US owners, or controlling persons
 organisationFatca.nonParticipating = Non-participating foreign financial institution
 organisationFatca.specifiedPerson = Specified US person
-organisationFatca.empty =
 
 organisationCrs.title = What type of account holder is this?
 organisationCrs.heading = What type of account holder is {0}?
@@ -1012,7 +1011,6 @@ organisationCrs.change.hidden = organisationCrs
 organisationCrs.passiveWithMultiplePersons = Passive non-financial entity with one or more controlling reportable persons
 organisationCrs.crsReportable = CRS reportable person
 organisationCrs.passiveCrsPerson = Passive non-financial entity that is a CRS reportable person
-organisationCrs.empty =
 
 cpso.controllingPersonType.title = What type of controlling person are they?
 cpso.controllingPersonType.heading = What type of controlling person is {0}?
