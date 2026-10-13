@@ -1002,7 +1002,6 @@ organisationFatca.ownerDocumented = Owner-documented foreign financial instituti
 organisationFatca.passive = Passive non-financial foreign entity with substantial US owners, or controlling persons
 organisationFatca.nonParticipating = Non-participating foreign financial institution
 organisationFatca.specifiedPerson = Specified US person
-organisationFatca.empty =
 
 organisationCrs.title = What type of account holder is this?
 organisationCrs.heading = What type of account holder is {0}?
@@ -1013,6 +1012,49 @@ organisationCrs.passiveWithMultiplePersons = Passive non-financial entity with o
 organisationCrs.crsReportable = CRS reportable person
 organisationCrs.passiveCrsPerson = Passive non-financial entity that is a CRS reportable person
 organisationCrs.empty =
+
+cpso.controllingPersonType.title = What type of controlling person are they?
+cpso.controllingPersonType.heading = What type of controlling person is {0}?
+cpso.controllingPersonType.hint = Select all that apply.
+
+cpso.controllingPersonType.ownershipOfLegalPerson = Ownership of a legal person
+cpso.controllingPersonType.otherMeansOfControl = Other means of control of a legal person
+cpso.controllingPersonType.seniorManagingOfficial = Senior managing official of a legal person
+cpso.controllingPersonType.settlorOfTrust = Settlor of a trust
+cpso.controllingPersonType.trusteeOfTrust = Trustee of a trust
+cpso.controllingPersonType.protectorOfTrust = Protector of a trust
+cpso.controllingPersonType.beneficiaryOfTrust = Beneficiary of a trust
+cpso.controllingPersonType.otherControllingPersonOfTrust = Other type of controlling person of a trust
+cpso.controllingPersonType.settlorEquivalent = Settlor-equivalent of another legal arrangement
+cpso.controllingPersonType.trusteeEquivalent = Trustee-equivalent of another legal arrangement
+cpso.controllingPersonType.protectorEquivalent = Protector-equivalent of another legal arrangement
+cpso.controllingPersonType.beneficiaryEquivalent = Beneficiary-equivalent of another legal arrangement
+cpso.controllingPersonType.otherLegalArrangementEquivalent = Other equivalent of another legal arrangement
+cpso.controllingPersonType.notReported = Not reported
+
+cpso.controllingPersonType.error.required = Select what type of controlling person they are
+
+whatIsAccountNumber.title = What is the account or identification number?
+whatIsAccountNumber.heading = What is the account or identification number?
+whatIsAccountNumber.error.required = Enter the account or identification number
+
+whatIsAccountNumber.error.length.OTHER = Account or identification number must be 200 characters or less
+whatIsAccountNumber.error.invalid.characters.OTHER = Account or identification number must not include a double dash (--), ampersand hash (&#) or forward slash asterisk (/*)
+
+whatIsAccountNumber.hint.IBAN = For example, GB33BUKB20201555555555.
+whatIsAccountNumber.error.length.IBAN = IBAN must be from 5 to 34 characters
+whatIsAccountNumber.error.invalid.characters.IBAN = IBAN must only include letters a to z and numbers 0 to 9
+whatIsAccountNumber.error.invalid.format.IBAN = IBAN must be in the right format
+whatIsAccountNumber.error.invalid.countryCode.IBAN = IBAN must include a real country code for the first 2 letters
+
+whatIsAccountNumber.hint.ISIN = For example, US0378331005.
+whatIsAccountNumber.error.length.ISIN = ISIN must be 12 characters
+whatIsAccountNumber.error.invalid.characters.ISIN = ISIN must only include letters a to z and numbers 0 to 9
+whatIsAccountNumber.error.invalid.format.ISIN = ISIN must be in the right format
+whatIsAccountNumber.error.invalid.countryCode.ISIN = ISIN must include a real country code for the first 2 letters
+
+whatIsAccountNumber.checkYourAnswersLabel = Account or identification number
+whatIsAccountNumber.change.hidden = Change account or identification number
 
 accountHolders.residentTax.title = Where is the account holder resident for tax?
 accountHolders.residentTax.heading = Where is {0} resident for tax?

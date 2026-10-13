@@ -356,9 +356,16 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
       }
 
       "NumberTypePage" - {
-        "must go to AccountClosed Page" in { // will go to account/number when built
+        "must go to WhatIsAccountNumber Page" in {
           val userData = UserAnswers("id").withPage(NumberTypePage(accountId), NumberType.Iban)
           navigator.nextPage(NumberTypePage(accountId), NormalMode, userData) mustBe
+            controllers.manual.account.routes.WhatIsAccountNumberController.onPageLoad(NormalMode)
+        }
+      }
+      "WhatIsAccountNumberPage" - {
+        "must go to AccountClosed Page" in {
+          val userData = UserAnswers("id").withPage(WhatIsAccountNumberPage(accountId, reportId), "GB29NWBK60161331926819")
+          navigator.nextPage(WhatIsAccountNumberPage(accountId, reportId), NormalMode, userData) mustBe
             controllers.manual.account.routes.AccountClosedController.onPageLoad(NormalMode)
         }
       }
@@ -696,11 +703,12 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           "when regime is CRS" - {
             implicit val reportId: ReportId = ReportId(CRS, 2024, None, "TestFIID")
 
-            "must go to controlling-person-type [under-construction] page when answer is no" in {
+            "must go to ControllingPersonType page when answer is no" in {
               val ua = UserAnswers("id")
                 .withPage(pages.manual.cpso.IndividualHavePlaceOfBirthPage(currentCPSOId, reportId), false)
+
               navigator.nextPage(pages.manual.cpso.IndividualHavePlaceOfBirthPage(currentCPSOId, reportId), NormalMode, ua) mustBe
-                controllers.routes.UnderConstructionController.onPageLoad()
+                controllers.manual.cpso.routes.ControllingPersonTypeController.onPageLoad(NormalMode)
             }
           }
           "when regime is FATCA" - {
@@ -748,13 +756,13 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           "when regime is CRS" - {
             implicit val reportId: ReportId = ReportId(CRS, 2024, None, "TestFIID")
 
-            "must go to controlling-person-type [under-construction] page when submitted" in {
+            "must go to controlling-person-type page when submitted" in {
               val ua = UserAnswers("id")
                 .withPage(pages.manual.cpso.IndividualPlaceOfBirthPage(currentCPSOId, reportId),
                           models.manual.cpso.IndividualPlaceOfBirth(Some("city"), Some("region"), "FR")
                 )
               navigator.nextPage(pages.manual.cpso.IndividualPlaceOfBirthPage(currentCPSOId, reportId), NormalMode, ua) mustBe
-                controllers.routes.UnderConstructionController.onPageLoad()
+                controllers.manual.cpso.routes.ControllingPersonTypeController.onPageLoad(NormalMode)
             }
 
           }
