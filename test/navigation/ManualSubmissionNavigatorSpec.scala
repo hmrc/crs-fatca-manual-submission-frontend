@@ -833,7 +833,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               controllers.manual.accountHolders.routes.HaveTaxIdenticationNumberController.onPageLoad(NormalMode)
           }
 
-          "must go to underconstruction page page when regime is fatca" in {
+          "must go to tax identification page page when regime is fatca" in {
             implicit val reportId2: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
             val ua                           = UserAnswers("id")
 
@@ -842,8 +842,65 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               NormalMode,
               ua
             )(reportId2) mustBe
+              controllers.manual.accountHolders.routes.TaxIdentificationNumberController.onPageLoad(NormalMode)
+          }
+        }
+
+        "HaveTaxIdenticationNumberPage" - {
+          implicit val reportId: ReportId = ReportId(CRS, 2024, None, "TestFIID")
+
+          "must go to tax identification page if they have a tax identification number" in {
+
+            val ua = UserAnswers("id")
+              .withPage(HaveTaxIdenticationNumberPage(0, currentAccountHolderId, reportId), true)
+
+            navigator.nextPage(
+              HaveTaxIdenticationNumberPage(0, currentAccountHolderId, reportId),
+              NormalMode,
+              ua
+            ) mustBe
+              controllers.manual.accountHolders.routes.TaxIdentificationNumberController.onPageLoad(NormalMode)
+          }
+
+          "must go to under construction page if they do not have a tax identification number" in {
+
+            val ua = UserAnswers("id")
+              .withPage(HaveTaxIdenticationNumberPage(0, currentAccountHolderId, reportId), false)
+
+            navigator.nextPage(
+              HaveTaxIdenticationNumberPage(0, currentAccountHolderId, reportId),
+              NormalMode,
+              ua
+            ) mustBe
               controllers.routes.UnderConstructionController.onPageLoad()
           }
+
+          "must go to journey recovery page if they do not have a tax identification number record" in {
+
+            val ua = UserAnswers("id")
+
+            navigator.nextPage(
+              HaveTaxIdenticationNumberPage(0, currentAccountHolderId, reportId),
+              NormalMode,
+              ua
+            ) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
+        }
+
+        "TaxIdentificationNumberPage" - {
+          val ua = UserAnswers("id")
+            .withPage(TaxIdentificationNumberPage(0, currentAccountHolderId, reportId), "some-value")
+
+          "must go to under construction page if successfully submitted" in {
+            navigator.nextPage(
+              TaxIdentificationNumberPage(0, currentAccountHolderId, reportId),
+              NormalMode,
+              ua
+            ) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+
         }
 
         "IndividualOrOrganisationPage" - {

@@ -19,7 +19,7 @@ package models.manual.accountHolders
 import models.response.Country
 import play.api.libs.json.{Json, OFormat}
 
-case class TaxResidentInformation(country: Country, hasTaxIdenticationNumber: Option[Boolean] = None, taxIdentifierNumbers: Option[String] = None)
+case class TaxResidentInformation(country: Country, hasTaxIdentificationNumber: Option[Boolean] = None, taxIdentifierNumbers: Option[String] = None)
 
 object TaxResidentInformation {
 

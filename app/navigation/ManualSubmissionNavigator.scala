@@ -44,6 +44,7 @@ import pages.manual.accountHolders.{
   AccountHolderIndividualNamePage,
   AccountHolderOrganisationNamePage,
   AddressLookupForAccountHolderPage,
+  HaveTaxIdenticationNumberPage,
   IndividualHavePlaceOfBirthPage,
   IndividualOrOrganisationPage,
   IndividualPlaceOfBirthPage,
@@ -53,6 +54,7 @@ import pages.manual.accountHolders.{
   ResidentTaxPage,
   SelectAddressPage,
   SelfCertificationPage as AccountHolderSelfCertificationPage,
+  TaxIdentificationNumberPage,
   UkAddressPage as AccountHolderUkAddressPage,
   UkPostCodeForAccountHolderPage,
   WhereAreTheyBasedPage
@@ -235,7 +237,10 @@ class ManualSubmissionNavigator @Inject() () {
     case (AccountHolderSelfCertificationPage(accountHolderId, reportId), mode, ua) =>
       handleAccountHolderSelfCertificationPageNavigationForAccountHolders(ua, mode, accountHolderId)
     case (IndividualPlaceOfBirthPage(_, _), mode, _)               => controllers.manual.accountHolders.routes.WhereAreTheyBasedController.onPageLoad(mode)
-    case (ResidentTaxPage(_, accountHolderId, reportId), mode, ua) => handleResidentTaxPageNavigationForAccountHolders(ua, mode)
+    case (ResidentTaxPage(_, accountHolderId, reportId), mode, ua) => handleResidentTaxPageNavigationForAccountHolders(mode)
+    case (HaveTaxIdenticationNumberPage(index, accountHolderId, reportId), mode, ua) =>
+      handleHaveTaxIdenticationNumberPageNavigationForAccountHolders(ua, mode, accountHolderId, index)
+    case (TaxIdentificationNumberPage(_, _, _), mode, ua) => routes.UnderConstructionController.onPageLoad()
   }
 
   private def cpsoNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
@@ -379,11 +384,23 @@ class ManualSubmissionNavigator @Inject() () {
       case None                                 => controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(mode)
     }
 
-  private def handleResidentTaxPageNavigationForAccountHolders(userAnswers: UserAnswers, mode: Mode)(implicit
+  private def handleHaveTaxIdenticationNumberPageNavigationForAccountHolders(userAnswers: UserAnswers,
+                                                                             mode: Mode,
+                                                                             accountHolderId: AccountHolderId,
+                                                                             index: Int
+  )(implicit
+    reportId: ReportId
+  ) = userAnswers.get(HaveTaxIdenticationNumberPage(index, accountHolderId, reportId)) match {
+    case Some(true)  => controllers.manual.accountHolders.routes.TaxIdentificationNumberController.onPageLoad(mode)
+    case Some(false) => routes.UnderConstructionController.onPageLoad()
+    case None        => routes.JourneyRecoveryController.onPageLoad()
+  }
+
+  private def handleResidentTaxPageNavigationForAccountHolders(mode: Mode)(implicit
     reportId: ReportId
   ) =
     if (reportId.regime == CRS) controllers.manual.accountHolders.routes.HaveTaxIdenticationNumberController.onPageLoad(mode)
-    else controllers.routes.UnderConstructionController.onPageLoad()
+    else controllers.manual.accountHolders.routes.TaxIdentificationNumberController.onPageLoad(mode)
 
   private def handleAccountHolderSelfCertificationPageNavigationForAccountHolders(userAnswers: UserAnswers, mode: Mode, accountHolderId: AccountHolderId)(
     implicit reportId: ReportId

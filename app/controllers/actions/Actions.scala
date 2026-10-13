@@ -68,6 +68,9 @@ class Actions @Inject() (
     : ActionBuilder[TaxResidentCountryIdForAccountHolderRequest, AnyContent] =
     withReportIdRequired() andThen withReportIdRequiredAndAccountHolderIdRequired() andThen accountHolderCRSOnlyFilterAction andThen withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired() andThen taxResidentIdRequiredForAccountHolderAction
 
+  def withReportIdRequiredAndAccountHolderNameRequiredAndTaxResidentIdRequired(): ActionBuilder[TaxResidentCountryIdForAccountHolderRequest, AnyContent] =
+    withReportIdRequired() andThen withReportIdRequiredAndAccountHolderIdRequired() andThen withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired() andThen taxResidentIdRequiredForAccountHolderAction
+
   def withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired(): ActionBuilder[AccountHolderNameRequest, AnyContent] =
     withReportIdRequired() andThen accountHolderIdRequiredAction andThen accountHolderNameRequiredAction
 

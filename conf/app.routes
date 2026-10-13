@@ -419,3 +419,8 @@ GET        /manual/account-holder/have-identification-number                    
 POST        /manual/account-holder/have-identification-number           controllers.manual.accountHolders.HaveTaxIdenticationNumberController.onSubmit(mode: Mode = NormalMode)
 GET         /manual/account-holder/change-have-identification-number                    controllers.manual.accountHolders.HaveTaxIdenticationNumberController.onPageLoad(mode: Mode = CheckMode)
 POST        /manual/account-holder/change-have-identification-number                    controllers.manual.accountHolders.HaveTaxIdenticationNumberController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/account-holder/identification-number                         controllers.manual.accountHolders.TaxIdentificationNumberController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account-holder/identification-number                         controllers.manual.accountHolders.TaxIdentificationNumberController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account-holder/change-identification-number                  controllers.manual.accountHolders.TaxIdentificationNumberController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account-holder/change-identification-number                   controllers.manual.accountHolders.TaxIdentificationNumberController.onSubmit(mode: Mode = CheckMode)

@@ -1026,3 +1026,16 @@ accountHolders.haveTaxIdenticationNumber.other.heading = Do you have a tax ident
 accountHolders.haveTaxIdenticationNumber.checkYourAnswersLabel = haveTaxIdenticationNumber
 accountHolders.haveTaxIdenticationNumber.error.required = 	Select yes if you have a tax identification number
 accountHolders.haveTaxIdenticationNumber.change.hidden = HaveTaxIdenticationNumber
+
+accountHolders.taxIdentificationNumber.title = What is the tax identification number for the account holder for the country?
+accountHolders.taxIdentificationNumber.heading = What is the tax identification number for {0} for {1}?
+accountHolders.taxIdentificationNumber.tin = tin
+accountHolders.taxIdentificationNumber.deleteme = deleteme
+accountHolders.taxIdentificationNumber.checkYourAnswersLabel = TaxIdentificationNumber
+accountHolders.taxIdentificationNumber.error.tin.required = Enter the tax identification number for the account holder for the country
+accountHolders.taxIdentificationNumber.error.tin.length = Tax identification number must be 200 characters or less
+accountHolders.taxIdentificationNumber.error.tin.invalidChars = Tax identification number must not include a double dash (--), ampersand hash (&#) or forward slash asterisk (/*)
+accountHolders.taxIdentificationNumber.error.tin.giinOrSsn.invalid = Tax identification number must be a Global Intermediary Identification Number (GIIN) or in the format 000-00-0000, 00-0000000 or 000000000
+accountHolders.taxIdentificationNumber.error.tin.organization.is.blacklisted = Tax identification number must not be 000000000, 222222222, 000222111, 333333333 or 888888888
+accountHolders.taxIdentificationNumber.error.tin.individual.is.blacklisted = Tax identification number must not be 000000000, 666666666 or 888888888
+accountHolders.taxIdentificationNumber.tin.change.hidden = tin
