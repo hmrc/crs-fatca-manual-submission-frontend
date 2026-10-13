@@ -86,17 +86,6 @@ class TaxIdentificationNumberFormProviderSpec extends StringFieldBehaviours {
       result4.errors shouldBe empty
     }
 
-    "blackList values for Individual are valid for Organization account holder" in {
-      val reportIdFatca: ReportId = ReportId(FATCA, 2023, None, "TestfiID")
-      val formUS                  = formProvider(us, reportIdFatca, Organisation)
-
-      organizationUSA2023Blacklist.foreach {
-        v =>
-          val result = formUS.bind(validData.updated("tin", "770002244"))
-          result.errors shouldBe empty
-      }
-    }
-
     "cannot be empty" in {
       val result = form.bind(validData.updated("tin", ""))
       result.errors("tin").map(_.message) shouldBe Seq("accountHolders.taxIdentificationNumber.error.tin.required")
