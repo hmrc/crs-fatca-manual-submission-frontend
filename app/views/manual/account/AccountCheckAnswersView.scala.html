@@ -14,15 +14,18 @@
  * limitations under the License.
  *@
 
+@import models.manual.account.AccountPayment
+
 @this(
-        layout: templates.Layout,
-        govukButton: GovukButton,
-        formHelper: FormWithCSRF,
-        govukSummaryList: GovukSummaryList,
-        heading: components.Heading
+    layout: templates.Layout,
+    govukButton: GovukButton,
+    formHelper: FormWithCSRF,
+    govukSummaryList: GovukSummaryList,
+    summaryCard: components.AccountPaymentsCard,
+    heading: components.Heading
 )
 
-@(list: SummaryList)(implicit request: Request[_], messages: Messages)
+@(list: SummaryList, payments: Seq[AccountPayment])(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("accountCheckAnswers.title"))) {
 
@@ -31,6 +34,10 @@
     @heading(headingContent = messages("accountCheckAnswers.heading"), size = "l")
 
     @govukSummaryList(list)
+
+    @if(payments.nonEmpty) {
+        @summaryCard(payments)
+    }
 
     @govukButton(
         ButtonViewModel(messages("site.continue"))

@@ -16,9 +16,11 @@
 
 package utils
 
+import models.SubmissionsConstants.{CRS, FATCA}
 import models.{ReportId, UserAnswers}
+import pages.manual.account.{AccountClosedPage, CurrentAccountIdPage, HaveNumberPage}
 import play.api.i18n.Messages
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 import viewmodels.checkAnswers.manual.account.*
 import viewmodels.checkAnswers.manual.filercategory.{WhatTypeOfFilerIsSponsorSummary, WhatTypeOfFilerSummary}
 import viewmodels.checkAnswers.{CrsOrFatcaSummary, ReportingYearSummary, TypeOfReportSummary}
@@ -41,26 +43,51 @@ class CheckAnswersUtil @Inject() {
     ).withCssClass("govuk-!-margin-bottom-9")
 
   def getAccountRows(ua: UserAnswers)(implicit messages: Messages, reportId: ReportId): SummaryList = {
-//TODO WIP
-    val paymentSummaries =
-      Seq(HowManyJointAccountHoldersSummary.row(ua), IdentifierSummary.row(ua), NumberTypeSummary.row(ua), WhatWasTheAccountCurrencySummary.row(ua)).flatten
 
-    val allSummaries = Seq(
-      HaveNumberSummary.row(ua),
-      WhatIsAccountNumberSummary.row(ua),
-      AccountClosedSummary.row(ua),
-      WhatWasTheAccountBalanceSummary.row(ua),
-      IsUndocumentedAccountSummary.row(ua),
-      IsDormantAccountSummary.row(ua),
-      WasAccountOpenSummary.row(ua),
-      IsJointAccountSummary.row(ua),
-      WhatAccountTypeSummary.row(ua),
-      HavePaymentsSummary.row(ua)
-    ).flatten
+    val regime = reportId.regime
 
-    SummaryListViewModel(
-      rows = allSummaries
-    ).withCssClass("govuk-!-margin-bottom-9")
+    val rows: Seq[SummaryListRow] =
+      (for {
+        currentAccountId   <- ua.get(CurrentAccountIdPage()(reportId))
+        haveOfficialNumber <- ua.get(HaveNumberPage(currentAccountId)(reportId))
+        isClosed           <- ua.get(AccountClosedPage(currentAccountId)(reportId))
+      } yield {
+
+        val haveNumberSummary       = Seq(HaveNumberSummary.row(ua)).flatten
+        val unofficialNumberSummary = if (!haveOfficialNumber) Seq(IdentifierSummary.row(ua)).flatten else Seq.empty
+        val officialNumberSummaries = if (haveOfficialNumber) Seq(NumberTypeSummary.row(ua), WhatIsAccountNumberSummary.row(ua)).flatten else Seq.empty
+
+        val accountClosedSummary = Seq(AccountClosedSummary.row(ua)).flatten
+        val currSummary          = if (isClosed && regime == CRS) Seq(WhatWasTheAccountCurrencySummary.row(ua)).flatten else Seq.empty
+        val balanceSummary =
+          if (regime == FATCA || (regime == CRS && !isClosed)) Seq(WhatWasTheAccountBalanceSummary.row(ua)).flatten
+          else Seq.empty
+
+        val crsOnlySummaries =
+          if (regime == CRS)
+            Seq(
+              IsUndocumentedAccountSummary.row(ua),
+              IsDormantAccountSummary.row(ua),
+              WasAccountOpenSummary.row(ua),
+              IsJointAccountSummary.row(ua),
+              HowManyJointAccountHoldersSummary.row(ua),
+              WhatAccountTypeSummary.row(ua)
+            ).flatten
+          else Seq.empty
+
+        val paymentsSummary = Seq(HavePaymentsSummary.row(ua)).flatten
+
+        haveNumberSummary ++
+          unofficialNumberSummary ++
+          officialNumberSummaries ++
+          accountClosedSummary ++
+          currSummary ++
+          balanceSummary ++
+          crsOnlySummaries ++
+          paymentsSummary
+      }).getOrElse(Seq.empty)
+
+    SummaryListViewModel(rows = rows).withCssClass("govuk-!-margin-bottom-9")
   }
 
 }

@@ -18,6 +18,7 @@ package controllers.manual.account
 
 import controllers.actions.*
 import models.ReportId
+import pages.manual.account.AccountPaymentListPage
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -37,10 +38,10 @@ class AccountCheckAnswersController @Inject() (override val messagesApi: Message
     with I18nSupport
     with Logging {
 
-  def onPageLoad(): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdRequired() { // todo update action
+  def onPageLoad(): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdRequired() {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
-      Ok(view(util.getAccountRows(request.userAnswers)))
+      Ok(view(util.getAccountRows(request.userAnswers), request.userAnswers.get(AccountPaymentListPage(request.accountId)).getOrElse(Seq.empty)))
 
   }
 
