@@ -60,16 +60,12 @@ class Actions @Inject() (
   def withReportIdRequiredAndAccountHolderNameRequiredAndTaxResidentIdCreation(): ActionBuilder[TaxResidentCountryIdForAccountHolderRequest, AnyContent] =
     withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired() andThen taxResidentCountryIdCreationForAccountHolderAction
 
-  def withReportIdRequiredAndAccountHolderNameRequiredAndTaxResidentIdRequiredCreation()
-    : ActionBuilder[TaxResidentCountryIdForAccountHolderRequest, AnyContent] =
-    withReportIdRequired() andThen withReportIdRequiredAndAccountHolderIdRequired() andThen withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired() andThen taxResidentIdRequiredForAccountHolderAction
-
   def withReportIdRequiredAndAccountHolderNameRequiredAndTaxResidentIdRequiredAndCRSOnlyCreation()
     : ActionBuilder[TaxResidentCountryIdForAccountHolderRequest, AnyContent] =
-    withReportIdRequired() andThen withReportIdRequiredAndAccountHolderIdRequired() andThen accountHolderCRSOnlyFilterAction andThen withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired() andThen taxResidentIdRequiredForAccountHolderAction
+    withReportIdRequiredAndAccountHolderIdRequired() andThen accountHolderCRSOnlyFilterAction andThen withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired() andThen taxResidentIdRequiredForAccountHolderAction
 
   def withReportIdRequiredAndAccountHolderNameRequiredAndTaxResidentIdRequired(): ActionBuilder[TaxResidentCountryIdForAccountHolderRequest, AnyContent] =
-    withReportIdRequired() andThen withReportIdRequiredAndAccountHolderIdRequired() andThen withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired() andThen taxResidentIdRequiredForAccountHolderAction
+    withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired() andThen taxResidentIdRequiredForAccountHolderAction
 
   def withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired(): ActionBuilder[AccountHolderNameRequest, AnyContent] =
     withReportIdRequired() andThen accountHolderIdRequiredAction andThen accountHolderNameRequiredAction
