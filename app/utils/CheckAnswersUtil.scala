@@ -18,7 +18,7 @@ package utils
 
 import models.SubmissionsConstants.{CRS, FATCA}
 import models.{ReportId, UserAnswers}
-import pages.manual.account.{AccountClosedPage, CurrentAccountIdPage, HaveNumberPage}
+import pages.manual.account.{AccountClosedPage, CurrentAccountIdPage, HaveNumberPage, IsJointAccountPage}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 import viewmodels.checkAnswers.manual.account.*
@@ -51,12 +51,15 @@ class CheckAnswersUtil @Inject() {
         currentAccountId   <- ua.get(CurrentAccountIdPage()(reportId))
         haveOfficialNumber <- ua.get(HaveNumberPage(currentAccountId)(reportId))
         isClosed           <- ua.get(AccountClosedPage(currentAccountId)(reportId))
+        hasJointAccounts   <- ua.get(IsJointAccountPage(currentAccountId)(reportId))
       } yield {
 
         val haveNumberSummary       = Seq(HaveNumberSummary.row(ua)).flatten
         val unofficialNumberSummary = if (!haveOfficialNumber) Seq(IdentifierSummary.row(ua)).flatten else Seq.empty
         val officialNumberSummaries = if (haveOfficialNumber) Seq(NumberTypeSummary.row(ua), WhatIsAccountNumberSummary.row(ua)).flatten else Seq.empty
-
+        val jointAccountSummaries =
+          (if (hasJointAccounts) Seq(IsJointAccountSummary.row(ua), HowManyJointAccountHoldersSummary.row(ua))
+           else Seq(IsJointAccountSummary.row(ua))).flatten
         val accountClosedSummary = Seq(AccountClosedSummary.row(ua)).flatten
         val currSummary          = if (isClosed && regime == CRS) Seq(WhatWasTheAccountCurrencySummary.row(ua)).flatten else Seq.empty
         val balanceSummary =
@@ -64,16 +67,11 @@ class CheckAnswersUtil @Inject() {
           else Seq.empty
 
         val crsOnlySummaries =
-          if (regime == CRS)
-            Seq(
-              IsUndocumentedAccountSummary.row(ua),
-              IsDormantAccountSummary.row(ua),
-              WasAccountOpenSummary.row(ua),
-              IsJointAccountSummary.row(ua),
-              HowManyJointAccountHoldersSummary.row(ua),
+          if (regime == CRS) {
+            Seq(IsUndocumentedAccountSummary.row(ua), IsDormantAccountSummary.row(ua), WasAccountOpenSummary.row(ua)).flatten ++ jointAccountSummaries ++ Seq(
               WhatAccountTypeSummary.row(ua)
             ).flatten
-          else Seq.empty
+          } else Seq.empty
 
         val paymentsSummary = Seq(HavePaymentsSummary.row(ua)).flatten
 

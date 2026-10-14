@@ -23,11 +23,12 @@ import models.manual.filercategory.{WhatTypeOfFiler, WhatTypeOfFilerIsSponsor}
 import models.viewModels.AccountId
 import models.{CrsOrFatca, ReportId, UserAnswers}
 import org.scalatest.freespec.AnyFreeSpec
-import pages.manual.account.{AccountClosedPage, CurrentAccountIdPage, HaveNumberPage, HavePaymentsPage}
+import pages.manual.account.{AccountClosedPage, CurrentAccountIdPage, HaveNumberPage, HavePaymentsPage, HowManyJointAccountHoldersPage, IsJointAccountPage}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import play.api.i18n.Messages
 import play.api.test.Helpers.stubMessages
+import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import viewmodels.checkAnswers.manual.account.*
 
 class CheckAnswersUtilSpec extends SpecBase {
@@ -92,11 +93,26 @@ class CheckAnswersUtilSpec extends SpecBase {
             .withPage(CurrentAccountIdPage(), accId)
             .withPage(HaveNumberPage(accId), haveNumber)
             .withPage(AccountClosedPage(accId), closed)
+            .withPage(IsJointAccountPage(accId), false)
 
         "when no relevant answers exist" - {
           "must return an empty SummaryList" in {
             util.getAccountRows(emptyUserAnswers).rows mustBe Seq.empty
             util.getAccountRows(emptyUserAnswers.withPage(CurrentAccountIdPage(), accId)).rows mustBe Seq.empty
+          }
+        }
+
+        "when there are joint account holders" - {
+          "must include the joint account holders summary" in {
+            val ua = baseUa(haveNumber = true, closed = false)
+              .withPage(IsJointAccountPage(accId), true)
+              .withPage(HowManyJointAccountHoldersPage(accId), 42)
+
+            val result = util.getAccountRows(ua)
+
+            val keys = result.rows.map(_.key.content.toString)
+            keys.filter(_.contains("howManyJointAccountHolders")) must not be empty
+
           }
         }
 
@@ -114,7 +130,6 @@ class CheckAnswersUtilSpec extends SpecBase {
                 IsDormantAccountSummary.row(ua) ++
                 WasAccountOpenSummary.row(ua) ++
                 IsJointAccountSummary.row(ua) ++
-                HowManyJointAccountHoldersSummary.row(ua) ++
                 WhatAccountTypeSummary.row(ua) ++
                 HavePaymentsSummary.row(ua)
 
@@ -127,7 +142,7 @@ class CheckAnswersUtilSpec extends SpecBase {
               util
                 .getAccountRows(ua)
                 .rows
-                .map(_.key.content.toString) must not contain messages("havePayments.checkAnswers.label")
+                .map(_.key.content.toString) must not contain (Text("account.havePayments.checkYourAnswersLabel.crs"))
             }
           }
 
@@ -144,7 +159,6 @@ class CheckAnswersUtilSpec extends SpecBase {
                 IsDormantAccountSummary.row(ua) ++
                 WasAccountOpenSummary.row(ua) ++
                 IsJointAccountSummary.row(ua) ++
-                HowManyJointAccountHoldersSummary.row(ua) ++
                 WhatAccountTypeSummary.row(ua)
 
               util.getAccountRows(ua).rows mustBe expected
@@ -165,7 +179,6 @@ class CheckAnswersUtilSpec extends SpecBase {
               IsDormantAccountSummary.row(ua) ++
               WasAccountOpenSummary.row(ua) ++
               IsJointAccountSummary.row(ua) ++
-              HowManyJointAccountHoldersSummary.row(ua) ++
               WhatAccountTypeSummary.row(ua)
 
             util.getAccountRows(ua).rows mustBe expected
@@ -182,6 +195,7 @@ class CheckAnswersUtilSpec extends SpecBase {
             .withPage(CurrentAccountIdPage(), accId)
             .withPage(HaveNumberPage(accId), haveNumber)
             .withPage(AccountClosedPage(accId), closed)
+            .withPage(IsJointAccountPage(accId), false)
 
         "when no relevant answers exist" - {
           "must return an empty SummaryList" in {

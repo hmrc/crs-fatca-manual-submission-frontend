@@ -41,7 +41,7 @@ object HavePaymentsSummary {
         value = ValueViewModel(value),
         actions = Seq(
           ActionItemViewModel("site.change", routes.HavePaymentsController.onPageLoad(CheckMode).url)
-            .withVisuallyHiddenText(messages("account.havePayments.change.hidden", reportId.reportingYear.toString))
+            .withVisuallyHiddenText(messages(s"account.havePayments.change.hidden.$regime", reportId.reportingYear.toString))
         )
       )
     }

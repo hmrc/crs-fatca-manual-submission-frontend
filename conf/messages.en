@@ -384,12 +384,12 @@ identifier.heading = Identifying the account
 identifier.p1 = You must provide an unofficial number or code to identify the account.
 identifier.p2 = If you do not have one, you must provide a unique description of the account.
 identifier.label = What number, code or description should we use to identify the account?
-identifier.checkYourAnswersLabel = identifier
+identifier.checkYourAnswersLabel = Unofficial number, code or description
 identifier.error.required = Enter your account identifier
 identifier.error.length = Account identifier must be 200 characters or less
 identifier.error.invalid = Account identifier must only include letters a to z, numbers 0 to 9, ampersands (&), apostrophes, backslashes, carets (^), grave accents (`), hyphens and spaces
 identifier.error.doubedash = Account identifier must not include a double dash (--)
-identifier.change.hidden = Identifier
+identifier.change.hidden = Change unofficial number, code or description
 
 ukAddress.title = What is the sponsor’s registered address?
 ukAddress.heading =What is the registered address for {0}?
@@ -509,13 +509,13 @@ isJointAccount.change.hidden = Change if this is a joint account
 
 howManyJointAccountHolders.title = How many joint account holders are there?
 howManyJointAccountHolders.heading = How many joint account holders are there?
-howManyJointAccountHolders.checkYourAnswersLabel = HowManyJoinAccountHolders
+howManyJointAccountHolders.checkYourAnswersLabel = How many joint account holders are there?
 howManyJointAccountHolders.error.nonNumeric = Number of joint account holders must only include numbers 0 to 9
 howManyJointAccountHolders.error.required = Enter the number of joint account holders
 howManyJointAccountHolders.error.wholeNumber = Number of joint account holders must only include numbers 0 to 9
 howManyJointAccountHolders.error.max = Number of joint account holders must be 200 or less
 howManyJointAccountHolders.error.min = Number of joint account holders must be 1 or more
-howManyJointAccountHolders.change.hidden = HowManyJoinAccountHolders
+howManyJointAccountHolders.change.hidden = Change how many joint account holders there are
 
 wasAccountOpen.title = Was the account opened in {0}?
 wasAccountOpen.heading = Was the account opened in {0}?
@@ -639,7 +639,8 @@ account.havePayments.checkYourAnswersLabel.crs = Were any payments made to this 
 account.havePayments.checkYourAnswersLabel.fatca = Were any payments made to this account a payee or an owner in {0}?
 account.havePayments.crs.error.required = Select yes if there were any payments made to this account in {0}
 account.havePayments.fatca.error.required = Select yes if there were any payments made to this account, a payee or an owner in {0}
-account.havePayments.change.hidden = Change if any payments were made to this account in {0}
+account.havePayments.change.hidden.crs = Change if any payments were made to this account in {0}
+account.havePayments.change.hidden.fatca = Change if any payments made to this account a payee or an owner in {0}
 
 
 account.paymentType.title = What type of payments were these for this account?
@@ -654,9 +655,7 @@ account.paymentType.FATCA503 = Gross proceeds or redemptions
 account.paymentType.CRS504 = Other
 account.paymentType.FATCA504 = Other
 account.paymentType.legend.hidden.title= What type of payments were these for this account?
-account.paymentType.checkYourAnswersLabel = paymentType
 account.paymentType.error.required = Select what type of payments these were for this account
-account.paymentType.change.hidden = PaymentType
 
 accountHolders.individualHavePlaceOfBirth.title = Do you want to provide the place of birth for the account holder?
 accountHolders.individualHavePlaceOfBirth.heading = Do you want to provide the place of birth for {0}?

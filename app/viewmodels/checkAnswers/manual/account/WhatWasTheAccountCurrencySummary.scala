@@ -32,7 +32,7 @@ object WhatWasTheAccountCurrencySummary {
       answer           <- answers.get(WhatWasTheAccountCurrencyPage(currentAccountId)(reportId))
     } yield SummaryListRowViewModel(
       key = "whatWasTheAccountCurrency.checkYourAnswersLabel",
-      value = ValueViewModel(HtmlFormat.escape(s"$answer").toString),
+      value = ValueViewModel(HtmlFormat.escape(s"${answer.displayName}").toString),
       actions = Seq(
         ActionItemViewModel("site.change", controllers.manual.account.routes.WhatWasTheAccountCurrencyController.onPageLoad(CheckMode).url)
           .withVisuallyHiddenText(messages("whatWasTheAccountCurrency.change.hidden"))
