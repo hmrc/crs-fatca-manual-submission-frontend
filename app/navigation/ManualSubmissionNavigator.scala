@@ -54,6 +54,7 @@ import pages.manual.cpso.{
   IsThisTheAddressPage,
   SelectAddressPage as SelectAddressPageForCPSO,
   UkPostCodePage as UkPostCodePageForCPSO,
+  TaxResidentCountriesListPage as TaxResidentCountriesListPageCPSO,
   *
 }
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
@@ -309,7 +310,7 @@ class ManualSubmissionNavigator @Inject() () {
     }
 
   private def handleNavigationToSponsorResidentTaxView(ua: UserAnswers, mode: Mode)(implicit reportId: ReportId): Call =
-    val currentIndex = ua.get(TaxResidentCountriesListPage()).getOrElse(Seq.empty).size
+    val currentIndex = ua.get(pages.manual.sponsor.TaxResidentCountriesListPage()).getOrElse(Seq.empty).size
     if currentIndex > 0 then controllers.manual.sponsor.routes.TaxResidentCountriesController.onPageLoad(mode)
     else controllers.manual.sponsor.routes.SponsorResidentForTaxController.onPageLoad(mode)
 

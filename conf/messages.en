@@ -1055,3 +1055,15 @@ whatIsAccountNumber.error.invalid.countryCode.ISIN = ISIN must include a real co
 whatIsAccountNumber.checkYourAnswersLabel = Account or identification number
 whatIsAccountNumber.change.hidden = Change account or identification number
 
+
+cpso.residentForTax.title = residentForTax
+cpso.residentForTax.heading = residentForTax
+cpso.residentForTax.country = country
+cpso.residentForTax.deleteme = deleteme
+cpso.residentForTax.checkYourAnswersLabel = ResidentForTax
+cpso.residentForTax.error.country.required = Enter country
+cpso.residentForTax.error.deleteme.required = Enter deleteme
+cpso.residentForTax.error.country.length = country must be 100 characters or less
+cpso.residentForTax.error.deleteme.length = deleteme must be 100 characters or less
+cpso.residentForTax.country.change.hidden = country
+cpso.residentForTax.deleteme.change.hidden = deleteme

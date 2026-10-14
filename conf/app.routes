@@ -419,3 +419,8 @@ GET        /manual/cp-so/controlling-person-type                      controller
 POST       /manual/cp-so/controlling-person-type                        controllers.manual.cpso.ControllingPersonTypeController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/cp-so/change-controlling-person-type                  controllers.manual.cpso.ControllingPersonTypeController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/cp-so/change-controlling-person-type                  controllers.manual.cpso.ControllingPersonTypeController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/cp-so/resident-for-tax                       controllers.manual.cpso.ResidentForTaxController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/cp-so/resident-for-tax                        controllers.manual.cpso.ResidentForTaxController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/cp-so/change-resident-for-tax                   controllers.manual.cpso.ResidentForTaxController.onPageLoad(mode: Mode = CheckMode)
+POST       //manual/cp-so/change-resident-for-tax                   controllers.manual.cpso.ResidentForTaxController.onSubmit(mode: Mode = CheckMode)
