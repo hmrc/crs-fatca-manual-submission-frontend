@@ -415,5 +415,10 @@ POST       /manual/account-holder/organisation-crs-type                       co
 GET        /manual/account-holder/change-organisation-crs-type                controllers.manual.accountHolders.OrganisationCrsController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/account-holder/change-organisation-crs-type                controllers.manual.accountHolders.OrganisationCrsController.onSubmit(mode: Mode = CheckMode)
 
+GET        /manual/cp-so/controlling-person-type                      controllers.manual.cpso.ControllingPersonTypeController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/cp-so/controlling-person-type                        controllers.manual.cpso.ControllingPersonTypeController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/cp-so/change-controlling-person-type                  controllers.manual.cpso.ControllingPersonTypeController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/cp-so/change-controlling-person-type                  controllers.manual.cpso.ControllingPersonTypeController.onSubmit(mode: Mode = CheckMode)
+
 GET        /manual/account/check-answers                                      controllers.manual.account.AccountCheckAnswersController.onPageLoad()
 POST       /manual/account/check-answers                                      controllers.manual.account.AccountCheckAnswersController.onSubmit()
