@@ -21,7 +21,9 @@ import play.api.libs.json.{Format, JsString, Reads, Writes}
 import scala.annotation.tailrec
 import scala.util.Random
 
-case class AccountId(value: String)
+case class AccountId(value: String) {
+  override def toString: String = value
+}
 
 object AccountId {
 

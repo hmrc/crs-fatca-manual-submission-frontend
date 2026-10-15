@@ -17,6 +17,8 @@
 package views.manual
 
 import base.SpecBase
+import models.ReportId
+import models.SubmissionsConstants.CRS
 import models.viewModels.SendAReportSections
 import models.viewModels.TaskStatus.*
 import org.jsoup.Jsoup
@@ -45,7 +47,9 @@ class SendAReportViewSpec extends SpecBase {
     accountHolders = Some(NoStatus),
     controllingPersons = Some(Completed),
     tbc1 = Some(Incomplete),
-    tbc2 = Some(Incomplete)
+    tbc2 = Some(Incomplete),
+    userAnswers = emptyUserAnswers,
+    reportId = ReportId(CRS, 2025, None, "testFiid")
   )
 
   "SendAReportView" - {
@@ -124,7 +128,9 @@ class SendAReportViewSpec extends SpecBase {
         accountHolders = None,
         controllingPersons = None,
         tbc1 = None,
-        tbc2 = None
+        tbc2 = None,
+        userAnswers = emptyUserAnswers,
+        reportId = ReportId(CRS, 2025, None, "testFIID")
       )
 
       val renderedHtml = view(model)

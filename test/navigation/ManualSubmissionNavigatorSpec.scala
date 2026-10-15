@@ -826,6 +826,35 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
 
         val currentAccountHolderId = AccountHolderId("01")
 
+        "AccountPage" - {
+
+          "must go to Individual Or Organisation Page " in {
+            val ua = UserAnswers("id")
+              .withPage(
+                AccountPage(reportId, currentAccountHolderId),
+                Set(AccountId("testId"))
+              )
+
+            navigator.nextPage(
+              AccountPage(reportId, currentAccountHolderId),
+              NormalMode,
+              ua
+            ) mustBe
+              controllers.manual.accountHolders.routes.IndividualOrOrganisationController.onPageLoad(NormalMode)
+          }
+
+          "must go to Problem Page " in {
+            val ua = UserAnswers("id")
+
+            navigator.nextPage(
+              AccountPage(reportId, currentAccountHolderId),
+              NormalMode,
+              ua
+            ) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
+        }
+
         "ResidentTaxPage" - {
           implicit val reportId: ReportId = ReportId(CRS, 2024, None, "TestFIID")
 
