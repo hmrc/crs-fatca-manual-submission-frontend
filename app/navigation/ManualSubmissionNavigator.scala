@@ -294,6 +294,7 @@ class ManualSubmissionNavigator @Inject() () {
       }
     case (pages.manual.cpso.ControllingPersonTypePage(reportId, cpsoId), mode, ua) =>
       controllers.manual.cpso.routes.CpsoSelfCertificationController.onPageLoad(mode)
+    case (pages.manual.cpso.ResidentForTaxPage(_, cpsoId, reportId), mode, ua) =>  handleResidentForTaxNavigationForCPSO(ua, mode, cpsoId)
   }
 
   private def sponsorNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
@@ -444,5 +445,10 @@ class ManualSubmissionNavigator @Inject() () {
       case Some(false) => controllers.manual.accountHolders.routes.WhereAreTheyBasedController.onPageLoad(mode)
       case _           => routes.JourneyRecoveryController.onPageLoad()
     }
+    
+  private def handleResidentForTaxNavigationForCPSO(userAnswers: UserAnswers, mode: Mode, cpsoId: CPSOId)(implicit reportId: ReportId)   =
+    if (reportId.regime == CRS) controllers.manual.cpso.routes.HaveTaxIdentificationNumberController.onPageLoad(mode)
+    else controllers.routes.UnderConstructionController.onPageLoad()
+    
 
 }

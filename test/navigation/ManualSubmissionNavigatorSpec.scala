@@ -33,17 +33,7 @@ import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
 import pages.manual.account.*
 import pages.manual.accountHolders.{UkAddressPage as AccountHolderUkAddressPage, *}
-import pages.manual.cpso.{
-  AddressLookupPage as AddressLookupPageForCpso,
-  AddressUkPage,
-  CPSOAddressNonUkPage,
-  CPSOWhereAreTheyBasedPage,
-  CpsoOrganisationNamePage,
-  CpsoSelfCertificationPage,
-  IsThisTheAddressPage as IsThisTheAddressPageForCpso,
-  SelectAddressPage as SelectAddressPageForCPSO,
-  UkPostCodePage as UkPostCodePageForCpso
-}
+import pages.manual.cpso.{AddressUkPage, CPSOAddressNonUkPage, CPSOWhereAreTheyBasedPage, CpsoOrganisationNamePage, CpsoSelfCertificationPage, ResidentForTaxPage, AddressLookupPage as AddressLookupPageForCpso, IsThisTheAddressPage as IsThisTheAddressPageForCpso, SelectAddressPage as SelectAddressPageForCPSO, UkPostCodePage as UkPostCodePageForCpso}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.{AddressLookupPage, *}
@@ -1431,6 +1421,35 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
 
             navigator.nextPage(RemovePaymentPage(accountId), NormalMode, ua) mustBe
               controllers.manual.account.routes.AccountPaymentsController.onPageLoad(NormalMode)
+          }
+        }
+
+        "ResidentForTaxPage cpso " - {
+          implicit val reportId: ReportId = ReportId(CRS, 2024, None, "TestFIID")
+          val currentCPSOId               = CPSOId("testid")
+
+          "must go to have tax identification page when regime is crs" in {
+
+            val ua = UserAnswers("id")
+
+            navigator.nextPage(
+              ResidentForTaxPage(0, currentCPSOId, reportId),
+              NormalMode,
+              ua
+            ) mustBe
+              controllers.manual.cpso.routes.HaveTaxIdentificationNumberController.onPageLoad(NormalMode)
+          }
+
+          "must go to under construction page page when regime is fatca" in {
+            implicit val reportId2: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+            val ua = UserAnswers("id")
+
+            navigator.nextPage(
+              ResidentForTaxPage(0, currentCPSOId, reportId2),
+              NormalMode,
+              ua
+            )(reportId2) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
           }
         }
       }
