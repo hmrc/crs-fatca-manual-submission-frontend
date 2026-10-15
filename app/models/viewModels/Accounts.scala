@@ -16,9 +16,87 @@
 
 package models.viewModels
 
-import play.api.libs.json.{Json, OFormat}
+import models.{ReportId, UserAnswers}
+import pages.manual.account.AccountsPage
+import play.api.libs.json.*
+import uk.gov.hmrc.govukfrontend.views.viewmodels.checkboxes.CheckboxItem
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
+import viewmodels.govuk.all.CheckboxItemViewModel
 
-case class Accounts(accounts: Map[String, Account])
+case class Accounts(
+  currentAccountId: Option[AccountId],
+  accounts: Map[String, Account]
+)
 
-object Accounts:
-  implicit val format: OFormat[Accounts] = Json.format[Accounts]
+object Accounts {
+
+  private val CurrentAccountId = "currentAccountId"
+
+  implicit val format: OFormat[Accounts] = new OFormat[Accounts] {
+
+    override def reads(json: JsValue): JsResult[Accounts] =
+      json.validate[JsObject].flatMap {
+        obj =>
+
+          val currentAccountId =
+            (obj \ CurrentAccountId).validateOpt[AccountId]
+
+          val accountEntries =
+            JsObject(
+              obj.fields.filterNot(_._1 == CurrentAccountId)
+            ).validate[Map[String, Account]]
+
+          for {
+            currentId <- currentAccountId
+            accounts  <- accountEntries
+          } yield Accounts(currentId, accounts)
+      }
+
+    override def writes(value: Accounts): JsObject = {
+      val accountJson =
+        JsObject(
+          value.accounts.map {
+            case (id, account) =>
+              id -> Json.toJson(account)
+          }
+        )
+
+      value.currentAccountId match {
+        case Some(id) =>
+          accountJson + (CurrentAccountId -> Json.toJson(id))
+
+        case None =>
+          accountJson
+      }
+    }
+  }
+
+  def existingAccounts(
+    userAnswers: UserAnswers,
+    reportId: ReportId
+  ): Seq[(AccountId, String)] =
+    userAnswers
+      .get(AccountsPage(reportId))
+      .map(
+        _.accounts.values
+          .flatMap {
+            account =>
+              account.accountNumber.map(account.accountId -> _)
+          }
+          .toSeq
+      )
+      .getOrElse(Seq.empty)
+
+  def checkboxOptions(
+    accounts: Seq[(AccountId, String)]
+  ): Seq[CheckboxItem] =
+    accounts.zipWithIndex.map {
+      case ((accountId, accountNumber), index) =>
+        CheckboxItemViewModel(
+          content = Text(accountNumber),
+          fieldId = "value",
+          index = index,
+          value = accountId.value
+        ).copy(name = Some(s"value[$index]"))
+    }
+}

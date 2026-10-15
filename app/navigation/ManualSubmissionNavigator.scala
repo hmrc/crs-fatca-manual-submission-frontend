@@ -30,6 +30,7 @@ import pages.manual.accountHolders.{
   AccountHolderAddressNonUkPage,
   AccountHolderIndividualNamePage,
   AccountHolderOrganisationNamePage,
+  AccountPage,
   AddressLookupForAccountHolderPage,
   IndividualHavePlaceOfBirthPage,
   IndividualOrOrganisationPage,
@@ -156,6 +157,14 @@ class ManualSubmissionNavigator @Inject() () {
   private def accountHolderNavigation(implicit
     reportId: ReportId
   ): PartialFunction[(Page, Mode, UserAnswers), Call] = {
+
+    case (pages.manual.accountHolders.AccountPage(reportId, id), mode, ua) =>
+      ua.get(pages.manual.accountHolders.AccountPage(reportId, id)) match {
+        case Some(_) =>
+          controllers.manual.accountHolders.routes.IndividualOrOrganisationController.onPageLoad(mode)
+        case None =>
+          controllers.routes.JourneyRecoveryController.onPageLoad()
+      }
 
     case (IndividualOrOrganisationPage(id), mode, ua) =>
       ua.get(IndividualOrOrganisationPage(id))
