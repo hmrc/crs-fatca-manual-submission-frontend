@@ -228,9 +228,14 @@ class ManualSubmissionNavigator @Inject() () {
     case (IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId), mode, ua) =>
       handleIsThisTheAddressForAccountHoldersRouting(ua, mode, accountHolderId)
     case (AccountHolderUkAddressPage(accountHolderId, reportId), mode, _) =>
+      // TODO - need to route here!
       controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
-    case (SelectAddressPage(_, _), _, _)                  => controllers.routes.UnderConstructionController.onPageLoad()
-    case (AccountHolderAddressNonUkPage(_, _), _, _)      => controllers.routes.UnderConstructionController.onPageLoad()
+    case (SelectAddressPage(_, _), _, _) =>
+      // TODO - need to route here!
+      controllers.routes.UnderConstructionController.onPageLoad()
+    case (AccountHolderAddressNonUkPage(_, _), _, _)      =>
+      //TODO - routing here too
+      controllers.routes.UnderConstructionController.onPageLoad()
     case (AccountHolderSelfCertificationPage(_, _), _, _) => controllers.routes.UnderConstructionController.onPageLoad()
     case (IndividualPlaceOfBirthPage(_, _), mode, _)      => controllers.manual.accountHolders.routes.WhereAreTheyBasedController.onPageLoad(mode)
   }
@@ -387,6 +392,7 @@ class ManualSubmissionNavigator @Inject() () {
     reportId: ReportId
   ) =
     userAnswers.get(IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId)) match {
+      //todo - handle routing here!
       case Some(true)  => routes.UnderConstructionController.onPageLoad()
       case Some(false) => controllers.manual.accountHolders.routes.UkAddressController.onPageLoad(mode)
       case None        => routes.JourneyRecoveryController.onPageLoad()
