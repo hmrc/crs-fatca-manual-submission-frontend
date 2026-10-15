@@ -22,7 +22,7 @@ import forms.manual.cpso.ResidentForTaxFormProvider
 import models.response.Country
 import models.{Countries, Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.cpso.ResidentForTaxPage
+import pages.manual.cpso.{CurrentTaxResidentCountryIndexPage, ResidentForTaxPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -70,10 +70,12 @@ class ResidentForTaxController @Inject() (
             ),
           value =>
             for {
-              updatedAnswers <- Future
-                .fromTry(request.userAnswers.setWithReportId(ResidentForTaxPage(request.currentIndex, request.cpsoId, reportId), Country.GB))
-              _ <- repository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(ResidentForTaxPage(request.currentIndex, request.cpsoId, reportId), mode, updatedAnswers))
+              selectedCountry <- Future.successful(Countries.allCountries(reportId.regime).find(_.code == value).get)
+              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(ResidentForTaxPage(request.currentIndex, request.cpsoId, reportId), selectedCountry))
+              updatedAnswersWithCurrentIndex <- Future
+                .fromTry(updatedAnswers.setWithReportId(CurrentTaxResidentCountryIndexPage(request.cpsoId, reportId), request.currentIndex))
+              _ <- repository.set(updatedAnswersWithCurrentIndex)
+            } yield Redirect(navigator.nextPage(ResidentForTaxPage(request.currentIndex, request.cpsoId, reportId), mode, updatedAnswersWithCurrentIndex))
         )
   }
 }
