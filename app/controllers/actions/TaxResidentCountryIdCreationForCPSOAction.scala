@@ -25,11 +25,11 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class TaxResidentCountryIdCreationForCPSOActionImpl @Inject() (implicit val executionContext: ExecutionContext)
-  extends TaxResidentCountryIdCreationForCPSOAction {
+    extends TaxResidentCountryIdCreationForCPSOAction {
 
   override protected def transform[A](request: CPSONameRequest[A]): Future[TaxResidentCountryIdForCPSORequest[A]] = {
     given reportId: ReportId = request.reportId
-    
+
     val cpsoId = request.cpsoId
 
     val ua = request.userAnswers

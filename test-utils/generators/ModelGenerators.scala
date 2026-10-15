@@ -23,12 +23,13 @@ import models.{AddressUk, CrsOrFatca, NumberType, TypeOfReport, UkAddress, UkPos
 import org.scalacheck.Arbitrary.*
 import org.scalacheck.{Arbitrary, Gen}
 import org.scalacheck.Arbitrary.*
+
 trait ModelGenerators {
 
   implicit lazy val arbitraryResidentForTax: Arbitrary[ResidentForTax] =
     Arbitrary {
       for {
-        country <- arbitrary[String]
+        country  <- arbitrary[String]
         deleteme <- arbitrary[String]
       } yield ResidentForTax(country, deleteme)
     }

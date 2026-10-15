@@ -8,7 +8,7 @@ import play.api.inject.bind
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import connectors.DatabaseConnector
 import forms.manual.cpso.ResidentForTaxFormProvider
 import views.html.ResidentForTaxView
@@ -18,6 +18,7 @@ import models.{NormalMode, ReportId, UserAnswers}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import pages.ReportIdPage
 import pages.manual.cpso.ResidentForTaxPage
+import views.html.manual.cpso.ResidentForTaxView
 
 import scala.concurrent.Future
 
@@ -26,7 +27,7 @@ class ResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
   def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new ResidentForTaxFormProvider()
-  val form = formProvider()
+  val form         = formProvider()
 
   lazy val residentForTaxRoute = routes.ResidentForTaxController.onPageLoad(NormalMode).url
 
@@ -34,14 +35,14 @@ class ResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
     userAnswersId,
     Json.obj(
       ResidentForTaxPage.toString -> Json.obj(
-        "country" -> "value 1",
+        "country"  -> "value 1",
         "deleteme" -> "value 2"
       )
     )
   )
 
   "ResidentForTax Controller" - {
-    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS,2025,None,"TestfiID"))
+    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
 
     "must return OK and the correct view for a GET" in {
 
@@ -60,9 +61,9 @@ class ResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-      val validAnswer = ResidentForTax("value 1", "value 2")
-      implicit val reportId = ReportId(CRS,2025,None,"TestfiID")
-      val userAnswers = ua.set(ResidentForTaxPage(), validAnswer).success.value
+      val validAnswer       = ResidentForTax("value 1", "value 2")
+      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
+      val userAnswers       = ua.set(ResidentForTaxPage(), validAnswer).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 

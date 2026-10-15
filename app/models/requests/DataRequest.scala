@@ -102,12 +102,11 @@ case class AccountHolderNameRequest[A](
     with HasReportIdRequest[A]
 
 case class TaxResidentCountryIdForCPSORequest[A](request: Request[A],
-                              userId: String,
-                              userAnswers: UserAnswers,
-                              fatcaId: String,
-                              reportId: ReportId,
-                              cpsoId: CPSOId,
-                              cpsoName: String,
-                              currentIndex: Int
-                             ) extends WrappedRequest[A](request)
-
+                                                 userId: String,
+                                                 userAnswers: UserAnswers,
+                                                 fatcaId: String,
+                                                 reportId: ReportId,
+                                                 cpsoId: CPSOId,
+                                                 cpsoName: String,
+                                                 currentIndex: Int
+) extends WrappedRequest[A](request)

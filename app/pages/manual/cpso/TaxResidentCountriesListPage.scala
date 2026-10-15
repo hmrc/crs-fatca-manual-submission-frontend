@@ -23,7 +23,7 @@ import pages.QuestionPage
 import play.api.libs.json.JsPath
 
 class TaxResidentCountriesListPage(currentId: CPSOId, reportId: ReportId) extends QuestionPage[Seq[TaxResidentInformation]] {
-  
+
   override def path: JsPath = JsPath \ reportId.mongoKey \ "cp-so" \ currentId.value \ "taxResidentCountries"
 
 }

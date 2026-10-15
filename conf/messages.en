@@ -1056,14 +1056,11 @@ whatIsAccountNumber.checkYourAnswersLabel = Account or identification number
 whatIsAccountNumber.change.hidden = Change account or identification number
 
 
-cpso.residentForTax.title = residentForTax
-cpso.residentForTax.heading = residentForTax
-cpso.residentForTax.country = country
-cpso.residentForTax.deleteme = deleteme
+cpso.crs.residentForTax.title = Where is the controlling person resident for tax?
+cpso.fatca.residentForTax.title = Where is the substantial owner resident for tax?
+cpso.residentForTax.heading = Where is {0} resident for tax?
+cpso.residentForTax.paragraph = If they are resident for tax in more than one country, then you can add other countries on the next page.
+cpso.crs.residentForTax.error.country.required = Select where the controlling person is resident for tax
+cpso.fatca.residentForTax.error.country.required = Select where the substantial owner is resident for tax
 cpso.residentForTax.checkYourAnswersLabel = ResidentForTax
-cpso.residentForTax.error.country.required = Enter country
-cpso.residentForTax.error.deleteme.required = Enter deleteme
-cpso.residentForTax.error.country.length = country must be 100 characters or less
-cpso.residentForTax.error.deleteme.length = deleteme must be 100 characters or less
 cpso.residentForTax.country.change.hidden = country
-cpso.residentForTax.deleteme.change.hidden = deleteme

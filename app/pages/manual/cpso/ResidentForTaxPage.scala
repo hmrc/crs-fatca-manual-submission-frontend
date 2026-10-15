@@ -24,4 +24,4 @@ import play.api.libs.json.JsPath
 
 final case class ResidentForTaxPage(index: Int, currentId: CPSOId, reportId: ReportId) extends QuestionPage[Country]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "cp-so" \ currentId.value  \ "taxResidentCountries" \ index \ "country"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "cp-so" \ currentId.value \ "taxResidentCountries" \ index \ "country"

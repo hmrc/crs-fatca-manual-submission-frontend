@@ -2,31 +2,18 @@ package forms
 
 import forms.behaviours.StringFieldBehaviours
 import forms.manual.cpso.ResidentForTaxFormProvider
+import models.SubmissionsConstants.{CRS, FATCA}
+import models.elections.RegimeType
 import play.api.data.FormError
 
 class ResidentForTaxFormProviderSpec extends StringFieldBehaviours {
 
-  val form = new ResidentForTaxFormProvider()()
+  val form = new ResidentForTaxFormProvider()(CRS)
 
-  ".country" - {
-
-    val fieldName = "country"
-    val requiredKey = "residentForTax.error.country.required"
-    val lengthKey = "residentForTax.error.country.length"
-    val maxLength = 100
-
-    behave like fieldThatBindsValidData(
-      form,
-      fieldName,
-      stringsWithMaxLength(maxLength)
-    )
-
-    behave like fieldWithMaxLength(
-      form,
-      fieldName,
-      maxLength = maxLength,
-      lengthError = FormError(fieldName, lengthKey, Seq(maxLength))
-    )
+  ".country crs" - {
+    val form        = new ResidentForTaxFormProvider()(CRS)
+    val fieldName   = "country"
+    val requiredKey = "cpso.crs.residentForTax.error.country.required"
 
     behave like mandatoryField(
       form,
@@ -35,25 +22,10 @@ class ResidentForTaxFormProviderSpec extends StringFieldBehaviours {
     )
   }
 
-  ".deleteme" - {
-
-    val fieldName = "deleteme"
-    val requiredKey = "residentForTax.error.deleteme.required"
-    val lengthKey = "residentForTax.error.deleteme.length"
-    val maxLength = 100
-
-    behave like fieldThatBindsValidData(
-      form,
-      fieldName,
-      stringsWithMaxLength(maxLength)
-    )
-
-    behave like fieldWithMaxLength(
-      form,
-      fieldName,
-      maxLength = maxLength,
-      lengthError = FormError(fieldName, lengthKey, Seq(maxLength))
-    )
+  ".country fatca" - {
+    val form        = new ResidentForTaxFormProvider()(FATCA)
+    val fieldName   = "country"
+    val requiredKey = "cpso.fatca.residentForTax.error.country.required"
 
     behave like mandatoryField(
       form,
@@ -61,4 +33,5 @@ class ResidentForTaxFormProviderSpec extends StringFieldBehaviours {
       requiredError = FormError(fieldName, requiredKey)
     )
   }
+
 }

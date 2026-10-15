@@ -17,14 +17,15 @@
 package forms.manual.cpso
 
 import forms.mappings.Mappings
+import models.SubmissionsConstants.RegimeType
 import play.api.data.Form
 
 import javax.inject.Inject
 
 class ResidentForTaxFormProvider @Inject() extends Mappings {
 
-  def apply(): Form[String] =
+  def apply(regimeType: RegimeType): Form[String] =
     Form(
-      "country" -> text("cpso.country.error.required")
+      "country" -> text(s"cpso.${regimeType.value.toLowerCase}.country.error.required")
     )
- }
+}

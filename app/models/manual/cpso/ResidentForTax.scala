@@ -16,10 +16,9 @@
 
 package models.manual.cpso
 
-
 import play.api.libs.json.*
 
-case class ResidentForTax (country: String, deleteme: String)
+case class ResidentForTax(country: String, deleteme: String)
 
 object ResidentForTax {
 

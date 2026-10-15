@@ -20,7 +20,7 @@ import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.manual.cpso.ResidentForTaxFormProvider
 import models.response.Country
-import models.{Mode, ReportId}
+import models.{Countries, Mode, ReportId}
 import navigation.ManualSubmissionNavigator
 import pages.manual.cpso.ResidentForTaxPage
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -31,43 +31,49 @@ import views.html.manual.cpso.ResidentForTaxView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ResidentForTaxController @Inject()(
-                                      override val messagesApi: MessagesApi,
-                                      repository: DatabaseConnector,
-                                      navigator: ManualSubmissionNavigator,
-                                      actions: Actions,
-                                      formProvider: ResidentForTaxFormProvider,
-                                      val controllerComponents: MessagesControllerComponents,
-                                      view: ResidentForTaxView
-                                     )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+class ResidentForTaxController @Inject() (
+  override val messagesApi: MessagesApi,
+  repository: DatabaseConnector,
+  navigator: ManualSubmissionNavigator,
+  actions: Actions,
+  formProvider: ResidentForTaxFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: ResidentForTaxView
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
+    with I18nSupport {
 
-  val form = formProvider()
-
-  def onPageLoad(mode: Mode): Action[AnyContent] = (actions.withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequiredAndTaxResidentIdCreation()) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequiredAndTaxResidentIdCreation() {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
+      val form                        = formProvider(reportId.regime)
 
       val preparedForm = request.userAnswers.get(ResidentForTaxPage(request.currentIndex, request.cpsoId, reportId)) match {
-        case None => form
+        case None        => form
         case Some(value) => form.fill(value.code)
       }
 
-      Ok(view(preparedForm, mode))
+      Ok(view(preparedForm, mode, request.cpsoName, Countries.allCountries(reportId.regime), reportId.regime.toString.toLowerCase))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (actions.withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequiredAndTaxResidentIdCreation()).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequiredAndTaxResidentIdCreation().async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
+      val form                        = formProvider(reportId.regime)
 
-      form.bindFromRequest().fold(
-        formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors, mode))),
-
-        value =>
-          for {
-            updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(ResidentForTaxPage(request.currentIndex, request.cpsoId, reportId), Country.GB))
-            _              <- repository.set(updatedAnswers)
-          } yield Redirect(navigator.nextPage(ResidentForTaxPage(request.currentIndex, request.cpsoId, reportId), mode, updatedAnswers))
-      )
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors =>
+            Future.successful(
+              BadRequest(view(formWithErrors, mode, request.cpsoName, Countries.allCountries(reportId.regime), reportId.regime.toString.toLowerCase))
+            ),
+          value =>
+            for {
+              updatedAnswers <- Future
+                .fromTry(request.userAnswers.setWithReportId(ResidentForTaxPage(request.currentIndex, request.cpsoId, reportId), Country.GB))
+              _ <- repository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(ResidentForTaxPage(request.currentIndex, request.cpsoId, reportId), mode, updatedAnswers))
+        )
   }
 }

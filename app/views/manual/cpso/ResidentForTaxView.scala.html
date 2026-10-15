@@ -22,39 +22,37 @@
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
     govukInput: GovukInput,
-    govukButton: GovukButton
+    govukButton: GovukButton,
+    countrySelect: views.html.components.CountrySelect,
+    heading: views.html.components.Heading,
+    paragraph: views.html.components.Paragraph
 )
 
-@(form: Form[_], mode: Mode, cpsoName: String = "Sue Coe", countries: Seq[Country] = Seq())(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, cpsoName: String = "Sue Coe", countries: Seq[Country] = Seq(), regiment: String = "crs")(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("residentForTax.title"))) {
+@layout(pageTitle = title(form, messages(s"cpso.${regiment}.residentForTax.title"))) {
 
     @formHelper(action = controllers.manual.cpso.routes.ResidentForTaxController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
+        @heading(messages("cpso.residentForTax.heading", cpsoName))
 
-        <h1 class="govuk-heading-xl">@messages("residentForTax.heading")</h1>
+        @paragraph(messages("cpso.residentForTax.paragraph"))
 
-        @govukInput(
-            InputViewModel(
-                field = form("country"),
-                label = LabelViewModel(messages("residentForTax.country"))
-            )
-            .withWidth(Full)
+
+        <div class="govuk-!-width-two-thirds">
+        @countrySelect(
+            field = form("country"),
+            label = messages("accountHolders.residentTax.heading", cpsoName),
+            countries = countries,
+            labelClasses = "govuk-label govuk-visually-hidden"
         )
-
-        @govukInput(
-            InputViewModel(
-                field = form("deleteme"),
-                label = LabelViewModel(messages("residentForTax.deleteme"))
-            )
-            .withWidth(Full)
-        )
+        </div>
 
         @govukButton(
-            ButtonViewModel(messages("site.saveContinue"))
+            ButtonViewModel(messages("site.saveContinue")).withId("submit")
         )
     }
 }

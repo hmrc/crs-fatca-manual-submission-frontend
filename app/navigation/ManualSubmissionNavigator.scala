@@ -53,8 +53,8 @@ import pages.manual.cpso.{
   IndividualNamePage,
   IsThisTheAddressPage,
   SelectAddressPage as SelectAddressPageForCPSO,
-  UkPostCodePage as UkPostCodePageForCPSO,
   TaxResidentCountriesListPage as TaxResidentCountriesListPageCPSO,
+  UkPostCodePage as UkPostCodePageForCPSO,
   *
 }
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
