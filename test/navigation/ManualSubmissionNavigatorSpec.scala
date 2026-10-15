@@ -33,7 +33,18 @@ import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
 import pages.manual.account.*
 import pages.manual.accountHolders.{UkAddressPage as AccountHolderUkAddressPage, *}
-import pages.manual.cpso.{AddressUkPage, CPSOAddressNonUkPage, CPSOWhereAreTheyBasedPage, CpsoOrganisationNamePage, CpsoSelfCertificationPage, ResidentForTaxPage, AddressLookupPage as AddressLookupPageForCpso, IsThisTheAddressPage as IsThisTheAddressPageForCpso, SelectAddressPage as SelectAddressPageForCPSO, UkPostCodePage as UkPostCodePageForCpso}
+import pages.manual.cpso.{
+  AddressLookupPage as AddressLookupPageForCpso,
+  AddressUkPage,
+  CPSOAddressNonUkPage,
+  CPSOWhereAreTheyBasedPage,
+  CpsoOrganisationNamePage,
+  CpsoSelfCertificationPage,
+  IsThisTheAddressPage as IsThisTheAddressPageForCpso,
+  ResidentForTaxPage,
+  SelectAddressPage as SelectAddressPageForCPSO,
+  UkPostCodePage as UkPostCodePageForCpso
+}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.{AddressLookupPage, *}
@@ -1442,7 +1453,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
 
           "must go to under construction page page when regime is fatca" in {
             implicit val reportId2: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
-            val ua = UserAnswers("id")
+            val ua                           = UserAnswers("id")
 
             navigator.nextPage(
               ResidentForTaxPage(0, currentCPSOId, reportId2),

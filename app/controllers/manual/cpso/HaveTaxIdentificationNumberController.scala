@@ -30,29 +30,29 @@ import views.html.manual.cpso.HaveTaxIdentificationNumberView
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class HaveTaxIdentificationNumberController @Inject()(
-                                         override val messagesApi: MessagesApi,
-                                         repository: DatabaseConnector,
-                                         navigator: ManualSubmissionNavigator,
-                                         identify: IdentifierAction,
-                                         getData: DataRetrievalAction,
-                                         requireData: DataRequiredAction,
-                                         reportIdAction: ReportIdRequiredAction,
-                                         formProvider: HaveTaxIdentificationNumberFormProvider,
-                                         val controllerComponents: MessagesControllerComponents,
-                                         view: HaveTaxIdentificationNumberView
-                                 )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
-
-  
+class HaveTaxIdentificationNumberController @Inject() (
+  override val messagesApi: MessagesApi,
+  repository: DatabaseConnector,
+  navigator: ManualSubmissionNavigator,
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
+  reportIdAction: ReportIdRequiredAction,
+  formProvider: HaveTaxIdentificationNumberFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: HaveTaxIdentificationNumberView
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
+    with I18nSupport {
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
     implicit request =>
-   
+
       implicit val reportId: ReportId = request.reportId
-      val form = formProvider(reportId.regime)
+      val form                        = formProvider(reportId.regime)
 
       val preparedForm = request.userAnswers.get(HaveTaxIdentificationNumberPage()) match {
-        case None => form
+        case None        => form
         case Some(value) => form.fill(value)
       }
 
@@ -61,19 +61,19 @@ class HaveTaxIdentificationNumberController @Inject()(
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
     implicit request =>
-  
+
       implicit val reportId: ReportId = request.reportId
-      val form = formProvider(reportId.regime)
+      val form                        = formProvider(reportId.regime)
 
-      form.bindFromRequest().fold(
-        formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors, mode))),
-
-        value =>
-          for {
-            updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(HaveTaxIdentificationNumberPage(), value))
-            _              <- repository.set(updatedAnswers)
-          } yield Redirect(navigator.nextPage(HaveTaxIdentificationNumberPage(), mode, updatedAnswers))
-      )
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(HaveTaxIdentificationNumberPage(), value))
+              _              <- repository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(HaveTaxIdentificationNumberPage(), mode, updatedAnswers))
+        )
   }
 }

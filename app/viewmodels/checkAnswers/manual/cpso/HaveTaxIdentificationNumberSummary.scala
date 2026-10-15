@@ -24,7 +24,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
-object HaveTaxIdentificationNumberSummary  {
+object HaveTaxIdentificationNumberSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
     answers.get(HaveTaxIdentificationNumberPage()).map {
@@ -33,8 +33,8 @@ object HaveTaxIdentificationNumberSummary  {
         val value = if (answer) "site.yes" else "site.no"
 
         SummaryListRowViewModel(
-          key     = "haveTaxIdentificationNumber.checkYourAnswersLabel",
-          value   = ValueViewModel(value),
+          key = "haveTaxIdentificationNumber.checkYourAnswersLabel",
+          value = ValueViewModel(value),
           actions = Seq(
             ActionItemViewModel("site.change", routes.HaveTaxIdentificationNumberController.onPageLoad(CheckMode).url)
               .withVisuallyHiddenText(messages("haveTaxIdentificationNumber.change.hidden"))
