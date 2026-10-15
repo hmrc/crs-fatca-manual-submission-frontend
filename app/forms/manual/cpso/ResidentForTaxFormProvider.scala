@@ -26,6 +26,6 @@ class ResidentForTaxFormProvider @Inject() extends Mappings {
 
   def apply(regimeType: RegimeType): Form[String] =
     Form(
-      "country" -> text(s"cpso.${regimeType.value.toLowerCase}.country.error.required")
+      "country" -> text(s"cpso.${regimeType.value.toLowerCase}.residentForTax.error.country.required")
     )
 }

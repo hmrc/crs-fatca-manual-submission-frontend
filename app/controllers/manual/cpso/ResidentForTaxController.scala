@@ -71,7 +71,8 @@ class ResidentForTaxController @Inject() (
           value =>
             for {
               selectedCountry <- Future.successful(Countries.allCountries(reportId.regime).find(_.code == value).get)
-              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(ResidentForTaxPage(request.currentIndex, request.cpsoId, reportId), selectedCountry))
+              updatedAnswers <- Future
+                .fromTry(request.userAnswers.setWithReportId(ResidentForTaxPage(request.currentIndex, request.cpsoId, reportId), selectedCountry))
               updatedAnswersWithCurrentIndex <- Future
                 .fromTry(updatedAnswers.setWithReportId(CurrentTaxResidentCountryIndexPage(request.cpsoId, reportId), request.currentIndex))
               _ <- repository.set(updatedAnswersWithCurrentIndex)
