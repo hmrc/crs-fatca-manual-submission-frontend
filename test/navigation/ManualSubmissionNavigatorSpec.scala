@@ -25,9 +25,8 @@ import models.manual.account.PaymentType.*
 import models.manual.account.{AccountPayment, PaymentType, WasAccountOpen, WhatAccountType}
 import models.manual.accountHolders.{IndividualDateOfBirth, IndividualName, IndividualPlaceOfBirth, SelfCertification}
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
-
 import models.manual.cpso.CpsoSelfCertification.Yes
-import models.manual.cpso.IndividualOrOrganisation
+import models.manual.cpso.{IndividualOrOrganisation, TaxResidentInformation}
 import models.response.{Address, AddressLookup, Country}
 import models.viewModels.manual.cpso.CPSOId
 import models.viewModels.{AccountHolderId, AccountId}
@@ -250,6 +249,8 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         }
       }
       "AddressUkPage" - {
+        val country                     = Country("GB", "UK")
+        val taxResidentInformation      = TaxResidentInformation(country)
         val currentCPSOId               = CPSOId("testid")
         implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
         val address = Address(uprn = None,
@@ -262,14 +263,35 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
                               country = Country.GB
         ).ukAddress
 
-        "must go to under construction" in {
+        "must go to tax resident page when there are no resident taxes present" in {
           val ua = UserAnswers("id")
             .withPage(AddressUkPage(currentCPSOId, reportId), address)
+          navigator.nextPage(AddressUkPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+            controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(NormalMode)
+
+        }
+
+        "must go to tax resident page when the resident taxes is empty" in {
+          val ua = UserAnswers("id")
+            .withPage(AddressUkPage(currentCPSOId, reportId), address)
+            .withPage(pages.manual.cpso.TaxResidentCountriesListPage(currentCPSOId, reportId), Seq())
+
+          navigator.nextPage(AddressUkPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+            controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(NormalMode)
+
+        }
+
+        "must go to under construction page when there are resident taxes are present" in {
+          val ua = UserAnswers("id")
+            .withPage(AddressUkPage(currentCPSOId, reportId), address)
+            .withPage(pages.manual.cpso.TaxResidentCountriesListPage(currentCPSOId, reportId), Seq(taxResidentInformation))
+
           navigator.nextPage(AddressUkPage(currentCPSOId, reportId), NormalMode, ua) mustBe
             controllers.routes.UnderConstructionController.onPageLoad()
 
         }
       }
+
       "UkPostcodePage  for cp-so" - {
         val currentCPSOId = CPSOId("testid")
         val addressLookup: AddressLookup =
@@ -799,6 +821,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               controllers.manual.cpso.routes.CPSOWhereAreTheyBasedController.onPageLoad(NormalMode)
           }
         }
+
         "CPSOWhereAreTheyBased page" - {
           "must go to CPSOAddressNonUk page when No is submitted" in {
             val ua = UserAnswers("id")
@@ -813,10 +836,32 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               controllers.manual.cpso.routes.UkPostCodeController.onPageLoad(NormalMode)
           }
         }
+
         "CPSOAddressNonUk page" - {
-          "must go to resident-for-tax [under construction] page when submitted" in {
+          val country                = Country("GB", "UK")
+          val taxResidentInformation = TaxResidentInformation(country)
+
+          "must go to resident-for-tax  page when submitted and there a no resident tax countries" in {
             val ua = UserAnswers("id")
               .withPage(CPSOAddressNonUkPage(currentCPSOId, reportId), nonUkAddress)
+            navigator.nextPage(CPSOAddressNonUkPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+              controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(NormalMode)
+          }
+
+          "must go to resident-for-tax  page when submitted and the resident tax countries list is empty" in {
+            val ua = UserAnswers("id")
+              .withPage(CPSOAddressNonUkPage(currentCPSOId, reportId), nonUkAddress)
+              .withPage(pages.manual.cpso.TaxResidentCountriesListPage(currentCPSOId, reportId), Seq())
+
+            navigator.nextPage(CPSOAddressNonUkPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+              controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(NormalMode)
+          }
+
+          "must go to under construction page when submitted and the resident tax countries list is populated" in {
+            val ua = UserAnswers("id")
+              .withPage(CPSOAddressNonUkPage(currentCPSOId, reportId), nonUkAddress)
+              .withPage(pages.manual.cpso.TaxResidentCountriesListPage(currentCPSOId, reportId), Seq(taxResidentInformation))
+
             navigator.nextPage(CPSOAddressNonUkPage(currentCPSOId, reportId), NormalMode, ua) mustBe
               controllers.routes.UnderConstructionController.onPageLoad()
           }
@@ -1187,12 +1232,32 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         }
 
         "IsThisTheAddressForCPSOPage" - {
+          val country                     = Country("GB", "UK")
+          val taxResidentInformation      = TaxResidentInformation(country)
           implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
           val currentCPSOId               = CPSOId("testid")
 
-          "must go to under construction for a yes answer" in {
+          "must go to resident tax page when answer is yes and there are no resident tax countries" in {
             val ua = UserAnswers("id")
               .withPage(IsThisTheAddressPageForCpso(currentCPSOId, reportId), true)
+
+            navigator.nextPage(IsThisTheAddressPageForCpso(currentCPSOId, reportId), NormalMode, ua) mustBe
+              controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(NormalMode)
+          }
+
+          "must go to resident tax page when answer is yes and resident tax countries is empty" in {
+            val ua = UserAnswers("id")
+              .withPage(IsThisTheAddressPageForCpso(currentCPSOId, reportId), true)
+              .withPage(pages.manual.cpso.TaxResidentCountriesListPage(currentCPSOId, reportId), Seq())
+
+            navigator.nextPage(IsThisTheAddressPageForCpso(currentCPSOId, reportId), NormalMode, ua) mustBe
+              controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(NormalMode)
+          }
+
+          "must go to under construction page when answer is yes and resident tax countries is populated" in {
+            val ua = UserAnswers("id")
+              .withPage(IsThisTheAddressPageForCpso(currentCPSOId, reportId), true)
+              .withPage(pages.manual.cpso.TaxResidentCountriesListPage(currentCPSOId, reportId), Seq(taxResidentInformation))
 
             navigator.nextPage(IsThisTheAddressPageForCpso(currentCPSOId, reportId), NormalMode, ua) mustBe
               controllers.routes.UnderConstructionController.onPageLoad()
@@ -1238,6 +1303,9 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         }
 
         "SelectAddressPage for cpso" - {
+          val country                = Country("GB", "UK")
+          val taxResidentInformation = TaxResidentInformation(country)
+
           implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
           val address = Address(uprn = None,
                                 addressLine1 = "string",
@@ -1250,21 +1318,31 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           )
           val currentId = CPSOId("holder-id")
 
-          "must go to under construction" in {
+          "must go to Tax resident page when there are no countries selected" in {
             val ua = UserAnswers("id")
               .withPage(SelectAddressPageForCPSO(currentId, reportId), address)
 
             navigator.nextPage(SelectAddressPageForCPSO(currentId, reportId), NormalMode, ua) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(NormalMode)
           }
 
-          "must go to journey recovery if select address is absent" in {
+          "must go to Tax resident page when the country list is empty" in {
             val ua = UserAnswers("id")
+              .withPage(SelectAddressPageForCPSO(currentId, reportId), address)
+              .withPage(pages.manual.cpso.TaxResidentCountriesListPage(currentId, reportId), Seq())
 
             navigator.nextPage(SelectAddressPageForCPSO(currentId, reportId), NormalMode, ua) mustBe
-              controllers.routes.JourneyRecoveryController.onPageLoad()
+              controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(NormalMode)
           }
 
+          "must go to under construction page when the country list is populated" in {
+            val ua = UserAnswers("id")
+              .withPage(SelectAddressPageForCPSO(currentId, reportId), address)
+              .withPage(pages.manual.cpso.TaxResidentCountriesListPage(currentId, reportId), Seq(taxResidentInformation))
+
+            navigator.nextPage(SelectAddressPageForCPSO(currentId, reportId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
         }
 
         "UKAddressPage" - {
