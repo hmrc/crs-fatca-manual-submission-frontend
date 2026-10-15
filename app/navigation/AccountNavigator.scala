@@ -31,30 +31,28 @@ import javax.inject.Singleton
 object AccountNavigator {
 
   def accountNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
-    case (page, NormalMode, ua) if normalRoutes.isDefinedAt((page, ua)) => normalRoutes(reportId)(page, ua)
-    case (page, CheckMode, ua) =>
-      normalRoutes(reportId)(page, ua)
+    case (page, mode, ua) if accountRoutes.isDefinedAt((page, mode, ua)) => accountRoutes(reportId)(page, mode, ua)
   }
 
-  def normalRoutes(implicit reportId: ReportId): PartialFunction[(Page, UserAnswers), Call] = {
-    case (HaveNumberPage(accountId), ua)                    => haveNumberNavigation(accountId, NormalMode, ua)
-    case (NumberTypePage(accountId), ua)                    => NumberTypeNavigation(accountId, NormalMode, ua)
-    case (IdentifierPage(_), ua)                            => controllers.manual.account.routes.AccountClosedController.onPageLoad(NormalMode)
-    case (WasAccountOpenPage(_), ua)                        => controllers.manual.account.routes.IsJointAccountController.onPageLoad(NormalMode)
-    case (IsJointAccountPage(accountId), ua)                => jointAccountRouteLogic(accountId, ua)
-    case (HowManyJointAccountHoldersPage(_), ua)            => controllers.manual.account.routes.WhatAccountTypeController.onPageLoad(NormalMode)
-    case (AccountClosedPage(accountId), ua)                 => accountClosedNavigation(accountId, NormalMode, ua)
-    case (WhatWasTheAccountBalancePage(_), ua)              => accountBalanceRouteLogic(NormalMode)
-    case (IsUndocumentedAccountPage(_), ua)                 => controllers.manual.account.routes.IsDormantAccountController.onPageLoad(NormalMode)
-    case (WhatWasTheAccountCurrencyPage(_), ua)             => controllers.manual.account.routes.IsUndocumentedAccountController.onPageLoad(NormalMode)
-    case (IsDormantAccountPage(_), ua)                      => controllers.manual.account.routes.WasAccountOpenController.onPageLoad(NormalMode)
-    case (WhatAccountTypePage(_), ua)                       => controllers.manual.account.routes.HavePaymentsController.onPageLoad(NormalMode)
-    case (HavePaymentsPage(accId), ua)                      => havePaymentRouteLogic(NormalMode, ua, accId)
-    case (PaymentTypePage(accountId), ua)                   => paymentTypeRouteLogic(NormalMode, ua, accountId)
-    case (AccountPaymentsAmountPage(accountId), ua)         => controllers.manual.account.routes.AccountPaymentsController.onPageLoad(NormalMode)
-    case (DoYouNeedToAddPaymentsPage(accountId), ua)        => doYouNeedToAddPaymentsRouteLogic(NormalMode, ua, accountId)
-    case (RemovePaymentPage(accountId), ua)                 => controllers.manual.account.routes.AccountPaymentsController.onPageLoad(NormalMode)
-    case (WhatIsAccountNumberPage(accountId, reportId), ua) => controllers.manual.account.routes.AccountClosedController.onPageLoad(NormalMode)
+  def accountRoutes(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
+    case (HaveNumberPage(accountId), mode, ua)                    => haveNumberNavigation(accountId, mode, ua)
+    case (NumberTypePage(accountId), mode, ua)                    => NumberTypeNavigation(accountId, mode, ua)
+    case (IdentifierPage(_), mode, ua)                            => controllers.manual.account.routes.AccountClosedController.onPageLoad(mode)
+    case (WasAccountOpenPage(_), mode, ua)                        => controllers.manual.account.routes.IsJointAccountController.onPageLoad(mode)
+    case (IsJointAccountPage(accountId), mode, ua)                => jointAccountRouteLogic(accountId, mode, ua)
+    case (HowManyJointAccountHoldersPage(_), mode, ua)            => controllers.manual.account.routes.WhatAccountTypeController.onPageLoad(mode)
+    case (AccountClosedPage(accountId), mode, ua)                 => accountClosedNavigation(accountId, mode, ua)
+    case (WhatWasTheAccountBalancePage(_), mode, ua)              => accountBalanceRouteLogic(mode)
+    case (IsUndocumentedAccountPage(_), mode, ua)                 => controllers.manual.account.routes.IsDormantAccountController.onPageLoad(mode)
+    case (WhatWasTheAccountCurrencyPage(_), mode, ua)             => controllers.manual.account.routes.IsUndocumentedAccountController.onPageLoad(mode)
+    case (IsDormantAccountPage(_), mode, ua)                      => controllers.manual.account.routes.WasAccountOpenController.onPageLoad(mode)
+    case (WhatAccountTypePage(_), mode, ua)                       => controllers.manual.account.routes.HavePaymentsController.onPageLoad(mode)
+    case (HavePaymentsPage(accId), mode, ua)                      => havePaymentRouteLogic(mode, ua, accId)
+    case (PaymentTypePage(accountId), mode, ua)                   => paymentTypeRouteLogic(mode, ua, accountId)
+    case (AccountPaymentsAmountPage(accountId), mode, ua)         => controllers.manual.account.routes.AccountPaymentsController.onPageLoad(mode)
+    case (DoYouNeedToAddPaymentsPage(accountId), mode, ua)        => doYouNeedToAddPaymentsRouteLogic(mode, ua, accountId)
+    case (RemovePaymentPage(accountId), mode, ua)                 => controllers.manual.account.routes.AccountPaymentsController.onPageLoad(mode)
+    case (WhatIsAccountNumberPage(accountId, reportId), mode, ua) => controllers.manual.account.routes.AccountClosedController.onPageLoad(mode)
   }
 
   private def NumberTypeNavigation(accountId: AccountId, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
@@ -92,14 +90,14 @@ object AccountNavigator {
       case _ => controllers.manual.account.routes.AccountCheckAnswersController.onPageLoad()
     }
 
-  private def jointAccountRouteLogic(accountId: AccountId, useranswers: UserAnswers)(implicit reportId: ReportId) =
-    useranswers
+  private def jointAccountRouteLogic(accountId: AccountId, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
+    userAnswers
       .get(IsJointAccountPage(accountId))
       .map {
         isJointAccount =>
-          if (isJointAccount) controllers.manual.account.routes.HowManyJointAccountHoldersController.onPageLoad(NormalMode)
+          if (isJointAccount) controllers.manual.account.routes.HowManyJointAccountHoldersController.onPageLoad(mode)
           else
-            controllers.manual.account.routes.WhatAccountTypeController.onPageLoad(NormalMode)
+            controllers.manual.account.routes.WhatAccountTypeController.onPageLoad(mode)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
