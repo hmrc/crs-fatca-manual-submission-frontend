@@ -51,21 +51,19 @@ class CheckAnswersUtil @Inject() {
         currentAccountId   <- ua.get(CurrentAccountIdPage()(reportId))
         haveOfficialNumber <- ua.get(HaveNumberPage(currentAccountId)(reportId))
         isClosed           <- ua.get(AccountClosedPage(currentAccountId)(reportId))
-        hasJointAccounts   <- ua.get(IsJointAccountPage(currentAccountId)(reportId))
+        hasJointAccounts   <- Some(ua.get(IsJointAccountPage(currentAccountId)(reportId)).contains(true))
       } yield {
-
         val haveNumberSummary       = Seq(HaveNumberSummary.row(ua)).flatten
         val unofficialNumberSummary = if (!haveOfficialNumber) Seq(IdentifierSummary.row(ua)).flatten else Seq.empty
         val officialNumberSummaries = if (haveOfficialNumber) Seq(NumberTypeSummary.row(ua), WhatIsAccountNumberSummary.row(ua)).flatten else Seq.empty
         val jointAccountSummaries =
-          (if (hasJointAccounts) Seq(IsJointAccountSummary.row(ua), HowManyJointAccountHoldersSummary.row(ua))
-           else Seq(IsJointAccountSummary.row(ua))).flatten
+          if (hasJointAccounts) Seq(IsJointAccountSummary.row(ua), HowManyJointAccountHoldersSummary.row(ua)).flatten
+          else Seq(IsJointAccountSummary.row(ua)).flatten
         val accountClosedSummary = Seq(AccountClosedSummary.row(ua)).flatten
         val currSummary          = if (isClosed && regime == CRS) Seq(WhatWasTheAccountCurrencySummary.row(ua)).flatten else Seq.empty
         val balanceSummary =
           if (regime == FATCA || (regime == CRS && !isClosed)) Seq(WhatWasTheAccountBalanceSummary.row(ua)).flatten
           else Seq.empty
-
         val crsOnlySummaries =
           if (regime == CRS) {
             Seq(IsUndocumentedAccountSummary.row(ua), IsDormantAccountSummary.row(ua), WasAccountOpenSummary.row(ua)).flatten ++ jointAccountSummaries ++ Seq(
@@ -83,7 +81,9 @@ class CheckAnswersUtil @Inject() {
           balanceSummary ++
           crsOnlySummaries ++
           paymentsSummary
-      }).getOrElse(Seq.empty)
+      }).getOrElse {
+        Seq.empty
+      }
 
     SummaryListViewModel(rows = rows).withCssClass("govuk-!-margin-bottom-9")
   }
