@@ -400,6 +400,9 @@ POST       /manual/account/number                                               
 GET        /manual/account/change-number                                          controllers.manual.account.WhatIsAccountNumberController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/account/change-number                                          controllers.manual.account.WhatIsAccountNumberController.onSubmit(mode: Mode = CheckMode)
 
+GET        /manual/account/check-answers                                      controllers.manual.account.AccountCheckAnswersController.onPageLoad()
+POST       /manual/account/check-answers                                      controllers.manual.account.AccountCheckAnswersController.onSubmit()
+
 GET        /manual/account-holder/organisation-name                       controllers.manual.accountHolders.OrganisationNameController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/account-holder/organisation-name                       controllers.manual.accountHolders.OrganisationNameController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/account-holder/change-organisation-name                 controllers.manual.accountHolders.OrganisationNameController.onPageLoad(mode: Mode = CheckMode)
@@ -420,5 +423,8 @@ POST       /manual/cp-so/controlling-person-type                        controll
 GET        /manual/cp-so/change-controlling-person-type                  controllers.manual.cpso.ControllingPersonTypeController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/cp-so/change-controlling-person-type                  controllers.manual.cpso.ControllingPersonTypeController.onSubmit(mode: Mode = CheckMode)
 
-GET        /manual/account/check-answers                                      controllers.manual.account.AccountCheckAnswersController.onPageLoad()
-POST       /manual/account/check-answers                                      controllers.manual.account.AccountCheckAnswersController.onSubmit()
+GET        /manual/account-holder/account                controllers.manual.accountHolders.AccountController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account-holder/account                controllers.manual.accountHolders.AccountController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account-holder/change-account         controllers.manual.accountHolders.AccountController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account-holder/change-account         controllers.manual.accountHolders.AccountController.onSubmit(mode: Mode = CheckMode)
+

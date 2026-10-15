@@ -34,11 +34,7 @@ class IndividualOrOrganisationController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
-  identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  reportIdAction: ReportIdRequiredAction,
-  accountHolderIdCreationAction: AccountHolderIdCreationAction,
+  actions: Actions,
   formProvider: IndividualOrOrganisationFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: individualOrOrganisationView
@@ -48,7 +44,7 @@ class IndividualOrOrganisationController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction andThen accountHolderIdCreationAction) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequired() {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
       val preparedForm = request.userAnswers.get(IndividualOrOrganisationPage(request.accountHolderId)) match {
@@ -60,7 +56,7 @@ class IndividualOrOrganisationController @Inject() (
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] =
-    (identify andThen getData andThen requireData andThen reportIdAction andThen accountHolderIdCreationAction).async {
+    actions.withReportIdRequiredAndAccountHolderIdRequired().async {
       implicit request =>
         implicit val reportId: ReportId = request.reportId
         form

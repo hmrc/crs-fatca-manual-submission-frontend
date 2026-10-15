@@ -1054,3 +1054,13 @@ whatIsAccountNumber.change.hidden = Change account number or identification numb
 
 accountCheckAnswers.title = Check your answers for the account
 accountCheckAnswers.heading = Check your answers for the account
+accountHolder.account.title = Accounts held by this account holder
+accountHolder.account.heading = Accounts held by this account holder
+accountHolder.account.para = You must {0} first for it to appear as an option.
+accountHolder.account.para.link = add an account
+accountHolder.account.question = Which accounts does this account holder hold?
+accountHolder.account.question.hint = Select at least one account number or identifier.
+accountHolder.account.sendAReport.link = Back to send a {0} report for {1}
+accountHolder.account.checkYourAnswersLabel = Accounts held by this account holder
+accountHolder.account.error.required = Select at least one account number or identifier
+accountHolder.account.change.hidden = Account

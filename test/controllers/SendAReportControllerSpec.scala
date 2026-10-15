@@ -29,7 +29,8 @@ import views.html.SendAReportView
 
 class SendAReportControllerSpec extends SpecBase {
   "SendAReport Controller" - {
-    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "testFiID"))
+    val reportId = ReportId(CRS, 2025, None, "testFiID")
+    val ua       = emptyUserAnswers.withPage(ReportIdPage, reportId)
     val sections = SendAReportSections(
       reportDetails = Some(NotStarted),
       financialInstitutionDetails = Some(NotStarted),
@@ -39,7 +40,9 @@ class SendAReportControllerSpec extends SpecBase {
       accountHolders = Some(NoStatus),
       controllingPersons = Some(Completed),
       tbc1 = Some(Incomplete),
-      tbc2 = Some(Incomplete)
+      tbc2 = Some(Incomplete),
+      userAnswers = emptyUserAnswers,
+      reportId = reportId
     )
     "must return OK and the correct view for a GET" in {
       val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
