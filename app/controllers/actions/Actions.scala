@@ -39,7 +39,8 @@ class Actions @Inject() (
   cpsoNameRequiredAction: CPSONameRequiredAction,
   accountHolderNameRequiredAction: AccountHolderNameRequiredAction,
   accountHolderCRSOnlyFilterAction: AccountHolderCRSOnlyFilterAction,
-  taxResidentCountryIdCreationForCPSOAction: TaxResidentCountryIdCreationForCPSOAction
+  taxResidentCountryIdCreationForCPSOAction: TaxResidentCountryIdCreationForCPSOAction,
+  taxResidentCountryIdRequiredForCPSOAction: TaxResidentCountryIdRequiredForCPSOAction
 ) {
 
   def withReportIdRequiredAndAccountIdCreation(): ActionBuilder[AccountIdRequest, AnyContent] =
@@ -86,6 +87,9 @@ class Actions @Inject() (
 
   def withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequiredAndTaxResidentIdCreation(): ActionBuilder[TaxResidentCountryIdForCPSORequest, AnyContent] =
     withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequired() andThen taxResidentCountryIdCreationForCPSOAction
+
+  def withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequiredAndTaxResidentIdRequired(): ActionBuilder[TaxResidentCountryIdForCPSORequest, AnyContent] =
+    withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequired() andThen taxResidentCountryIdRequiredForCPSOAction
 
   private def identityAndRequireData = identify andThen getData andThen requireData
 }

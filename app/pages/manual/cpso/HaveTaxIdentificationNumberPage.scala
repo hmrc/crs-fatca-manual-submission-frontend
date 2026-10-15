@@ -17,9 +17,10 @@
 package pages.manual.cpso
 
 import models.ReportId
+import models.viewModels.manual.cpso.CPSOId
 import pages.QuestionPage
 import play.api.libs.json.JsPath
 
-final case class HaveTaxIdentificationNumberPage()(implicit reportId: ReportId) extends QuestionPage[Boolean]:
+final case class HaveTaxIdentificationNumberPage(index: Int, currentId: CPSOId, reportId: ReportId) extends QuestionPage[Boolean]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "haveTaxIdentificationNumber"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "cp-so" \ currentId.value \ "taxResidentCountries" \ index \ "hasTaxIdentificationNumber"
