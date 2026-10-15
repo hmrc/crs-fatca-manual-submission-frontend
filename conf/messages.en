@@ -1012,7 +1012,27 @@ organisationCrs.change.hidden = organisationCrs
 organisationCrs.passiveWithMultiplePersons = Passive non-financial entity with one or more controlling reportable persons
 organisationCrs.crsReportable = CRS reportable person
 organisationCrs.passiveCrsPerson = Passive non-financial entity that is a CRS reportable person
-organisationCrs.empty =
+
+cpso.controllingPersonType.title = What type of controlling person are they?
+cpso.controllingPersonType.heading = What type of controlling person is {0}?
+cpso.controllingPersonType.hint = Select all that apply.
+
+cpso.controllingPersonType.ownershipOfLegalPerson = Ownership of a legal person
+cpso.controllingPersonType.otherMeansOfControl = Other means of control of a legal person
+cpso.controllingPersonType.seniorManagingOfficial = Senior managing official of a legal person
+cpso.controllingPersonType.settlorOfTrust = Settlor of a trust
+cpso.controllingPersonType.trusteeOfTrust = Trustee of a trust
+cpso.controllingPersonType.protectorOfTrust = Protector of a trust
+cpso.controllingPersonType.beneficiaryOfTrust = Beneficiary of a trust
+cpso.controllingPersonType.otherControllingPersonOfTrust = Other type of controlling person of a trust
+cpso.controllingPersonType.settlorEquivalent = Settlor-equivalent of another legal arrangement
+cpso.controllingPersonType.trusteeEquivalent = Trustee-equivalent of another legal arrangement
+cpso.controllingPersonType.protectorEquivalent = Protector-equivalent of another legal arrangement
+cpso.controllingPersonType.beneficiaryEquivalent = Beneficiary-equivalent of another legal arrangement
+cpso.controllingPersonType.otherLegalArrangementEquivalent = Other equivalent of another legal arrangement
+cpso.controllingPersonType.notReported = Not reported
+
+cpso.controllingPersonType.error.required = Select what type of controlling person they are
 
 whatIsAccountNumber.title = What is the account or identification number?
 whatIsAccountNumber.heading = What is the account or identification number?
@@ -1036,6 +1056,16 @@ whatIsAccountNumber.error.invalid.countryCode.ISIN = ISIN must include a real co
 whatIsAccountNumber.checkYourAnswersLabel = Account or identification number
 whatIsAccountNumber.change.hidden = Change account or identification number
 
+accountHolder.account.title = Accounts held by this account holder
+accountHolder.account.heading = Accounts held by this account holder
+accountHolder.account.para = You must {0} first for it to appear as an option.
+accountHolder.account.para.link = add an account
+accountHolder.account.question = Which accounts does this account holder hold?
+accountHolder.account.question.hint = Select at least one account number or identifier.
+accountHolder.account.sendAReport.link = Back to send a {0} report for {1}
+accountHolder.account.checkYourAnswersLabel = Accounts held by this account holder
+accountHolder.account.error.required = Select at least one account number or identifier
+accountHolder.account.change.hidden = Account
 accountHolders.provideEquityInterestType.title = 	Do you need to provide the equity interest type of the account holder?
 accountHolders.provideEquityInterestType.heading = 	Do you need to provide the equity interest type of {0}?
 accountHolders.provideEquityInterestType.error.required = 	Select whether you need to provide the equity interest type of the account holder

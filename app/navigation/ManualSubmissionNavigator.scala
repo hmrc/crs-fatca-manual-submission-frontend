@@ -30,6 +30,7 @@ import pages.manual.accountHolders.{
   AccountHolderAddressNonUkPage,
   AccountHolderIndividualNamePage,
   AccountHolderOrganisationNamePage,
+  AccountPage,
   AddressLookupForAccountHolderPage,
   IndividualHavePlaceOfBirthPage,
   IndividualOrOrganisationPage,
@@ -157,6 +158,14 @@ class ManualSubmissionNavigator @Inject() () {
     reportId: ReportId
   ): PartialFunction[(Page, Mode, UserAnswers), Call] = {
 
+    case (pages.manual.accountHolders.AccountPage(reportId, id), mode, ua) =>
+      ua.get(pages.manual.accountHolders.AccountPage(reportId, id)) match {
+        case Some(_) =>
+          controllers.manual.accountHolders.routes.IndividualOrOrganisationController.onPageLoad(mode)
+        case None =>
+          controllers.routes.JourneyRecoveryController.onPageLoad()
+      }
+
     case (IndividualOrOrganisationPage(id), mode, ua) =>
       ua.get(IndividualOrOrganisationPage(id))
         .fold(controllers.routes.JourneyRecoveryController.onPageLoad()) {
@@ -258,15 +267,17 @@ class ManualSubmissionNavigator @Inject() () {
         case Some(false) =>
           reportId.regime match {
             case SubmissionsConstants.FATCA => controllers.manual.cpso.routes.CPSOWhereAreTheyBasedController.onPageLoad(mode)
+            case SubmissionsConstants.CRS   => controllers.manual.cpso.routes.ControllingPersonTypeController.onPageLoad(mode)
             case _                          => routes.UnderConstructionController.onPageLoad()
-          } // todo: update to handle CRS specific routing in 4498
+          }
         case None => routes.JourneyRecoveryController.onPageLoad()
       }
     case (pages.manual.cpso.IndividualPlaceOfBirthPage(cpsoId, reportId), mode, ua) =>
       reportId.regime match {
         case SubmissionsConstants.FATCA => controllers.manual.cpso.routes.CPSOWhereAreTheyBasedController.onPageLoad(mode)
+        case SubmissionsConstants.CRS   => controllers.manual.cpso.routes.ControllingPersonTypeController.onPageLoad(mode)
         case _                          => routes.UnderConstructionController.onPageLoad()
-      } // todo: update to handle CRS specific routing in 4498
+      }
     case (CPSOWhereAreTheyBasedPage(cpsoId, reportId), mode, ua) =>
       ua.get(CPSOWhereAreTheyBasedPage(cpsoId, reportId)) match {
         case Some(false) => controllers.manual.cpso.routes.CPSOAddressNonUkController.onPageLoad(mode)
@@ -286,6 +297,8 @@ class ManualSubmissionNavigator @Inject() () {
         case Some(true)  => controllers.manual.cpso.routes.CPSOIndividualDateOfBirthController.onPageLoad(mode)
         case None        => routes.JourneyRecoveryController.onPageLoad()
       }
+    case (pages.manual.cpso.ControllingPersonTypePage(reportId, cpsoId), mode, ua) =>
+      controllers.manual.cpso.routes.CpsoSelfCertificationController.onPageLoad(mode)
   }
 
   private def sponsorNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {

@@ -16,7 +16,8 @@
 
 package models.viewModels
 
-import models.NormalMode
+import models.{NormalMode, ReportId, UserAnswers}
+import pages.manual.accountHolders.AccountHoldersPage
 
 sealed trait TaskStatus
 
@@ -27,6 +28,12 @@ object TaskStatus {
   case object NoStatus extends TaskStatus
 }
 
+def handleAccountHolderNavigation(userAnswers: UserAnswers, reportId: ReportId) =
+  userAnswers.get(AccountHoldersPage()(reportId)) match {
+    case Some(_) => Some(controllers.routes.UnderConstructionController.onPageLoad().url)
+    case None    => Some(controllers.manual.accountHolders.routes.AccountController.onPageLoad(NormalMode).url)
+  }
+
 final case class SendAReportSections(
   reportDetails: Option[TaskStatus],
   financialInstitutionDetails: Option[TaskStatus],
@@ -36,7 +43,9 @@ final case class SendAReportSections(
   accountHolders: Option[TaskStatus],
   controllingPersons: Option[TaskStatus],
   tbc1: Option[TaskStatus],
-  tbc2: Option[TaskStatus]
+  tbc2: Option[TaskStatus],
+  userAnswers: UserAnswers,
+  reportId: ReportId
 ) {
 
   private def task(titleKey: String, status: Option[TaskStatus], href: Option[String]): Seq[SendAReportTask] =
@@ -82,7 +91,7 @@ final case class SendAReportSections(
                accounts,
                href = Some(controllers.manual.account.routes.HaveNumberController.onPageLoad(NormalMode).url)
           ),
-          task("sendAReport.accountsInformation.accountHolders", accountHolders, href = Some(controllers.routes.UnderConstructionController.onPageLoad().url)),
+          task("sendAReport.accountsInformation.accountHolders", accountHolders, href = handleAccountHolderNavigation(userAnswers, reportId)),
           task(
             "sendAReport.accountsInformation.controllingPersons",
             controllingPersons,

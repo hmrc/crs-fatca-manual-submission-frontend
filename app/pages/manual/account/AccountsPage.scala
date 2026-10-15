@@ -21,6 +21,6 @@ import models.viewModels.Accounts
 import pages.QuestionPage
 import play.api.libs.json.JsPath
 
-case class AccountsPage()(implicit reportId: ReportId) extends QuestionPage[Accounts]:
+case class AccountsPage(reportId: ReportId) extends QuestionPage[Accounts]:
 
   override def path: JsPath = JsPath \ reportId.mongoKey \ "accounts"

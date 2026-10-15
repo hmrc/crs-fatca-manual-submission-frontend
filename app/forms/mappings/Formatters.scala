@@ -17,6 +17,7 @@
 package forms.mappings
 
 import models.SubmissionsConstants.{FATCA, RegimeType}
+import models.viewModels.AccountId
 import models.{Enumerable, ErrorValidation, SubmissionsConstants}
 import play.api.data.FormError
 import play.api.data.format.Formatter
@@ -329,5 +330,23 @@ trait Formatters extends Transforms {
     override def unbind(key: String, value: String): Map[String, String] =
       Map(key -> formatAmount(value))
   }
+
+  protected def accountIdFormatter(requiredKey: String): Formatter[AccountId] =
+    new Formatter[AccountId] {
+      override def bind(
+        key: String,
+        data: Map[String, String]
+      ): Either[Seq[FormError], AccountId] =
+        data
+          .get(key)
+          .map(AccountId.apply)
+          .toRight(Seq(FormError(key, requiredKey)))
+
+      override def unbind(
+        key: String,
+        value: AccountId
+      ): Map[String, String] =
+        Map(key -> value.value)
+    }
 
 }

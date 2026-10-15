@@ -424,3 +424,13 @@ GET        /manual/account-holder/equity-interest-type                       con
 POST       /manual/account-holder/equity-interest-type                       controllers.manual.accountHolders.EquityInterestTypeController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/account-holder/change-equity-interest-type                controllers.manual.accountHolders.EquityInterestTypeController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/account-holder/change-equity-interest-type                controllers.manual.accountHolders.EquityInterestTypeController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/cp-so/controlling-person-type                      controllers.manual.cpso.ControllingPersonTypeController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/cp-so/controlling-person-type                        controllers.manual.cpso.ControllingPersonTypeController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/cp-so/change-controlling-person-type                  controllers.manual.cpso.ControllingPersonTypeController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/cp-so/change-controlling-person-type                  controllers.manual.cpso.ControllingPersonTypeController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/account-holder/account                controllers.manual.accountHolders.AccountController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account-holder/account                controllers.manual.accountHolders.AccountController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account-holder/change-account         controllers.manual.accountHolders.AccountController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account-holder/change-account         controllers.manual.accountHolders.AccountController.onSubmit(mode: Mode = CheckMode)
