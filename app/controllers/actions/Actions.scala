@@ -29,6 +29,7 @@ class Actions @Inject() (
   accountIdCreationAction: AccountIdCreationAction,
   accountIdRequiredAction: AccountIdRequiredAction,
   accountHolderIdRequiredAction: AccountHolderIdRequiredAction,
+  accountHolderIdCreationAction: AccountHolderIdCreationAction,
   sponsorNameRequiredAction: SponsorNameRequiredAction,
   cpsoIdCreationAction: CpsoIdCreationAction,
   cpsoIdRequiredAction: CPSOIdRequiredAction,
@@ -55,6 +56,9 @@ class Actions @Inject() (
 
   def withReportIdRequiredAndAccountHolderIdRequired(): ActionBuilder[AccountHolderIdRequest, AnyContent] =
     withReportIdRequired() andThen accountHolderIdRequiredAction
+
+  def withReportIdRequiredAndAccountHolderIdCreation(): ActionBuilder[AccountHolderIdRequest, AnyContent] =
+    withReportIdRequired() andThen accountHolderIdCreationAction
 
   def withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired(): ActionBuilder[AccountHolderNameRequest, AnyContent] =
     withReportIdRequired() andThen accountHolderIdRequiredAction andThen accountHolderNameRequiredAction

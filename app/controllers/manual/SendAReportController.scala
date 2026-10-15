@@ -48,7 +48,9 @@ class SendAReportController @Inject() (
         accountHolders = Some(NoStatus),
         controllingPersons = Some(Completed),
         tbc1 = Some(Incomplete),
-        tbc2 = Some(Incomplete)
+        tbc2 = Some(Incomplete),
+        userAnswers = request.userAnswers,
+        reportId = request.reportId
       )
       Ok(view(sections))
   }

@@ -17,6 +17,8 @@
 package generators
 
 import models.manual.account.{PaymentType, WasAccountOpen, WhatAccountType}
+import models.manual.accountHolders.{IndividualName, SelfCertification}
+import models.manual.cpso.{CpsoSelfCertification, IndividualOrOrganisation, UkPostCode}
 import models.manual.accountHolders.{IndividualName, IndividualPlaceOfBirth, SelfCertification}
 import models.manual.cpso.{CpsoSelfCertification, IndividualOrOrganisation, ResidentForTax, UkPostCode}
 import models.{AddressUk, CrsOrFatca, NumberType, TypeOfReport, UkAddress, UkPostCodeForAccountHolder}
