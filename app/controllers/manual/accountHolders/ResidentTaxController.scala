@@ -74,7 +74,7 @@ class ResidentTaxController @Inject() (
               updatedAnswersWithCurrentIndex <- Future
                 .fromTry(updatedAnswers.setWithReportId(CurrentTaxResidentCountryIndexPage(request.accountHolderId, reportId), request.currentIndex))
               _ <- repository.set(updatedAnswersWithCurrentIndex)
-            } yield Redirect(navigator.nextPage(ResidentTaxPage(request.currentIndex, request.accountHolderId, reportId), mode, updatedAnswers))
+            } yield Redirect(navigator.nextPage(ResidentTaxPage(request.currentIndex, request.accountHolderId, reportId), mode, updatedAnswersWithCurrentIndex))
         )
   }
 }
