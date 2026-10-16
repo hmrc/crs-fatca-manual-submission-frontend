@@ -21,6 +21,7 @@ import controllers.manual.reportdetails.routes.*
 import controllers.routes
 import models.*
 import models.SubmissionsConstants.{CRS, FATCA}
+import models.manual.account.WhatAccountType
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
 import models.viewModels.manual.cpso.CPSOId
 import models.viewModels.{AccountHolderId, AccountId}
@@ -32,12 +33,14 @@ import pages.manual.accountHolders.{
   AccountHolderOrganisationNamePage,
   AccountPage,
   AddressLookupForAccountHolderPage,
+  EquityInterestTypePage,
   IndividualHavePlaceOfBirthPage,
   IndividualOrOrganisationPage,
   IndividualPlaceOfBirthPage,
   IsThisTheAddressForAccountHoldersPage,
   OrganisationCrsPage,
   OrganisationFatcaPage,
+  ProvideEquityInterestTypePage,
   SelectAddressPage,
   SelfCertificationPage as AccountHolderSelfCertificationPage,
   UkAddressPage as AccountHolderUkAddressPage,
@@ -236,17 +239,21 @@ class ManualSubmissionNavigator @Inject() () {
     case (UkPostCodeForAccountHolderPage(accountHolderId, reportId), mode, ua) => handleUKPostcodeNavigationForAccountHolders(ua, mode, accountHolderId)
     case (IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId), mode, ua) =>
       handleIsThisTheAddressForAccountHoldersRouting(ua, mode, accountHolderId)
-    case (AccountHolderUkAddressPage(accountHolderId, reportId), mode, _) =>
-      // TODO - need to route here!
-      controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
-    case (SelectAddressPage(_, _), _, _) =>
-      // TODO - need to route here!
-      controllers.routes.UnderConstructionController.onPageLoad()
-    case (AccountHolderAddressNonUkPage(_, _), _, _)      =>
-      //TODO - routing here too
-      controllers.routes.UnderConstructionController.onPageLoad()
+    case (AccountHolderUkAddressPage(accountHolderId, _), mode, ua) =>
+      handleEquityInterestRouting(ua, mode, accountHolderId)
+    case (SelectAddressPage(accountHolderId, _), mode, ua) =>
+      handleEquityInterestRouting(ua, mode, accountHolderId)
+    case (AccountHolderAddressNonUkPage(accountHolderId, _), mode, ua) =>
+      handleEquityInterestRouting(ua, mode, accountHolderId)
     case (AccountHolderSelfCertificationPage(_, _), _, _) => controllers.routes.UnderConstructionController.onPageLoad()
     case (IndividualPlaceOfBirthPage(_, _), mode, _)      => controllers.manual.accountHolders.routes.WhereAreTheyBasedController.onPageLoad(mode)
+    case (ProvideEquityInterestTypePage(id), mode, ua) =>
+      ua.get(ProvideEquityInterestTypePage(id)) match {
+        case Some(true)  => controllers.manual.accountHolders.routes.EquityInterestTypeController.onPageLoad(mode)
+        case Some(false) => controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
+        case None        => routes.JourneyRecoveryController.onPageLoad()
+      }
+    case (EquityInterestTypePage(_), mode, _) => controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
   }
 
   private def cpsoNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
@@ -405,10 +412,29 @@ class ManualSubmissionNavigator @Inject() () {
     reportId: ReportId
   ) =
     userAnswers.get(IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId)) match {
-      //todo - handle routing here!
-      case Some(true)  => routes.UnderConstructionController.onPageLoad()
+      case Some(true)  => handleEquityInterestRouting(userAnswers, mode, accountHolderId)
       case Some(false) => controllers.manual.accountHolders.routes.UkAddressController.onPageLoad(mode)
       case None        => routes.JourneyRecoveryController.onPageLoad()
+    }
+
+  private def handleEquityInterestRouting(ua: UserAnswers, mode: Mode, accountHolderId: AccountHolderId)(implicit reportId: ReportId): Call =
+    reportId.regime match {
+      case FATCA => routes.UnderConstructionController.onPageLoad()
+      case CRS =>
+        ua.get(AccountPage(reportId, accountHolderId)) match {
+          case Some(accountIds) if accountIds.nonEmpty =>
+            val accountTypes = accountIds.map(
+              id => ua.get(WhatAccountTypePage(id))
+            )
+
+            if (accountTypes.exists(_.isEmpty)) routes.JourneyRecoveryController.onPageLoad()
+            else if (accountTypes.flatten.contains(WhatAccountType.InvestmentEntity))
+              controllers.manual.accountHolders.routes.ProvideEquityInterestTypeController.onPageLoad(mode)
+            else controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
+
+          case _ => routes.JourneyRecoveryController.onPageLoad()
+        }
+      case _ => routes.JourneyRecoveryController.onPageLoad()
     }
 
   private def handleWhatIsAddressForSponsorNavigation(userAnswers: UserAnswers, mode: Mode)(implicit reportId: ReportId) =

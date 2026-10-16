@@ -1280,12 +1280,12 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           ).ukAddress
           val accountHolderId = AccountHolderId("holder-id")
 
-          "must go to account holder self certification" in {
+          "must go to Under Construction for FATCA" in {
             val ua = UserAnswers("id")
               .withPage(AccountHolderUkAddressPage(accountHolderId, reportId), address)
 
             navigator.nextPage(AccountHolderUkAddressPage(accountHolderId, reportId), NormalMode, ua) mustBe
-              controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(NormalMode)
+              controllers.routes.UnderConstructionController.onPageLoad()
           }
 
         }
@@ -1313,6 +1313,135 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               controllers.routes.UnderConstructionController.onPageLoad()
           }
 
+        }
+
+        "Equity interest routing" - {
+          val accountHolderId = AccountHolderId("equity-holder")
+          val firstAccountId  = AccountId("first-account")
+          val secondAccountId = AccountId("second-account")
+          val crsReportId     = ReportId(CRS, 2025, None, "TestFIID")
+          val fatcaReportId   = ReportId(FATCA, 2025, None, "TestFIID")
+
+          def addressPages(id: ReportId): Seq[(String, Page)] = Seq(
+            "confirmed UK address" -> IsThisTheAddressForAccountHoldersPage(accountHolderId, id),
+            "manual UK address"    -> AccountHolderUkAddressPage(accountHolderId, id),
+            "selected UK address"  -> SelectAddressPage(accountHolderId, id),
+            "non-UK address"       -> AccountHolderAddressNonUkPage(accountHolderId, id)
+          )
+
+          def answers(id: ReportId, accountTypes: Seq[(AccountId, WhatAccountType)]): UserAnswers =
+            accountTypes.foldLeft(
+              UserAnswers("id")
+                .withPage(AccountPage(id, accountHolderId), accountTypes.map(_._1).toSet)
+                .withPage(IsThisTheAddressForAccountHoldersPage(accountHolderId, id), true)
+            ) {
+              case (ua, (accountId, accountType)) =>
+                ua.withPage(WhatAccountTypePage(accountId)(id), accountType)
+            }
+
+          addressPages(fatcaReportId).foreach {
+            case (name, page) =>
+              s"must go to Under Construction from $name for FATCA" in {
+                val ua = answers(fatcaReportId, Seq(firstAccountId -> WhatAccountType.InvestmentEntity))
+
+                navigator.nextPage(page, NormalMode, ua)(fatcaReportId) mustBe
+                  controllers.routes.UnderConstructionController.onPageLoad()
+              }
+          }
+
+          addressPages(crsReportId).foreach {
+            case (name, page) =>
+              s"must go to Provide Equity Interest Type from $name when any associated CRS account is CRS1104" in {
+                val ua = answers(crsReportId,
+                                 Seq(
+                                   firstAccountId  -> WhatAccountType.Custodial,
+                                   secondAccountId -> WhatAccountType.InvestmentEntity
+                                 )
+                )
+
+                navigator.nextPage(page, NormalMode, ua)(crsReportId) mustBe
+                  controllers.manual.accountHolders.routes.ProvideEquityInterestTypeController.onPageLoad(NormalMode)
+              }
+
+              s"must go to Self Certification from $name when no associated CRS account is CRS1104" in {
+                val ua = answers(crsReportId,
+                                 Seq(
+                                   firstAccountId  -> WhatAccountType.Depository,
+                                   secondAccountId -> WhatAccountType.Custodial
+                                 )
+                )
+
+                navigator.nextPage(page, NormalMode, ua)(crsReportId) mustBe
+                  controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(NormalMode)
+              }
+          }
+
+          "must go to Provide Equity Interest Type when the only associated CRS account is CRS1104" in {
+            val ua = answers(crsReportId, Seq(firstAccountId -> WhatAccountType.InvestmentEntity))
+
+            navigator.nextPage(AccountHolderUkAddressPage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
+              controllers.manual.accountHolders.routes.ProvideEquityInterestTypeController.onPageLoad(NormalMode)
+          }
+
+          "must ignore CRS1104 accounts associated with another account holder" in {
+            val otherHolderId = AccountHolderId("other-holder")
+            val ua = answers(crsReportId, Seq(firstAccountId -> WhatAccountType.Custodial))
+              .withPage(AccountPage(crsReportId, otherHolderId), Set(secondAccountId))
+              .withPage(WhatAccountTypePage(secondAccountId)(crsReportId), WhatAccountType.InvestmentEntity)
+
+            navigator.nextPage(AccountHolderUkAddressPage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
+              controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(NormalMode)
+          }
+
+          "must go to Journey Recovery when no accounts are associated with the account holder" in {
+            val ua = UserAnswers("id")
+
+            navigator.nextPage(AccountHolderUkAddressPage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
+
+          "must go to Journey Recovery when the associated account set is empty" in {
+            val ua = UserAnswers("id").withPage(AccountPage(crsReportId, accountHolderId), Set.empty[AccountId])
+
+            navigator.nextPage(AccountHolderUkAddressPage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
+
+          "must go to Journey Recovery when an associated account has no account type answer" in {
+            val ua = answers(crsReportId, Seq(firstAccountId -> WhatAccountType.InvestmentEntity))
+              .withPage(AccountPage(crsReportId, accountHolderId), Set(firstAccountId, secondAccountId))
+
+            navigator.nextPage(AccountHolderUkAddressPage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
+
+          "must go to the Equity Interest Type checkboxes when Provide Equity Interest Type is Yes" in {
+            val ua = UserAnswers("id").withPage(ProvideEquityInterestTypePage(accountHolderId)(crsReportId), true)
+
+            navigator.nextPage(ProvideEquityInterestTypePage(accountHolderId)(crsReportId), NormalMode, ua)(crsReportId) mustBe
+              controllers.manual.accountHolders.routes.EquityInterestTypeController.onPageLoad(NormalMode)
+          }
+
+          "must go to Self Certification when Provide Equity Interest Type is No" in {
+            val ua = UserAnswers("id").withPage(ProvideEquityInterestTypePage(accountHolderId)(crsReportId), false)
+
+            navigator.nextPage(ProvideEquityInterestTypePage(accountHolderId)(crsReportId), NormalMode, ua)(crsReportId) mustBe
+              controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(NormalMode)
+          }
+
+          "must go to Journey Recovery when Provide Equity Interest Type is unanswered" in {
+            val ua = UserAnswers("id")
+
+            navigator.nextPage(ProvideEquityInterestTypePage(accountHolderId)(crsReportId), NormalMode, ua)(crsReportId) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
+
+          "must go to Self Certification after Equity Interest Type" in {
+            val ua = UserAnswers("id")
+
+            navigator.nextPage(EquityInterestTypePage(accountHolderId)(crsReportId), NormalMode, ua)(crsReportId) mustBe
+              controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(NormalMode)
+          }
         }
 
         "AccountPaymentsAmountPage" - {
