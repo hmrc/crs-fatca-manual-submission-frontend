@@ -85,7 +85,7 @@ class HaveTaxIdentificationNumberViewSpec extends SpecBase {
 
       "must quote the country when it is the 'Other country' entry" in {
         render(country = otherCountry).select("h1").text() mustBe
-          "Do you have a tax identification number for Test Name for 'Other country'?"
+          "Do you have a tax identification number for Test Name for ‘Other country’?"
       }
 
     }

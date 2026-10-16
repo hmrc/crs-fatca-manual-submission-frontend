@@ -17,7 +17,7 @@
 package controllers.actions
 
 import models.SubmissionsConstants.{CRS, RegimeType}
-import models.requests.{CPSOIdRequest, CPSONameRequest}
+import models.requests.CPSONameRequest
 import play.api.mvc.ActionFilter
 
 import javax.inject.Inject

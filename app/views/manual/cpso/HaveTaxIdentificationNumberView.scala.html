@@ -38,10 +38,10 @@
                 field = form("value"),
                 legend = LegendViewModel(
                     if(country.code == "XX") {
-                        messages("cpso.haveTaxIdentificationNumber.other.heading", cpsoName, s"'${country.description}'")
+                        messages("cpso.haveTaxIdentificationNumber.other.heading", cpsoName, s"‘${country.displayNameInSentence.getOrElse(country.description)}’")
                     }
                     else{
-                        messages("cpso.haveTaxIdentificationNumber.heading", cpsoName, country.description)
+                        messages("cpso.haveTaxIdentificationNumber.heading", cpsoName, country.displayNameInSentence.getOrElse(country.description))
                     }
 
                 ).asPageHeading()

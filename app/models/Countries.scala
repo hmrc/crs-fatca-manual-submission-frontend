@@ -25,7 +25,8 @@ object Countries {
     Country(
       code = "GB",
       description = "United Kingdom",
-      alternativeName = Some("United Kingdom:UK:Great Britain:Northern Ireland")
+      alternativeName = Some("United Kingdom:UK:Great Britain:Northern Ireland"),
+      displayNameInSentence = Some("the United Kingdom")
     ),
     Country(
       code = "GG",
@@ -33,7 +34,8 @@ object Countries {
     ),
     Country(
       code = "IM",
-      description = "Isle of Man"
+      description = "Isle of Man",
+      displayNameInSentence = Some("the Isle of Man")
     ),
     Country(
       code = "JE",
@@ -45,118 +47,145 @@ object Countries {
     Country(
       code = "AE",
       description = "United Arab Emirates",
-      alternativeName = Some("UAE")
+      alternativeName = Some("UAE"),
+      displayNameInSentence = Some("the United Arab Emirates")
     ),
     Country(
       code = "AX",
-      description = "Aland Islands"
+      description = "Aland Islands",
+      displayNameInSentence = Some("the Aland Islands")
     ),
     Country(
       code = "CC",
       description = "Cocos (Keeling) Islands",
-      alternativeName = Some("Keeling Islands:Cocos Islands")
+      alternativeName = Some("Keeling Islands:Cocos Islands"),
+      displayNameInSentence = Some("the Cocos (Keeling) Islands")
     ),
     Country(
       code = "CF",
       description = "Central African Republic",
-      alternativeName = Some("The Central African Republic")
+      alternativeName = Some("The Central African Republic"),
+      displayNameInSentence = Some("the Central African Republic")
     ),
     Country(
       code = "CG",
-      description = "Congo"
+      description = "Congo",
+      displayNameInSentence = Some("the Congo")
     ),
     Country(
       code = "CK",
-      description = "Cook Islands"
+      description = "Cook Islands",
+      displayNameInSentence = Some("the Cook Islands")
     ),
     Country(
       code = "DO",
       description = "Dominican Republic",
-      alternativeName = Some("The Dominican Republic")
+      alternativeName = Some("The Dominican Republic"),
+      displayNameInSentence = Some("the Dominican Republic")
     ),
     Country(
       code = "FK",
-      description = "Falkland Islands"
+      description = "Falkland Islands",
+      displayNameInSentence = Some("the Falkland Islands")
     ),
     Country(
       code = "FO",
-      description = "Faroe Islands"
+      description = "Faroe Islands",
+      displayNameInSentence = Some("the Faroe Islands")
     ),
     Country(
       code = "GS",
-      description = "South Georgia and South Sandwich Islands"
+      description = "South Georgia and South Sandwich Islands",
+      displayNameInSentence = Some("the South Georgia and South Sandwich Islands")
     ),
     Country(
       code = "HM",
-      description = "Heard and McDonald Islands"
+      description = "Heard and McDonald Islands",
+      displayNameInSentence = Some("the Heard and McDonald Islands")
     ),
     Country(
       code = "IO",
-      description = "British Indian Ocean Territory"
+      description = "British Indian Ocean Territory",
+      displayNameInSentence = Some("the British Indian Ocean Territory")
     ),
     Country(
       code = "KY",
-      description = "Cayman Islands"
+      description = "Cayman Islands",
+      displayNameInSentence = Some("the Cayman Islands")
     ),
     Country(
       code = "MH",
       description = "Marshall Islands",
-      alternativeName = Some("The Marshall Islands")
+      alternativeName = Some("The Marshall Islands"),
+      displayNameInSentence = Some("the Marshall Islands")
     ),
     Country(
       code = "MP",
-      description = "Northern Mariana Islands"
+      description = "Northern Mariana Islands",
+      displayNameInSentence = Some("the Northern Mariana Islands")
     ),
     Country(
       code = "NL",
-      description = "Netherlands"
+      description = "Netherlands",
+      displayNameInSentence = Some("the Netherlands")
     ),
     Country(
       code = "PH",
-      description = "Philippines"
+      description = "Philippines",
+      displayNameInSentence = Some("the Philippines")
     ),
     Country(
       code = "PN",
-      description = "Pitcairn, Henderson, Ducie and Oeno Islands"
+      description = "Pitcairn, Henderson, Ducie and Oeno Islands",
+      displayNameInSentence = Some("the Pitcairn, Henderson, Ducie and Oeno Islands")
     ),
     Country(
       code = "PS",
-      description = "State of Palestine"
+      description = "State of Palestine",
+      displayNameInSentence = Some("the State of Palestine")
     ),
     Country(
       code = "SB",
-      description = "Solomon Islands"
+      description = "Solomon Islands",
+      displayNameInSentence = Some("the Solomon Islands")
     ),
     Country(
       code = "TC",
-      description = "Turks and Caicos Islands"
+      description = "Turks and Caicos Islands",
+      displayNameInSentence = Some("the Turks and Caicos Islands")
     ),
     Country(
       code = "TF",
-      description = "French Southern Territories"
+      description = "French Southern Territories",
+      displayNameInSentence = Some("the French Southern Territories")
     ),
     Country(
       code = "UM",
       description = "US Minor Outlying Islands",
-      alternativeName = Some("United States Minor Outlying Islands")
+      alternativeName = Some("United States Minor Outlying Islands"),
+      displayNameInSentence = Some("the United States Minor Outlying Islands")
     ),
     Country(
       code = "US",
       description = "United States",
-      alternativeName = Some("USA")
+      alternativeName = Some("USA"),
+      displayNameInSentence = Some("the United States")
     ),
     Country(
       code = "VG",
-      description = "British Virgin Islands"
+      description = "British Virgin Islands",
+      displayNameInSentence = Some("the British Virgin Islands")
     ),
     Country(
       code = "VI",
       description = "United States Virgin Islands",
-      alternativeName = Some("US Virgin Islands")
+      alternativeName = Some("US Virgin Islands"),
+      displayNameInSentence = Some("the United States Virgin Islands")
     ),
     Country(
       code = "WF",
-      description = "Wallis and Futuna Islands"
+      description = "Wallis and Futuna Islands",
+      displayNameInSentence = Some("the Wallis and Futuna Islands")
     ),
     Country(
       code = "CD",
