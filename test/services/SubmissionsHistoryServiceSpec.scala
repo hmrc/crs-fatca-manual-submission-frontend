@@ -26,7 +26,7 @@ import play.api.inject.bind
 import play.api.test.Helpers.*
 import uk.gov.hmrc.http.InternalServerException
 
-import java.time.LocalDateTime
+import java.time.{LocalDateTime, ZoneId}
 import scala.concurrent.Future
 
 class SubmissionsHistoryServiceSpec extends SpecBase {
@@ -99,9 +99,9 @@ class SubmissionsHistoryServiceSpec extends SpecBase {
       }
 
       "sort submissions by timeSent in descending order (newest first)" in {
-        val report1 = submittedReport.copy(messageRefId = "msg1", uploadDateTime = now.minusHours(2))
-        val report2 = submittedReport.copy(messageRefId = "msg2", uploadDateTime = now)
-        val report3 = submittedReport.copy(messageRefId = "msg3", uploadDateTime = now.minusHours(1))
+        val report1 = submittedReport.copy(messageRefId = "msg1", uploadDateTime = now.minusHours(2).atZone(ZoneId.of("Europe/London")).toInstant)
+        val report2 = submittedReport.copy(messageRefId = "msg2", uploadDateTime = now.atZone(ZoneId.of("Europe/London")).toInstant)
+        val report3 = submittedReport.copy(messageRefId = "msg3", uploadDateTime = now.minusHours(1).atZone(ZoneId.of("Europe/London")).toInstant)
 
         val result = service.prepareSubmissionHistoryCards(List(report1, report2, report3), 2016)
 
@@ -171,17 +171,17 @@ class SubmissionsHistoryServiceSpec extends SpecBase {
         val report1 = submittedReport.copy(
           messageRefId = "msg1",
           originalMessageRefId = Some("group1"),
-          uploadDateTime = now.minusHours(3)
+          uploadDateTime = now.minusHours(3).atZone(ZoneId.of("Europe/London")).toInstant
         )
         val report2 = submittedReport.copy(
           messageRefId = "msg2",
           originalMessageRefId = Some("group1"),
-          uploadDateTime = now
+          uploadDateTime = now.atZone(ZoneId.of("Europe/London")).toInstant
         )
         val report3 = submittedReport.copy(
           messageRefId = "msg3",
           originalMessageRefId = Some("group2"),
-          uploadDateTime = now.minusHours(1)
+          uploadDateTime = now.minusHours(1).atZone(ZoneId.of("Europe/London")).toInstant
         )
 
         val result = service.prepareSubmissionHistoryCards(
@@ -191,9 +191,9 @@ class SubmissionsHistoryServiceSpec extends SpecBase {
 
         result.size mustEqual 2
         result("group1").length mustEqual 2
-        result("group1")(0).timeSent mustEqual now
-        result("group1")(1).timeSent mustEqual now.minusHours(3)
-        result("group2")(0).timeSent mustEqual now.minusHours(1)
+        result("group1")(0).timeSent mustEqual now.atZone(ZoneId.of("Europe/London")).toInstant
+        result("group1")(1).timeSent mustEqual now.minusHours(3).atZone(ZoneId.of("Europe/London")).toInstant
+        result("group2")(0).timeSent mustEqual now.minusHours(1).atZone(ZoneId.of("Europe/London")).toInstant
       }
     }
   }

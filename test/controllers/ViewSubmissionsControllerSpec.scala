@@ -31,7 +31,7 @@ import services.{SubmissionHistoryService, ViewFIService}
 import uk.gov.hmrc.http.InternalServerException
 import views.html.ViewSubmissionsView
 
-import java.time.LocalDate
+import java.time.{Instant, LocalDate}
 import scala.concurrent.Future
 
 class ViewSubmissionsControllerSpec extends SpecBase {
@@ -41,7 +41,7 @@ class ViewSubmissionsControllerSpec extends SpecBase {
     messageRefId = "ref1",
     reportingYear = 2016,
     originalMessageRefId = "ref1",
-    timeSent = now,
+    timeSent = Instant.now(),
     fileType = FATCA1,
     submissionType = SubmissionsConstants.XML,
     isNilReport = false

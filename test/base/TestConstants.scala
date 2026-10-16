@@ -20,7 +20,7 @@ import models.SubmissionsConstants.{FATCA, FATCA1, PASSED}
 import models.response.{AddressDetails, FIDetail}
 import models.{SubmissionsConstants, SubmittedReport, UserAnswers}
 import uk.gov.hmrc.http.HeaderCarrier
-
+import java.time.Instant
 import java.time.LocalDateTime
 import scala.concurrent.ExecutionContext
 
@@ -38,7 +38,7 @@ trait TestConstants {
     fiName = "name",
     fileName = "fileName",
     submissionStatus = PASSED,
-    uploadDateTime = now,
+    uploadDateTime = Instant.now(),
     regime = FATCA,
     reportingYear = "2016",
     submissionCaseId = "123",
