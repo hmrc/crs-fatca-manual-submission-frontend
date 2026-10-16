@@ -19,7 +19,6 @@ package forms
 import forms.behaviours.StringFieldBehaviours
 import forms.manual.cpso.ResidentForTaxFormProvider
 import models.SubmissionsConstants.{CRS, FATCA}
-import models.elections.RegimeType
 import play.api.data.FormError
 
 class ResidentForTaxFormProviderSpec extends StringFieldBehaviours {

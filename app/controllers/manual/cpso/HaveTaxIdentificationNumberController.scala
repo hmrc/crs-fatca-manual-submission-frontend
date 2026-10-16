@@ -76,7 +76,7 @@ class HaveTaxIdentificationNumberController @Inject() (
           form
             .bindFromRequest()
             .fold(
-              formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+              formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, country, request.cpsoName, reportId.regime.value.toLowerCase()))),
               value =>
                 for {
                   updatedAnswers <- Future

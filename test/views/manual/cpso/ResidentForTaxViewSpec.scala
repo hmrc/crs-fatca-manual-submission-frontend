@@ -47,8 +47,6 @@ class ResidentForTaxViewSpec extends SpecBase {
   private val cpsoName  = "Test Name"
   private val countries = Countries.allCountries(CRS)
 
-  private val unitedKingdom = countries.find(_.code == "GB").value
-
   private def render(
     boundForm: Form[_] = form,
     mode: Mode = NormalMode,
