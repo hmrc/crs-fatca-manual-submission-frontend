@@ -386,16 +386,20 @@ class ManualSubmissionNavigator @Inject() () {
         case None                                 => controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(mode)
       }
     } else {
-      controllers.routes.UnderConstructionController.onPageLoad()
+      controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
     }
 
   private def handleSelectAddressPageNavigationForAccountHolders(userAnswers: UserAnswers, mode: Mode, accountHolderId: AccountHolderId)(implicit
     reportId: ReportId
   ) =
-    userAnswers.get(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId)) match {
-      case Some(countries) if countries.isEmpty => controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(mode)
-      case Some(_)                              => controllers.routes.UnderConstructionController.onPageLoad()
-      case None                                 => controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(mode)
+    if (reportId.regime == FATCA) {
+      userAnswers.get(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId)) match {
+        case Some(countries) if countries.isEmpty => controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(mode)
+        case Some(_)                              => controllers.routes.UnderConstructionController.onPageLoad()
+        case None                                 => controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(mode)
+      }
+    } else {
+      controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
     }
 
   private def handleHaveTaxIdenticationNumberPageNavigationForAccountHolders(userAnswers: UserAnswers,
@@ -472,14 +476,14 @@ class ManualSubmissionNavigator @Inject() () {
   ) =
     userAnswers.get(IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId)) match {
       case Some(true) =>
-        if (reportId.regime == CRS)
-          routes.UnderConstructionController.onPageLoad()
-        else {
+        if (reportId.regime == FATCA) {
           userAnswers.get(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId)) match {
             case Some(countries) if countries.isEmpty => controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(mode)
             case Some(_)                              => controllers.routes.UnderConstructionController.onPageLoad()
             case None                                 => controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(mode)
           }
+        } else {
+          controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
         }
 
       case Some(false) => controllers.manual.accountHolders.routes.UkAddressController.onPageLoad(mode)

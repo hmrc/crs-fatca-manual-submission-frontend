@@ -1274,14 +1274,14 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               controllers.routes.UnderConstructionController.onPageLoad()
           }
 
-          "must go to under construction page for a yes answer when regime is CRS " in {
+          "must go to self certification page for a yes answer when regime is CRS " in {
             val reportId2: ReportId = ReportId(CRS, 2024, None, "TestFIID")
             val ua = UserAnswers("id")
               .withPage(IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId2), true)
               .withPage(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId2), Seq(taxResidentInformation))
 
             navigator.nextPage(IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId2), NormalMode, ua)(reportId2) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(NormalMode)
           }
 
           "must go to address uk for a no answer" in {
@@ -1342,6 +1342,15 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
                                 country = Country.GB
           )
           val accountHolderId = AccountHolderId("holder-id")
+
+          "must go to self certification page if regime is crs" in {
+            val reportId2: ReportId = ReportId(CRS, 2024, None, "TestFIID")
+            val ua = UserAnswers("id")
+              .withPage(SelectAddressPage(accountHolderId, reportId2), address)
+
+            navigator.nextPage(SelectAddressPage(accountHolderId, reportId2), NormalMode, ua)(reportId2) mustBe
+              controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(NormalMode)
+          }
 
           "must go to under construction if there are tax residents specified" in {
             val ua = UserAnswers("id")
@@ -1517,14 +1526,14 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               controllers.routes.UnderConstructionController.onPageLoad()
           }
 
-          "must go to under construction page when regime is CRS" in {
+          "must go to self certification page when regime is CRS" in {
             implicit val reportId2: ReportId = ReportId(CRS, 2024, None, "TestFIID")
             val ua = UserAnswers("id")
               .withPage(AccountHolderAddressNonUkPage(accountHolderId, reportId2), nonUkAddress)
               .withPage(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId2), Seq(taxResidentInformation))
 
             navigator.nextPage(AccountHolderAddressNonUkPage(accountHolderId, reportId2), NormalMode, ua)(reportId2) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(NormalMode)
           }
 
         }
