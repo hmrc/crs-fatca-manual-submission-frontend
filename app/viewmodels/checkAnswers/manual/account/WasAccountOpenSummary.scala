@@ -39,11 +39,11 @@ object WasAccountOpenSummary {
       )
 
       SummaryListRowViewModel(
-        key = "wasAccountOpen.checkYourAnswersLabel",
+        key = messages("wasAccountOpen.checkYourAnswersLabel", reportId.reportingYear.toString),
         value = value,
         actions = Seq(
           ActionItemViewModel("site.change", controllers.manual.account.routes.WasAccountOpenController.onPageLoad(CheckMode).url)
-            .withVisuallyHiddenText(messages("wasAccountOpen.change.hidden"))
+            .withVisuallyHiddenText(messages("wasAccountOpen.change.hidden", reportId.reportingYear.toString))
         )
       )
     }

@@ -17,15 +17,19 @@
 package utils
 
 import base.SpecBase
-import models.SubmissionsConstants.CRS
+import models.SubmissionsConstants.{CRS, FATCA}
 import models.TypeOfReport.Information
 import models.manual.filercategory.{WhatTypeOfFiler, WhatTypeOfFilerIsSponsor}
-import models.{CrsOrFatca, ReportId}
+import models.viewModels.AccountId
+import models.{CrsOrFatca, ReportId, UserAnswers}
 import org.scalatest.freespec.AnyFreeSpec
+import pages.manual.account.{AccountClosedPage, CurrentAccountIdPage, HaveNumberPage, HavePaymentsPage, HowManyJointAccountHoldersPage, IsJointAccountPage}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import play.api.i18n.Messages
 import play.api.test.Helpers.stubMessages
+import uk.gov.hmrc.govukfrontend.views.Aliases.Text
+import viewmodels.checkAnswers.manual.account.*
 
 class CheckAnswersUtilSpec extends SpecBase {
 
@@ -75,5 +79,162 @@ class CheckAnswersUtilSpec extends SpecBase {
         result.rows.size mustBe 2
       }
     }
+
+    "getAccountRows" - {
+
+      val accId = AccountId("accountId123")
+
+      "when the regime is CRS" - {
+
+        implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
+
+        def baseUa(haveNumber: Boolean, closed: Boolean): UserAnswers =
+          emptyUserAnswers
+            .withPage(CurrentAccountIdPage(), accId)
+            .withPage(HaveNumberPage(accId), haveNumber)
+            .withPage(AccountClosedPage(accId), closed)
+            .withPage(IsJointAccountPage(accId), false)
+
+        "when no relevant answers exist" - {
+          "must return an empty SummaryList" in {
+            util.getAccountRows(emptyUserAnswers).rows mustBe Seq.empty
+            util.getAccountRows(emptyUserAnswers.withPage(CurrentAccountIdPage(), accId)).rows mustBe Seq.empty
+          }
+        }
+
+        "when there are joint account holders" - {
+          "must include the joint account holders summary" in {
+            val ua = baseUa(haveNumber = true, closed = false)
+              .withPage(IsJointAccountPage(accId), true)
+              .withPage(HowManyJointAccountHoldersPage(accId), 42)
+
+            val result = util.getAccountRows(ua)
+
+            val keys = result.rows.map(_.key.content.toString)
+            keys.filter(_.contains("howManyJointAccountHolders")) must not be empty
+
+          }
+        }
+
+        "when the account is not closed" - {
+
+          "when there is no official number" - {
+            "must return the correct rows, including the payments row when payments answers exist" in {
+              val ua = baseUa(haveNumber = false, closed = false).withPage(HavePaymentsPage(accId), true)
+
+              val expected = HaveNumberSummary.row(ua) ++
+                IdentifierSummary.row(ua) ++
+                AccountClosedSummary.row(ua) ++
+                WhatWasTheAccountBalanceSummary.row(ua) ++
+                IsUndocumentedAccountSummary.row(ua) ++
+                IsDormantAccountSummary.row(ua) ++
+                WasAccountOpenSummary.row(ua) ++
+                IsJointAccountSummary.row(ua) ++
+                WhatAccountTypeSummary.row(ua) ++
+                HavePaymentsSummary.row(ua)
+
+              util.getAccountRows(ua).rows mustBe expected
+            }
+
+            "must omit the payments row when payments answers are absent" in {
+              val ua = baseUa(haveNumber = false, closed = false)
+
+              util
+                .getAccountRows(ua)
+                .rows
+                .map(_.key.content.toString) must not contain (Text("account.havePayments.checkYourAnswersLabel.crs"))
+            }
+          }
+
+          "when there is an official number" - {
+            "must return the correct rows" in {
+              val ua = baseUa(haveNumber = true, closed = false)
+
+              val expected = HaveNumberSummary.row(ua) ++
+                NumberTypeSummary.row(ua) ++
+                WhatIsAccountNumberSummary.row(ua) ++
+                AccountClosedSummary.row(ua) ++
+                WhatWasTheAccountBalanceSummary.row(ua) ++
+                IsUndocumentedAccountSummary.row(ua) ++
+                IsDormantAccountSummary.row(ua) ++
+                WasAccountOpenSummary.row(ua) ++
+                IsJointAccountSummary.row(ua) ++
+                WhatAccountTypeSummary.row(ua)
+
+              util.getAccountRows(ua).rows mustBe expected
+            }
+          }
+        }
+
+        "when the account is closed" - {
+          "must show the currency row but hide the balance row" in {
+            val ua = baseUa(haveNumber = true, closed = true)
+
+            val expected = HaveNumberSummary.row(ua) ++
+              NumberTypeSummary.row(ua) ++
+              WhatIsAccountNumberSummary.row(ua) ++
+              AccountClosedSummary.row(ua) ++
+              WhatWasTheAccountCurrencySummary.row(ua) ++
+              IsUndocumentedAccountSummary.row(ua) ++
+              IsDormantAccountSummary.row(ua) ++
+              WasAccountOpenSummary.row(ua) ++
+              IsJointAccountSummary.row(ua) ++
+              WhatAccountTypeSummary.row(ua)
+
+            util.getAccountRows(ua).rows mustBe expected
+          }
+        }
+      }
+
+      "when the regime is FATCA" - {
+
+        implicit val reportId: ReportId = ReportId(FATCA, 2025, None, "TestfiID")
+
+        def baseUa(haveNumber: Boolean, closed: Boolean): UserAnswers =
+          emptyUserAnswers
+            .withPage(CurrentAccountIdPage(), accId)
+            .withPage(HaveNumberPage(accId), haveNumber)
+            .withPage(AccountClosedPage(accId), closed)
+            .withPage(IsJointAccountPage(accId), false)
+
+        "when no relevant answers exist" - {
+          "must return an empty SummaryList" in {
+            util.getAccountRows(emptyUserAnswers).rows mustBe Seq.empty
+            util.getAccountRows(emptyUserAnswers.withPage(CurrentAccountIdPage(), accId)).rows mustBe Seq.empty
+          }
+        }
+        "when the account is not closed" - {
+          "when there is no official number" - {
+            "must show the balance but no CRS-only rows" in {
+              val ua = baseUa(haveNumber = false, closed = false)
+
+              val expected = HaveNumberSummary.row(ua) ++
+                IdentifierSummary.row(ua) ++
+                AccountClosedSummary.row(ua) ++
+                WhatWasTheAccountBalanceSummary.row(ua)
+
+              util.getAccountRows(ua).rows mustBe expected
+            }
+          }
+        }
+
+        "when the account is closed" - {
+          "when there is an official number" - {
+            "must show the balance" in {
+              val ua = baseUa(haveNumber = true, closed = true)
+
+              val expected = HaveNumberSummary.row(ua) ++
+                NumberTypeSummary.row(ua) ++
+                WhatIsAccountNumberSummary.row(ua) ++
+                AccountClosedSummary.row(ua) ++
+                WhatWasTheAccountBalanceSummary.row(ua)
+
+              util.getAccountRows(ua).rows mustBe expected
+            }
+          }
+        }
+      }
+    }
+
   }
 }
