@@ -16,11 +16,12 @@
 
 package models.manual.cpso
 
-import play.api.libs.json.*
+import models.response.Country
+import play.api.libs.json.{Json, OFormat}
 
-case class UkPostCode(value: String, value2: String)
+case class TaxResidentInformation(country: Country, hasTaxIdentificationNumber: Option[Boolean] = None, taxIdentifierNumbers: Option[String] = None)
 
-object UkPostCode {
+object TaxResidentInformation {
 
-  implicit val format: OFormat[UkPostCode] = Json.format
+  implicit val format: OFormat[TaxResidentInformation] = Json.format
 }

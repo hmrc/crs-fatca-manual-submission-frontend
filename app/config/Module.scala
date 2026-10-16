@@ -49,8 +49,11 @@ class Module extends AbstractModule {
     bind(classOf[AccountPaymentIndexRequiredAction]).to(classOf[AccountPaymentIndexRequiredActionImpl]).asEagerSingleton()
     bind(classOf[CPSOIdRequiredAction]).to(classOf[CPSOIdRequiredActionImpl]).asEagerSingleton()
     bind(classOf[CPSOCRSOnlyFilterAction]).to(classOf[CPSOCRSOnlyFilterActionImpl]).asEagerSingleton()
+    bind(classOf[CPSOCRSOnlyFilterWithCPSONameAction]).to(classOf[CPSOCRSOnlyFilterWithCPSONameActionImpl]).asEagerSingleton()
     bind(classOf[AccountHolderCRSOnlyFilterAction]).to(classOf[AccountHolderCRSOnlyFilterActionImpl]).asEagerSingleton()
     bind(classOf[CPSONameRequiredAction]).to(classOf[CPSONameRequiredActionImpl]).asEagerSingleton()
+    bind(classOf[TaxResidentCountryIdCreationForCPSOAction]).to(classOf[TaxResidentCountryIdCreationForCPSOActionImpl]).asEagerSingleton()
+    bind(classOf[TaxResidentCountryIdRequiredForCPSOAction]).to(classOf[TaxResidentCountryIdRequiredForCPSOActionImpl]).asEagerSingleton()
 
     bind(classOf[Clock]).toInstance(Clock.systemDefaultZone.withZone(ZoneOffset.UTC))
   }

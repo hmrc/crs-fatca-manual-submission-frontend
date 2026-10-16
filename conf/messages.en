@@ -1065,3 +1065,22 @@ accountHolder.account.sendAReport.link = Back to send a {0} report for {1}
 accountHolder.account.checkYourAnswersLabel = Accounts held by this account holder
 accountHolder.account.error.required = Select at least one account number or identifier
 accountHolder.account.change.hidden = Account
+
+cpso.crs.residentForTax.title = Where is the controlling person resident for tax?
+cpso.fatca.residentForTax.title = Where is the substantial owner resident for tax?
+cpso.residentForTax.heading = Where is {0} resident for tax?
+cpso.residentForTax.paragraph = If they are resident for tax in more than one country, then you can add other countries on the next page.
+cpso.crs.residentForTax.error.country.required = Select where the controlling person is resident for tax
+cpso.fatca.residentForTax.error.country.required = Select where the substantial owner is resident for tax
+cpso.residentForTax.checkYourAnswersLabel = ResidentForTax
+cpso.residentForTax.country.change.hidden = country
+
+cpso.crs.haveTaxIdentificationNumber.title = Do you have a tax identification number for the controlling person for the country?
+cpso.fatca.haveTaxIdentificationNumber.title = Do you have a tax identification number for the substantial owner for the country?
+cpso.haveTaxIdentificationNumber.other.heading = Do you have a tax identification number for {0} for {1}?
+cpso.haveTaxIdentificationNumber.heading = Do you have a tax identification number for {0} for {1}?
+cpso.haveTaxIdentificationNumber.heading = Do you have a tax identification number for {0} for {1}?
+cpso.haveTaxIdentificationNumber.checkYourAnswersLabel = haveTaxIdentificationNumber
+cpso.crs.haveTaxIdentificationNumber.error.required = Select yes if you have a tax identification number for the controlling person for the country
+cpso.fatca.haveTaxIdentificationNumber.error.required = Select yes if you have a tax identification number for the substantial owner for the country
+cpso.haveTaxIdentificationNumber.change.hidden = HaveTaxIdentificationNumber
