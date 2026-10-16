@@ -89,6 +89,7 @@ case class CPSONameRequest[A](request: Request[A],
                               cpsoId: CPSOId,
                               cpsoName: String
 ) extends WrappedRequest[A](request)
+    with HasReportIdRequest[A]
 
 case class AccountHolderNameRequest[A](
   request: Request[A],

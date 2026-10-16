@@ -20,7 +20,7 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.cpso.HaveTaxIdentificationNumberFormProvider
-import models.SubmissionsConstants.CRS
+import models.SubmissionsConstants.{CRS, FATCA}
 import models.manual.cpso.IndividualName
 import models.response.Country
 import models.viewModels.manual.cpso.CPSOId
@@ -98,6 +98,25 @@ class HaveTaxIdentificationNumberControllerSpec extends SpecBase with MockitoSug
       }
     }
 
+    "must redirect to journey recovery when fatca regime is used for a GET" in {
+      val reportId2: ReportId = ReportId(FATCA, 2025, None, "TestfiID")
+
+      val application = applicationBuilder(maybeUserAnswers =
+        Some(
+          userAnswersWith().withPage(ReportIdPage, reportId2)
+        )
+      ).build()
+
+      running(application) {
+        val request = FakeRequest(GET, haveTaxIdentificationNumberRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
     "must return OK and the correct view for a GET in check mode" in {
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswersWith())).build()
@@ -163,6 +182,32 @@ class HaveTaxIdentificationNumberControllerSpec extends SpecBase with MockitoSug
         verify(mockRepository).set(captor.capture())(any())
 
         captor.getValue.get(HaveTaxIdentificationNumberPage(currentIndex, cpsoId, reportId)) mustBe Some(true)
+      }
+    }
+
+    "must redirect to journey recovery when fatca regime is used in submission" in {
+      val reportId2: ReportId = ReportId(FATCA, 2025, None, "TestfiID")
+
+      val application =
+        applicationBuilder(maybeUserAnswers =
+          Some(
+            userAnswersWith().withPage(ReportIdPage, reportId2)
+          )
+        )
+          .overrides(
+            bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute))
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, haveTaxIdentificationNumberRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 
