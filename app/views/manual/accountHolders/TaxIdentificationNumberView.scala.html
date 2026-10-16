@@ -16,6 +16,7 @@
 
 @import viewmodels.InputWidth._
 @import models.response.Country
+@import uk.gov.hmrc.govukfrontend.views.html.components._
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
@@ -35,18 +36,14 @@
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
         <div class="govuk-form-group">
-            <h1 class="govuk-label-wrapper">
-                <label class="govuk-label govuk-label--l" for="value">
-                    @messages("accountHolders.taxIdentificationNumber.heading", accountHolderName, country.displayNameInSentence.getOrElse(country.description))
-                </label>
-            </h1>
-
-
             @govukInput(
                 InputViewModel(
                     field = form("tin"),
-                    label = LabelViewModel(messages("accountHolders.taxIdentificationNumber.heading", accountHolderName, country.displayNameInSentence.getOrElse(country.description)))
-                    .withCssClass("govuk-visually-hidden")
+                    label = Label(
+                        isPageHeading = true,
+                        classes = "govuk-label  govuk-label--l",
+                        content = Text(messages("accountHolders.taxIdentificationNumber.heading", accountHolderName, country.displayNameInSentence.getOrElse(country.description)))
+                    )
                 )
                 .withWidth(Fixed20)
             )

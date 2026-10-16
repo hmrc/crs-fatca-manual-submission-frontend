@@ -35,7 +35,7 @@ object Countries {
     Country(
       code = "IM",
       description = "Isle of Man",
-      displayNameInSentence = Some("the Isle of Man"),
+      displayNameInSentence = Some("the Isle of Man")
     ),
     Country(
       code = "JE",
@@ -59,7 +59,7 @@ object Countries {
       code = "CC",
       description = "Cocos (Keeling) Islands",
       alternativeName = Some("Keeling Islands:Cocos Islands"),
-      displayNameInSentence = Some("the Cocos (Keeling) Islands"),
+      displayNameInSentence = Some("the Cocos (Keeling) Islands")
     ),
     Country(
       code = "CF",
@@ -70,7 +70,7 @@ object Countries {
     Country(
       code = "CG",
       description = "Congo",
-      displayNameInSentence = Some("the Congo"),
+      displayNameInSentence = Some("the Congo")
     ),
     Country(
       code = "CK",
@@ -96,7 +96,7 @@ object Countries {
     Country(
       code = "GS",
       description = "South Georgia and South Sandwich Islands",
-      displayNameInSentence = Some("the South Georgia and South Sandwich Islands"),
+      displayNameInSentence = Some("the South Georgia and South Sandwich Islands")
     ),
     Country(
       code = "HM",
@@ -157,7 +157,7 @@ object Countries {
     Country(
       code = "TF",
       description = "French Southern Territories",
-      displayNameInSentence = Some("the French Southern Territories"),
+      displayNameInSentence = Some("the French Southern Territories")
     ),
     Country(
       code = "UM",
@@ -185,7 +185,7 @@ object Countries {
     Country(
       code = "WF",
       description = "Wallis and Futuna Islands",
-      displayNameInSentence = Some("the Wallis and Futuna Islands"),
+      displayNameInSentence = Some("the Wallis and Futuna Islands")
     ),
     Country(
       code = "CD",
