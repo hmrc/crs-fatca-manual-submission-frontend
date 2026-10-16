@@ -37,7 +37,7 @@
         <div class="govuk-form-group">
             <h1 class="govuk-label-wrapper">
                 <label class="govuk-label govuk-label--l" for="value">
-                    @messages("accountHolders.taxIdentificationNumber.heading", accountHolderName, country.description)
+                    @messages("accountHolders.taxIdentificationNumber.heading", accountHolderName, country.displayNameInSentence.getOrElse(country.description))
                 </label>
             </h1>
 
