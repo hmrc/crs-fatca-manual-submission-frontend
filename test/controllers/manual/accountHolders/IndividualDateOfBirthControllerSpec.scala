@@ -21,6 +21,7 @@ import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.accountHolders.IndividualDateOfBirthFormProvider
 import models.SubmissionsConstants.CRS
+import models.manual.accountHolders.IndividualOrOrganisation.Individual
 import models.manual.accountHolders.{IndividualDateOfBirth, IndividualName}
 import models.viewModels.AccountHolderId
 import models.{NormalMode, ReportId}
@@ -29,7 +30,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.accountHolders.{AccountHolderIndividualNamePage, CurrentAccountHolderIdPage, IndividualDateOfBirthPage}
+import pages.manual.accountHolders.{AccountHolderIndividualNamePage, CurrentAccountHolderIdPage, IndividualDateOfBirthPage, IndividualOrOrganisationPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -71,6 +72,10 @@ class IndividualDateOfBirthControllerSpec extends SpecBase with MockitoSugar {
         .withPage(
           CurrentAccountHolderIdPage()(reportId),
           currentAccountHolderId
+        )
+        .withPage(
+          IndividualOrOrganisationPage(currentAccountHolderId)(reportId),
+          Individual
         )
         .withPage(
           AccountHolderIndividualNamePage(currentAccountHolderId)(reportId),

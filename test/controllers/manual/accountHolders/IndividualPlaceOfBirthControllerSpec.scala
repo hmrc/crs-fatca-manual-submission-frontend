@@ -21,6 +21,7 @@ import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.accountHolders.IndividualPlaceOfBirthFormProvider
 import models.SubmissionsConstants.CRS
+import models.manual.accountHolders.IndividualOrOrganisation.Individual
 import models.manual.accountHolders.{IndividualName, IndividualPlaceOfBirth}
 import models.viewModels.AccountHolderId
 import models.{Countries, NormalMode, ReportId, UserAnswers}
@@ -29,7 +30,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.accountHolders.{AccountHolderIndividualNamePage, CurrentAccountHolderIdPage, IndividualPlaceOfBirthPage}
+import pages.manual.accountHolders.{AccountHolderIndividualNamePage, CurrentAccountHolderIdPage, IndividualOrOrganisationPage, IndividualPlaceOfBirthPage}
 import play.api.inject.bind
 import play.api.libs.json.Json
 import play.api.mvc.Call
@@ -66,6 +67,7 @@ class IndividualPlaceOfBirthControllerSpec extends SpecBase with MockitoSugar {
     val ua = emptyUserAnswers
       .withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
       .withPage(CurrentAccountHolderIdPage(), accountHolderId)
+      .withPage(IndividualOrOrganisationPage(accountHolderId)(reportId), Individual)
       .withPage(AccountHolderIndividualNamePage(accountHolderId), name)
 
     "must return OK and the correct view for a GET" in {
