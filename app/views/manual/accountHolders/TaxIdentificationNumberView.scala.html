@@ -45,7 +45,7 @@
             @govukInput(
                 InputViewModel(
                     field = form("tin"),
-                    label = LabelViewModel(messages("accountHolders.taxIdentificationNumber.heading", accountHolderName, country.description))
+                    label = LabelViewModel(messages("accountHolders.taxIdentificationNumber.heading", accountHolderName, country.displayNameInSentence.getOrElse(country.description)))
                     .withCssClass("govuk-visually-hidden")
                 )
                 .withWidth(Fixed20)
