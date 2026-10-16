@@ -23,6 +23,7 @@ import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
 import pages.manual.FINamePage
 import pages.manual.accountHolders.IndividualHaveDateOfBirthPage
+import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -43,7 +44,7 @@ class IndividualHaveDateOfBirthController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  val form = formProvider()
+  val form: Form[Boolean] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
     actions.withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired() {
@@ -57,7 +58,7 @@ class IndividualHaveDateOfBirthController @Inject() (
             .fold(form)(form.fill)
 
         request.userAnswers.get(FINamePage()) match {
-          case (Some(fiName)) =>
+          case Some(fiName) =>
             Ok(
               view(
                 preparedForm,
@@ -80,7 +81,7 @@ class IndividualHaveDateOfBirthController @Inject() (
         implicit val reportId: ReportId = request.reportId
 
         request.userAnswers.get(FINamePage()) match {
-          case (Some(fiName)) =>
+          case Some(fiName) =>
             form
               .bindFromRequest()
               .fold(

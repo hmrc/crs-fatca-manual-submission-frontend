@@ -19,10 +19,12 @@ package controllers.manual.accountHolders
 import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.manual.accountHolders.IndividualDateOfBirthFormProvider
+import models.manual.accountHolders.IndividualDateOfBirth
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
 import pages.manual.accountHolders.IndividualDateOfBirthPage
 import play.api.Logging
+import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -44,7 +46,7 @@ class IndividualDateOfBirthController @Inject() (
     with I18nSupport
     with Logging {
 
-  val form = formProvider()
+  val form: Form[IndividualDateOfBirth] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
     actions.withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired() {

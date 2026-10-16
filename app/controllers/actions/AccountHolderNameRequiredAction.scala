@@ -60,7 +60,6 @@ class AccountHolderNameRequiredActionImpl @Inject() (implicit
           Right(toAccountHolderNameRequest(request, name))
 
         case None =>
-          println(Console.CYAN_B + "Unable to find account holder name in User Answers" + Console.RESET)
           logger.error("Unable to find account holder name in User Answers")
           Left(Redirect(routes.JourneyRecoveryController.onPageLoad()))
       }

@@ -44,10 +44,9 @@ class IndividualHaveDateOfBirthControllerSpec extends SpecBase with MockitoSugar
 
   def onwardRoute: Call = Call("GET", "/foo")
 
-  val formProvider = new IndividualHaveDateOfBirthFormProvider()
-  val form         = formProvider()
+  private val form = new IndividualHaveDateOfBirthFormProvider()()
 
-  lazy val individualHaveDateOfBirthRoute =
+  private lazy val individualHaveDateOfBirthRoute =
     controllers.manual.accountHolders.routes.IndividualHaveDateOfBirthController
       .onPageLoad(NormalMode)
       .url

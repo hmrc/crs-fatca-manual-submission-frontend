@@ -44,10 +44,9 @@ class IndividualPlaceOfBirthControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new IndividualPlaceOfBirthFormProvider()
-  val form         = formProvider()
+  private val form = new IndividualPlaceOfBirthFormProvider()()
 
-  lazy val individualPlaceOfBirthRoute = controllers.manual.accountHolders.routes.IndividualPlaceOfBirthController.onPageLoad(NormalMode).url
+  private lazy val individualPlaceOfBirthRoute = controllers.manual.accountHolders.routes.IndividualPlaceOfBirthController.onPageLoad(NormalMode).url
 
   val userAnswers = UserAnswers(
     userAnswersId,
@@ -60,10 +59,10 @@ class IndividualPlaceOfBirthControllerSpec extends SpecBase with MockitoSugar {
   )
 
   "IndividualPlaceOfBirth Controller" - {
-    implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
-    val accountHolderId   = AccountHolderId("some-id")
-    val countries         = Countries.allCountries(CRS)
-    val name              = IndividualName("Test", "Last")
+    implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
+    val accountHolderId             = AccountHolderId("some-id")
+    val countries                   = Countries.allCountries(CRS)
+    val name                        = IndividualName("Test", "Last")
     val ua = emptyUserAnswers
       .withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
       .withPage(CurrentAccountHolderIdPage(), accountHolderId)
