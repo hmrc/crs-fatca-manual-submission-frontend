@@ -85,7 +85,7 @@ class CheckAnswersUtil @Inject() {
         Seq.empty
       }
 
-    SummaryListViewModel(rows = rows).withCssClass("govuk-!-margin-bottom-9")
+    SummaryListViewModel(rows = rows).withCssClass("govuk-!-margin-bottom-3")
   }
 
 }
