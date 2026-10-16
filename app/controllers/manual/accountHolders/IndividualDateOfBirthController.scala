@@ -19,10 +19,12 @@ package controllers.manual.accountHolders
 import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.manual.accountHolders.IndividualDateOfBirthFormProvider
+import models.manual.accountHolders.IndividualDateOfBirth
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.accountHolders.{AccountHolderIndividualNamePage, IndividualDateOfBirthPage}
+import pages.manual.accountHolders.IndividualDateOfBirthPage
 import play.api.Logging
+import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -44,10 +46,10 @@ class IndividualDateOfBirthController @Inject() (
     with I18nSupport
     with Logging {
 
-  val form = formProvider()
+  val form: Form[IndividualDateOfBirth] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
-    actions.withReportIdRequiredAndAccountHolderIdRequired() {
+    actions.withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired() {
       implicit request =>
 
         implicit val reportId: ReportId = request.reportId
@@ -57,77 +59,53 @@ class IndividualDateOfBirthController @Inject() (
             .get(IndividualDateOfBirthPage(request.accountHolderId))
             .fold(form)(form.fill)
 
-        request.userAnswers
-          .get(AccountHolderIndividualNamePage(request.accountHolderId)) match {
+        Ok(
+          view(
+            preparedForm,
+            mode,
+            request.accountHolderName
+          )
+        )
 
-          case Some(individualName) =>
-            val accountHolderName = individualName.fullName
-
-            Ok(
-              view(
-                preparedForm,
-                mode,
-                accountHolderName
-              )
-            )
-
-          case None =>
-            logger.error("Mandatory individual name is missing from User Answers")
-            Redirect(
-              controllers.routes.JourneyRecoveryController.onPageLoad()
-            )
-        }
     }
 
   def onSubmit(mode: Mode): Action[AnyContent] =
-    actions.withReportIdRequiredAndAccountHolderIdRequired().async {
+    actions.withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired().async {
       implicit request =>
 
         implicit val reportId: ReportId = request.reportId
 
-        request.userAnswers
-          .get(AccountHolderIndividualNamePage(request.accountHolderId)) match {
-
-          case Some(individualName) =>
-            val accountHolderName = individualName.fullName
-
-            form
-              .bindFromRequest()
-              .fold(
-                formWithErrors =>
-                  Future.successful(
-                    BadRequest(
-                      view(
-                        formWithErrors,
-                        mode,
-                        accountHolderName
-                      )
-                    )
-                  ),
-                value =>
-                  for {
-                    updatedAnswers <- Future.fromTry(
-                      request.userAnswers.setWithReportId(
-                        IndividualDateOfBirthPage(request.accountHolderId),
-                        value
-                      )
-                    )
-                    _ <- repository.set(updatedAnswers)
-                  } yield Redirect(
-                    navigator.nextPage(
-                      IndividualDateOfBirthPage(request.accountHolderId),
-                      mode,
-                      updatedAnswers
-                    )
+        form
+          .bindFromRequest()
+          .fold(
+            formWithErrors =>
+              Future.successful(
+                BadRequest(
+                  view(
+                    formWithErrors,
+                    mode,
+                    request.accountHolderName
                   )
+                )
+              ),
+            value =>
+              for {
+                updatedAnswers <- Future.fromTry(
+                  request.userAnswers.setWithReportId(
+                    IndividualDateOfBirthPage(request.accountHolderId),
+                    value
+                  )
+                )
+                _ <- repository.set(updatedAnswers)
+              } yield Redirect(
+                navigator.nextPage(
+                  IndividualDateOfBirthPage(request.accountHolderId),
+                  mode,
+                  updatedAnswers
+                )
               )
-          case None =>
-            logger.error("Mandatory individual name is missing from User Answers")
-            Future.successful(
-              Redirect(
-                controllers.routes.JourneyRecoveryController.onPageLoad()
-              )
-            )
-        }
+          )
+
     }
+
 }
