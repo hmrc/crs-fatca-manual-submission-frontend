@@ -66,7 +66,7 @@ class HaveTaxIdenticationNumberViewSpec extends SpecBase {
       "must display the heading with the account holder name and the country for an XX" in {
         val renderedHtml2: HtmlFormat.Appendable = view(form, NormalMode, accountHolder, other)
         lazy val doc2                            = Jsoup.parse(renderedHtml2.body)
-        doc2.select("h1").text() mustBe s"Do you have a tax identification number for $accountHolder for 'Other country'?"
+        doc2.select("h1").text() mustBe s"Do you have a tax identification number for $accountHolder for ‘Other country’?"
       }
 
       "must display the heading as the page heading legend of the radios" in {

@@ -1065,6 +1065,7 @@ accountHolder.account.question.hint = Select at least one account number or iden
 accountHolder.account.sendAReport.link = Back to send a {0} report for {1}
 accountHolder.account.checkYourAnswersLabel = Accounts held by this account holder
 accountHolder.account.error.required = Select at least one account number or identifier
+accountHolders.residentTax.paragraph = If they are resident for tax in more than one country, then you can add other countries after this one.
 accountHolder.account.change.hidden = Account
 accountHolders.residentTax.title = Where is the account holder resident for tax?
 accountHolders.residentTax.heading = Where is {0} resident for tax?

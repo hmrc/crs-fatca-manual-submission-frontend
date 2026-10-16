@@ -59,7 +59,7 @@ class ResidentTaxViewSpec extends SpecBase {
 
       "must display the guidance paragraph" in {
         doc.select("p.govuk-body").text() must include(
-          "If they are resident for tax in more than one country, then you can add other countries on the next page."
+          "If they are resident for tax in more than one country, then you can add other countries after this one."
         )
       }
 
