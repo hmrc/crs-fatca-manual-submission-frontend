@@ -62,7 +62,6 @@ class HavePaymentsControllerSpec extends SpecBase with MockitoSugar {
   val regimeType                   = CRS
   val form                         = formProvider(regimeType, reportingPeriod)
   private val accountId: AccountId = AccountId(value = "SomeId")
-  implicit val reportId: ReportId  = ReportId(CRS, 2025, None, "TestfiID")
 
   lazy val havePaymentsRoute = controllers.manual.account.routes.HavePaymentsController.onPageLoad(NormalMode).url
 

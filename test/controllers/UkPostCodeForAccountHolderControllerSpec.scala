@@ -19,7 +19,6 @@ package controllers
 import base.SpecBase
 import connectors.{AddressLookupConnector, DatabaseConnector}
 import forms.manual.accountHolders.UkPostCodeForAccountHolderFormProvider
-import models.SubmissionsConstants.CRS
 import models.manual.accountHolders.IndividualName
 import models.manual.accountHolders.IndividualOrOrganisation.Individual
 import models.response.{AddressLookup, Country}
@@ -46,7 +45,6 @@ class UkPostCodeForAccountHolderControllerSpec extends SpecBase with MockitoSuga
   def onwardRoute = Call("GET", "/foo")
 
   val formProvider                     = new UkPostCodeForAccountHolderFormProvider()
-  implicit val reportId: ReportId      = ReportId(CRS, 2025, None, "TestfiID")
   val accountHolderId: AccountHolderId = AccountHolderId("some-id")
   val individualName                   = IndividualName("Some-name", "Some-last-name")
   val accountHolderName                = s"${individualName.firstName} ${individualName.lastName}".trim

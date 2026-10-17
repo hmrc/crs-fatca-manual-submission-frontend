@@ -18,7 +18,6 @@ package controllers.manual.account
 
 import base.SpecBase
 import connectors.DatabaseConnector
-import models.SubmissionsConstants.CRS
 import models.manual.account.PaymentType.CRSInterest
 import models.manual.account.{AccountPayment, AccountPaymentsAmount}
 import models.viewModels.AccountId
@@ -38,9 +37,8 @@ import scala.concurrent.Future
 
 class CurrentAccountPaymentIndexControllerSpec extends SpecBase with MockitoSugar {
 
-  implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
-  val currency                    = Currency(code = "VED", displayName = "Venezuelan Bolivar (VED)")
-  val accountPaymentList          = Seq(AccountPayment(CRSInterest, Some(AccountPaymentsAmount(currency, "1000"))))
+  val currency           = Currency(code = "VED", displayName = "Venezuelan Bolivar (VED)")
+  val accountPaymentList = Seq(AccountPayment(CRSInterest, Some(AccountPaymentsAmount(currency, "1000"))))
 
   val accountId = AccountId("TestAccountId")
 

@@ -45,8 +45,6 @@ class CRSDormantAccountsControllerSpec extends SpecBase with MockitoSugar {
   val reportingYear                     = 2027
   implicit val electionsId: ElectionsId = models.ElectionsId(reportingYear, "fiID")
 
-  val mockSessionRepository: SessionRepository = mock[SessionRepository]
-
   lazy val cRSDormantAccountsRoute: String = controllers.elections.routes.CRSDormantAccountsController.onPageLoad(NormalMode, reportingYear).url
 
   override def beforeEach(): Unit =
@@ -99,9 +97,7 @@ class CRSDormantAccountsControllerSpec extends SpecBase with MockitoSugar {
         .withPage(ElectionsIdPage, electionsId)
         .withPage(CRSDormantAccountsPage(), true)
 
-      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
-        .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
-        .build()
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
         when(mockSessionRepository.get(any())) thenReturn Future.successful(Some(userAnswers))
@@ -126,8 +122,7 @@ class CRSDormantAccountsControllerSpec extends SpecBase with MockitoSugar {
       val application =
         applicationBuilder(maybeUserAnswers = Some(userAnswers))
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository)
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
           )
           .build()
 
@@ -148,7 +143,6 @@ class CRSDormantAccountsControllerSpec extends SpecBase with MockitoSugar {
         .withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))
         .withPage(ElectionsIdPage, electionsId)
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
-        .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
         .build()
 
       running(application) {

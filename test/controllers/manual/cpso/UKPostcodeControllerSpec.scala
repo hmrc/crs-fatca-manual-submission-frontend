@@ -20,7 +20,6 @@ import base.SpecBase
 import connectors.{AddressLookupConnector, DatabaseConnector}
 import controllers.routes
 import forms.manual.cpso.UkPostCodeFormProvider
-import models.SubmissionsConstants.CRS
 import models.manual.cpso.IndividualName
 import models.response.{AddressLookup, Country}
 import models.viewModels.manual.cpso.CPSOId
@@ -45,11 +44,10 @@ class UkPostCodeControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  val formProvider                = new UkPostCodeFormProvider()
-  val form                        = formProvider()
-  implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
-  val controllingName             = "Some Name"
-  val currentId                   = CPSOId("cpso-id")
+  val formProvider    = new UkPostCodeFormProvider()
+  val form            = formProvider()
+  val controllingName = "Some Name"
+  val currentId       = CPSOId("cpso-id")
 
   val addressLookup =
     AddressLookup(990091234514L, Some("2 Other place"), None, Some("Some District"), None, "Town", Some("County"), "postcode", Some(Country.GB))

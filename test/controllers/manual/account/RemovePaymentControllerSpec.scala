@@ -20,17 +20,15 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.account.RemovePaymentFormProvider
-import models.SubmissionsConstants.CRS
 import models.manual.account.PaymentType.CRSInterest
 import models.manual.account.{AccountPayment, AccountPaymentsAmount}
 import models.viewModels.AccountId
-import models.{CheckMode, Currency, NormalMode, ReportId}
+import models.{CheckMode, Currency, NormalMode}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers.should
 import org.scalatestplus.mockito.MockitoSugar
-import pages.ReportIdPage
 import pages.manual.account.{AccountPaymentListPage, CurrentAccountIdPage, CurrentAccountPaymentIndexPage}
 import play.api.inject.bind
 import play.api.mvc.Call
@@ -44,19 +42,17 @@ class RemovePaymentControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
-  val accountId: AccountId        = AccountId("TestAccountId")
-  val formProvider                = new RemovePaymentFormProvider()
-  val form                        = formProvider()
-  val currency                    = Currency(code = "VED", displayName = "Venezuelan Bolivar (VED)")
-  val accountPayment              = AccountPayment(CRSInterest, Some(AccountPaymentsAmount(currency, "1000")))
-  val accountPaymentList          = Seq(AccountPayment(CRSInterest, Some(AccountPaymentsAmount(currency, "1000"))))
-  lazy val removePaymentRoute     = controllers.manual.account.routes.RemovePaymentController.onPageLoad(CheckMode).url
+  val accountId: AccountId    = AccountId("TestAccountId")
+  val formProvider            = new RemovePaymentFormProvider()
+  val form                    = formProvider()
+  val currency                = Currency(code = "VED", displayName = "Venezuelan Bolivar (VED)")
+  val accountPayment          = AccountPayment(CRSInterest, Some(AccountPaymentsAmount(currency, "1000")))
+  val accountPaymentList      = Seq(AccountPayment(CRSInterest, Some(AccountPaymentsAmount(currency, "1000"))))
+  lazy val removePaymentRoute = controllers.manual.account.routes.RemovePaymentController.onPageLoad(CheckMode).url
 
   "RemovePayment Controller" - {
 
     val ua = emptyUserAnswers
-      .withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
       .withPage(CurrentAccountIdPage(), accountId)
 
     "must return OK and the correct view for a GET" in {
@@ -82,15 +78,15 @@ class RemovePaymentControllerSpec extends SpecBase with MockitoSugar {
       val useranswers = ua
         .withPage(CurrentAccountPaymentIndexPage(accountId), 0)
         .withPage(AccountPaymentListPage(accountId), accountPaymentList)
-      val mockSessionRepository = mock[DatabaseConnector]
+      val dbConnector = mock[DatabaseConnector]
 
-      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+      when(dbConnector.set(any())(any())) thenReturn Future.successful(())
 
       val application =
         applicationBuilder(maybeUserAnswers = Some(useranswers))
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockSessionRepository)
+            bind[DatabaseConnector].toInstance(dbConnector)
           )
           .build()
 
@@ -111,15 +107,15 @@ class RemovePaymentControllerSpec extends SpecBase with MockitoSugar {
       val useranswers = ua
         .withPage(CurrentAccountPaymentIndexPage(accountId), 0)
         .withPage(AccountPaymentListPage(accountId), accountPaymentList)
-      val mockSessionRepository = mock[DatabaseConnector]
+      val dbConnector = mock[DatabaseConnector]
 
-      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+      when(dbConnector.set(any())(any())) thenReturn Future.successful(())
 
       val application =
         applicationBuilder(maybeUserAnswers = Some(useranswers))
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockSessionRepository)
+            bind[DatabaseConnector].toInstance(dbConnector)
           )
           .build()
 

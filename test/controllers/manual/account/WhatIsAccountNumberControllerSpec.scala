@@ -22,12 +22,11 @@ import forms.manual.account.WhatIsAccountNumberFormProvider
 import models.NumberType.Iban
 import models.SubmissionsConstants.CRS
 import models.viewModels.AccountId
-import models.{NormalMode, ReportId}
+import models.NormalMode
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.ReportIdPage
 import pages.manual.account.{CurrentAccountIdPage, NumberTypePage, WhatIsAccountNumberPage}
 import play.api.inject.bind
 import play.api.mvc.Call
@@ -48,10 +47,8 @@ class WhatIsAccountNumberControllerSpec extends SpecBase with MockitoSugar {
   private val numTypeString                 = "IBAN"
 
   "WhatIsAccountNumber Controller" - {
-    implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
     val ua = emptyUserAnswers
       .withPage(CurrentAccountIdPage(), accountId)
-      .withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
       .withPage(NumberTypePage(accountId), Iban)
 
     "must return OK and the correct view for a GET" in {
@@ -72,8 +69,6 @@ class WhatIsAccountNumberControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
-
       val userAnswers = ua.set(WhatIsAccountNumberPage(accountId, reportId), "answer").success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
@@ -92,15 +87,15 @@ class WhatIsAccountNumberControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to the next page when valid data is submitted" in {
 
-      val mockSessionRepository = mock[DatabaseConnector]
+      val mockDBConnector = mock[DatabaseConnector]
 
-      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+      when(mockDBConnector.set(any())(any())) thenReturn Future.successful(())
 
       val application =
         applicationBuilder(maybeUserAnswers = Some(ua))
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockSessionRepository)
+            bind[DatabaseConnector].toInstance(mockDBConnector)
           )
           .build()
 
@@ -138,7 +133,7 @@ class WhatIsAccountNumberControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to Journey Recovery for a GET if the number type is not answered" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID")))).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, whatIsAccountNumberRoute)
@@ -152,7 +147,7 @@ class WhatIsAccountNumberControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to Journey Recovery for a POST if the number type is not answered" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID")))).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
         val request =

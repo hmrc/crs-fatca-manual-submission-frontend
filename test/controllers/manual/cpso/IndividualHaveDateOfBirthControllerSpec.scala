@@ -55,7 +55,6 @@ class IndividualHaveDateOfBirthControllerSpec extends SpecBase with MockitoSugar
     val cpsoId   = CPSOId("testid")
     val cpsoName = IndividualName("test", "last")
     val ua = emptyUserAnswers
-      .withPage(ReportIdPage, reportId)
       .withPage(CurrentCPSOIdPage()(reportId), cpsoId)
       .withPage(IndividualOrOrganisationPage(cpsoId)(reportId), IndividualOrOrganisation.Individual)
       .withPage(IndividualNamePage(cpsoId)(reportId), cpsoName)
@@ -83,7 +82,6 @@ class IndividualHaveDateOfBirthControllerSpec extends SpecBase with MockitoSugar
 
       val reportId = ReportId(FATCA, 2025, None, "TestfiID")
       val ua = emptyUserAnswers
-        .withPage(ReportIdPage, reportId)
         .withPage(CurrentCPSOIdPage()(reportId), cpsoId)
         .withPage(IndividualOrOrganisationPage(cpsoId)(reportId), IndividualOrOrganisation.Individual)
         .withPage(IndividualNamePage(cpsoId)(reportId), cpsoName)
@@ -92,6 +90,7 @@ class IndividualHaveDateOfBirthControllerSpec extends SpecBase with MockitoSugar
         .overrides(bind[ViewFIService].toInstance(mockFiService))
         .build()
       when(mockFiService.getFIDetail(any(), any())(using any())).thenReturn(Future.successful(fiDetail))
+      when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(emptyUserAnswers.withPage(ReportIdPage, reportId))))
 
       running(application) {
         val request = FakeRequest(GET, individualHaveDateOfBirthRoute)

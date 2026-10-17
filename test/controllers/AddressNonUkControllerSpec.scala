@@ -42,8 +42,6 @@ class AddressNonUkControllerSpec extends SpecBase with MockitoSugar {
   private val formProvider = new AddressNonUkFormProvider()
   private val form         = formProvider()
 
-  implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
-
   private val sponsorName = "Test Sponsor"
   private val countries   = Countries.nonUkTerritories(CRS)
 

@@ -18,10 +18,10 @@ package services
 
 import base.SpecBase
 import connectors.ElectionsConnector
-import models.{ElectionsId, FiIdentifiers}
 import models.ServiceErrors.Elections_Error
 import models.elections.{CrsElectionsDetails, ElectionDetails, FatcaElectionsDetails, YesNoNa}
 import models.requests.ElectionsSubmissionRequest
+import models.{ElectionsId, FiIdentifiers}
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito
 import org.mockito.Mockito.{reset, times, verify, when}
@@ -29,23 +29,21 @@ import pages.FiDetailsPage
 import pages.elections.{CRSContractsPage, CRSDormantAccountsPage, CRSThresholdsPage}
 import play.api.inject.bind
 import play.api.test.Helpers.*
-import repositories.SessionRepository
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
 import scala.concurrent.Future
 
 class ElectionsServiceSpec extends SpecBase {
-  private val mockConnector  = mock[ElectionsConnector]
-  private val mockRepository = mock[SessionRepository]
-  private val fiId: String   = "testFiId"
-  private val year: Int      = 2024
-  private val service        = new ElectionsService(mockConnector, mockRepository)
+  private val mockConnector = mock[ElectionsConnector]
+  private val fiId: String  = "testFiId"
+  private val year: Int     = 2024
+  private val service       = new ElectionsService(mockConnector, mockSessionRepository)
 
   given HeaderCarrier = HeaderCarrier()
 
   override def beforeEach(): Unit =
-    reset(mockConnector, mockRepository)
+    reset(mockConnector)
   super.beforeEach()
 
   val testCrsDetails: CrsElectionsDetails = CrsElectionsDetails(
@@ -170,7 +168,7 @@ class ElectionsServiceSpec extends SpecBase {
           .withPage(CRSDormantAccountsPage(), true)
           .withPage(CRSThresholdsPage(), true)
         when(mockConnector.submit(any())(using any[HeaderCarrier])).thenReturn(Future.successful(()))
-        when(mockRepository.set(any())).thenReturn(Future.failed(RuntimeException("Failed")))
+        when(mockSessionRepository.set(any())).thenReturn(Future.failed(RuntimeException("Failed")))
 
         val exception = service.submitAndDeleteElectionData(userAnswers, 2026).failed.futureValue
 
@@ -185,7 +183,7 @@ class ElectionsServiceSpec extends SpecBase {
           .withPage(CRSDormantAccountsPage(), true)
           .withPage(CRSThresholdsPage(), true)
         when(mockConnector.submit(any())(using any[HeaderCarrier])).thenReturn(Future.successful(()))
-        when(mockRepository.set(any())).thenReturn(Future.successful(true))
+        when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
 
         service.submitAndDeleteElectionData(userAnswers, 2026).futureValue mustBe ()
 
@@ -197,7 +195,6 @@ class ElectionsServiceSpec extends SpecBase {
   private def withService(testService: ElectionsService => Any): Any = {
     val app = applicationBuilder()
       .overrides(bind[ElectionsConnector].toInstance(mockConnector))
-      .overrides(bind[SessionRepository].toInstance(mockRepository))
       .build()
 
     running(app) {

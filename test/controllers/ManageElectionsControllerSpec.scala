@@ -22,7 +22,6 @@ import org.mockito.MockitoSugar.when
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import repositories.SessionRepository
 import services.{ElectionsRows, ElectionsService, ViewFIService}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import views.html.ManageElectionsView
@@ -43,9 +42,8 @@ class ManageElectionsControllerSpec extends SpecBase {
     crsRows = SummaryList(rows = Seq.empty),
     fatcaRows = SummaryList(rows = Seq.empty)
   )
-  private val mockElectionsService: ElectionsService   = mock[ElectionsService]
-  private val mockFiService: ViewFIService             = mock[ViewFIService]
-  private val mockSessionRepository: SessionRepository = mock[SessionRepository]
+  private val mockElectionsService: ElectionsService = mock[ElectionsService]
+  private val mockFiService: ViewFIService           = mock[ViewFIService]
 
   "ManageElections Controller" - {
     when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
@@ -59,8 +57,7 @@ class ManageElectionsControllerSpec extends SpecBase {
       val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers))
         .overrides(
           bind[ElectionsService].toInstance(mockElectionsService),
-          bind[ViewFIService].toInstance(mockFiService),
-          bind[SessionRepository].toInstance(mockSessionRepository)
+          bind[ViewFIService].toInstance(mockFiService)
         )
         .build()
 
@@ -91,8 +88,7 @@ class ManageElectionsControllerSpec extends SpecBase {
       val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers))
         .overrides(
           bind[ElectionsService].toInstance(mockElectionsService),
-          bind[ViewFIService].toInstance(mockFiService),
-          bind[SessionRepository].toInstance(mockSessionRepository)
+          bind[ViewFIService].toInstance(mockFiService)
         )
         .build()
 

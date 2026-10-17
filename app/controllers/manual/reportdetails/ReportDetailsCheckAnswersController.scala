@@ -73,9 +73,9 @@ class ReportDetailsCheckAnswersController @Inject() (
           (for {
             dbAnswers           <- dbConnector.get().map(_.getOrElse(UserAnswers(request.fatcaId)))
             dbAnswersWithFiName <- Future.fromTry(dbAnswers.set(FINamePage()(reportId), fiName))
-            feAnswers           <- Future.fromTry(request.userAnswers.set(ReportIdPage, reportId))
+            updatedFeAnswer     <- Future.fromTry(request.userAnswers.set(ReportIdPage, reportId))
             _                   <- dbConnector.set(dbAnswersWithFiName)
-            _                   <- sessionRepository.set(feAnswers)
+            _                   <- sessionRepository.set(updatedFeAnswer)
           } yield Redirect(controllers.manual.routes.SendAReportController.onPageLoad().url))
             .recover {
               case err =>

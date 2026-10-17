@@ -27,6 +27,7 @@ import repositories.SessionRepository
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import cats.data.OptionT
 
 class ReportIdRequiredActionImpl @Inject() (
   val sessionRepository: SessionRepository
@@ -36,17 +37,14 @@ class ReportIdRequiredActionImpl @Inject() (
     with Logging {
 
   override protected def refine[A](request: DataRequest[A]): Future[Either[Result, ReportIdRequest[A]]] =
-    sessionRepository.get(request.userId).map {
-      case Some(userAnswers) =>
-        userAnswers.get(ReportIdPage) match {
-          case Some(reportId) => Right(toReportIdRequest(request, reportId))
-          case None =>
-            logger.error("Unable to find reportId in FE userAnswers")
-            Left(Redirect(routes.JourneyRecoveryController.onPageLoad()))
-        }
-      case None =>
-        logger.error("Unable to find FE userAnswers")
-        Left(Redirect(routes.JourneyRecoveryController.onPageLoad()))
+    (
+      for {
+        userAnswers <- OptionT(sessionRepository.get(request.userId))
+        reportId    <- OptionT.fromOption(userAnswers.get(ReportIdPage))
+      } yield Right(toReportIdRequest(request, reportId))
+    ).getOrElse {
+      logger.error("Unable to find FE userAnswers & reportId")
+      Left(Redirect(routes.JourneyRecoveryController.onPageLoad()))
     }
 
   private def toReportIdRequest[A](
