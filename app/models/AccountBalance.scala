@@ -16,12 +16,17 @@
 
 package models
 
+import forms.mappings.Transforms
 import play.api.libs.json.{Json, OFormat}
 
 case class AccountBalance(
   currency: Currency,
   amount: String
-)
+) extends Transforms {
+
+  def formatBalanceAmount(): String =
+    s"${formatLargeNumber(amount)} ${currency.code}"
+}
 
 object AccountBalance {
   implicit val format: OFormat[AccountBalance] = Json.format[AccountBalance]

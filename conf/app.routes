@@ -347,8 +347,8 @@ GET         /manual/account/payments/:id/remove        controllers.manual.accoun
 
 GET        /manual/account/remove-payment                        controllers.manual.account.RemovePaymentController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/account/remove-payment                        controllers.manual.account.RemovePaymentController.onSubmit(mode: Mode = NormalMode)
-GET        /manual/account/remove-payment                  controllers.manual.account.RemovePaymentController.onPageLoad(mode: Mode = CheckMode)
-POST       /manual/account/remove-payment                  controllers.manual.account.RemovePaymentController.onSubmit(mode: Mode = CheckMode)
+GET        /manual/account/change-remove-payment                  controllers.manual.account.RemovePaymentController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account/change-remove-payment                  controllers.manual.account.RemovePaymentController.onSubmit(mode: Mode = CheckMode)
 
 GET        /manual/account-holder/self-certification                        controllers.manual.accountHolders.SelfCertificationController.onPageLoad(mode: Mode = NormalMode)
 POST        /manual/account-holder/self-certification                    controllers.manual.accountHolders.SelfCertificationController.onSubmit(mode: Mode = NormalMode)
@@ -400,6 +400,9 @@ POST       /manual/account/number                                               
 GET        /manual/account/change-number                                          controllers.manual.account.WhatIsAccountNumberController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/account/change-number                                          controllers.manual.account.WhatIsAccountNumberController.onSubmit(mode: Mode = CheckMode)
 
+GET        /manual/account/check-answers                                      controllers.manual.account.AccountCheckAnswersController.onPageLoad()
+POST       /manual/account/check-answers                                      controllers.manual.account.AccountCheckAnswersController.onSubmit()
+
 GET        /manual/account-holder/organisation-name                       controllers.manual.accountHolders.OrganisationNameController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/account-holder/organisation-name                       controllers.manual.accountHolders.OrganisationNameController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/account-holder/change-organisation-name                 controllers.manual.accountHolders.OrganisationNameController.onPageLoad(mode: Mode = CheckMode)
@@ -424,7 +427,6 @@ GET        /manual/account-holder/account                controllers.manual.acco
 POST       /manual/account-holder/account                controllers.manual.accountHolders.AccountController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/account-holder/change-account         controllers.manual.accountHolders.AccountController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/account-holder/change-account         controllers.manual.accountHolders.AccountController.onSubmit(mode: Mode = CheckMode)
-
 
 GET        /manual/cp-so/resident-for-tax                       controllers.manual.cpso.ResidentForTaxController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/cp-so/resident-for-tax                        controllers.manual.cpso.ResidentForTaxController.onSubmit(mode: Mode = NormalMode)
