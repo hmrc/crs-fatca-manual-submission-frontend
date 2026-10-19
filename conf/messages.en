@@ -1008,6 +1008,7 @@ organisationCrs.change.hidden = organisationCrs
 organisationCrs.passiveWithMultiplePersons = Passive non-financial entity with one or more controlling reportable persons
 organisationCrs.crsReportable = CRS reportable person
 organisationCrs.passiveCrsPerson = Passive non-financial entity that is a CRS reportable person
+organisationCrs.empty =
 
 cpso.controllingPersonType.title = What type of controlling person are they?
 cpso.controllingPersonType.heading = What type of controlling person is {0}?
@@ -1063,7 +1064,31 @@ accountHolder.account.question.hint = Select at least one account number or iden
 accountHolder.account.sendAReport.link = Back to send a {0} report for {1}
 accountHolder.account.checkYourAnswersLabel = Accounts held by this account holder
 accountHolder.account.error.required = Select at least one account number or identifier
+accountHolders.residentTax.paragraph = If they are resident for tax in more than one country, then you can add other countries after this one.
 accountHolder.account.change.hidden = Account
+
+accountHolders.residentTax.title = Where is the account holder resident for tax?
+accountHolders.residentTax.heading = Where is {0} resident for tax?
+accountHolders.residentTax.paragraph = If they are resident for tax in more than one country, then you can add other countries after this one.
+accountHolders.country.error.required = Select where the account holder is resident for tax
+accountHolders.residentTax.checkYourAnswersLabel = ResidentTax
+
+accountHolders.haveTaxIdenticationNumber.title = Do you have a tax identification number for the account holder for the country?
+accountHolders.haveTaxIdenticationNumber.heading = Do you have a tax identification number for {0} for {1}?
+accountHolders.haveTaxIdenticationNumber.other.heading = Do you have a tax identification number for {0} for {1}?
+accountHolders.haveTaxIdenticationNumber.error.required = Select yes if you have a tax identification number for the account holder for the country
+
+accountHolders.taxIdentificationNumber.title = What is the tax identification number for the account holder for the country?
+accountHolders.taxIdentificationNumber.heading = What is the tax identification number for {0} for {1}?
+accountHolders.taxIdentificationNumber.other.heading = What is the tax identification number for {0} for {1}?
+accountHolders.taxIdentificationNumber.checkYourAnswersLabel = TaxIdentificationNumber
+accountHolders.taxIdentificationNumber.error.tin.required = Enter the tax identification number for the account holder for the country
+accountHolders.taxIdentificationNumber.error.tin.length = Tax identification number must be 200 characters or less
+accountHolders.taxIdentificationNumber.error.tin.invalidChars = Tax identification number must not include a double dash (--), ampersand hash (&#) or forward slash asterisk (/*)
+accountHolders.taxIdentificationNumber.error.tin.giinOrSsn.invalid = Tax identification number must be a Global Intermediary Identification Number (GIIN) or in the format 000-00-0000, 00-0000000 or 000000000
+accountHolders.taxIdentificationNumber.error.tin.organization.is.blacklisted = Tax identification number must not be 000000000, 222222222, 000222111, 333333333 or 888888888
+accountHolders.taxIdentificationNumber.error.tin.individual.is.blacklisted = Tax identification number must not be 000000000, 666666666 or 888888888
+accountHolders.taxIdentificationNumber.tin.change.hidden = tin
 
 cpso.crs.residentForTax.title = Where is the controlling person resident for tax?
 cpso.fatca.residentForTax.title = Where is the substantial owner resident for tax?
@@ -1095,3 +1120,4 @@ cpso.taxIdentificationNumber.error.tin.invalidChars = Tax identification number 
 cpso.taxIdentificationNumber.error.tin.giinOrSsn.invalid = Tax identification number must be a Global Intermediary Identification Number (GIIN) or in the format 000-00-0000, 00-0000000 or 000000000
 cpso.taxIdentificationNumber.error.tin.organization.is.blacklisted = Tax identification number must not be 000000000, 222222222, 000222111, 333333333 or 888888888
 cpso.taxIdentificationNumber.error.tin.individual.is.blacklisted = Tax identification number must not be 000000000, 666666666 or 888888888
+
