@@ -85,7 +85,7 @@ class EquityInterestTypeControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = ua.withPage(EquityInterestTypePage(currentAccountHolderId)(reportId), validAnswer)
+      val userAnswers = ua.withPage(EquityInterestTypePage(currentAccountHolderId, reportId), validAnswer)
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 

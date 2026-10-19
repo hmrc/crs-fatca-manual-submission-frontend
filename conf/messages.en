@@ -1002,7 +1002,6 @@ organisationFatca.ownerDocumented = Owner-documented foreign financial instituti
 organisationFatca.passive = Passive non-financial foreign entity with substantial US owners, or controlling persons
 organisationFatca.nonParticipating = Non-participating foreign financial institution
 organisationFatca.specifiedPerson = Specified US person
-organisationFatca.empty =
 
 organisationCrs.title = What type of account holder is this?
 organisationCrs.heading = What type of account holder is {0}?

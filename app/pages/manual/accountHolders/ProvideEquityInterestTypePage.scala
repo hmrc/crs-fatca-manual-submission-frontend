@@ -21,6 +21,6 @@ import models.viewModels.AccountHolderId
 import pages.QuestionPage
 import play.api.libs.json.JsPath
 
-final case class ProvideEquityInterestTypePage(accountHolderId: AccountHolderId)(implicit reportId: ReportId) extends QuestionPage[Boolean]:
+final case class ProvideEquityInterestTypePage(accountHolderId: AccountHolderId, reportId: ReportId) extends QuestionPage[Boolean]:
 
   override def path: JsPath = JsPath \ reportId.mongoKey \ "accountHolder" \ accountHolderId.value \ "provideEquityInterestType"

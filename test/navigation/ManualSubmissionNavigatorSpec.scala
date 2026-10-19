@@ -1416,30 +1416,30 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           }
 
           "must go to the Equity Interest Type checkboxes when Provide Equity Interest Type is Yes" in {
-            val ua = UserAnswers("id").withPage(ProvideEquityInterestTypePage(accountHolderId)(crsReportId), true)
+            val ua = UserAnswers("id").withPage(ProvideEquityInterestTypePage(accountHolderId, crsReportId), true)
 
-            navigator.nextPage(ProvideEquityInterestTypePage(accountHolderId)(crsReportId), NormalMode, ua)(crsReportId) mustBe
+            navigator.nextPage(ProvideEquityInterestTypePage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
               controllers.manual.accountHolders.routes.EquityInterestTypeController.onPageLoad(NormalMode)
           }
 
           "must go to Self Certification when Provide Equity Interest Type is No" in {
-            val ua = UserAnswers("id").withPage(ProvideEquityInterestTypePage(accountHolderId)(crsReportId), false)
+            val ua = UserAnswers("id").withPage(ProvideEquityInterestTypePage(accountHolderId, crsReportId), false)
 
-            navigator.nextPage(ProvideEquityInterestTypePage(accountHolderId)(crsReportId), NormalMode, ua)(crsReportId) mustBe
+            navigator.nextPage(ProvideEquityInterestTypePage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
               controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(NormalMode)
           }
 
           "must go to Journey Recovery when Provide Equity Interest Type is unanswered" in {
             val ua = UserAnswers("id")
 
-            navigator.nextPage(ProvideEquityInterestTypePage(accountHolderId)(crsReportId), NormalMode, ua)(crsReportId) mustBe
+            navigator.nextPage(ProvideEquityInterestTypePage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
               controllers.routes.JourneyRecoveryController.onPageLoad()
           }
 
           "must go to Self Certification after Equity Interest Type" in {
             val ua = UserAnswers("id")
 
-            navigator.nextPage(EquityInterestTypePage(accountHolderId)(crsReportId), NormalMode, ua)(crsReportId) mustBe
+            navigator.nextPage(EquityInterestTypePage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
               controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(NormalMode)
           }
         }

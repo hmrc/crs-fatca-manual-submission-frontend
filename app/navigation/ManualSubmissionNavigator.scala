@@ -247,13 +247,13 @@ class ManualSubmissionNavigator @Inject() () {
       handleEquityInterestRouting(ua, mode, accountHolderId)
     case (AccountHolderSelfCertificationPage(_, _), _, _) => controllers.routes.UnderConstructionController.onPageLoad()
     case (IndividualPlaceOfBirthPage(_, _), mode, _)      => controllers.manual.accountHolders.routes.WhereAreTheyBasedController.onPageLoad(mode)
-    case (ProvideEquityInterestTypePage(id), mode, ua) =>
-      ua.get(ProvideEquityInterestTypePage(id)) match {
+    case (ProvideEquityInterestTypePage(id, reportId), mode, ua) =>
+      ua.get(ProvideEquityInterestTypePage(id, reportId)) match {
         case Some(true)  => controllers.manual.accountHolders.routes.EquityInterestTypeController.onPageLoad(mode)
         case Some(false) => controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
         case None        => routes.JourneyRecoveryController.onPageLoad()
       }
-    case (EquityInterestTypePage(_), mode, _) => controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
+    case (EquityInterestTypePage(_, _), mode, _) => controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
   }
 
   private def cpsoNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {

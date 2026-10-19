@@ -29,7 +29,7 @@ object ProvideEquityInterestTypeSummary {
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
     for {
       currentAccountHolderId <- answers.get(CurrentAccountHolderIdPage()(reportId))
-      answer                 <- answers.get(ProvideEquityInterestTypePage(currentAccountHolderId)(reportId))
+      answer                 <- answers.get(ProvideEquityInterestTypePage(currentAccountHolderId, reportId))
     } yield
       val value = if (answer) "site.yes" else "site.no"
 

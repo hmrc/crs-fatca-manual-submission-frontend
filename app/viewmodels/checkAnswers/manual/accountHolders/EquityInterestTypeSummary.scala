@@ -29,7 +29,7 @@ object EquityInterestTypeSummary {
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
     for {
       currentAccountHolderId <- answers.get(CurrentAccountHolderIdPage()(reportId))
-      answer                 <- answers.get(EquityInterestTypePage(currentAccountHolderId)(reportId))
+      answer                 <- answers.get(EquityInterestTypePage(currentAccountHolderId, reportId))
     } yield
       val value = answer.types
         .map(

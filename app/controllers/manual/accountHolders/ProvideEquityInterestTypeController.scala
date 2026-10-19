@@ -48,10 +48,8 @@ class ProvideEquityInterestTypeController @Inject() (
     actions.withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired() {
       implicit request =>
 
-        implicit val reportId: ReportId = request.reportId
-
         val preparedForm =
-          request.userAnswers.get(ProvideEquityInterestTypePage(request.accountHolderId)) match {
+          request.userAnswers.get(ProvideEquityInterestTypePage(request.accountHolderId, request.reportId)) match {
             case None        => form
             case Some(value) => form.fill(value)
           }
@@ -82,14 +80,14 @@ class ProvideEquityInterestTypeController @Inject() (
               for {
                 updatedAnswers <- Future.fromTry(
                   request.userAnswers.setWithReportId(
-                    ProvideEquityInterestTypePage(request.accountHolderId),
+                    ProvideEquityInterestTypePage(request.accountHolderId, request.reportId),
                     value
                   )
                 )
                 _ <- repository.set(updatedAnswers)
               } yield Redirect(
                 navigator.nextPage(
-                  ProvideEquityInterestTypePage(request.accountHolderId),
+                  ProvideEquityInterestTypePage(request.accountHolderId, request.reportId),
                   mode,
                   updatedAnswers
                 )
