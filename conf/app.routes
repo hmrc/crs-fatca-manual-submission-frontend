@@ -428,3 +428,17 @@ POST       /manual/account-holder/account                controllers.manual.acco
 GET        /manual/account-holder/change-account         controllers.manual.accountHolders.AccountController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/account-holder/change-account         controllers.manual.accountHolders.AccountController.onSubmit(mode: Mode = CheckMode)
 
+GET        /manual/account-holder/resident-for-tax                        controllers.manual.accountHolders.ResidentTaxController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account-holder/resident-for-tax                         controllers.manual.accountHolders.ResidentTaxController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account-holder/change-resident-for-tax                   controllers.manual.accountHolders.ResidentTaxController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account-holder/change-resident-for-tax                   controllers.manual.accountHolders.ResidentTaxController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/account-holder/have-identification-number                         controllers.manual.accountHolders.HaveTaxIdenticationNumberController.onPageLoad(mode: Mode = NormalMode)
+POST        /manual/account-holder/have-identification-number           controllers.manual.accountHolders.HaveTaxIdenticationNumberController.onSubmit(mode: Mode = NormalMode)
+GET         /manual/account-holder/change-have-identification-number                    controllers.manual.accountHolders.HaveTaxIdenticationNumberController.onPageLoad(mode: Mode = CheckMode)
+POST        /manual/account-holder/change-have-identification-number                    controllers.manual.accountHolders.HaveTaxIdenticationNumberController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/account-holder/identification-number                         controllers.manual.accountHolders.TaxIdentificationNumberController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account-holder/identification-number                         controllers.manual.accountHolders.TaxIdentificationNumberController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account-holder/change-identification-number                  controllers.manual.accountHolders.TaxIdentificationNumberController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account-holder/change-identification-number                   controllers.manual.accountHolders.TaxIdentificationNumberController.onSubmit(mode: Mode = CheckMode)
