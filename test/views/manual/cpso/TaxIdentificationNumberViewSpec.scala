@@ -21,7 +21,7 @@ import forms.manual.cpso.TaxIdentificationNumberFormProvider
 import models.SubmissionsConstants.CRS
 import models.manual.cpso.IndividualOrOrganisation.Individual
 import models.response.Country
-import models.{Mode, NormalMode, ReportId, TaxIdentificationNumber}
+import models.{Mode, NormalMode, ReportId}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.data.Form

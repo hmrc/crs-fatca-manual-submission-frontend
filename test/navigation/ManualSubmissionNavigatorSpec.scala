@@ -1508,6 +1508,24 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           }
 
         }
+
+        "TaxIdentificationNumberPage" - {
+          implicit val reportId: ReportId = ReportId(CRS, 2024, None, "TestFIID")
+          val currentCPSOId               = CPSOId("testid")
+
+          "must go to under construction page when answe" in {
+
+            val ua = UserAnswers("id")
+              .withPage(pages.manual.cpso.TaxIdentificationNumberPage(0, currentCPSOId, reportId), "some-number")
+
+            navigator.nextPage(
+              pages.manual.cpso.TaxIdentificationNumberPage(0, currentCPSOId, reportId),
+              NormalMode,
+              ua
+            ) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+        }
       }
     }
   }

@@ -234,9 +234,11 @@ class ManualSubmissionNavigator @Inject() () {
       }
     case (pages.manual.cpso.ControllingPersonTypePage(reportId, cpsoId), mode, ua) =>
       controllers.manual.cpso.routes.CpsoSelfCertificationController.onPageLoad(mode)
-    case (pages.manual.cpso.ResidentForTaxPage(_, cpsoId, reportId), mode, ua) => handleResidentForTaxNavigationForCPSO(ua, mode, cpsoId)
+    case (pages.manual.cpso.ResidentForTaxPage(_, cpsoId, reportId), mode, ua) => handleResidentForTaxNavigationForCPSO(mode)
     case (pages.manual.cpso.HaveTaxIdentificationNumberPage(index, cpsoId, reportId), mode, ua) =>
       handleHaveTaxIdentificationNumberNavigationForCPSO(index, ua, mode, cpsoId)
+    case (pages.manual.cpso.TaxIdentificationNumberPage(index, cpsoId, reportId), mode, ua) =>
+      routes.UnderConstructionController.onPageLoad()
   }
 
   private def sponsorNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
@@ -365,7 +367,7 @@ class ManualSubmissionNavigator @Inject() () {
       case _           => routes.JourneyRecoveryController.onPageLoad()
     }
 
-  private def handleResidentForTaxNavigationForCPSO(userAnswers: UserAnswers, mode: Mode, cpsoId: CPSOId)(implicit reportId: ReportId) =
+  private def handleResidentForTaxNavigationForCPSO(mode: Mode)(implicit reportId: ReportId) =
     if (reportId.regime == CRS) controllers.manual.cpso.routes.HaveTaxIdentificationNumberController.onPageLoad(mode)
     else controllers.manual.cpso.routes.TaxIdentificationNumberController.onPageLoad(mode)
 
