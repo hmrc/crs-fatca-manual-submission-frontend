@@ -20,15 +20,17 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.account.RemovePaymentFormProvider
+import models.SubmissionsConstants.CRS
 import models.manual.account.PaymentType.CRSInterest
 import models.manual.account.{AccountPayment, AccountPaymentsAmount}
 import models.viewModels.AccountId
-import models.{CheckMode, Currency, NormalMode}
+import models.{Currency, NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers.should
 import org.scalatestplus.mockito.MockitoSugar
+import pages.ReportIdPage
 import pages.manual.account.{AccountPaymentListPage, CurrentAccountIdPage, CurrentAccountPaymentIndexPage}
 import play.api.inject.bind
 import play.api.mvc.Call
@@ -48,11 +50,12 @@ class RemovePaymentControllerSpec extends SpecBase with MockitoSugar {
   val currency                = Currency(code = "VED", displayName = "Venezuelan Bolivar (VED)")
   val accountPayment          = AccountPayment(CRSInterest, Some(AccountPaymentsAmount(currency, "1000")))
   val accountPaymentList      = Seq(AccountPayment(CRSInterest, Some(AccountPaymentsAmount(currency, "1000"))))
-  lazy val removePaymentRoute = controllers.manual.account.routes.RemovePaymentController.onPageLoad(CheckMode).url
+  lazy val removePaymentRoute = controllers.manual.account.routes.RemovePaymentController.onPageLoad(NormalMode).url
 
   "RemovePayment Controller" - {
 
     val ua = emptyUserAnswers
+      .withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
       .withPage(CurrentAccountIdPage(), accountId)
 
     "must return OK and the correct view for a GET" in {

@@ -1060,12 +1060,12 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
         "HavePaymentPage" - {
           implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
           val accountId                   = AccountId("TestAccountId")
-          "must go to /check-answers (under construction) page when answer is No" in {
+          "must go to /check-answers  page when answer is No" in {
             val ua = UserAnswers("id")
               .withPage(HavePaymentsPage(accountId), false)
 
             navigator.nextPage(HavePaymentsPage(accountId), NormalMode, ua) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.account.routes.AccountCheckAnswersController.onPageLoad()
           }
 
           "navigation must be handled by CheckAccountTypeIsDepository when have payments is yes" in {
@@ -1337,12 +1337,12 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               controllers.manual.account.routes.CheckAccountTypeIsDepositoryController.onChangeRedirect(NormalMode)
           }
 
-          "must go to underconstruction when answer is no" in {
+          "must go to /check-answers when answer is no" in {
             val ua = UserAnswers("id")
               .withPage(AccountPaymentListPage(accountId), Seq(AccountPayment(PaymentType.CRSDividends)))
               .withPage(DoYouNeedToAddPaymentsPage(accountId), false)
             navigator.nextPage(DoYouNeedToAddPaymentsPage(accountId), NormalMode, ua) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.account.routes.AccountCheckAnswersController.onPageLoad()
           }
         }
 

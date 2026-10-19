@@ -32,7 +32,7 @@ object WhatWasTheAccountBalanceSummary {
       answer           <- answers.get(WhatWasTheAccountBalancePage(currentAccountId)(reportId))
     } yield SummaryListRowViewModel(
       key = "whatWasTheAccountBalance.checkYourAnswersLabel",
-      value = ValueViewModel(HtmlFormat.escape(s"${answer.amount} ${answer.currency.displayName}").toString),
+      value = ValueViewModel(HtmlFormat.escape(s"${answer.formatBalanceAmount()}").toString),
       actions = Seq(
         ActionItemViewModel("site.change", controllers.manual.account.routes.WhatWasTheAccountBalanceController.onPageLoad(CheckMode).url)
           .withVisuallyHiddenText(messages("whatWasTheAccountBalance.change.hidden"))
