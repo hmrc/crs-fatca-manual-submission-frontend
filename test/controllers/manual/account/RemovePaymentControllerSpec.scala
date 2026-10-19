@@ -44,14 +44,14 @@ class RemovePaymentControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
-  val accountId: AccountId        = AccountId("TestAccountId")
-  val formProvider                = new RemovePaymentFormProvider()
-  val form                        = formProvider()
-  val currency                    = Currency(code = "VED", displayName = "Venezuelan Bolivar (VED)")
-  val accountPayment              = AccountPayment(CRSInterest, Some(AccountPaymentsAmount(currency, "1000")))
-  val accountPaymentList          = Seq(AccountPayment(CRSInterest, Some(AccountPaymentsAmount(currency, "1000"))))
-  lazy val removePaymentRoute     = controllers.manual.account.routes.RemovePaymentController.onPageLoad(CheckMode).url
+  implicit val reportId: ReportId     = ReportId(CRS, 2025, None, "TestfiID")
+  private val accountId: AccountId    = AccountId("TestAccountId")
+  private val formProvider            = new RemovePaymentFormProvider()
+  private val form                    = formProvider()
+  private val currency                = Currency(code = "VED", displayName = "Venezuelan Bolivar (VED)")
+  private val accountPayment          = AccountPayment(CRSInterest, Some(AccountPaymentsAmount(currency, "1000")))
+  private val accountPaymentList      = Seq(AccountPayment(CRSInterest, Some(AccountPaymentsAmount(currency, "1000"))))
+  private lazy val removePaymentRoute = controllers.manual.account.routes.RemovePaymentController.onPageLoad(NormalMode).url
 
   "RemovePayment Controller" - {
 
