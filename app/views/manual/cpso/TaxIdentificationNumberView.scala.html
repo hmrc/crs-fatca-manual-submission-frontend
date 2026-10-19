@@ -42,7 +42,14 @@
                     label = Label(
                         isPageHeading = true,
                         classes = "govuk-label  govuk-label--l",
-                        content = Text(messages("cpso.taxIdentificationNumber.heading", cpsoName, country.displayNameInSentence.getOrElse(country.description)))
+                        content = Text(
+                            if(country.code == "XX") {
+                                messages("cpso.taxIdentificationNumber.other.heading", cpsoName, s"‘${country.displayNameInSentence.getOrElse(country.description)}’")
+                            }
+                            else{
+                                messages("cpso.taxIdentificationNumber.heading", cpsoName, country.displayNameInSentence.getOrElse(country.description))
+                            }
+                        )
                     )
                 )
                 .withWidth(Fixed20)

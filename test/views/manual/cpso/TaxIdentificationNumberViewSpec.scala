@@ -93,6 +93,13 @@ class TaxIdentificationNumberViewSpec extends SpecBase {
         render(country = unitedStates).select("h1").text() mustBe
           s"What is the tax identification number for $cpsoName for the United States?"
       }
+
+      "must display other country in curly quotes" in {
+        val other = Country("XX", "Other", None, None)
+
+        render(country = other).select("h1").text() mustBe
+          s"What is the tax identification number for $cpsoName for ‘Other’?"
+      }
     }
 
     "submit button" - {
