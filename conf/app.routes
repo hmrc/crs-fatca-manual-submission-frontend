@@ -437,3 +437,8 @@ GET        /manual/cp-so/have-identification-number                        contr
 POST       /manual/cp-so/have-identification-number                        controllers.manual.cpso.HaveTaxIdentificationNumberController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/cp-so/change-have-identification-number                   controllers.manual.cpso.HaveTaxIdentificationNumberController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/cp-so/change-have-identification-number                   controllers.manual.cpso.HaveTaxIdentificationNumberController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/cp-so/identification-number                        controllers.manual.cpso.TaxIdentificationNumberController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/cp-so/identification-number                        controllers.manual.cpso.TaxIdentificationNumberController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/cp-so/change-identification-number                  controllers.manual.cpso.TaxIdentificationNumberController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/cp-so/change-identification-number                controllers.manual.cpso.TaxIdentificationNumberController.onSubmit(mode: Mode = CheckMode)

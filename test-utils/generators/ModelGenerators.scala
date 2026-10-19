@@ -23,7 +23,18 @@ import models.{AddressUk, CrsOrFatca, NumberType, TypeOfReport, UkAddress, UkPos
 import org.scalacheck.Arbitrary.*
 import org.scalacheck.{Arbitrary, Gen}
 
+import models.TaxIdentificationNumber
+import org.scalacheck.Arbitrary.*
+
 trait ModelGenerators {
+
+  implicit lazy val arbitraryTaxIdentificationNumber: Arbitrary[TaxIdentificationNumber] =
+    Arbitrary {
+      for {
+        tin      <- arbitrary[String]
+        deleteme <- arbitrary[String]
+      } yield TaxIdentificationNumber(tin, deleteme)
+    }
 
   implicit lazy val arbitraryAddressUk: Arbitrary[AddressUk] =
     Arbitrary {

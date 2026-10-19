@@ -1083,3 +1083,17 @@ cpso.haveTaxIdentificationNumber.checkYourAnswersLabel = haveTaxIdentificationNu
 cpso.crs.haveTaxIdentificationNumber.error.required = Select yes if you have a tax identification number for the controlling person for the country
 cpso.fatca.haveTaxIdentificationNumber.error.required = Select yes if you have a tax identification number for the substantial owner for the country
 cpso.haveTaxIdentificationNumber.change.hidden = HaveTaxIdentificationNumber
+
+cpso.crs.taxIdentificationNumber.title = What is the tax identification number for the controlling person for the country?
+cpso.crs.taxIdentificationNumber.title = What is the tax identification number for the substantial owner for the country?
+cpso.taxIdentificationNumber.heading = What is the tax identification number for {0} for {1}?
+
+cpso.taxIdentificationNumber.tin = tin
+cpso.taxIdentificationNumber.deleteme = deleteme
+cpso.taxIdentificationNumber.checkYourAnswersLabel = TaxIdentificationNumber
+cpso.taxIdentificationNumber.error.tin.required = Enter tin
+cpso.taxIdentificationNumber.error.deleteme.required = Enter deleteme
+cpso.taxIdentificationNumber.error.tin.length = tin must be 100 characters or less
+cpso.taxIdentificationNumber.error.deleteme.length = deleteme must be 100 characters or less
+cpso.taxIdentificationNumber.tin.change.hidden = tin
+cpso.taxIdentificationNumber.deleteme.change.hidden = deleteme
