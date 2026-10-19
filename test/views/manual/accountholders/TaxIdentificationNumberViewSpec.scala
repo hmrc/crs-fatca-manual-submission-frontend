@@ -41,6 +41,7 @@ class TaxIdentificationNumberViewSpec extends SpecBase {
 
   private val accountHolder = "Test Last"
   private val fr            = Country("FR", "France")
+  private val other         = Country("XX", "Other")
 
   val formProvider = new TaxIdentificationNumberFormProvider()
   val form         = formProvider(fr, reportId, Individual)
@@ -57,6 +58,12 @@ class TaxIdentificationNumberViewSpec extends SpecBase {
 
       "must display heading with the account holder name" in {
         doc.select("h1").text() must include("What is the tax identification number for Test Last for France?")
+      }
+
+      "must display heading with the account holder name with other country" in {
+        val renderedHtml2: HtmlFormat.Appendable = view(form, NormalMode, other, accountHolder)
+        lazy val doc2                            = Jsoup.parse(renderedHtml2.body)
+        doc2.select("h1").text() must include("What is the tax identification number for Test Last for ‘Other’?")
       }
 
       "must display button" in {

@@ -1079,6 +1079,7 @@ accountHolders.haveTaxIdenticationNumber.error.required = Select yes if you have
 
 accountHolders.taxIdentificationNumber.title = What is the tax identification number for the account holder for the country?
 accountHolders.taxIdentificationNumber.heading = What is the tax identification number for {0} for {1}?
+accountHolders.taxIdentificationNumber.other.heading = What is the tax identification number for {0} for {1}?
 accountHolders.taxIdentificationNumber.checkYourAnswersLabel = TaxIdentificationNumber
 accountHolders.taxIdentificationNumber.error.tin.required = Enter the tax identification number for the account holder for the country
 accountHolders.taxIdentificationNumber.error.tin.length = Tax identification number must be 200 characters or less
