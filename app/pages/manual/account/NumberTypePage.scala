@@ -16,20 +16,11 @@
 
 package pages.manual.account
 
-import models.NumberType.*
 import models.viewModels.AccountId
-import models.{NumberType, ReportId, UserAnswers}
+import models.{NumberType, ReportId}
 import pages.QuestionPage
 import play.api.libs.json.JsPath
-
-import scala.util.Try
 
 final case class NumberTypePage(accountId: AccountId)(implicit reportId: ReportId) extends QuestionPage[NumberType]:
 
   override def path: JsPath = JsPath \ reportId.mongoKey \ "accounts" \ accountId.value \ "numberType"
-
-  override def cleanup(value: Option[NumberType], userAnswers: UserAnswers): Try[UserAnswers] =
-    value match {
-      case Some(Iban) | Some(Semp) => super.cleanup(value, userAnswers)
-      case _                       => userAnswers.remove(WhatAccountTypePage(accountId))
-    }

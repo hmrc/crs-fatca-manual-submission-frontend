@@ -17,13 +17,16 @@
 package utils
 
 import base.SpecBase
+import models.NumberType.*
 import models.SubmissionsConstants.{CRS, FATCA}
 import models.TypeOfReport.Information
+import models.manual.account.WasAccountOpen
+import models.manual.account.WhatAccountType.Custodial
 import models.manual.filercategory.{WhatTypeOfFiler, WhatTypeOfFilerIsSponsor}
 import models.viewModels.AccountId
-import models.{CrsOrFatca, ReportId, UserAnswers}
+import models.{AccountBalance, CrsOrFatca, Currency, NumberType, ReportId, UserAnswers}
 import org.scalatest.freespec.AnyFreeSpec
-import pages.manual.account.{AccountClosedPage, CurrentAccountIdPage, HaveNumberPage, HavePaymentsPage, HowManyJointAccountHoldersPage, IsJointAccountPage}
+import pages.manual.account.*
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import play.api.i18n.Messages
@@ -88,12 +91,19 @@ class CheckAnswersUtilSpec extends SpecBase {
 
         implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
 
-        def baseUa(haveNumber: Boolean, closed: Boolean): UserAnswers =
+        def baseUa(hasNumber: Boolean, isClosed: Boolean, isJointAcc: Boolean): UserAnswers =
           emptyUserAnswers
             .withPage(CurrentAccountIdPage(), accId)
-            .withPage(HaveNumberPage(accId), haveNumber)
-            .withPage(AccountClosedPage(accId), closed)
-            .withPage(IsJointAccountPage(accId), false)
+            .withPage(HaveNumberPage(accId), hasNumber)
+            .withPage(AccountClosedPage(accId), isClosed)
+            .withPage(IsJointAccountPage(accId), isJointAcc)
+            .withPage(NumberTypePage(accId), NumberType.Other)
+            .withPage(WhatIsAccountNumberPage(accId, reportId), "TESTACCNO123")
+            .withPage(WhatWasTheAccountBalancePage(accId), AccountBalance(currency = Currency.GBP, amount = "300"))
+            .withPage(IsUndocumentedAccountPage(accId), false)
+            .withPage(IsDormantAccountPage(accId), false)
+            .withPage(WasAccountOpenPage(accId), WasAccountOpen.NotReported)
+            .withPage(WhatAccountTypePage(accId), Custodial)
 
         "when no relevant answers exist" - {
           "must return an empty SummaryList" in {
@@ -104,15 +114,22 @@ class CheckAnswersUtilSpec extends SpecBase {
 
         "when there are joint account holders" - {
           "must include the joint account holders summary" in {
-            val ua = baseUa(haveNumber = true, closed = false)
-              .withPage(IsJointAccountPage(accId), true)
+            val ua = baseUa(hasNumber = true, isClosed = false, isJointAcc = true)
               .withPage(HowManyJointAccountHoldersPage(accId), 42)
 
-            val result = util.getAccountRows(ua)
+            val expected = HaveNumberSummary.row(ua) ++
+              NumberTypeSummary.row(ua) ++
+              WhatIsAccountNumberSummary.row(ua) ++
+              AccountClosedSummary.row(ua) ++
+              WhatWasTheAccountBalanceSummary.row(ua) ++
+              IsUndocumentedAccountSummary.row(ua) ++
+              IsDormantAccountSummary.row(ua) ++
+              WasAccountOpenSummary.row(ua) ++
+              IsJointAccountSummary.row(ua) ++
+              HowManyJointAccountHoldersSummary.row(ua) ++
+              WhatAccountTypeSummary.row(ua)
 
-            val keys = result.rows.map(_.key.content.toString)
-            keys.filter(_.contains("howManyJointAccountHolders")) must not be empty
-
+            util.getAccountRows(ua).rows mustBe expected
           }
         }
 
@@ -120,7 +137,7 @@ class CheckAnswersUtilSpec extends SpecBase {
 
           "when there is no official number" - {
             "must return the correct rows, including the payments row when payments answers exist" in {
-              val ua = baseUa(haveNumber = false, closed = false).withPage(HavePaymentsPage(accId), true)
+              val ua = baseUa(hasNumber = false, isClosed = false, isJointAcc = false).withPage(HavePaymentsPage(accId), true)
 
               val expected = HaveNumberSummary.row(ua) ++
                 IdentifierSummary.row(ua) ++
@@ -137,18 +154,25 @@ class CheckAnswersUtilSpec extends SpecBase {
             }
 
             "must omit the payments row when payments answers are absent" in {
-              val ua = baseUa(haveNumber = false, closed = false)
+              val ua = baseUa(hasNumber = false, isClosed = false, isJointAcc = false)
 
-              util
-                .getAccountRows(ua)
-                .rows
-                .map(_.key.content.toString) must not contain (Text("account.havePayments.checkYourAnswersLabel.crs"))
+              val expected = HaveNumberSummary.row(ua) ++
+                IdentifierSummary.row(ua) ++
+                AccountClosedSummary.row(ua) ++
+                WhatWasTheAccountBalanceSummary.row(ua) ++
+                IsUndocumentedAccountSummary.row(ua) ++
+                IsDormantAccountSummary.row(ua) ++
+                WasAccountOpenSummary.row(ua) ++
+                IsJointAccountSummary.row(ua) ++
+                WhatAccountTypeSummary.row(ua)
+
+              util.getAccountRows(ua).rows mustBe expected
             }
           }
 
           "when there is an official number" - {
             "must return the correct rows" in {
-              val ua = baseUa(haveNumber = true, closed = false)
+              val ua = baseUa(hasNumber = true, isClosed = false, isJointAcc = false)
 
               val expected = HaveNumberSummary.row(ua) ++
                 NumberTypeSummary.row(ua) ++
@@ -168,7 +192,7 @@ class CheckAnswersUtilSpec extends SpecBase {
 
         "when the account is closed" - {
           "must show the currency row but hide the balance row" in {
-            val ua = baseUa(haveNumber = true, closed = true)
+            val ua = baseUa(hasNumber = true, isClosed = true, isJointAcc = false)
 
             val expected = HaveNumberSummary.row(ua) ++
               NumberTypeSummary.row(ua) ++
@@ -184,18 +208,41 @@ class CheckAnswersUtilSpec extends SpecBase {
             util.getAccountRows(ua).rows mustBe expected
           }
         }
+
+        "when the number type is Iban" - {
+          "must omit the account type row" in {
+            val ua = baseUa(hasNumber = true, isClosed = false, isJointAcc = false)
+              .withPage(NumberTypePage(accId), Iban)
+
+            val result = util.getAccountRows(ua)
+
+            result.rows must not contain (WhatAccountTypeSummary.row(ua))
+          }
+        }
+
+        "when the number type is Semp" - {
+          "must omit the account type row" in {
+            val ua = baseUa(hasNumber = true, isClosed = true, isJointAcc = false)
+              .withPage(NumberTypePage(accId), Semp)
+
+            val result = util.getAccountRows(ua)
+
+            result.rows must not contain (WhatAccountTypeSummary.row(ua))
+          }
+        }
       }
 
       "when the regime is FATCA" - {
 
         implicit val reportId: ReportId = ReportId(FATCA, 2025, None, "TestfiID")
 
-        def baseUa(haveNumber: Boolean, closed: Boolean): UserAnswers =
+        def baseUa(hasNumber: Boolean, isClosed: Boolean, isJointAcc: Boolean): UserAnswers =
           emptyUserAnswers
             .withPage(CurrentAccountIdPage(), accId)
-            .withPage(HaveNumberPage(accId), haveNumber)
-            .withPage(AccountClosedPage(accId), closed)
-            .withPage(IsJointAccountPage(accId), false)
+            .withPage(HaveNumberPage(accId), hasNumber)
+            .withPage(AccountClosedPage(accId), isClosed)
+            .withPage(IsJointAccountPage(accId), isJointAcc)
+            .withPage(NumberTypePage(accId), NumberType.Other)
 
         "when no relevant answers exist" - {
           "must return an empty SummaryList" in {
@@ -206,7 +253,7 @@ class CheckAnswersUtilSpec extends SpecBase {
         "when the account is not closed" - {
           "when there is no official number" - {
             "must show the balance but no CRS-only rows" in {
-              val ua = baseUa(haveNumber = false, closed = false)
+              val ua = baseUa(hasNumber = false, isClosed = false, isJointAcc = false)
 
               val expected = HaveNumberSummary.row(ua) ++
                 IdentifierSummary.row(ua) ++
@@ -221,7 +268,7 @@ class CheckAnswersUtilSpec extends SpecBase {
         "when the account is closed" - {
           "when there is an official number" - {
             "must show the balance" in {
-              val ua = baseUa(haveNumber = true, closed = true)
+              val ua = baseUa(hasNumber = true, isClosed = true, isJointAcc = false)
 
               val expected = HaveNumberSummary.row(ua) ++
                 NumberTypeSummary.row(ua) ++
