@@ -20,18 +20,19 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.cpso.TaxIdentificationNumberFormProvider
-import models.SubmissionsConstants.CRS
-import models.manual.cpso.IndividualOrOrganisation.Individual
+import models.SubmissionsConstants.{CRS, FATCA}
+import models.manual.cpso.{IndividualName, IndividualOrOrganisation}
 import models.response.Country
-import models.{NormalMode, ReportId, TaxIdentificationNumber, UserAnswers}
+import models.viewModels.manual.cpso.CPSOId
+import models.{CheckMode, NormalMode, ReportId, UserAnswers}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
+import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.cpso.TaxIdentificationNumberPage
+import pages.manual.cpso.*
 import play.api.inject.bind
-import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
@@ -41,31 +42,62 @@ import scala.concurrent.Future
 
 class TaxIdentificationNumberControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
+  private val onwardRoute: Call = Call("GET", "/foo")
 
-  implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
+  private val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
 
-  val formProvider = new TaxIdentificationNumberFormProvider()
-  val form         = formProvider(Country.GB, reportId, Individual)
+  private val fatcaReportId: ReportId = ReportId(FATCA, 2025, None, "TestfiID")
 
-  lazy val taxIdentificationNumberRoute = controllers.manual.cpso.routes.TaxIdentificationNumberController.onPageLoad(NormalMode).url
+  private val cpsoId   = CPSOId("cpso-id")
+  private val cpsoName = "Some Name"
 
-  val userAnswers = UserAnswers(
-    userAnswersId,
-    Json.obj(
-      TaxIdentificationNumberPage.toString -> Json.obj(
-        "tin"      -> "value 1",
-        "deleteme" -> "value 2"
+  private val previousIndex = 0
+  private val currentIndex  = 1
+
+  private val selectedCountry = Country.GB
+
+  private val regime = reportId.regime.value.toLowerCase()
+
+  private val tin = "Y1234567"
+
+  private val formProvider = new TaxIdentificationNumberFormProvider()
+  private val form         = formProvider(selectedCountry, reportId, Some(IndividualOrOrganisation.Individual))
+
+  private lazy val taxIdentificationNumberRoute =
+    controllers.manual.cpso.routes.TaxIdentificationNumberController.onPageLoad(NormalMode).url
+
+  private lazy val changeTaxIdentificationNumberRoute =
+    controllers.manual.cpso.routes.TaxIdentificationNumberController.onPageLoad(CheckMode).url
+
+  private def userAnswersFor(
+    rd: ReportId,
+    maybeCountry: Option[Country] = Some(selectedCountry),
+    individualOrOrganisation: Option[IndividualOrOrganisation] = None
+  ): UserAnswers = {
+    val answers = emptyUserAnswers
+      .withPage(ReportIdPage, rd)
+      .withPage(CurrentCPSOIdPage()(rd), cpsoId)
+      .withPage(IndividualNamePage(cpsoId)(rd), IndividualName("Some", "Name"))
+      .withPage(CurrentTaxResidentCountryIndexPage(cpsoId, rd), currentIndex)
+      .withPage(ResidentForTaxPage(previousIndex, cpsoId, rd), selectedCountry)
+
+    val withCountry =
+      maybeCountry.fold(answers)(
+        country => answers.withPage(ResidentForTaxPage(currentIndex, cpsoId, rd), country)
       )
+
+    individualOrOrganisation.fold(withCountry)(
+      value => withCountry.withPage(IndividualOrOrganisationPage(cpsoId)(rd), value)
     )
-  )
+  }
+
+  private lazy val defaultAnswers = userAnswersFor(reportId)
 
   "TaxIdentificationNumber Controller" - {
-    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(defaultAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, taxIdentificationNumberRoute)
@@ -75,15 +107,34 @@ class TaxIdentificationNumberControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual
+          view(form, NormalMode, cpsoName, selectedCountry, regime)(request, messages(application)).toString
+      }
+    }
+
+    "must return OK and the correct view for a GET in check mode" in {
+
+      val application = applicationBuilder(maybeUserAnswers = Some(defaultAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, changeTaxIdentificationNumberRoute)
+
+        val view = application.injector.instanceOf[TaxIdentificationNumberView]
+
+        val result = route(application, request).value
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual
+          view(form, CheckMode, cpsoName, selectedCountry, regime)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-      val validAnswer = TaxIdentificationNumber("value 1", "value 2")
-      val userAnswers = ua.set(TaxIdentificationNumberPage(), validAnswer).success.value
 
-      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
+      val answers = defaultAnswers
+        .withPage(TaxIdentificationNumberPage(currentIndex, cpsoId, reportId), tin)
+
+      val application = applicationBuilder(maybeUserAnswers = Some(answers)).build()
 
       running(application) {
         val request = FakeRequest(GET, taxIdentificationNumberRoute)
@@ -93,53 +144,93 @@ class TaxIdentificationNumberControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(TaxIdentificationNumber("value 1", "value 2")), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual
+          view(form.fill(tin), NormalMode, cpsoName, selectedCountry, regime)(request, messages(application)).toString
       }
     }
 
-    "must redirect to the next page when valid data is submitted" in {
+    "must save the answer against the current tax resident country and redirect to the next page when valid data is submitted" in {
 
-      val mockSessionRepository = mock[DatabaseConnector]
+      val mockRepository = mock[DatabaseConnector]
 
-      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+      when(mockRepository.set(any())(any())) thenReturn Future.successful(())
 
       val application =
-        applicationBuilder(maybeUserAnswers = Some(ua))
+        applicationBuilder(maybeUserAnswers = Some(defaultAnswers))
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockSessionRepository)
+            bind[DatabaseConnector].toInstance(mockRepository)
           )
           .build()
 
       running(application) {
         val request =
           FakeRequest(POST, taxIdentificationNumberRoute)
-            .withFormUrlEncodedBody(("tin", "value 1"), ("deleteme", "value 2"))
+            .withFormUrlEncodedBody(("tin", tin))
 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
+
+        val captor = ArgumentCaptor.forClass(classOf[UserAnswers])
+        verify(mockRepository).set(captor.capture())(any())
+
+        captor.getValue.get(TaxIdentificationNumberPage(currentIndex, cpsoId, reportId)) mustBe Some(tin)
       }
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(defaultAnswers)).build()
 
       running(application) {
         val request =
           FakeRequest(POST, taxIdentificationNumberRoute)
-            .withFormUrlEncodedBody(("value", "invalid value"))
+            .withFormUrlEncodedBody(("tin", ""))
 
-        val boundForm = form.bind(Map("value" -> "invalid value"))
+        val boundForm = form.bind(Map("tin" -> ""))
 
         val view = application.injector.instanceOf[TaxIdentificationNumberView]
 
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual
+          view(boundForm, NormalMode, cpsoName, selectedCountry, regime)(request, messages(application)).toString
+      }
+    }
+
+    "must render the view for a fatca report when the CP-SO is an individual" in {
+
+      val answers = userAnswersFor(fatcaReportId, individualOrOrganisation = Some(IndividualOrOrganisation.Individual))
+
+      val application = applicationBuilder(maybeUserAnswers = Some(answers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, taxIdentificationNumberRoute)
+
+        val view = application.injector.instanceOf[TaxIdentificationNumberView]
+
+        val result = route(application, request).value
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual
+          view(form, NormalMode, cpsoName, selectedCountry, "fatca")(request, messages(application)).toString
+      }
+    }
+
+    "must redirect to Journey Recovery for a GET when the individual or organisation has not been answered for a fatca report" in {
+
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswersFor(fatcaReportId))).build()
+
+      running(application) {
+        val request = FakeRequest(GET, taxIdentificationNumberRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 
@@ -164,7 +255,37 @@ class TaxIdentificationNumberControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, taxIdentificationNumberRoute)
-            .withFormUrlEncodedBody(("tin", "value 1"), ("deleteme", "value 2"))
+            .withFormUrlEncodedBody(("tin", tin))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Journey Recovery for a GET when no country has been selected for the current tax resident country" in {
+
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswersFor(reportId, maybeCountry = None))).build()
+
+      running(application) {
+        val request = FakeRequest(GET, taxIdentificationNumberRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Journey Recovery for a POST when no country has been selected for the current tax resident country" in {
+
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswersFor(reportId, maybeCountry = None))).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, taxIdentificationNumberRoute)
+            .withFormUrlEncodedBody(("tin", tin))
 
         val result = route(application, request).value
 
