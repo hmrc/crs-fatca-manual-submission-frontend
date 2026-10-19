@@ -41,8 +41,8 @@ class TaxIdentificationNumberViewSpec extends SpecBase {
 
   private val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
 
-  private val form: Form[TaxIdentificationNumber] =
-    new TaxIdentificationNumberFormProvider()(Country.GB, reportId, Individual)
+  private val form: Form[String] =
+    new TaxIdentificationNumberFormProvider()(Country.GB, reportId, Some(Individual))
 
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
   implicit private val messages: Messages               = messagesControllerComponents.messagesApi.preferred(Seq(Lang("en")))
