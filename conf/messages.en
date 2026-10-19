@@ -1075,12 +1075,11 @@ accountHolders.residentTax.checkYourAnswersLabel = ResidentTax
 accountHolders.haveTaxIdenticationNumber.title = Do you have a tax identification number for the account holder for the country?
 accountHolders.haveTaxIdenticationNumber.heading = Do you have a tax identification number for {0} for {1}?
 accountHolders.haveTaxIdenticationNumber.other.heading = Do you have a tax identification number for {0} for {1}?
-accountHolders.haveTaxIdenticationNumber.checkYourAnswersLabel = haveTaxIdenticationNumber
-accountHolders.haveTaxIdenticationNumber.error.required = 	Select yes if you have a tax identification number
-accountHolders.haveTaxIdenticationNumber.change.hidden = HaveTaxIdenticationNumber
+accountHolders.haveTaxIdenticationNumber.error.required = Select yes if you have a tax identification number for the account holder for the country
 
 accountHolders.taxIdentificationNumber.title = What is the tax identification number for the account holder for the country?
 accountHolders.taxIdentificationNumber.heading = What is the tax identification number for {0} for {1}?
+accountHolders.taxIdentificationNumber.other.heading = What is the tax identification number for {0} for {1}?
 accountHolders.taxIdentificationNumber.checkYourAnswersLabel = TaxIdentificationNumber
 accountHolders.taxIdentificationNumber.error.tin.required = Enter the tax identification number for the account holder for the country
 accountHolders.taxIdentificationNumber.error.tin.length = Tax identification number must be 200 characters or less
