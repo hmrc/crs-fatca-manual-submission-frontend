@@ -45,7 +45,7 @@ class HaveTaxIdentificationNumberController @Inject() (
     with I18nSupport
     with Logging {
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequiredAndTaxResidentIdRequired() {
+  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequiredAndTaxResidentIdRequiredForCrsOnly() {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
@@ -65,7 +65,7 @@ class HaveTaxIdentificationNumberController @Inject() (
       }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequiredAndTaxResidentIdRequired().async {
+  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequiredAndTaxResidentIdRequiredForCrsOnly().async {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId

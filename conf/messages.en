@@ -1085,7 +1085,7 @@ cpso.fatca.haveTaxIdentificationNumber.error.required = Select yes if you have a
 cpso.haveTaxIdentificationNumber.change.hidden = HaveTaxIdentificationNumber
 
 cpso.crs.taxIdentificationNumber.title = What is the tax identification number for the controlling person for the country?
-cpso.crs.taxIdentificationNumber.title = What is the tax identification number for the substantial owner for the country?
+cpso.fatca.taxIdentificationNumber.title = What is the tax identification number for the substantial owner for the country?
 cpso.taxIdentificationNumber.heading = What is the tax identification number for {0} for {1}?
 
 cpso.taxIdentificationNumber.tin = tin
