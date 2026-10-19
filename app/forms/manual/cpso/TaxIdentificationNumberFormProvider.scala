@@ -27,14 +27,7 @@ import javax.inject.Inject
 
 class TaxIdentificationNumberFormProvider @Inject() extends Mappings {
 
-  def apply(country: Country, reportId: ReportId, individualOrOrganization: IndividualOrOrganisation): Form[TaxIdentificationNumber] = Form(
-    mapping(
-      "tin" -> text("taxIdentificationNumber.error.tin.required")
-        .verifying(maxLength(100, "taxIdentificationNumber.error.tin.length")),
-      "deleteme" -> text("taxIdentificationNumber.error.deleteme.required")
-        .verifying(maxLength(100, "taxIdentificationNumber.error.deleteme.length"))
-    )(TaxIdentificationNumber.apply)(
-      x => Some((x.tin, x.deleteme))
-    )
+  def apply(country: Country, reportId: ReportId, individualOrOrganization: Option[IndividualOrOrganisation]): Form[String] = Form(
+    "tin" -> text(s"cpso.${reportId.regime.value.toLowerCase}.taxIdentificationNumber.error.tin.required")
   )
 }

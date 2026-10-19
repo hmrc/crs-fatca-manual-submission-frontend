@@ -89,12 +89,12 @@ class Actions @Inject() (
   def withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequiredAndTaxResidentIdCreation(): ActionBuilder[TaxResidentCountryIdForCPSORequest, AnyContent] =
     withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequired() andThen taxResidentCountryIdCreationForCPSOAction
 
-  def withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequiredAndTaxResidentIdRequiredForCrsOnly(): ActionBuilder[TaxResidentCountryIdForCPSORequest, AnyContent] =
+  def withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequiredAndTaxResidentIdRequiredForCrsOnly()
+    : ActionBuilder[TaxResidentCountryIdForCPSORequest, AnyContent] =
     withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequired() andThen cpsoCRSOnlyFilterWithCPSONameAction andThen taxResidentCountryIdRequiredForCPSOAction
 
   def withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequiredAndTaxResidentIdRequired(): ActionBuilder[TaxResidentCountryIdForCPSORequest, AnyContent] =
-    withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequired()  andThen taxResidentCountryIdRequiredForCPSOAction
-
+    withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequired() andThen taxResidentCountryIdRequiredForCPSOAction
 
   private def identityAndRequireData = identify andThen getData andThen requireData
 }

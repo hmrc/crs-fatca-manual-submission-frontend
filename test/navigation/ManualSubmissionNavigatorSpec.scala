@@ -40,6 +40,7 @@ import pages.manual.cpso.{
   CPSOWhereAreTheyBasedPage,
   CpsoOrganisationNamePage,
   CpsoSelfCertificationPage,
+  HaveTaxIdentificationNumberPage,
   IsThisTheAddressPage as IsThisTheAddressPageForCpso,
   ResidentForTaxPage,
   SelectAddressPage as SelectAddressPageForCPSO,
@@ -1451,7 +1452,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               controllers.manual.cpso.routes.HaveTaxIdentificationNumberController.onPageLoad(NormalMode)
           }
 
-          "must go to under construction page page when regime is fatca" in {
+          "must go to tax identification  page page when regime is fatca" in {
             implicit val reportId2: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
             val ua                           = UserAnswers("id")
 
@@ -1460,8 +1461,52 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               NormalMode,
               ua
             )(reportId2) mustBe
+              controllers.manual.cpso.routes.TaxIdentificationNumberController.onPageLoad(NormalMode)
+          }
+        }
+
+        "HaveTaxIdentificationNumberPage cpso" - {
+          implicit val reportId: ReportId = ReportId(CRS, 2024, None, "TestFIID")
+          val currentCPSOId               = CPSOId("testid")
+
+          "must go to have tax identification page when answer is yes" in {
+
+            val ua = UserAnswers("id")
+              .withPage(pages.manual.cpso.HaveTaxIdentificationNumberPage(0, currentCPSOId, reportId), true)
+
+            navigator.nextPage(
+              HaveTaxIdentificationNumberPage(0, currentCPSOId, reportId),
+              NormalMode,
+              ua
+            ) mustBe
+              controllers.manual.cpso.routes.TaxIdentificationNumberController.onPageLoad(NormalMode)
+          }
+
+          "must go to under construction page when answer is no" in {
+
+            val ua = UserAnswers("id")
+              .withPage(pages.manual.cpso.HaveTaxIdentificationNumberPage(0, currentCPSOId, reportId), false)
+
+            navigator.nextPage(
+              HaveTaxIdentificationNumberPage(0, currentCPSOId, reportId),
+              NormalMode,
+              ua
+            ) mustBe
               controllers.routes.UnderConstructionController.onPageLoad()
           }
+
+          "must go to journey recovery page when an answer is not provided" in {
+
+            val ua = UserAnswers("id")
+
+            navigator.nextPage(
+              HaveTaxIdentificationNumberPage(0, currentCPSOId, reportId),
+              NormalMode,
+              ua
+            ) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
+
         }
       }
     }

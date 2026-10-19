@@ -52,12 +52,12 @@ class TaxIdentificationNumberViewSpec extends SpecBase {
   private val pageHeading = s"What is the tax identification number for $cpsoName for United Kingdom?"
 
   private def render(
-                      boundForm: Form[_] = form,
-                      mode: Mode = NormalMode,
-                      name: String = cpsoName,
-                      country: Country = Country.GB,
-                      regimeName: String = "crs"
-                    ): Document =
+    boundForm: Form[_] = form,
+    mode: Mode = NormalMode,
+    name: String = cpsoName,
+    country: Country = Country.GB,
+    regimeName: String = "crs"
+  ): Document =
     Jsoup.parse(view(boundForm, mode, name, country, regimeName).body)
 
   "TaxIdentificationNumberView" - {
@@ -67,13 +67,13 @@ class TaxIdentificationNumberViewSpec extends SpecBase {
       "must use the controlling person wording for the crs regime" in {
         render().title() mustBe
           "What is the tax identification number for the controlling person for the country?" +
-            " - Send a CRS or FATCA report - GOV.UK"
+          " - Send a CRS or FATCA report - GOV.UK"
       }
 
       "must use the substantial owner wording for the fatca regime" in {
         render(regimeName = "fatca").title() mustBe
           "What is the tax identification number for the substantial owner for the country?" +
-            " - Send a CRS or FATCA report - GOV.UK"
+          " - Send a CRS or FATCA report - GOV.UK"
       }
     }
 
