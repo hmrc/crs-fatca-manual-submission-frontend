@@ -20,21 +20,21 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.cpso.CpsoSelfCertificationFormProvider
-import models.SubmissionsConstants.{CRS, FATCA}
-import models.{NormalMode, ReportId}
+import models.SubmissionsConstants.FATCA
 import models.manual.cpso.{CpsoSelfCertification, IndividualName}
 import models.viewModels.manual.cpso.CPSOId
+import models.{NormalMode, ReportId}
+import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
+import pages.ReportIdPage
+import pages.manual.cpso.{CpsoSelfCertificationPage, CurrentCPSOIdPage, IndividualNamePage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import views.html.manual.cpso.CpsoSelfCertificationView
-import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
-import pages.ReportIdPage
-import pages.manual.cpso.{CpsoSelfCertificationPage, CurrentCPSOIdPage, IndividualNamePage}
 
 import scala.concurrent.Future
 
@@ -44,16 +44,14 @@ class CpsoSelfCertificationControllerSpec extends SpecBase with MockitoSugar {
 
   lazy val cpsoSelfCertificationRoute = controllers.manual.cpso.routes.CpsoSelfCertificationController.onPageLoad(NormalMode).url
 
-  implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
-  val reportingPeriod             = 2025
-  val controllingName             = "Some Name"
-  val currentId                   = CPSOId("cpso-id")
-  val formProvider                = new CpsoSelfCertificationFormProvider()
-  val form                        = formProvider()
+  val reportingPeriod = 2025
+  val controllingName = "Some Name"
+  val currentId       = CPSOId("cpso-id")
+  val formProvider    = new CpsoSelfCertificationFormProvider()
+  val form            = formProvider()
 
   "CpsoSelfCertification Controller" - {
     val ua = emptyUserAnswers
-      .withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
       .withPage(CurrentCPSOIdPage(), currentId)
       .withPage(IndividualNamePage(currentId), IndividualName("Some", "Name"))
 
@@ -74,12 +72,15 @@ class CpsoSelfCertificationControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to journey recovery when fatca is provided for a GET" in {
+      val reportId = ReportId(FATCA, 2025, None, "TestfiID")
       val answer = emptyUserAnswers
-        .withPage(ReportIdPage, ReportId(FATCA, 2025, None, "TestfiID"))
         .withPage(CurrentCPSOIdPage(), currentId)
         .withPage(IndividualNamePage(currentId), IndividualName("Some", "Name"))
 
-      val application = applicationBuilder(maybeUserAnswers = Some(answer)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(answer))
+        .build()
+
+      when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(emptyUserAnswers.withPage(ReportIdPage, reportId))))
 
       running(application) {
         val request = FakeRequest(GET, cpsoSelfCertificationRoute)
@@ -133,15 +134,15 @@ class CpsoSelfCertificationControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to the next page when valid data is submitted" in {
 
-      val mockSessionRepository = mock[DatabaseConnector]
+      val dbConnector = mock[DatabaseConnector]
 
-      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+      when(dbConnector.set(any())(any())) thenReturn Future.successful(())
 
       val application =
         applicationBuilder(maybeUserAnswers = Some(ua))
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockSessionRepository)
+            bind[DatabaseConnector].toInstance(dbConnector)
           )
           .build()
 
@@ -158,20 +159,21 @@ class CpsoSelfCertificationControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to journey recovery when FATCA is provided for a submission" in {
+      val reportId = ReportId(FATCA, 2025, None, "TestfiID")
       val answer = emptyUserAnswers
-        .withPage(ReportIdPage, ReportId(FATCA, 2025, None, "TestfiID"))
         .withPage(CurrentCPSOIdPage(), currentId)
         .withPage(IndividualNamePage(currentId), IndividualName("Some", "Name"))
 
-      val mockSessionRepository = mock[DatabaseConnector]
+      val dbConnector = mock[DatabaseConnector]
 
-      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+      when(dbConnector.set(any())(any())) thenReturn Future.successful(())
+      when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(emptyUserAnswers.withPage(ReportIdPage, reportId))))
 
       val application =
         applicationBuilder(maybeUserAnswers = Some(answer))
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockSessionRepository)
+            bind[DatabaseConnector].toInstance(dbConnector)
           )
           .build()
 
@@ -193,15 +195,15 @@ class CpsoSelfCertificationControllerSpec extends SpecBase with MockitoSugar {
         .remove(IndividualNamePage(currentId))
         .get
 
-      val mockSessionRepository = mock[DatabaseConnector]
+      val dbConnector = mock[DatabaseConnector]
 
-      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+      when(dbConnector.set(any())(any())) thenReturn Future.successful(())
 
       val application =
         applicationBuilder(maybeUserAnswers = Some(userAnswers))
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockSessionRepository)
+            bind[DatabaseConnector].toInstance(dbConnector)
           )
           .build()
 

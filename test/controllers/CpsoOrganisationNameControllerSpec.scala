@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{reset, when}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.bind
 import play.api.libs.json.Json
@@ -43,7 +43,6 @@ class CpsoOrganisationNameControllerSpec extends SpecBase with MockitoSugar {
 
   val formProvider = new CpsoOrganisationNameFormProvider()
   val form         = formProvider()
-  val reportId     = ReportId(FATCA, 2025, None, "TestfiID")
   val currentId    = CPSOId("cpso-id")
 
   lazy val cpsoOrganisationNameRoute = controllers.manual.cpso.routes.CpsoOrganisationNameController.onPageLoad(NormalMode).url
@@ -58,9 +57,17 @@ class CpsoOrganisationNameControllerSpec extends SpecBase with MockitoSugar {
     )
   )
 
+  override def beforeEach(): Unit =
+    when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(emptyUserAnswers.withPage(ReportIdPage, ReportId(FATCA, 2025, None, "TestfiID")))))
+
+  override def afterEach(): Unit =
+    reset(mockSessionRepository)
+
   "CpsoOrganisationName Controller" - {
+
+    val reportId = ReportId(FATCA, 2025, None, "TestfiID")
+
     val ua = emptyUserAnswers
-      .withPage(ReportIdPage, reportId)
       .withPage(CurrentCPSOIdPage()(reportId), currentId)
 
     "must return OK and the correct view for a GET" in {
@@ -80,8 +87,9 @@ class CpsoOrganisationNameControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to journey recovery when CRS is used in GET" in {
-      val updatedUa   = ua.withPage(ReportIdPage, reportId.copy(regime = CRS))
-      val application = applicationBuilder(maybeUserAnswers = Some(updatedUa)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+
+      when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID")))))
 
       running(application) {
         val request = FakeRequest(GET, cpsoOrganisationNameRoute)
@@ -139,16 +147,17 @@ class CpsoOrganisationNameControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to journey recovery when valid data is submitted for crs regime" in {
-      val updatedUa             = ua.withPage(ReportIdPage, reportId.copy(regime = CRS))
-      val mockSessionRepository = mock[DatabaseConnector]
+      val dbConnector = mock[DatabaseConnector]
+      val reportId    = ReportId(CRS, 2025, None, "TestfiID")
 
-      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+      when(dbConnector.set(any())(any())) thenReturn Future.successful(())
+      when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(emptyUserAnswers.withPage(ReportIdPage, reportId))))
 
       val application =
-        applicationBuilder(maybeUserAnswers = Some(updatedUa))
+        applicationBuilder(maybeUserAnswers = Some(ua))
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockSessionRepository)
+            bind[DatabaseConnector].toInstance(dbConnector)
           )
           .build()
 

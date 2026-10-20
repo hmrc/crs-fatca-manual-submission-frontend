@@ -46,7 +46,6 @@ class IndividualNameControllerSpec extends SpecBase with MockitoSugar {
   val regimeType   = CRS
   val form         = formProvider(regimeType)
   val currentId    = CPSOId("testid")
-  val reportId     = ReportId(CRS, 2025, None, "TestfiID")
   val ua           = emptyUserAnswers.withPage(ReportIdPage, reportId)
 
   lazy val individualNameRoute = controllers.manual.cpso.routes.IndividualNameController.onSubmit(NormalMode).url

@@ -41,12 +41,11 @@ class UkAddressControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  val formProvider                = new UkAddressFormProvider()
-  val form                        = formProvider()
-  implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
-  lazy val ukAddressRoute         = controllers.manual.sponsor.routes.UkAddressController.onPageLoad(NormalMode).url
-  val sponsorName                 = "Test Sponsor Name"
-  val countries                   = Countries.ukTerritories
+  val formProvider        = new UkAddressFormProvider()
+  val form                = formProvider()
+  lazy val ukAddressRoute = controllers.manual.sponsor.routes.UkAddressController.onPageLoad(NormalMode).url
+  val sponsorName         = "Test Sponsor Name"
+  val countries           = Countries.ukTerritories
 
   val userAnswers = UserAnswers(
     userAnswersId,

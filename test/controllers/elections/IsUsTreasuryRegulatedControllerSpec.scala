@@ -29,7 +29,6 @@ import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import repositories.SessionRepository
 import views.html.IsUsTreasuryRegulatedView
 
 import scala.concurrent.Future
@@ -85,16 +84,14 @@ class IsUsTreasuryRegulatedControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to the next page when valid data is submitted" in {
-      val userData              = emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers("fiID", fiName))
-      val mockSessionRepository = mock[SessionRepository]
+      val userData = emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers("fiID", fiName))
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
         applicationBuilder(maybeUserAnswers = Some(userData))
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository)
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
           )
           .build()
 

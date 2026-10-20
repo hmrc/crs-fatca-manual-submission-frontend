@@ -48,8 +48,6 @@ class AccountHolderAddressNonUkControllerSpec extends SpecBase with MockitoSugar
   private val formProvider = new AccountHolderAddressNonUkFormProvider()
   private val form         = formProvider()
 
-  implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
-
   private val countries = Countries.nonUkTerritories(CRS)
 
   private val validAddress = AddressNonUk(

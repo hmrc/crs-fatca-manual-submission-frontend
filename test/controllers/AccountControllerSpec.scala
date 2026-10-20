@@ -20,7 +20,7 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import forms.manual.accountHolders.AccountFormProvider
 import models.ServiceErrors.NoFiDetailFound
-import models.SubmissionsConstants.{CRS, FATCA}
+import models.SubmissionsConstants.FATCA
 import models.viewModels.{Account, AccountHolderId, AccountId, Accounts}
 import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
@@ -47,7 +47,6 @@ class AccountControllerSpec extends SpecBase with MockitoSugar {
   def onwardRoute = Call("GET", "/foo")
 
   lazy val accountRoute            = controllers.manual.accountHolders.routes.AccountController.onPageLoad(NormalMode).url
-  private val reportId             = ReportId(CRS, 2025, None, "testFiID")
   private val accountHolderId      = AccountHolderId("testId")
   val mockFiService: ViewFIService = mock[ViewFIService]
   private val accId                = AccountId("1")
@@ -64,7 +63,6 @@ class AccountControllerSpec extends SpecBase with MockitoSugar {
   )
 
   val ua = emptyUserAnswers
-    .withPage(ReportIdPage, reportId)
     .withPage(CurrentAccountHolderIdPage()(reportId), accountHolderId)
     .withPage(AccountsPage(reportId), accounts)
 
@@ -178,7 +176,6 @@ class AccountControllerSpec extends SpecBase with MockitoSugar {
       val reportId = ReportId(FATCA, 2025, None, "testFiID")
 
       val ua = emptyUserAnswers
-        .withPage(ReportIdPage, reportId)
         .withPage(CurrentAccountHolderIdPage()(reportId), accountHolderId)
 
       val application = applicationBuilder(maybeUserAnswers = Some(ua))
@@ -186,6 +183,7 @@ class AccountControllerSpec extends SpecBase with MockitoSugar {
         .build()
 
       when(mockFiService.getFIDetail(any(), any())(using any())).thenReturn(Future.successful(fiDetail))
+      when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(emptyUserAnswers.withPage(ReportIdPage, reportId))))
 
       running(application) {
         val request = FakeRequest(GET, accountRoute)

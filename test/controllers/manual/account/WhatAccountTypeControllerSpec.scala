@@ -20,7 +20,7 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.account.WhatAccountTypeFormProvider
-import models.SubmissionsConstants.{CRS, FATCA}
+import models.SubmissionsConstants.FATCA
 import models.manual.account.WhatAccountType
 import models.viewModels.AccountId
 import models.{NormalMode, NumberType, ReportId}
@@ -40,7 +40,7 @@ import views.html.manual.account.WhatAccountTypeView
 
 import scala.concurrent.Future
 
-class AWhatAccountTypeControllerSpec extends SpecBase with MockitoSugar {
+class WhatAccountTypeControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
@@ -54,19 +54,19 @@ class AWhatAccountTypeControllerSpec extends SpecBase with MockitoSugar {
     WhatAccountType.options(2025, Some(numType))(messages(app))
 
   "WhatAccountType Controller" - {
-    implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
     val ua = emptyUserAnswers
-      .withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
       .withPage(CurrentAccountIdPage(), accountId)
       .withPage(NumberTypePage(accountId), numType)
 
     "must redirect to JourneyRecovery when regime is FATCA" in {
-      val uaWithFatca = ua.withPage(ReportIdPage, ReportId(FATCA, 2025, None, "TestfiID"))
       val application =
         applicationBuilder(
-          maybeUserAnswers = Some(uaWithFatca.withPage(NumberTypePage(accountId), NumberType.Other))
+          maybeUserAnswers = Some(emptyUserAnswers.withPage(NumberTypePage(accountId), NumberType.Other))
         )
           .build()
+
+      when(mockSessionRepository.get(any()))
+        .thenReturn(Future.successful(Some(emptyUserAnswers.withPage(ReportIdPage, ReportId(FATCA, 2025, None, "TestfiID")))))
 
       running(application) {
         val request = FakeRequest(GET, whatAccountTypeRoute)
@@ -79,15 +79,15 @@ class AWhatAccountTypeControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must save Depository and redirect to the next page on a GET when NumberType is Iban" in {
-      val mockSessionRepository = mock[DatabaseConnector]
+      val dbConnector = mock[DatabaseConnector]
 
-      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+      when(dbConnector.set(any())(any())) thenReturn Future.successful(())
 
       val application =
         applicationBuilder(maybeUserAnswers = Some(ua.withPage(NumberTypePage(accountId), NumberType.Iban)))
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockSessionRepository)
+            bind[DatabaseConnector].toInstance(dbConnector)
           )
           .build()
 
@@ -102,15 +102,15 @@ class AWhatAccountTypeControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must save Depository and redirect to the next page on a GET when NumberType is Semp" in {
-      val mockSessionRepository = mock[DatabaseConnector]
+      val dbConnector = mock[DatabaseConnector]
 
-      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+      when(dbConnector.set(any())(any())) thenReturn Future.successful(())
 
       val application =
         applicationBuilder(maybeUserAnswers = Some(ua.withPage(NumberTypePage(accountId), NumberType.Semp)))
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockSessionRepository)
+            bind[DatabaseConnector].toInstance(dbConnector)
           )
           .build()
 
@@ -141,8 +141,7 @@ class AWhatAccountTypeControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
-      val userAnswers       = ua.set(WhatAccountTypePage(accountId), WhatAccountType.baseValues.head).success.value
+      val userAnswers = ua.set(WhatAccountTypePage(accountId), WhatAccountType.baseValues.head).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
@@ -162,15 +161,15 @@ class AWhatAccountTypeControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to the next page when valid data is submitted" in {
 
-      val mockSessionRepository = mock[DatabaseConnector]
+      val dbConnector = mock[DatabaseConnector]
 
-      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+      when(dbConnector.set(any())(any())) thenReturn Future.successful(())
 
       val application =
         applicationBuilder(maybeUserAnswers = Some(ua))
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockSessionRepository)
+            bind[DatabaseConnector].toInstance(dbConnector)
           )
           .build()
 

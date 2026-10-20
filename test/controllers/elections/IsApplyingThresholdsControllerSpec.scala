@@ -29,7 +29,6 @@ import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import repositories.SessionRepository
 import views.html.IsApplyingThresholdsView
 
 import scala.concurrent.Future
@@ -87,13 +86,11 @@ class IsApplyingThresholdsControllerSpec extends SpecBase with MockitoSugar {
       val userData = emptyUserAnswers
         .withPage(FiDetailsPage, FiIdentifiers("fiID", fiName))
         .withPage(ElectionsIdPage, electionsId)
-      val mockSessionRepository = mock[SessionRepository]
 
       val application =
         applicationBuilder(maybeUserAnswers = Some(userData))
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository)
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
           )
           .build()
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)

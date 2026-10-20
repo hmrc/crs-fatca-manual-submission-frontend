@@ -363,9 +363,9 @@ isThisAddressForSponsor.change.hidden = IsThisAddressForSponsor
 
 haveNumber.title = Does the account have an official account number or identification number?
 haveNumber.heading = Does the account have an official account number or identification number?
-haveNumber.checkYourAnswersLabel = haveNumber
+haveNumber.checkYourAnswersLabel = Does the account have an official account number or identifier?
 haveNumber.error.required = Select yes if the account has an official account number or identification number
-haveNumber.change.hidden = HaveNumber
+haveNumber.change.hidden = Change if the account has an official account number or identifier
 
 numberType.title = What type of account number or identification number is this?
 numberType.heading = What type of account number or identification number is this?
@@ -375,21 +375,21 @@ numberType.iSIN = International Securities Identification Number (ISIN)
 numberType.oSIN = Other Securities Identification Number (OSIN)
 numberType.sEMP = Specified Electronic Money Product (SEMP)
 numberType.oTHER = Any other type of account number or identification number
-numberType.checkYourAnswersLabel = What type of account number or identification number is this?
+numberType.checkYourAnswersLabel = Account number or identification number type
 numberType.error.required = Select what type of account number or identification number this is
-numberType.change.hidden = NumberType
+numberType.change.hidden = Change account number or identification number type
 
 identifier.title = Identifying the account
 identifier.heading = Identifying the account
 identifier.p1 = You must provide an unofficial number or code to identify the account.
 identifier.p2 = If you do not have one, you must provide a unique description of the account.
 identifier.label = What number, code or description should we use to identify the account?
-identifier.checkYourAnswersLabel = identifier
+identifier.checkYourAnswersLabel = Unofficial number, code or description
 identifier.error.required = Enter your account identifier
 identifier.error.length = Account identifier must be 200 characters or less
 identifier.error.invalid = Account identifier must only include letters a to z, numbers 0 to 9, ampersands (&), apostrophes, backslashes, carets (^), grave accents (`), hyphens and spaces
 identifier.error.doubedash = Account identifier must not include a double dash (--)
-identifier.change.hidden = Identifier
+identifier.change.hidden = Change unofficial number, code or description
 
 ukAddress.title = What is the sponsor’s registered address?
 ukAddress.heading =What is the registered address for {0}?
@@ -432,9 +432,9 @@ ukAddress.isleOfMan = Isle of Man
 
 accountClosed.title = Is the account closed?
 accountClosed.heading = Is the account closed?
-accountClosed.checkYourAnswersLabel = accountClosed
+accountClosed.checkYourAnswersLabel = Is the account closed?
 accountClosed.error.required = Select yes if the account is closed
-accountClosed.change.hidden = AccountClosed
+accountClosed.change.hidden = Change if the account is closed
 
 sponsorResidentForTax.title = Where is the sponsor resident for tax?
 sponsorResidentForTax.heading = Where is {0} resident for tax?
@@ -453,8 +453,7 @@ whatWasTheAccountBalance.amount.hint = For example, 20124 or 112.43.
 whatWasTheAccountBalance.checkYourAnswersLabel = What was the account balance?
 whatWasTheAccountBalance.error.required.currency = Select an option for the currency
 whatWasTheAccountBalance.error.required.amount = Enter an amount
-whatWasTheAccountBalance.error.length = WhatWasTheAccountBalance must be 100 characters or less
-whatWasTheAccountBalance.change.hidden = WhatWasTheAccountBalance
+whatWasTheAccountBalance.change.hidden = Change what the account balance was
 whatWasTheAccountBalance.error.invalid.CRS = Amount must only include numbers 0 to 9 and a full stop
 whatWasTheAccountBalance.error.invalid.FATCA = Amount must only include numbers 0 to 9, a minus sign and a full stop
 whatWasTheAccountBalance.error.minus.FATCA = Amount can only include a minus sign as the first character
@@ -465,7 +464,7 @@ whatWasTheAccountCurrency.title = What was the account currency?
 whatWasTheAccountCurrency.heading = What was the account currency?
 whatWasTheAccountCurrency.checkYourAnswersLabel = What was the account currency?
 whatWasTheAccountCurrency.error.required = Select an option for the currency
-whatWasTheAccountCurrency.change.hidden = WhatWasTheAccountCurrency
+whatWasTheAccountCurrency.change.hidden = Change what the account currency was
 
 sponsorResidentForTax.title = Where is the sponsor resident for tax?
 sponsorResidentForTax.heading = Where is {0} resident for tax?
@@ -490,33 +489,33 @@ checkAnswers.heading = Check your answers for the sponsor for {0}
 
 isUndocumentedAccount.title = Is the account undocumented?
 isUndocumentedAccount.heading = Is the account undocumented?
-isUndocumentedAccount.checkYourAnswersLabel = isUndocumentedAccount
+isUndocumentedAccount.checkYourAnswersLabel = Is the account undocumented?
 isUndocumentedAccount.error.required = Select yes if the account is undocumented
-isUndocumentedAccount.change.hidden = IsUndocumentedAccount
+isUndocumentedAccount.change.hidden = Change if the account is undocumented
 
 isDormantAccount.title = Is the account dormant?
 isDormantAccount.heading = Is the account dormant?
-isDormantAccount.checkYourAnswersLabel = isDormantAccount
+isDormantAccount.checkYourAnswersLabel = Is the account dormant?
 isDormantAccount.error.required = Select yes if the account is dormant
-isDormantAccount.change.hidden = IsDormantAccount
+isDormantAccount.change.hidden = Change if the account is dormant
 
 isJointAccount.title = isJointAccount
 isJointAccount.heading = isJointAccount
 isJointAccount.title = Is this a joint account?
 isJointAccount.heading = Is this a joint account?
-isJointAccount.checkYourAnswersLabel = isJointAccount
+isJointAccount.checkYourAnswersLabel = Is this a joint account?
 isJointAccount.error.required = Select yes if this is a joint account
-isJointAccount.change.hidden = IsJointAccount
+isJointAccount.change.hidden = Change if this is a joint account
 
 howManyJointAccountHolders.title = How many joint account holders are there?
 howManyJointAccountHolders.heading = How many joint account holders are there?
-howManyJointAccountHolders.checkYourAnswersLabel = HowManyJoinAccountHolders
+howManyJointAccountHolders.checkYourAnswersLabel = How many joint account holders are there?
 howManyJointAccountHolders.error.nonNumeric = Number of joint account holders must only include numbers 0 to 9
 howManyJointAccountHolders.error.required = Enter the number of joint account holders
 howManyJointAccountHolders.error.wholeNumber = Number of joint account holders must only include numbers 0 to 9
 howManyJointAccountHolders.error.max = Number of joint account holders must be 200 or less
 howManyJointAccountHolders.error.min = Number of joint account holders must be 1 or more
-howManyJointAccountHolders.change.hidden = HowManyJoinAccountHolders
+howManyJointAccountHolders.change.hidden = Change how many joint account holders there are
 
 wasAccountOpen.title = Was the account opened in {0}?
 wasAccountOpen.heading = Was the account opened in {0}?
@@ -525,7 +524,7 @@ wasAccountOpen.no = No
 wasAccountOpen.notReported = Not reported
 wasAccountOpen.checkYourAnswersLabel = Was the account opened in {0}?
 wasAccountOpen.error.required = Select yes if the account was opened in {0}
-wasAccountOpen.change.hidden = WasAccountOpen
+wasAccountOpen.change.hidden =  Change if the account was opened in {0}
 
 removeTaxResidentCountry.plural.countries.title = Are you sure you want to remove the {0} as a tax resident country for the sponsor?
 removeTaxResidentCountry.definite.articles.countries.title = Are you sure you want to remove the {0} as a tax resident country for the sponsor?
@@ -603,7 +602,7 @@ whatAccountType.CRS1104 = Debt or equity interest in investment entity
 whatAccountType.CRS1100 = Not reported
 whatAccountType.checkYourAnswersLabel = What type of account is this?
 whatAccountType.error.required = Select what type of account this is
-whatAccountType.change.hidden = WhatAccountType
+whatAccountType.change.hidden =  Change what type of account this is
 
 individualHaveDateOfBirth.title=Date of birth for the account holder
 individualHaveDateOfBirth.heading=Date of birth for the account holder
@@ -636,10 +635,13 @@ account.havePayments.crs.title = Were any payments made to this account in {0}?
 account.havePayments.fatca.title = Were any payments made to this account, a payee or an owner in {0}?
 account.havePayments.crs.heading = Were any payments made to this account in {0}?
 account.havePayments.fatca.heading = Were any payments made to this account, a payee or an owner in {0}?
-account.havePayments.checkYourAnswersLabel = havePayments
+account.havePayments.checkYourAnswersLabel.crs = Were any payments made to this account in {0}?
+account.havePayments.checkYourAnswersLabel.fatca = Were any payments made to this account a payee or an owner in {0}?
 account.havePayments.crs.error.required = Select yes if there were any payments made to this account in {0}
 account.havePayments.fatca.error.required = Select yes if there were any payments made to this account, a payee or an owner in {0}
-account.havePayments.change.hidden = HavePayments
+account.havePayments.change.hidden.crs = Change if any payments were made to this account in {0}
+account.havePayments.change.hidden.fatca = Change if any payments made to this account a payee or an owner in {0}
+
 
 account.paymentType.title = What type of payments were these for this account?
 account.paymentType.heading = What type of payments were these for this account?
@@ -653,9 +655,7 @@ account.paymentType.FATCA503 = Gross proceeds or redemptions
 account.paymentType.CRS504 = Other
 account.paymentType.FATCA504 = Other
 account.paymentType.legend.hidden.title= What type of payments were these for this account?
-account.paymentType.checkYourAnswersLabel = paymentType
 account.paymentType.error.required = Select what type of payments these were for this account
-account.paymentType.change.hidden = PaymentType
 
 accountHolders.individualHavePlaceOfBirth.title = Do you want to provide the place of birth for the account holder?
 accountHolders.individualHavePlaceOfBirth.heading = Do you want to provide the place of birth for {0}?
@@ -835,14 +835,11 @@ account.payments.heading.fatca.more.than.one.payments = You have added {0} payme
 
 account.payment.form.with.payments.heading = Do you need to add more payments for {0}?
 account.payment.form.no.payments.heading = Do you need to add payments for {0}?
-account.payments.checkYourAnswersLabel = accountPayments
 account.payments.has.no.payments.error.required = Select yes if you need to add payments
 account.payments.has.payments.error.required = Select yes if you need to add more payments
-account.payments.change.hidden = AccountPayments
 
 account.remove.payment.title = Are you sure you want to remove this {0} {1} payment for this account?
 account.remove.payment.heading = Are you sure you want to remove this {0} {1} payment for this account?
-account.remove.payment.checkYourAnswersLabel = removePayment
 account.remove.payment.error.required = Select yes if you are sure you want to remove this payment for this account
 account.remove.payment.change.hidden = RemovePayment
 account.payments.removed = {0} payment removed.
@@ -1011,6 +1008,7 @@ organisationCrs.change.hidden = organisationCrs
 organisationCrs.passiveWithMultiplePersons = Passive non-financial entity with one or more controlling reportable persons
 organisationCrs.crsReportable = CRS reportable person
 organisationCrs.passiveCrsPerson = Passive non-financial entity that is a CRS reportable person
+organisationCrs.empty =
 
 cpso.controllingPersonType.title = What type of controlling person are they?
 cpso.controllingPersonType.heading = What type of controlling person is {0}?
@@ -1052,9 +1050,11 @@ whatIsAccountNumber.error.invalid.characters.ISIN = ISIN must only include lette
 whatIsAccountNumber.error.invalid.format.ISIN = ISIN must be in the right format
 whatIsAccountNumber.error.invalid.countryCode.ISIN = ISIN must include a real country code for the first 2 letters
 
-whatIsAccountNumber.checkYourAnswersLabel = Account or identification number
-whatIsAccountNumber.change.hidden = Change account or identification number
+whatIsAccountNumber.checkYourAnswersLabel = Account number or identification number
+whatIsAccountNumber.change.hidden = Change account number or identification number
 
+accountCheckAnswers.title = Check your answers for the account
+accountCheckAnswers.heading = Check your answers for the account
 accountHolder.account.title = Accounts held by this account holder
 accountHolder.account.heading = Accounts held by this account holder
 accountHolder.account.para = You must {0} first for it to appear as an option.
@@ -1064,6 +1064,7 @@ accountHolder.account.question.hint = Select at least one account number or iden
 accountHolder.account.sendAReport.link = Back to send a {0} report for {1}
 accountHolder.account.checkYourAnswersLabel = Accounts held by this account holder
 accountHolder.account.error.required = Select at least one account number or identifier
+accountHolders.residentTax.paragraph = If they are resident for tax in more than one country, then you can add other countries after this one.
 accountHolder.account.change.hidden = Account
 accountHolders.provideEquityInterestType.title = 	Do you need to provide the equity interest type of the account holder?
 accountHolders.provideEquityInterestType.heading = 	Do you need to provide the equity interest type of {0}?
@@ -1087,3 +1088,25 @@ accountHolders.equityInterestType.beneficiaryEquivalent = Beneficiary-equivalent
 accountHolders.equityInterestType.otherEquivalent = Other-equivalent of another legal arrangement
 accountHolders.equityInterestType.checkYourAnswersLabel = What type of equity interest holder is the account holder?
 accountHolders.equityInterestType.change.hidden = EquityInterestType
+accountHolders.residentTax.title = Where is the account holder resident for tax?
+accountHolders.residentTax.heading = Where is {0} resident for tax?
+accountHolders.residentTax.paragraph = If they are resident for tax in more than one country, then you can add other countries after this one.
+accountHolders.country.error.required = Select where the account holder is resident for tax
+accountHolders.residentTax.checkYourAnswersLabel = ResidentTax
+
+accountHolders.haveTaxIdenticationNumber.title = Do you have a tax identification number for the account holder for the country?
+accountHolders.haveTaxIdenticationNumber.heading = Do you have a tax identification number for {0} for {1}?
+accountHolders.haveTaxIdenticationNumber.other.heading = Do you have a tax identification number for {0} for {1}?
+accountHolders.haveTaxIdenticationNumber.error.required = Select yes if you have a tax identification number for the account holder for the country
+
+accountHolders.taxIdentificationNumber.title = What is the tax identification number for the account holder for the country?
+accountHolders.taxIdentificationNumber.heading = What is the tax identification number for {0} for {1}?
+accountHolders.taxIdentificationNumber.other.heading = What is the tax identification number for {0} for {1}?
+accountHolders.taxIdentificationNumber.checkYourAnswersLabel = TaxIdentificationNumber
+accountHolders.taxIdentificationNumber.error.tin.required = Enter the tax identification number for the account holder for the country
+accountHolders.taxIdentificationNumber.error.tin.length = Tax identification number must be 200 characters or less
+accountHolders.taxIdentificationNumber.error.tin.invalidChars = Tax identification number must not include a double dash (--), ampersand hash (&#) or forward slash asterisk (/*)
+accountHolders.taxIdentificationNumber.error.tin.giinOrSsn.invalid = Tax identification number must be a Global Intermediary Identification Number (GIIN) or in the format 000-00-0000, 00-0000000 or 000000000
+accountHolders.taxIdentificationNumber.error.tin.organization.is.blacklisted = Tax identification number must not be 000000000, 222222222, 000222111, 333333333 or 888888888
+accountHolders.taxIdentificationNumber.error.tin.individual.is.blacklisted = Tax identification number must not be 000000000, 666666666 or 888888888
+accountHolders.taxIdentificationNumber.tin.change.hidden = tin
