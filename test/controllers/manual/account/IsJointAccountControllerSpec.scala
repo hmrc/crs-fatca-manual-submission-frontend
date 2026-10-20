@@ -20,14 +20,12 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.account.IsJointAccountFormProvider
-import models.SubmissionsConstants.CRS
 import models.viewModels.AccountId
-import models.{NormalMode, ReportId}
+import models.NormalMode
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.ReportIdPage
 import pages.manual.account.{CurrentAccountIdPage, IsJointAccountPage}
 import play.api.data.Form
 import play.api.inject.bind
@@ -48,9 +46,7 @@ class IsJointAccountControllerSpec extends SpecBase with MockitoSugar {
   lazy val isJointAccountRoute: String = controllers.manual.account.routes.IsJointAccountController.onPageLoad(NormalMode).url
 
   "IsJointAccount Controller" - {
-    implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiId")
     val ua = emptyUserAnswers
-      .withPage(ReportIdPage, reportId)
       .withPage(CurrentAccountIdPage(), accountId)
 
     "must return OK and the correct view for a GET" in {

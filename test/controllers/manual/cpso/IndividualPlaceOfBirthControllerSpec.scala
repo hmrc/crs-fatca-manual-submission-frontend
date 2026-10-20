@@ -59,13 +59,15 @@ class IndividualPlaceOfBirthControllerSpec extends SpecBase with MockitoSugar {
     )
   )
 
+  override def beforeEach(): Unit =
+    when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(emptyUserAnswers.withPage(ReportIdPage, ReportId(FATCA, 2025, None, "TestfiID")))))
+
   "IndividualPlaceOfBirth Controller" - {
     val reportId  = ReportId(FATCA, 2025, None, "TestfiID")
     val countries = Countries.allCountries(FATCA)
     val cpsoId    = CPSOId("TestId")
     val name      = IndividualName("Test", "Last")
     val ua = emptyUserAnswers
-      .withPage(ReportIdPage, reportId)
       .withPage(CurrentCPSOIdPage()(reportId), cpsoId)
       .withPage(IndividualOrOrganisationPage(cpsoId)(reportId), IndividualOrOrganisation.Individual)
       .withPage(IndividualNamePage(cpsoId)(reportId), name)

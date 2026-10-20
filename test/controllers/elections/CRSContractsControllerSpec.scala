@@ -39,12 +39,11 @@ class CRSContractsControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  val formProvider                             = new CRSContractsFormProvider()
-  val form: Form[Boolean]                      = formProvider()
-  val testFIName                               = "Test FI" // TODO : Require update after integration
-  val reportingYear                            = 2027
-  val mockSessionRepository: SessionRepository = mock[SessionRepository]
-  implicit val electionsId: ElectionsId        = ElectionsId(reportingYear, "fiID")
+  val formProvider                      = new CRSContractsFormProvider()
+  val form: Form[Boolean]               = formProvider()
+  val testFIName                        = "Test FI" // TODO : Require update after integration
+  val reportingYear                     = 2027
+  implicit val electionsId: ElectionsId = ElectionsId(reportingYear, "fiID")
 
   lazy val cRSContractsRoute: String = controllers.elections.routes.CRSContractsController.onPageLoad(NormalMode, reportingYear).url
 
@@ -95,7 +94,6 @@ class CRSContractsControllerSpec extends SpecBase with MockitoSugar {
         .value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
-        .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
         .build()
 
       running(application) {
@@ -114,9 +112,6 @@ class CRSContractsControllerSpec extends SpecBase with MockitoSugar {
 
       val application =
         applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers))
-          .overrides(
-            bind[SessionRepository].toInstance(mockSessionRepository)
-          )
           .build()
 
       running(application) {
@@ -138,8 +133,7 @@ class CRSContractsControllerSpec extends SpecBase with MockitoSugar {
       val application =
         applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))))
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository)
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
           )
           .build()
 
@@ -159,7 +153,6 @@ class CRSContractsControllerSpec extends SpecBase with MockitoSugar {
 
       when(mockSessionRepository.get(any())) thenReturn Future.successful(None)
       val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers("fiID", testFIName))))
-        .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
         .build()
 
       running(application) {

@@ -23,12 +23,11 @@ import forms.manual.account.PaymentTypeFormProvider
 import models.SubmissionsConstants.CRS
 import models.manual.account.{AccountPayment, PaymentType}
 import models.viewModels.AccountId
-import models.{NormalMode, ReportId}
+import models.NormalMode
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.ReportIdPage
 import pages.manual.account.*
 import play.api.inject.bind
 import play.api.mvc.Call
@@ -47,11 +46,10 @@ class PaymentTypeControllerSpec extends SpecBase with MockitoSugar {
   val formProvider                 = new PaymentTypeFormProvider()
   val form                         = formProvider()
   val crs                          = CRS
-  implicit val reportId: ReportId  = ReportId(CRS, 2025, None, "TestfiID")
   private val accountId: AccountId = AccountId(value = "SomeId")
 
   "PaymentType Controller" - {
-    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
+    val ua = emptyUserAnswers
 
     "must return OK and the correct view for a GET" in {
 

@@ -17,14 +17,15 @@
 package base
 
 import controllers.actions.*
-import models.UserAnswers
+import models.SubmissionsConstants.CRS
+import models.{ReportId, UserAnswers}
 import org.scalatest.Inspectors.forAll
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{Assertion, BeforeAndAfterEach, OptionValues, TryValues}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.QuestionPage
+import pages.{QuestionPage, ReportIdPage}
 import play.api.Application
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
@@ -33,6 +34,11 @@ import play.api.libs.json.Writes
 import play.api.test.FakeRequest
 import play.api.test.Helpers.stubMessages
 import queries.Settable
+import repositories.SessionRepository
+import org.mockito.Mockito.{reset, when}
+import org.mockito.ArgumentMatchers.any
+
+import scala.concurrent.Future
 
 trait SpecBase
     extends AnyFreeSpec
@@ -48,13 +54,24 @@ trait SpecBase
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
+  val mockSessionRepository = mock[SessionRepository]
+
+  implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
+
+  override def beforeEach(): Unit =
+    when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(emptyUserAnswers.withPage(ReportIdPage, reportId))))
+
+  override def afterEach(): Unit =
+    reset(mockSessionRepository)
+
   protected def applicationBuilder(maybeUserAnswers: Option[UserAnswers] = None): GuiceApplicationBuilder =
     new GuiceApplicationBuilder()
       .overrides(
         bind[DataRequiredAction].to[DataRequiredActionImpl],
         bind[FrontendDataRetrievalAction].to(new FakeFrontendDataRetrievalAction(maybeUserAnswers)),
         bind[IdentifierAction].to[FakeIdentifierAction],
-        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(maybeUserAnswers))
+        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(maybeUserAnswers)),
+        bind[SessionRepository].toInstance(mockSessionRepository)
       )
 
   implicit class UserAnswersExtension(userData: UserAnswers) {

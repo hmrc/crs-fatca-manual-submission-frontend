@@ -20,17 +20,15 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.accountHolders.SelectAddressFormProvider
-import models.SubmissionsConstants.CRS
 import models.manual.accountHolders.IndividualName
 import models.manual.accountHolders.IndividualOrOrganisation.Individual
 import models.response.{Address, AddressLookup, Country}
 import models.viewModels.AccountHolderId
-import models.{NormalMode, ReportId}
+import models.NormalMode
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.ReportIdPage
 import pages.manual.accountHolders.{
   AccountHolderIndividualNamePage,
   AddressLookupForAccountHolderPage,
@@ -59,7 +57,6 @@ class SelectAddressControllerSpec extends SpecBase with MockitoSugar {
 
   "SelectAddress Controller" - {
 
-    val reportId        = ReportId(CRS, 2025, None, "testFiID")
     val accountHolderId = AccountHolderId("testId")
     val addressLookup =
       AddressLookup(990091234514L, Some("2 Other place"), None, Some("Some District"), None, "Town", Some("County"), "postcode", Some(Country.GB))
@@ -71,7 +68,6 @@ class SelectAddressControllerSpec extends SpecBase with MockitoSugar {
     val savedAddress: Address = addressLookup.toAddress.value
 
     val baseAnswer = emptyUserAnswers
-      .withPage(ReportIdPage, reportId)
       .withPage(CurrentAccountHolderIdPage()(reportId), accountHolderId)
       .withPage(IndividualOrOrganisationPage(accountHolderId)(reportId), Individual)
       .withPage(AccountHolderIndividualNamePage(accountHolderId)(reportId), name)

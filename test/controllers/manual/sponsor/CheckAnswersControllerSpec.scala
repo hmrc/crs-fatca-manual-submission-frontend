@@ -17,9 +17,6 @@
 package controllers.manual.sponsor
 
 import base.SpecBase
-import models.ReportId
-import models.SubmissionsConstants.CRS
-import pages.ReportIdPage
 import pages.manual.FINamePage
 import pages.manual.sponsor.HaveSponsorPage
 import play.api.test.FakeRequest
@@ -31,10 +28,8 @@ class CheckAnswersControllerSpec extends SpecBase {
 
   "CheckAnswers Controller" - {
 
-    implicit val reportId = ReportId(CRS, 2025, None, "testFiID")
-    val fiName            = "testFiName"
+    val fiName = "testFiName"
     val ua = emptyUserAnswers
-      .withPage(ReportIdPage, reportId)
       .withPage(HaveSponsorPage(), false)
       .withPage(FINamePage(), fiName)
 

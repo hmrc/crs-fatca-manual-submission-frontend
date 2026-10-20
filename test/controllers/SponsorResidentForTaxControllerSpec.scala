@@ -19,7 +19,6 @@ package controllers
 import base.SpecBase
 import connectors.DatabaseConnector
 import forms.SponsorResidentForTaxFormProvider
-import models.SubmissionsConstants.CRS
 import models.response.Country
 import models.{Countries, NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
@@ -38,9 +37,8 @@ import scala.concurrent.Future
 
 class SponsorResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute                 = Call("GET", "/foo")
-  private val sponsorName         = "Test Sponsor"
-  implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
+  def onwardRoute         = Call("GET", "/foo")
+  private val sponsorName = "Test Sponsor"
 
   val formProvider = new SponsorResidentForTaxFormProvider()
   val form         = formProvider()

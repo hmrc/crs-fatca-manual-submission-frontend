@@ -27,7 +27,7 @@ import models.viewModels.AccountId
 import models.{Currency, NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{reset, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
 import pages.manual.account.{AccountPaymentPage, CurrentAccountIdPage, CurrentAccountPaymentIndexPage}
@@ -35,6 +35,7 @@ import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
+import repositories.SessionRepository
 import views.html.manual.account.AccountPaymentsAmountView
 
 import scala.concurrent.Future
@@ -51,6 +52,12 @@ class AccountPaymentsAmountControllerSpec extends SpecBase with MockitoSugar {
   private lazy val accountPaymentsAmountRoute = controllers.manual.account.routes.AccountPaymentsAmountController.onPageLoad(NormalMode).url
   private val accountId                       = AccountId("TestAccountId")
 
+  override def beforeEach(): Unit =
+    when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(emptyUserAnswers.withPage(ReportIdPage, reportId))))
+
+  override def afterEach(): Unit =
+    reset(mockSessionRepository)
+
   private val validFormData = Map(
     "currency" -> "CLP",
     "amount"   -> "123"
@@ -64,9 +71,7 @@ class AccountPaymentsAmountControllerSpec extends SpecBase with MockitoSugar {
   val validAnswer: AccountPaymentsAmount = AccountPaymentsAmount(Currency.GBP, "123")
 
   "AccountPaymentsAmount Controller" - {
-    val reportId = ReportId(CRS, 2025, None, "TestfiID")
     val ua = emptyUserAnswers
-      .withPage(ReportIdPage, reportId)
       .withPage(CurrentAccountIdPage()(reportId), accountId)
       .withPage(CurrentAccountPaymentIndexPage(accountId)(reportId), 0)
       .withPage(AccountPaymentPage(0)(reportId, accountId), AccountPayment(paymentType))
@@ -89,8 +94,7 @@ class AccountPaymentsAmountControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
-      val userAnswers       = ua.set(AccountPaymentPage(0)(reportId, accountId), AccountPayment(CRSDividends, Some(validAnswer))).success.value
+      val userAnswers = ua.set(AccountPaymentPage(0)(reportId, accountId), AccountPayment(CRSDividends, Some(validAnswer))).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
@@ -108,15 +112,15 @@ class AccountPaymentsAmountControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to the next page when valid data is submitted" in {
 
-      val mockSessionRepository = mock[DatabaseConnector]
+      val dbConnector = mock[DatabaseConnector]
 
-      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+      when(dbConnector.set(any())(any())) thenReturn Future.successful(())
 
       val application =
         applicationBuilder(maybeUserAnswers = Some(ua))
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockSessionRepository)
+            bind[DatabaseConnector].toInstance(dbConnector)
           )
           .build()
 

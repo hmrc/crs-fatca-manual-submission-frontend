@@ -53,7 +53,6 @@ class IndividualHavePlaceOfBirthControllerSpec extends SpecBase with MockitoSuga
     val cpsoId   = CPSOId("TestId")
     val name     = IndividualName("Test", "Last")
     val ua = emptyUserAnswers
-      .withPage(ReportIdPage, reportId)
       .withPage(CurrentCPSOIdPage()(reportId), cpsoId)
       .withPage(IndividualOrOrganisationPage(cpsoId)(reportId), IndividualOrOrganisation.Individual)
       .withPage(IndividualNamePage(cpsoId)(reportId), name)
@@ -61,6 +60,8 @@ class IndividualHavePlaceOfBirthControllerSpec extends SpecBase with MockitoSuga
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+
+      when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(emptyUserAnswers.withPage(ReportIdPage, reportId))))
 
       running(application) {
         val request = FakeRequest(GET, individualHavePlaceOfBirthRoute)
@@ -78,6 +79,8 @@ class IndividualHavePlaceOfBirthControllerSpec extends SpecBase with MockitoSuga
 
       val userAnswers = ua.set(IndividualHavePlaceOfBirthPage(cpsoId, reportId), true).success.value
 
+      when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(emptyUserAnswers.withPage(ReportIdPage, reportId))))
+
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
@@ -94,15 +97,16 @@ class IndividualHavePlaceOfBirthControllerSpec extends SpecBase with MockitoSuga
 
     "must redirect to the next page when valid data is submitted" in {
 
-      val mockSessionRepository = mock[DatabaseConnector]
+      val dbConnector = mock[DatabaseConnector]
 
-      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+      when(dbConnector.set(any())(any())) thenReturn Future.successful(())
+      when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(emptyUserAnswers.withPage(ReportIdPage, reportId))))
 
       val application =
         applicationBuilder(maybeUserAnswers = Some(ua))
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockSessionRepository)
+            bind[DatabaseConnector].toInstance(dbConnector)
           )
           .build()
 
@@ -121,6 +125,7 @@ class IndividualHavePlaceOfBirthControllerSpec extends SpecBase with MockitoSuga
     "must return a Bad Request and errors when invalid data is submitted" in {
 
       val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+      when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(emptyUserAnswers.withPage(ReportIdPage, reportId))))
 
       running(application) {
         val request =
