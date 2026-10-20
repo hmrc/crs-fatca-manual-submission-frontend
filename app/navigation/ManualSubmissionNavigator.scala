@@ -34,13 +34,13 @@ import pages.manual.accountHolders.{
   AddressLookupForAccountHolderPage,
   EquityInterestTypePage,
   HaveTaxIdenticationNumberPage,
-  ProvideEquityInterestTypePage,
   IndividualHavePlaceOfBirthPage,
   IndividualOrOrganisationPage,
   IndividualPlaceOfBirthPage,
   IsThisTheAddressForAccountHoldersPage,
   OrganisationCrsPage,
   OrganisationFatcaPage,
+  ProvideEquityInterestTypePage,
   ResidentTaxPage,
   SelectAddressPage,
   SelfCertificationPage as AccountHolderSelfCertificationPage,
@@ -102,8 +102,8 @@ class ManualSubmissionNavigator @Inject() () {
   }
 
   private def accountHolderNavigation(implicit
-                                      reportId: ReportId
-                                     ): PartialFunction[(Page, Mode, UserAnswers), Call] = {
+    reportId: ReportId
+  ): PartialFunction[(Page, Mode, UserAnswers), Call] = {
 
     case (pages.manual.accountHolders.AccountPage(reportId, id), mode, ua) =>
       ua.get(pages.manual.accountHolders.AccountPage(reportId, id)) match {
@@ -190,14 +190,14 @@ class ManualSubmissionNavigator @Inject() () {
       handleAccountHolderAddressNonUkPageNavigationForAccountHolders(ua, mode, accountHolderId)
     case (AccountHolderSelfCertificationPage(accountHolderId, reportId), mode, ua) =>
       handleAccountHolderSelfCertificationPageNavigationForAccountHolders(ua, mode, accountHolderId)
-    case (IndividualPlaceOfBirthPage(_, _), mode, _)               => controllers.manual.accountHolders.routes.WhereAreTheyBasedController.onPageLoad(mode)
+    case (IndividualPlaceOfBirthPage(_, _), mode, _) => controllers.manual.accountHolders.routes.WhereAreTheyBasedController.onPageLoad(mode)
     case (ProvideEquityInterestTypePage(id, reportId), mode, ua) =>
       ua.get(ProvideEquityInterestTypePage(id, reportId)) match {
         case Some(true)  => controllers.manual.accountHolders.routes.EquityInterestTypeController.onPageLoad(mode)
         case Some(false) => controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
         case None        => routes.JourneyRecoveryController.onPageLoad()
       }
-    case (EquityInterestTypePage(_, _), mode, _) => controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
+    case (EquityInterestTypePage(_, _), mode, _)                   => controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
     case (ResidentTaxPage(_, accountHolderId, reportId), mode, ua) => handleResidentTaxPageNavigationForAccountHolders(mode)
     case (HaveTaxIdenticationNumberPage(index, accountHolderId, reportId), mode, ua) =>
       handleHaveTaxIdenticationNumberPageNavigationForAccountHolders(ua, mode, accountHolderId, index)
@@ -305,7 +305,7 @@ class ManualSubmissionNavigator @Inject() () {
     }
 
   private def handleAccountHolderAddressNonUkPageNavigationForAccountHolders(userAnswers: UserAnswers, mode: Mode, accountHolderId: AccountHolderId)(implicit
-                                                                                                                                                     reportId: ReportId
+    reportId: ReportId
   ) =
     if (reportId.regime == FATCA) {
       userAnswers.get(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId)) match {
@@ -318,7 +318,7 @@ class ManualSubmissionNavigator @Inject() () {
     }
 
   private def handleSelectAddressPageNavigationForAccountHolders(userAnswers: UserAnswers, mode: Mode, accountHolderId: AccountHolderId)(implicit
-                                                                                                                                         reportId: ReportId
+    reportId: ReportId
   ) =
     if (reportId.regime == FATCA) {
       userAnswers.get(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId)) match {
@@ -334,16 +334,16 @@ class ManualSubmissionNavigator @Inject() () {
                                                                              mode: Mode,
                                                                              accountHolderId: AccountHolderId,
                                                                              index: Int
-                                                                            )(implicit
-                                                                              reportId: ReportId
-                                                                            ) = userAnswers.get(HaveTaxIdenticationNumberPage(index, accountHolderId, reportId)) match {
+  )(implicit
+    reportId: ReportId
+  ) = userAnswers.get(HaveTaxIdenticationNumberPage(index, accountHolderId, reportId)) match {
     case Some(true)  => controllers.manual.accountHolders.routes.TaxIdentificationNumberController.onPageLoad(mode)
     case Some(false) => routes.UnderConstructionController.onPageLoad()
     case None        => routes.JourneyRecoveryController.onPageLoad()
   }
 
   private def handleResidentTaxPageNavigationForAccountHolders(mode: Mode)(implicit
-                                                                           reportId: ReportId
+    reportId: ReportId
   ) =
     if (reportId.regime == CRS) controllers.manual.accountHolders.routes.HaveTaxIdenticationNumberController.onPageLoad(mode)
     else controllers.manual.accountHolders.routes.TaxIdentificationNumberController.onPageLoad(mode)
@@ -358,7 +358,7 @@ class ManualSubmissionNavigator @Inject() () {
     }
 
   private def handleAddressUKPageNavigationForAccountHolders(userAnswers: UserAnswers, mode: Mode, accountHolderId: AccountHolderId)(implicit
-                                                                                                                                     reportId: ReportId
+    reportId: ReportId
   ) =
     if (reportId.regime == FATCA) {
       userAnswers.get(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId)) match {
@@ -400,7 +400,7 @@ class ManualSubmissionNavigator @Inject() () {
     }
 
   private def handleIsThisTheAddressForAccountHoldersRouting(userAnswers: UserAnswers, mode: Mode, accountHolderId: AccountHolderId)(implicit
-                                                                                                                                     reportId: ReportId
+    reportId: ReportId
   ) =
     userAnswers.get(IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId)) match {
       case Some(true) =>
@@ -423,7 +423,9 @@ class ManualSubmissionNavigator @Inject() () {
       case CRS =>
         ua.get(AccountPage(reportId, accountHolderId)) match {
           case Some(accountIds) if accountIds.nonEmpty =>
-            val accountTypes = accountIds.map(id => ua.get(WhatAccountTypePage(id)))
+            val accountTypes = accountIds.map(
+              id => ua.get(WhatAccountTypePage(id))
+            )
 
             if (accountTypes.exists(_.isEmpty)) routes.JourneyRecoveryController.onPageLoad()
             else if (accountTypes.flatten.contains(WhatAccountType.InvestmentEntity))
