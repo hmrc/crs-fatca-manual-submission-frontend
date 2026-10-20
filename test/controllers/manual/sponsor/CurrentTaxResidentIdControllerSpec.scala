@@ -18,7 +18,6 @@ package controllers.manual.sponsor
 
 import base.SpecBase
 import connectors.DatabaseConnector
-import forms.manual.sponsor.HaveSponsorFormProvider
 import models.SubmissionsConstants.CRS
 import models.response.Country
 import models.{CheckMode, NormalMode, ReportId}
