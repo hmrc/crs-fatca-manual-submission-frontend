@@ -20,25 +20,31 @@ import controllers.routes
 import models.ReportId
 import models.requests.{DataRequest, ReportIdRequest}
 import pages.ReportIdPage
+import play.api.Logging
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{ActionRefiner, Result}
+import repositories.SessionRepository
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import cats.data.OptionT
 
-class ReportIdRequiredActionImpl @Inject() (implicit
+class ReportIdRequiredActionImpl @Inject() (
+  val sessionRepository: SessionRepository
+)(implicit
   val executionContext: ExecutionContext
-) extends ReportIdRequiredAction {
+) extends ReportIdRequiredAction
+    with Logging {
 
   override protected def refine[A](request: DataRequest[A]): Future[Either[Result, ReportIdRequest[A]]] =
-    Future.successful {
-      request.userAnswers.get(ReportIdPage) match {
-        case Some(reportId) =>
-          Right(toReportIdRequest(request, reportId))
-
-        case None =>
-          Left(Redirect(routes.JourneyRecoveryController.onPageLoad()))
-      }
+    (
+      for {
+        userAnswers <- OptionT(sessionRepository.get(request.userId))
+        reportId    <- OptionT.fromOption(userAnswers.get(ReportIdPage))
+      } yield Right(toReportIdRequest(request, reportId))
+    ).getOrElse {
+      logger.error("Unable to find FE userAnswers & reportId")
+      Left(Redirect(routes.JourneyRecoveryController.onPageLoad()))
     }
 
   private def toReportIdRequest[A](

@@ -47,9 +47,8 @@ class ControllingPersonTypeControllerSpec extends SpecBase with MockitoSugar {
 
   lazy val controllingPersonTypeRoute = controllers.manual.cpso.routes.ControllingPersonTypeController.onPageLoad(NormalMode).url
 
-  val reportId = ReportId(FATCA, 2025, None, "TestfiID")
-  val cpsoId   = CPSOId("TestId")
-  val name     = IndividualName("Test", "Last")
+  val cpsoId = CPSOId("TestId")
+  val name   = IndividualName("Test", "Last")
 
   def userAnswersFor(reportId: ReportId): UserAnswers = emptyUserAnswers
     .withPage(ReportIdPage, reportId)
@@ -119,6 +118,7 @@ class ControllingPersonTypeControllerSpec extends SpecBase with MockitoSugar {
 
       val newReportId = ReportId(FATCA, 2026, None, "TestfiID")
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswersFor(newReportId))).build()
+      when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(emptyUserAnswers.withPage(ReportIdPage, newReportId))))
 
       running(application) {
         val request = FakeRequest(GET, controllingPersonTypeRoute)

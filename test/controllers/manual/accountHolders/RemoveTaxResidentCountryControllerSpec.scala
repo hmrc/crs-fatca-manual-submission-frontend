@@ -20,7 +20,6 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.accountHolders.RemoveTaxResidentCountryFormProvider
-import models.SubmissionsConstants.CRS
 import models.manual.RemoveCountryMessage
 import models.manual.accountHolders.{IndividualOrOrganisation, TaxResidentInformation}
 import models.response.Country
@@ -50,7 +49,6 @@ class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar 
   val country                            = "United Kingdom"
   val GB                                 = Country("GB", "United Kingdom")
   val accountHolderName                  = "Test AccountHolder Name"
-  implicit val reportId: ReportId        = ReportId(CRS, 2025, None, "TestfiID")
   "RemoveTaxResidentCountry Controller" - {
 
     val currentAccountHolderId = AccountHolderId("TestAccHolderId")
@@ -91,15 +89,15 @@ class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar 
         .withPage(AccountHolderOrganisationNamePage(currentAccountHolderId), accountHolderName)
         .withPage(CurrentTaxResidentCountryIndexPage(currentAccountHolderId, reportId), 0)
 
-      val mockSessionRepository = mock[DatabaseConnector]
+      val dbConnector = mock[DatabaseConnector]
 
-      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+      when(dbConnector.set(any())(any())) thenReturn Future.successful(())
 
       val application =
         applicationBuilder(maybeUserAnswers = Some(useranswers))
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockSessionRepository)
+            bind[DatabaseConnector].toInstance(dbConnector)
           )
           .build()
 
@@ -284,15 +282,15 @@ class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar 
         .withPage(IndividualOrOrganisationPage(currentAccountHolderId), IndividualOrOrganisation.Organisation)
         .withPage(AccountHolderOrganisationNamePage(currentAccountHolderId), accountHolderName)
 
-      val mockSessionRepository = mock[DatabaseConnector]
+      val dbConnector = mock[DatabaseConnector]
 
-      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+      when(dbConnector.set(any())(any())) thenReturn Future.successful(())
 
       val application =
         applicationBuilder(maybeUserAnswers = Some(useranswers))
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockSessionRepository)
+            bind[DatabaseConnector].toInstance(dbConnector)
           )
           .build()
 

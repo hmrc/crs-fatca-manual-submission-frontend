@@ -16,14 +16,12 @@
 
 package navigation
 
-import controllers.manual.accountHolders
 import controllers.routes
 import models.*
 import models.SubmissionsConstants.{CRS, FATCA}
 import models.manual.accountHolders.IndividualOrOrganisation
 import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
-import pages.manual.account.NumberTypePage
 import pages.manual.accountHolders.{
   AccountHolderAddressNonUkPage,
   AccountHolderIndividualNamePage,

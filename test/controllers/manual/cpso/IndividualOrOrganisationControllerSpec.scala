@@ -47,6 +47,9 @@ class IndividualOrOrganisationControllerSpec extends SpecBase with MockitoSugar 
   val formProvider = new IndividualOrOrganisationFormProvider()
   val form         = formProvider()
 
+  override def beforeEach(): Unit =
+    when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(emptyUserAnswers.withPage(ReportIdPage, ReportId(FATCA, 2025, None, "TestfiID")))))
+
   "IndividualOrOrganisation Controller" - {
     val reportId = ReportId(FATCA, 2025, None, "TestfiID")
     val ua       = emptyUserAnswers.withPage(ReportIdPage, reportId)
@@ -149,9 +152,11 @@ class IndividualOrOrganisationControllerSpec extends SpecBase with MockitoSugar 
 
     "must redirect to Journey Recovery for a GET when Regime is CRS" in {
       val reportId = ReportId(CRS, 2025, None, "TestfiID")
-      val ua       = emptyUserAnswers.withPage(ReportIdPage, reportId)
+      val ua       = emptyUserAnswers
 
       val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+
+      when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(emptyUserAnswers.withPage(ReportIdPage, reportId))))
 
       running(application) {
         val request = FakeRequest(GET, individualOrOrganisationRoute)

@@ -22,6 +22,7 @@ import controllers.routes
 import forms.manual.accountHolders.IndividualHaveDateOfBirthFormProvider
 import models.SubmissionsConstants.CRS
 import models.manual.accountHolders.IndividualName
+import models.manual.accountHolders.IndividualOrOrganisation.Individual
 import models.viewModels.AccountHolderId
 import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
@@ -30,7 +31,7 @@ import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
 import pages.manual.FINamePage
-import pages.manual.accountHolders.{AccountHolderIndividualNamePage, CurrentAccountHolderIdPage, IndividualHaveDateOfBirthPage}
+import pages.manual.accountHolders.{AccountHolderIndividualNamePage, CurrentAccountHolderIdPage, IndividualHaveDateOfBirthPage, IndividualOrOrganisationPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -43,10 +44,9 @@ class IndividualHaveDateOfBirthControllerSpec extends SpecBase with MockitoSugar
 
   def onwardRoute: Call = Call("GET", "/foo")
 
-  val formProvider = new IndividualHaveDateOfBirthFormProvider()
-  val form         = formProvider()
+  private val form = new IndividualHaveDateOfBirthFormProvider()()
 
-  lazy val individualHaveDateOfBirthRoute =
+  private lazy val individualHaveDateOfBirthRoute =
     controllers.manual.accountHolders.routes.IndividualHaveDateOfBirthController
       .onPageLoad(NormalMode)
       .url
@@ -78,6 +78,10 @@ class IndividualHaveDateOfBirthControllerSpec extends SpecBase with MockitoSugar
         .withPage(
           FINamePage()(reportId),
           fiName
+        )
+        .withPage(
+          IndividualOrOrganisationPage(currentAccountHolderId)(reportId),
+          Individual
         )
         .withPage(
           AccountHolderIndividualNamePage(currentAccountHolderId)(reportId),

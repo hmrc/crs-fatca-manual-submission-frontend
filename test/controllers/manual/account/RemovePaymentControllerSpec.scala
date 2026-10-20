@@ -44,14 +44,13 @@ class RemovePaymentControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  implicit val reportId: ReportId     = ReportId(CRS, 2025, None, "TestfiID")
-  private val accountId: AccountId    = AccountId("TestAccountId")
-  private val formProvider            = new RemovePaymentFormProvider()
-  private val form                    = formProvider()
-  private val currency                = Currency(code = "VED", displayName = "Venezuelan Bolivar (VED)")
-  private val accountPayment          = AccountPayment(CRSInterest, Some(AccountPaymentsAmount(currency, "1000")))
-  private val accountPaymentList      = Seq(AccountPayment(CRSInterest, Some(AccountPaymentsAmount(currency, "1000"))))
-  private lazy val removePaymentRoute = controllers.manual.account.routes.RemovePaymentController.onPageLoad(NormalMode).url
+  val accountId: AccountId    = AccountId("TestAccountId")
+  val formProvider            = new RemovePaymentFormProvider()
+  val form                    = formProvider()
+  val currency                = Currency(code = "VED", displayName = "Venezuelan Bolivar (VED)")
+  val accountPayment          = AccountPayment(CRSInterest, Some(AccountPaymentsAmount(currency, "1000")))
+  val accountPaymentList      = Seq(AccountPayment(CRSInterest, Some(AccountPaymentsAmount(currency, "1000"))))
+  lazy val removePaymentRoute = controllers.manual.account.routes.RemovePaymentController.onPageLoad(NormalMode).url
 
   "RemovePayment Controller" - {
 
@@ -82,15 +81,15 @@ class RemovePaymentControllerSpec extends SpecBase with MockitoSugar {
       val useranswers = ua
         .withPage(CurrentAccountPaymentIndexPage(accountId), 0)
         .withPage(AccountPaymentListPage(accountId), accountPaymentList)
-      val mockSessionRepository = mock[DatabaseConnector]
+      val dbConnector = mock[DatabaseConnector]
 
-      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+      when(dbConnector.set(any())(any())) thenReturn Future.successful(())
 
       val application =
         applicationBuilder(maybeUserAnswers = Some(useranswers))
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockSessionRepository)
+            bind[DatabaseConnector].toInstance(dbConnector)
           )
           .build()
 
@@ -111,15 +110,15 @@ class RemovePaymentControllerSpec extends SpecBase with MockitoSugar {
       val useranswers = ua
         .withPage(CurrentAccountPaymentIndexPage(accountId), 0)
         .withPage(AccountPaymentListPage(accountId), accountPaymentList)
-      val mockSessionRepository = mock[DatabaseConnector]
+      val dbConnector = mock[DatabaseConnector]
 
-      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+      when(dbConnector.set(any())(any())) thenReturn Future.successful(())
 
       val application =
         applicationBuilder(maybeUserAnswers = Some(useranswers))
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockSessionRepository)
+            bind[DatabaseConnector].toInstance(dbConnector)
           )
           .build()
 

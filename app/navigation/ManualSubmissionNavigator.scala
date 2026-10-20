@@ -19,10 +19,7 @@ package navigation
 import controllers.manual.reportdetails.routes.*
 import controllers.routes
 import models.*
-import models.SubmissionsConstants.{CRS, FATCA}
-import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
 import models.viewModels.manual.cpso.CPSOId
-import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
 import pages.manual.cpso.{
   AddressLookupPage as AddressLookupPageForCPSO,

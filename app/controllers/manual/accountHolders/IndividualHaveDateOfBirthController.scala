@@ -22,7 +22,8 @@ import forms.manual.accountHolders.IndividualHaveDateOfBirthFormProvider
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
 import pages.manual.FINamePage
-import pages.manual.accountHolders.{AccountHolderIndividualNamePage, IndividualHaveDateOfBirthPage}
+import pages.manual.accountHolders.IndividualHaveDateOfBirthPage
+import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -43,10 +44,10 @@ class IndividualHaveDateOfBirthController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  val form = formProvider()
+  val form: Form[Boolean] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
-    actions.withReportIdRequiredAndAccountHolderIdRequired() {
+    actions.withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired() {
       implicit request =>
 
         implicit val reportId: ReportId = request.reportId
@@ -56,18 +57,14 @@ class IndividualHaveDateOfBirthController @Inject() (
             .get(IndividualHaveDateOfBirthPage(request.accountHolderId))
             .fold(form)(form.fill)
 
-        (
-          request.userAnswers.get(FINamePage()),
-          request.userAnswers.get(AccountHolderIndividualNamePage(request.accountHolderId))
-        ) match {
-          case (Some(fiName), Some(individualName)) =>
-            val accountHolderName = individualName.fullName
+        request.userAnswers.get(FINamePage()) match {
+          case Some(fiName) =>
             Ok(
               view(
                 preparedForm,
                 mode,
                 fiName,
-                accountHolderName,
+                request.accountHolderName,
                 reportId.regime
               )
             )
@@ -78,17 +75,13 @@ class IndividualHaveDateOfBirthController @Inject() (
     }
 
   def onSubmit(mode: Mode): Action[AnyContent] =
-    actions.withReportIdRequiredAndAccountHolderIdRequired().async {
+    actions.withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired().async {
       implicit request =>
 
         implicit val reportId: ReportId = request.reportId
 
-        (
-          request.userAnswers.get(FINamePage()),
-          request.userAnswers.get(AccountHolderIndividualNamePage(request.accountHolderId))
-        ) match {
-          case (Some(fiName), Some(individualName)) =>
-            val accountHolderName = individualName.fullName
+        request.userAnswers.get(FINamePage()) match {
+          case Some(fiName) =>
             form
               .bindFromRequest()
               .fold(
@@ -99,7 +92,7 @@ class IndividualHaveDateOfBirthController @Inject() (
                         formWithErrors,
                         mode,
                         fiName,
-                        accountHolderName,
+                        request.accountHolderName,
                         reportId.regime
                       )
                     )

@@ -20,28 +20,20 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.accountHolders.WhereAreTheyBasedFormProvider
-import models.SubmissionsConstants.CRS
 import models.manual.accountHolders.IndividualName
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
 import models.viewModels.AccountHolderId
-import models.{NormalMode, ReportId}
+import models.NormalMode
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.ReportIdPage
-import pages.manual.accountHolders.{
-  AccountHolderIndividualNamePage,
-  AccountHolderOrganisationNamePage,
-  CurrentAccountHolderIdPage,
-  IndividualOrOrganisationPage,
-  WhereAreTheyBasedPage
-}
-import play.api.inject.bind
+import pages.manual.accountHolders.*
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import views.html.manual.accountHolders.WhereAreTheyBasedView
+import play.api.inject.bind
 
 import scala.concurrent.Future
 
@@ -58,12 +50,10 @@ class WhereAreTheyBasedControllerSpec extends SpecBase with MockitoSugar {
   "WhereAreTheyBased Controller" - {
 
     val currentAccountHolderId = AccountHolderId("testid")
-    val reportId               = ReportId(CRS, 2025, None, "TestfiID")
     val individualName         = IndividualName("test", "last")
     val organisationName       = "Test Organisation"
 
     val ua = emptyUserAnswers
-      .withPage(ReportIdPage, reportId)
       .withPage(CurrentAccountHolderIdPage()(reportId), currentAccountHolderId)
       .withPage(
         IndividualOrOrganisationPage(currentAccountHolderId)(reportId),
@@ -98,7 +88,6 @@ class WhereAreTheyBasedControllerSpec extends SpecBase with MockitoSugar {
     "must return OK and the correct view for a GET for an organisation" in {
 
       val userAnswers = emptyUserAnswers
-        .withPage(ReportIdPage, reportId)
         .withPage(CurrentAccountHolderIdPage()(reportId), currentAccountHolderId)
         .withPage(
           IndividualOrOrganisationPage(currentAccountHolderId)(reportId),
@@ -159,16 +148,16 @@ class WhereAreTheyBasedControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to the next page when valid data is submitted" in {
 
-      val mockSessionRepository = mock[DatabaseConnector]
+      val dbConnector = mock[DatabaseConnector]
 
-      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+      when(dbConnector.set(any())(any())) thenReturn Future.successful(())
 
       val application =
         applicationBuilder(maybeUserAnswers = Some(ua))
           .overrides(
             bind[ManualSubmissionNavigator]
               .toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockSessionRepository)
+            bind[DatabaseConnector].toInstance(dbConnector)
           )
           .build()
 
@@ -186,12 +175,11 @@ class WhereAreTheyBasedControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to the next page when valid data is submitted for an organisation" in {
 
-      val mockSessionRepository = mock[DatabaseConnector]
+      val dbConnector = mock[DatabaseConnector]
 
-      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+      when(dbConnector.set(any())(any())) thenReturn Future.successful(())
 
       val userAnswers = emptyUserAnswers
-        .withPage(ReportIdPage, reportId)
         .withPage(CurrentAccountHolderIdPage()(reportId), currentAccountHolderId)
         .withPage(
           IndividualOrOrganisationPage(currentAccountHolderId)(reportId),
@@ -207,7 +195,7 @@ class WhereAreTheyBasedControllerSpec extends SpecBase with MockitoSugar {
           .overrides(
             bind[ManualSubmissionNavigator]
               .toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockSessionRepository)
+            bind[DatabaseConnector].toInstance(dbConnector)
           )
           .build()
 
@@ -251,7 +239,6 @@ class WhereAreTheyBasedControllerSpec extends SpecBase with MockitoSugar {
     "must return a Bad Request and errors when invalid data is submitted for an organisation" in {
 
       val userAnswers = emptyUserAnswers
-        .withPage(ReportIdPage, reportId)
         .withPage(CurrentAccountHolderIdPage()(reportId), currentAccountHolderId)
         .withPage(
           IndividualOrOrganisationPage(currentAccountHolderId)(reportId),
@@ -289,7 +276,6 @@ class WhereAreTheyBasedControllerSpec extends SpecBase with MockitoSugar {
     "must redirect to Journey Recovery for a GET when the individual name is missing" in {
 
       val userAnswers = emptyUserAnswers
-        .withPage(ReportIdPage, reportId)
         .withPage(CurrentAccountHolderIdPage()(reportId), currentAccountHolderId)
         .withPage(
           IndividualOrOrganisationPage(currentAccountHolderId)(reportId),
@@ -297,7 +283,8 @@ class WhereAreTheyBasedControllerSpec extends SpecBase with MockitoSugar {
         )
 
       val application =
-        applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
+        applicationBuilder(maybeUserAnswers = Some(userAnswers))
+          .build()
 
       running(application) {
         val request = FakeRequest(GET, whereAreTheyBasedRoute)
@@ -313,7 +300,6 @@ class WhereAreTheyBasedControllerSpec extends SpecBase with MockitoSugar {
     "must redirect to Journey Recovery for a GET when the organisation name is missing" in {
 
       val userAnswers = emptyUserAnswers
-        .withPage(ReportIdPage, reportId)
         .withPage(CurrentAccountHolderIdPage()(reportId), currentAccountHolderId)
         .withPage(
           IndividualOrOrganisationPage(currentAccountHolderId)(reportId),
@@ -321,7 +307,8 @@ class WhereAreTheyBasedControllerSpec extends SpecBase with MockitoSugar {
         )
 
       val application =
-        applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
+        applicationBuilder(maybeUserAnswers = Some(userAnswers))
+          .build()
 
       running(application) {
         val request = FakeRequest(GET, whereAreTheyBasedRoute)
@@ -337,7 +324,6 @@ class WhereAreTheyBasedControllerSpec extends SpecBase with MockitoSugar {
     "must redirect to Journey Recovery for a POST when the individual name is missing" in {
 
       val userAnswers = emptyUserAnswers
-        .withPage(ReportIdPage, reportId)
         .withPage(CurrentAccountHolderIdPage()(reportId), currentAccountHolderId)
         .withPage(
           IndividualOrOrganisationPage(currentAccountHolderId)(reportId),
@@ -345,7 +331,8 @@ class WhereAreTheyBasedControllerSpec extends SpecBase with MockitoSugar {
         )
 
       val application =
-        applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
+        applicationBuilder(maybeUserAnswers = Some(userAnswers))
+          .build()
 
       running(application) {
         val request =
@@ -363,7 +350,6 @@ class WhereAreTheyBasedControllerSpec extends SpecBase with MockitoSugar {
     "must redirect to Journey Recovery for a POST when the organisation name is missing" in {
 
       val userAnswers = emptyUserAnswers
-        .withPage(ReportIdPage, reportId)
         .withPage(CurrentAccountHolderIdPage()(reportId), currentAccountHolderId)
         .withPage(
           IndividualOrOrganisationPage(currentAccountHolderId)(reportId),
@@ -371,7 +357,8 @@ class WhereAreTheyBasedControllerSpec extends SpecBase with MockitoSugar {
         )
 
       val application =
-        applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
+        applicationBuilder(maybeUserAnswers = Some(userAnswers))
+          .build()
 
       running(application) {
         val request =
