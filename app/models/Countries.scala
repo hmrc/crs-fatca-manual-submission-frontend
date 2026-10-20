@@ -163,7 +163,7 @@ object Countries {
       code = "UM",
       description = "US Minor Outlying Islands",
       alternativeName = Some("United States Minor Outlying Islands"),
-      displayNameInSentence = Some("the United States Minor Outlying Islands")
+      displayNameInSentence = Some("the US Minor Outlying Islands")
     ),
     Country(
       code = "US",
