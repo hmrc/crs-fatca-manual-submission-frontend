@@ -17,7 +17,7 @@
 package pages.manual.cpso
 
 import models.viewModels.manual.cpso.CPSOId
-import models.{ReportId, TaxIdentificationNumber}
+import models.ReportId
 import pages.QuestionPage
 import play.api.libs.json.JsPath
 

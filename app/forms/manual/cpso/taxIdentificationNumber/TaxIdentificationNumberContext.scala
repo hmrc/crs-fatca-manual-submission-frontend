@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-package models
+package forms.manual.cpso.taxIdentificationNumber
 
-import play.api.libs.json._
+import models.ReportId
+import models.manual.cpso.IndividualOrOrganisation
+import models.response.Country
 
-case class TaxIdentificationNumber(tin: String, deleteme: String)
-
-object TaxIdentificationNumber {
-
-  implicit val format: OFormat[TaxIdentificationNumber] = Json.format
-}
+case class TaxIdentificationNumberContext(country: Country, reportId: ReportId, individualOrOrganization: Option[IndividualOrOrganisation])

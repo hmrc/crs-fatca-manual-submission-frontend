@@ -23,9 +23,9 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode, country: Country, cpsoName: String, regiment: String)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, country: Country, cpsoName: String, regime: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages(s"cpso.${regiment}.haveTaxIdentificationNumber.title"))) {
+@layout(pageTitle = title(form, messages(s"cpso.${regime}.haveTaxIdentificationNumber.title"))) {
 
     @formHelper(action = controllers.manual.cpso.routes.HaveTaxIdentificationNumberController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
