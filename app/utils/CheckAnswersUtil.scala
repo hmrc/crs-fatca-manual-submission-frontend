@@ -53,12 +53,18 @@ class CheckAnswersUtil @Inject() {
         haveOfficialNumber <- ua.get(HaveNumberPage(currentAccountId)(reportId))
         isClosed           <- ua.get(AccountClosedPage(currentAccountId)(reportId))
         hasJointAccounts   <- Some(ua.get(IsJointAccountPage(currentAccountId)(reportId)).contains(true))
-        isIbanOrSemp       <- ua.get(NumberTypePage(currentAccountId)(reportId)).map(Seq(Iban, Semp).contains)
+        isIbanOrSemp <-
+          if (haveOfficialNumber)
+            ua.get(NumberTypePage(currentAccountId)(reportId))
+              .map(
+                officialTypes => Seq(Iban, Semp).contains(officialTypes)
+              )
+          else Some(false)
       } yield {
+
         val haveNumberSummary       = Seq(HaveNumberSummary.row(ua)).flatten
         val unofficialNumberSummary = if (!haveOfficialNumber) Seq(IdentifierSummary.row(ua)).flatten else Seq.empty
         val officialNumberSummaries = if (haveOfficialNumber) Seq(NumberTypeSummary.row(ua), WhatIsAccountNumberSummary.row(ua)).flatten else Seq.empty
-
         val jointAccountSummaries =
           if (hasJointAccounts) Seq(IsJointAccountSummary.row(ua), HowManyJointAccountHoldersSummary.row(ua)).flatten
           else Seq(IsJointAccountSummary.row(ua)).flatten
