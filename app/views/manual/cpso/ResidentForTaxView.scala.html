@@ -28,7 +28,7 @@
     paragraph: views.html.components.Paragraph
 )
 
-@(form: Form[_], mode: Mode, cpsoName: String = "Sue Coe", countries: Seq[Country] = Seq(), regiment: String = "crs")(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, cpsoName: String, countries: Seq[Country], regiment: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages(s"cpso.${regiment}.residentForTax.title"))) {
 

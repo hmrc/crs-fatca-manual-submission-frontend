@@ -19,17 +19,15 @@ package controllers.manual.cpso
 import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.manual.cpso.TaxIdentificationNumberFormProvider
-import models.manual.cpso.IndividualOrOrganisation.Individual
 import models.response.Country
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
 import pages.manual.cpso.{IndividualOrOrganisationPage, ResidentForTaxPage, TaxIdentificationNumberPage}
+import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.cpso.TaxIdentificationNumberView
-import cats.syntax.apply.*
-import play.api.Logging
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -52,11 +50,11 @@ class TaxIdentificationNumberController @Inject() (
       implicit val reportId: ReportId = request.reportId
 
       val countryOption                  = request.userAnswers.get(ResidentForTaxPage(request.currentIndex, request.cpsoId, reportId))
-      val individualOrOrganizationOption = request.userAnswers.get(IndividualOrOrganisationPage(request.cpsoId))
+      val individualOrOrganisationOption = request.userAnswers.get(IndividualOrOrganisationPage(request.cpsoId))
 
       countryOption match {
         case Some(country) =>
-          val form = formProvider(country, reportId, individualOrOrganizationOption)
+          val form = formProvider(country, reportId, individualOrOrganisationOption)
           val preparedForm = request.userAnswers.get(TaxIdentificationNumberPage(request.currentIndex, request.cpsoId, reportId)) match {
             case None        => form
             case Some(value) => form.fill(value)
@@ -73,11 +71,11 @@ class TaxIdentificationNumberController @Inject() (
       implicit val reportId: ReportId    = request.reportId
       val currentIndex                   = request.currentIndex
       val countryOption                  = request.userAnswers.get(ResidentForTaxPage(request.currentIndex, request.cpsoId, reportId))
-      val individualOrOrganizationOption = request.userAnswers.get(IndividualOrOrganisationPage(request.cpsoId))
+      val individualOrOrganisationOption = request.userAnswers.get(IndividualOrOrganisationPage(request.cpsoId))
 
       countryOption match {
         case Some(country) =>
-          val form = formProvider(country, reportId, individualOrOrganizationOption)
+          val form = formProvider(country, reportId, individualOrOrganisationOption)
           form
             .bindFromRequest()
             .fold(
