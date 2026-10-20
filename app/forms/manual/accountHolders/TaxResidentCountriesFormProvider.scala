@@ -25,6 +25,6 @@ class TaxResidentCountriesFormProvider @Inject() extends Mappings {
 
   def apply(): Form[Boolean] =
     Form(
-      "value" -> boolean("taxResidentCountries.error.required")
+      "value" -> boolean("accountHolders.taxResidentCountries.error.required")
     )
 }

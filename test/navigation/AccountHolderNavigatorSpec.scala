@@ -157,7 +157,7 @@ class AccountHolderNavigatorSpec extends SpecBase {
               NormalMode,
               ua
             ) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.accountHolders.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
           }
 
         }
