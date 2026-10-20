@@ -430,7 +430,10 @@ class ManualSubmissionNavigator @Inject() () {
             if (accountTypes.exists(_.isEmpty)) routes.JourneyRecoveryController.onPageLoad()
             else if (accountTypes.flatten.contains(WhatAccountType.InvestmentEntity))
               controllers.manual.accountHolders.routes.ProvideEquityInterestTypeController.onPageLoad(mode)
-            else controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
+            else {
+              println(s"$accountTypes - *** account types are on the left")
+              controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
+            }
 
           case _ => routes.JourneyRecoveryController.onPageLoad()
         }

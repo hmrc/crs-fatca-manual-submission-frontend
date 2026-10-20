@@ -121,7 +121,7 @@ class EquityInterestTypeViewSpec extends SpecBase {
     "must display the save and continue button" in {
       val doc = render()
 
-      doc.select("button.govuk-button").text() mustBe messages("site.saveAndContinue")
+      doc.select("button.govuk-button").text() mustBe messages("site.saveContinue")
     }
   }
 }

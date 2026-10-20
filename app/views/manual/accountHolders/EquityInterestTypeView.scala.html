@@ -35,7 +35,9 @@
 
     @formHelper(action = controllers.manual.accountHolders.routes.EquityInterestTypeController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
-        @govukErrorSummary(ErrorSummaryViewModel(form))
+        @if(form.hasErrors) {
+            @govukErrorSummary(ErrorSummaryViewModel(form))
+        }
 
         @govukCheckboxes(
             Checkboxes(
@@ -57,7 +59,6 @@
             )
         )
 
-        @govukButton(ButtonViewModel(messages("site.saveAndContinue")).withAttribute("id" -> "submit")
-        )
+        @govukButton(ButtonViewModel(messages("site.saveContinue")).withAttribute("id" -> "submit"))
     }
 }
