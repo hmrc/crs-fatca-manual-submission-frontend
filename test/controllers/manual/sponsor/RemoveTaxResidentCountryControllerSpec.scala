@@ -21,8 +21,8 @@ import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.sponsor.RemoveTaxResidentCountryFormProvider
 import models.SubmissionsConstants.CRS
+import models.manual.RemoveCountryMessage
 import models.response.Country
-import models.sponsor.RemoveCountryMessage
 import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any

@@ -1,0 +1,311 @@
+/*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package controllers.manual.accountHolders
+
+import base.SpecBase
+import connectors.DatabaseConnector
+import controllers.routes
+import forms.manual.accountHolders.RemoveTaxResidentCountryFormProvider
+import models.SubmissionsConstants.CRS
+import models.manual.RemoveCountryMessage
+import models.manual.accountHolders.{IndividualOrOrganisation, TaxResidentInformation}
+import models.response.Country
+import models.viewModels.AccountHolderId
+import models.{NormalMode, ReportId}
+import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
+import org.scalatestplus.mockito.MockitoSugar
+import pages.ReportIdPage
+import pages.manual.accountHolders.*
+import play.api.inject.bind
+import play.api.mvc.Call
+import play.api.test.FakeRequest
+import play.api.test.Helpers.*
+import views.html.manual.accountHolders.RemoveTaxResidentCountryView
+
+import scala.concurrent.Future
+
+class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar {
+
+  def onwardRoute  = Call("GET", "/foo")
+  val formProvider = new RemoveTaxResidentCountryFormProvider()
+  val form         = formProvider()
+
+  lazy val removeTaxResidentCountryRoute = controllers.manual.accountHolders.routes.RemoveTaxResidentCountryController.onPageLoad(NormalMode).url
+  val country                            = "United Kingdom"
+  val GB                                 = Country("GB", "United Kingdom")
+  val accountHolderName                  = "Test AccountHolder Name"
+  implicit val reportId: ReportId        = ReportId(CRS, 2025, None, "TestfiID")
+  "RemoveTaxResidentCountry Controller" - {
+
+    val currentAccountHolderId = AccountHolderId("TestAccHolderId")
+    val ua = emptyUserAnswers
+      .withPage(ReportIdPage, reportId)
+      .withPage(CurrentAccountHolderIdPage()(reportId), currentAccountHolderId)
+
+    "must return OK and the correct view for a GET" in {
+      val useranswers = ua
+        .withPage(TaxResidentCountriesListPage(currentAccountHolderId, reportId), Seq(TaxResidentInformation(GB, Some(false), None)))
+        .withPage(ResidentTaxPage(0, currentAccountHolderId, reportId), GB)
+        .withPage(IndividualOrOrganisationPage(currentAccountHolderId), IndividualOrOrganisation.Organisation)
+        .withPage(AccountHolderOrganisationNamePage(currentAccountHolderId), accountHolderName)
+        .withPage(CurrentTaxResidentCountryIndexPage(currentAccountHolderId, reportId), 0)
+
+      val application = applicationBuilder(maybeUserAnswers = Some(useranswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, removeTaxResidentCountryRoute)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[RemoveTaxResidentCountryView]
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(form, NormalMode, country, accountHolderName, RemoveCountryMessage.NationsWithDefiniteArticlesMessage)(
+          request,
+          messages(application)
+        ).toString
+      }
+    }
+
+    "must redirect to the next page when valid data is submitted" in {
+      val useranswers = ua
+        .withPage(TaxResidentCountriesListPage(currentAccountHolderId, reportId), Seq(TaxResidentInformation(GB, Some(false), None)))
+        .withPage(ResidentTaxPage(0, currentAccountHolderId, reportId), GB)
+        .withPage(IndividualOrOrganisationPage(currentAccountHolderId), IndividualOrOrganisation.Organisation)
+        .withPage(AccountHolderOrganisationNamePage(currentAccountHolderId), accountHolderName)
+        .withPage(CurrentTaxResidentCountryIndexPage(currentAccountHolderId, reportId), 0)
+
+      val mockSessionRepository = mock[DatabaseConnector]
+
+      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(useranswers))
+          .overrides(
+            bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
+            bind[DatabaseConnector].toInstance(mockSessionRepository)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, removeTaxResidentCountryRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual onwardRoute.url
+      }
+    }
+
+    "must return a Bad Request and errors when invalid data is submitted" in {
+      val useranswers = ua
+        .withPage(TaxResidentCountriesListPage(currentAccountHolderId, reportId), Seq(TaxResidentInformation(GB, Some(false), None)))
+        .withPage(ResidentTaxPage(0, currentAccountHolderId, reportId), GB)
+        .withPage(IndividualOrOrganisationPage(currentAccountHolderId), IndividualOrOrganisation.Organisation)
+        .withPage(AccountHolderOrganisationNamePage(currentAccountHolderId), accountHolderName)
+        .withPage(CurrentTaxResidentCountryIndexPage(currentAccountHolderId, reportId), 0)
+
+      val application = applicationBuilder(maybeUserAnswers = Some(useranswers)).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, removeTaxResidentCountryRoute)
+            .withFormUrlEncodedBody(("value", ""))
+
+        val boundForm = form.bind(Map("value" -> ""))
+
+        val view = application.injector.instanceOf[RemoveTaxResidentCountryView]
+
+        val result = route(application, request).value
+
+        status(result) mustEqual BAD_REQUEST
+        contentAsString(result) mustEqual view(boundForm, NormalMode, country, accountHolderName, RemoveCountryMessage.NationsWithDefiniteArticlesMessage)(
+          request,
+          messages(application)
+        ).toString
+      }
+    }
+
+    "must redirect to Journey Recovery for a GET if no accountHolder name  is found" in {
+      val useranswers = ua
+        .withPage(TaxResidentCountriesListPage(currentAccountHolderId, reportId), Seq(TaxResidentInformation(GB, Some(false), None)))
+        .withPage(ResidentTaxPage(0, currentAccountHolderId, reportId), GB)
+        .withPage(CurrentTaxResidentCountryIndexPage(currentAccountHolderId, reportId), 0)
+
+      val application = applicationBuilder(maybeUserAnswers = Some(useranswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, removeTaxResidentCountryRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Journey Recovery for a GET if no ResidentTaxPage is found" in {
+      val useranswers = ua
+        .withPage(TaxResidentCountriesListPage(currentAccountHolderId, reportId), Seq(TaxResidentInformation(GB, Some(false), None)))
+        .withPage(IndividualOrOrganisationPage(currentAccountHolderId), IndividualOrOrganisation.Organisation)
+        .withPage(AccountHolderOrganisationNamePage(currentAccountHolderId), accountHolderName)
+
+      val application = applicationBuilder(maybeUserAnswers = Some(useranswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, removeTaxResidentCountryRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Journey Recovery for a GET if no existing data is found" in {
+
+      val application = applicationBuilder(maybeUserAnswers = None).build()
+
+      running(application) {
+        val request = FakeRequest(GET, removeTaxResidentCountryRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Journey Recovery for a GET for invalid country code" in {
+      val countryCode    = "ZWD"
+      val invalidCountry = Country(countryCode, "some-other-planet")
+      val useranswers = ua
+        .withPage(TaxResidentCountriesListPage(currentAccountHolderId, reportId), Seq(TaxResidentInformation(invalidCountry, Some(false), None)))
+        .withPage(ResidentTaxPage(0, currentAccountHolderId, reportId), invalidCountry)
+        .withPage(IndividualOrOrganisationPage(currentAccountHolderId), IndividualOrOrganisation.Organisation)
+        .withPage(AccountHolderOrganisationNamePage(currentAccountHolderId), accountHolderName)
+        .withPage(CurrentTaxResidentCountryIndexPage(currentAccountHolderId, reportId), 0)
+
+      val application = applicationBuilder(maybeUserAnswers = Some(useranswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, removeTaxResidentCountryRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Journey Recovery for a POST if no existing data is found" in {
+
+      val application = applicationBuilder(maybeUserAnswers = None).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, removeTaxResidentCountryRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Journey Recovery for a POST if no accountHolder name is found" in {
+      val useranswers = ua
+        .withPage(TaxResidentCountriesListPage(currentAccountHolderId, reportId), Seq(TaxResidentInformation(GB, Some(false), None)))
+        .withPage(ResidentTaxPage(0, currentAccountHolderId, reportId), GB)
+        .withPage(CurrentTaxResidentCountryIndexPage(currentAccountHolderId, reportId), 0)
+
+      val application = applicationBuilder(maybeUserAnswers = Some(useranswers)).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, removeTaxResidentCountryRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Journey Recovery for a POST if no ResidentForTax Page is found" in {
+      val useranswers = emptyUserAnswers
+        .withPage(ReportIdPage, reportId)
+        .withPage(TaxResidentCountriesListPage(currentAccountHolderId, reportId), Seq(TaxResidentInformation(GB, Some(false), None)))
+        .withPage(IndividualOrOrganisationPage(currentAccountHolderId), IndividualOrOrganisation.Organisation)
+        .withPage(AccountHolderOrganisationNamePage(currentAccountHolderId), accountHolderName)
+        .withPage(CurrentTaxResidentCountryIndexPage(currentAccountHolderId, reportId), 0)
+
+      val application = applicationBuilder(maybeUserAnswers = Some(useranswers))
+        .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, removeTaxResidentCountryRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Journey Recovery for a POST for invalid country code" in {
+      val countryCode    = "ZWD"
+      val invalidCountry = Country(countryCode, "some-other-planet")
+      val useranswers = ua
+        .withPage(TaxResidentCountriesListPage(currentAccountHolderId, reportId), Seq(TaxResidentInformation(invalidCountry, Some(false), None)))
+        .withPage(ResidentTaxPage(0, currentAccountHolderId, reportId), GB)
+        .withPage(IndividualOrOrganisationPage(currentAccountHolderId), IndividualOrOrganisation.Organisation)
+        .withPage(AccountHolderOrganisationNamePage(currentAccountHolderId), accountHolderName)
+
+      val mockSessionRepository = mock[DatabaseConnector]
+
+      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(useranswers))
+          .overrides(
+            bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
+            bind[DatabaseConnector].toInstance(mockSessionRepository)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, removeTaxResidentCountryRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+  }
+}

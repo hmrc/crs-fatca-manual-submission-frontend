@@ -21,8 +21,8 @@ import controllers.routes
 import models.*
 import models.SubmissionsConstants.{CRS, FATCA}
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
-import models.viewModels.AccountHolderId
 import models.viewModels.manual.cpso.CPSOId
+import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
 import pages.manual.accountHolders.{
   AccountHolderAddressNonUkPage,
@@ -30,6 +30,7 @@ import pages.manual.accountHolders.{
   AccountHolderOrganisationNamePage,
   AccountPage,
   AddressLookupForAccountHolderPage,
+  DoYouWantToAddTaxResidentCountryPage as AccHolderDoYouWantToAddTaxResidentCountryPage,
   HaveTaxIdenticationNumberPage,
   IndividualHavePlaceOfBirthPage,
   IndividualOrOrganisationPage,
@@ -37,6 +38,7 @@ import pages.manual.accountHolders.{
   IsThisTheAddressForAccountHoldersPage,
   OrganisationCrsPage,
   OrganisationFatcaPage,
+  RemoveTaxResidentCountryPage as AccRemoveTaxResidentCountryPage,
   ResidentTaxPage,
   SelectAddressPage,
   SelfCertificationPage as AccountHolderSelfCertificationPage,
@@ -190,7 +192,14 @@ class ManualSubmissionNavigator @Inject() () {
     case (ResidentTaxPage(_, accountHolderId, reportId), mode, ua) => handleResidentTaxPageNavigationForAccountHolders(mode)
     case (HaveTaxIdenticationNumberPage(index, accountHolderId, reportId), mode, ua) =>
       handleHaveTaxIdenticationNumberPageNavigationForAccountHolders(ua, mode, accountHolderId, index)
-    case (TaxIdentificationNumberPage(_, _, _), mode, ua) => routes.UnderConstructionController.onPageLoad()
+    case (TaxIdentificationNumberPage(_, _, _), mode, ua) => controllers.manual.accountHolders.routes.TaxResidentCountriesController.onPageLoad(mode)
+    case (AccHolderDoYouWantToAddTaxResidentCountryPage(accountHolderId, reportId), mode, ua) =>
+      ua.get(AccHolderDoYouWantToAddTaxResidentCountryPage(accountHolderId, reportId)) match {
+        case Some(true)  => controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(mode)
+        case Some(false) => controllers.routes.UnderConstructionController.onPageLoad()
+        case None        => controllers.routes.JourneyRecoveryController.onPageLoad()
+      }
+    case (AccRemoveTaxResidentCountryPage(_, _), mode, _) => controllers.manual.accountHolders.routes.TaxResidentCountriesController.onPageLoad(mode)
   }
 
   private def cpsoNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {

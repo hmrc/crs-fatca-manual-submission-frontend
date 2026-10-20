@@ -24,7 +24,7 @@ import models.SubmissionsConstants.CRS
 import models.manual.account.PaymentType.CRSInterest
 import models.manual.account.{AccountPayment, AccountPaymentsAmount}
 import models.viewModels.AccountId
-import models.{CheckMode, Currency, NormalMode, ReportId}
+import models.{Currency, NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
