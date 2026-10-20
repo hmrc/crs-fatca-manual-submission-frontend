@@ -19,8 +19,8 @@ package navigation
 import base.SpecBase
 import models.*
 import models.SubmissionsConstants.{CRS, FATCA}
-import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
 import models.manual.accountHolders.*
+import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
 import models.response.{Address, AddressLookup, Country}
 import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
@@ -121,7 +121,7 @@ class AccountHolderNavigatorSpec extends SpecBase {
               controllers.manual.accountHolders.routes.TaxIdentificationNumberController.onPageLoad(NormalMode)
           }
 
-          "must go to under construction page if they do not have a tax identification number" in {
+          "must go to TaxResidentCountries page if they do not have a tax identification number" in {
 
             val ua = UserAnswers("id")
               .withPage(HaveTaxIdenticationNumberPage(0, currentAccountHolderId, reportId), false)
@@ -131,7 +131,7 @@ class AccountHolderNavigatorSpec extends SpecBase {
               NormalMode,
               ua
             ) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.accountHolders.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
           }
 
           "must go to journey recovery page if they do not have a tax identification number record" in {
@@ -706,6 +706,46 @@ class AccountHolderNavigatorSpec extends SpecBase {
             navigator.nextPage(UkPostCodeForAccountHolderPage(accountHolderId, reportId), NormalMode, userData) mustBe
               controllers.routes.JourneyRecoveryController.onPageLoad()
           }
+        }
+
+        "DoYouWantToAddTaxResidentCountryPage" - {
+          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+          val accountHolderId             = AccountHolderId("holder-id")
+
+          "must go to TaxResidentCountries page when answer is true" in {
+
+            val ua = UserAnswers("id")
+              .withPage(DoYouWantToAddTaxResidentCountryPage(accountHolderId, reportId), true)
+            navigator.nextPage(DoYouWantToAddTaxResidentCountryPage(accountHolderId, reportId), NormalMode, ua) mustBe
+              controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(NormalMode)
+          }
+          "must go to TaxResidentCountries page when answer is false" in {
+
+            val ua = UserAnswers("id")
+              .withPage(DoYouWantToAddTaxResidentCountryPage(accountHolderId, reportId), false)
+            navigator.nextPage(DoYouWantToAddTaxResidentCountryPage(accountHolderId, reportId), NormalMode, ua) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+
+          "must go to JourneyRecovery Page when AddressLookupPage is missing" in {
+            val userData = UserAnswers("id")
+            navigator.nextPage(DoYouWantToAddTaxResidentCountryPage(accountHolderId, reportId), NormalMode, userData) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
+        }
+
+        "RemoveTaxResidentPage" - {
+          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+          val accountHolderId             = AccountHolderId("holder-id")
+
+          "must go to TaxResidentCountries page when answer is true" in {
+
+            val ua = UserAnswers("id")
+              .withPage(RemoveTaxResidentCountryPage(reportId, accountHolderId), true)
+            navigator.nextPage(RemoveTaxResidentCountryPage(reportId, accountHolderId), NormalMode, ua) mustBe
+              controllers.manual.accountHolders.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
+          }
+
         }
 
       }
