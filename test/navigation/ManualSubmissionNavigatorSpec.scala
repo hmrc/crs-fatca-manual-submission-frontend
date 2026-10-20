@@ -26,7 +26,7 @@ import models.manual.account.{AccountPayment, PaymentType, WasAccountOpen, WhatA
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
 import models.manual.accountHolders.*
 import models.manual.cpso.CpsoSelfCertification.Yes
-import models.manual.cpso.{IndividualOrOrganisation, TaxResidentInformation}
+import models.manual.cpso.IndividualOrOrganisation
 import models.response.{Address, AddressLookup, Country}
 import models.viewModels.manual.cpso.CPSOId
 import models.viewModels.{AccountHolderId, AccountId}

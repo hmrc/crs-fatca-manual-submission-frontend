@@ -17,7 +17,7 @@
 package pages.manual.cpso
 
 import models.ReportId
-import models.manual.cpso.TaxResidentInformation
+import models.TaxResidentInformation
 import models.viewModels.manual.cpso.CPSOId
 import pages.QuestionPage
 import play.api.libs.json.JsPath

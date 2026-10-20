@@ -18,7 +18,7 @@ package controllers.actions
 
 import base.SpecBase
 import models.SubmissionsConstants.FATCA
-import models.manual.accountHolders.TaxResidentInformation
+import models.TaxResidentInformation
 import models.requests.{AccountHolderNameRequest, TaxResidentCountryIdForAccountHolderRequest}
 import models.response.Country
 import models.viewModels.AccountHolderId

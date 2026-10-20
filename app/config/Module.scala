@@ -58,7 +58,7 @@ class Module extends AbstractModule {
     bind(classOf[TaxResidentIdRequiredForAccountHolderAction]).to(classOf[TaxResidentIdRequiredForAccountHolderImpl]).asEagerSingleton()
     bind(classOf[TaxResidentCountryIdCreationForCPSOAction]).to(classOf[TaxResidentCountryIdCreationForCPSOActionImpl]).asEagerSingleton()
     bind(classOf[TaxResidentCountryIdRequiredForCPSOAction]).to(classOf[TaxResidentCountryIdRequiredForCPSOActionImpl]).asEagerSingleton()
-    
+
     bind(classOf[Clock]).toInstance(Clock.systemDefaultZone.withZone(ZoneOffset.UTC))
   }
 }

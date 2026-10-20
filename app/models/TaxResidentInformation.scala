@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package models.manual.cpso
+package models
 
 import models.response.Country
 import play.api.libs.json.{Json, OFormat}
