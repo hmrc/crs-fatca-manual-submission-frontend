@@ -37,8 +37,10 @@ class Actions @Inject() (
   accountPaymentIndexCreationAction: AccountPaymentIndexCreationAction,
   accountPaymentIndexRequiredAction: AccountPaymentIndexRequiredAction,
   cpsoNameRequiredAction: CPSONameRequiredAction,
+  taxResidentCountryIdCreationForAccountHolderAction: TaxResidentCountryIdCreationForAccountHolderAction,
   accountHolderNameRequiredAction: AccountHolderNameRequiredAction,
-  accountHolderCRSOnlyFilterAction: AccountHolderCRSOnlyFilterAction
+  accountHolderCRSOnlyFilterAction: AccountHolderCRSOnlyFilterAction,
+  taxResidentIdRequiredForAccountHolderAction: TaxResidentIdRequiredForAccountHolderAction
 ) {
 
   def withReportIdRequiredAndAccountIdCreation(): ActionBuilder[AccountIdRequest, AnyContent] =
@@ -58,6 +60,16 @@ class Actions @Inject() (
 
   def withReportIdRequiredAndAccountHolderIdCreation(): ActionBuilder[AccountHolderIdRequest, AnyContent] =
     withReportIdRequired() andThen accountHolderIdCreationAction
+
+  def withReportIdRequiredAndAccountHolderNameRequiredAndTaxResidentIdCreation(): ActionBuilder[TaxResidentCountryIdForAccountHolderRequest, AnyContent] =
+    withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired() andThen taxResidentCountryIdCreationForAccountHolderAction
+
+  def withReportIdRequiredAndAccountHolderNameRequiredAndTaxResidentIdRequiredAndCRSOnlyCreation()
+    : ActionBuilder[TaxResidentCountryIdForAccountHolderRequest, AnyContent] =
+    withReportIdRequiredAndAccountHolderIdRequired() andThen accountHolderCRSOnlyFilterAction andThen withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired() andThen taxResidentIdRequiredForAccountHolderAction
+
+  def withReportIdRequiredAndAccountHolderNameRequiredAndTaxResidentIdRequired(): ActionBuilder[TaxResidentCountryIdForAccountHolderRequest, AnyContent] =
+    withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired() andThen taxResidentIdRequiredForAccountHolderAction
 
   def withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired(): ActionBuilder[AccountHolderNameRequest, AnyContent] =
     withReportIdRequired() andThen accountHolderIdRequiredAction andThen accountHolderNameRequiredAction

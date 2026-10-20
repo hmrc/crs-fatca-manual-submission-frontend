@@ -18,7 +18,7 @@ package models.response
 
 import play.api.libs.json.{Json, OFormat}
 
-case class Country(code: String, description: String, alternativeName: Option[String] = None)
+case class Country(code: String, description: String, alternativeName: Option[String] = None, displayNameInSentence: Option[String] = None)
 
 object Country {
 

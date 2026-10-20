@@ -17,7 +17,7 @@
 package viewmodels.checkAnswers.manual.account
 
 import controllers.manual.account.routes
-import models.{CheckMode, ReportId, UserAnswers}
+import models.{CheckMode, ReportId, SubmissionsConstants, UserAnswers}
 import pages.manual.account.{CurrentAccountIdPage, HavePaymentsPage}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
@@ -32,13 +32,16 @@ object HavePaymentsSummary {
       answer    <- answers.get(HavePaymentsPage(accountId))
     } yield {
       val value = if (answer) "site.yes" else "site.no"
-
+      val regime = reportId.regime match {
+        case SubmissionsConstants.CRS => "crs"
+        case _                        => "fatca"
+      }
       SummaryListRowViewModel(
-        key = "havePayments.checkYourAnswersLabel",
+        key = messages(s"account.havePayments.checkYourAnswersLabel.$regime", reportId.reportingYear.toString),
         value = ValueViewModel(value),
         actions = Seq(
           ActionItemViewModel("site.change", routes.HavePaymentsController.onPageLoad(CheckMode).url)
-            .withVisuallyHiddenText(messages("havePayments.change.hidden"))
+            .withVisuallyHiddenText(messages(s"account.havePayments.change.hidden.$regime", reportId.reportingYear.toString))
         )
       )
     }
