@@ -58,7 +58,6 @@ class IsThisAddressForSponsorControllerSpec extends SpecBase with MockitoSugar {
   private val address = addressLookup.toAddress.value
 
   private val ua = emptyUserAnswers
-    .withPage(ReportIdPage, reportId)
     .withPage(SponsorNamePage(), sponsorName)
 
   private val uaWithAddress = ua.withPage(AddressLookupPage(), addresses)
@@ -105,15 +104,15 @@ class IsThisAddressForSponsorControllerSpec extends SpecBase with MockitoSugar {
 
     "must save the boolean and the address when the user answers Yes, then redirect" in {
 
-      val mockSessionRepository = mock[DatabaseConnector]
+      val dbConnector = mock[DatabaseConnector]
 
-      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+      when(dbConnector.set(any())(any())) thenReturn Future.successful(())
 
       val application =
         applicationBuilder(maybeUserAnswers = Some(uaWithAddress))
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockSessionRepository)
+            bind[DatabaseConnector].toInstance(dbConnector)
           )
           .build()
 
@@ -128,7 +127,7 @@ class IsThisAddressForSponsorControllerSpec extends SpecBase with MockitoSugar {
         redirectLocation(result).value mustEqual onwardRoute.url
 
         val captor = ArgumentCaptor.forClass(classOf[UserAnswers])
-        verify(mockSessionRepository).set(captor.capture())(any())
+        verify(dbConnector).set(captor.capture())(any())
 
         val savedAnswers = captor.getValue
         savedAnswers.get(IsThisAddressForSponsorPage()) mustBe Some(true)
@@ -138,15 +137,15 @@ class IsThisAddressForSponsorControllerSpec extends SpecBase with MockitoSugar {
 
     "must save the boolean but not the address when the user answers No, then redirect, " in {
 
-      val mockSessionRepository = mock[DatabaseConnector]
+      val dbConnector = mock[DatabaseConnector]
 
-      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+      when(dbConnector.set(any())(any())) thenReturn Future.successful(())
 
       val application =
         applicationBuilder(maybeUserAnswers = Some(uaWithAddress))
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockSessionRepository)
+            bind[DatabaseConnector].toInstance(dbConnector)
           )
           .build()
 
@@ -161,7 +160,7 @@ class IsThisAddressForSponsorControllerSpec extends SpecBase with MockitoSugar {
         redirectLocation(result).value mustEqual onwardRoute.url
 
         val captor = ArgumentCaptor.forClass(classOf[UserAnswers])
-        verify(mockSessionRepository).set(captor.capture())(any())
+        verify(dbConnector).set(captor.capture())(any())
 
         val savedAnswers = captor.getValue
         savedAnswers.get(IsThisAddressForSponsorPage()) mustBe Some(false)

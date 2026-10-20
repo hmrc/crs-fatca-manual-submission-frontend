@@ -21,16 +21,19 @@ import controllers.routes
 import models.SubmissionsConstants.FATCA
 import models.{ReportId, UserAnswers}
 import models.requests.{DataRequest, ReportIdRequest}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import pages.ReportIdPage
 import play.api.mvc.Result
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
+import repositories.SessionRepository
 
 import scala.concurrent.Future
 
 class ReportIdRequiredActionSpec extends SpecBase {
 
-  class Harness extends ReportIdRequiredActionImpl {
+  class Harness(sessionRepository: SessionRepository) extends ReportIdRequiredActionImpl(sessionRepository) {
 
     def callRefine[A](request: DataRequest[A]): Future[Either[Result, ReportIdRequest[A]]] =
       refine(request)
@@ -57,10 +60,10 @@ class ReportIdRequiredActionSpec extends SpecBase {
   "ReportIdRequiredAction" - {
 
     "must return a ReportIdRequest when ReportIdPage exists in user answers" in {
-      val userAnswers =
-        emptyUserAnswers.set(ReportIdPage, reportId).success.value
+      val userAnswers = emptyUserAnswers.set(ReportIdPage, reportId).success.value
 
-      val action = new Harness
+      val action = new Harness(mockSessionRepository)
+      when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(userAnswers)))
 
       val result =
         action.callRefine(dataRequest(userAnswers)).futureValue
@@ -78,7 +81,8 @@ class ReportIdRequiredActionSpec extends SpecBase {
     }
 
     "must redirect to Journey Recovery when ReportIdPage does not exist in user answers" in {
-      val action = new Harness
+      val action = new Harness(mockSessionRepository)
+      when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(emptyUserAnswers)))
 
       val result =
         action.callRefine(dataRequest(emptyUserAnswers)).futureValue

@@ -20,7 +20,6 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.sponsor.RemoveTaxResidentCountryFormProvider
-import models.SubmissionsConstants.CRS
 import models.response.Country
 import models.sponsor.RemoveCountryMessage
 import models.{NormalMode, ReportId}
@@ -48,7 +47,6 @@ class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar 
   val country                            = "United Kingdom"
   val GB                                 = Country("GB", "United Kingdom")
   val sponsorName                        = "Some Sponsor Name"
-  implicit val reportId: ReportId        = ReportId(CRS, 2025, None, "TestfiID")
   "RemoveTaxResidentCountry Controller" - {
 
     val ua = emptyUserAnswers.withPage(ReportIdPage, reportId)

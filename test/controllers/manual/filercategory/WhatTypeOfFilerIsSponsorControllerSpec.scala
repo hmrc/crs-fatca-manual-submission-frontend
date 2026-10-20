@@ -20,14 +20,12 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.filercategory.WhatTypeOfFilerIsSponsorFormProvider
-import models.SubmissionsConstants.CRS
+import models.NormalMode
 import models.manual.filercategory.WhatTypeOfFilerIsSponsor
-import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.ReportIdPage
 import pages.manual.filercategory.WhatTypeOfFilerIsSponsorPage
 import pages.manual.sponsor.SponsorNamePage
 import play.api.inject.bind
@@ -48,13 +46,10 @@ class WhatTypeOfFilerIsSponsorControllerSpec extends SpecBase with MockitoSugar 
   private val form         = formProvider()
 
   "WhatTypeOfFilerIsSponsor Controller" - {
-    val testSponsorName             = "testSponsorName"
-    implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
+    val testSponsorName = "testSponsorName"
     val ua = emptyUserAnswers
-      .withPage(ReportIdPage, reportId)
       .withPage(SponsorNamePage(), testSponsorName)
     val uaWithoutSponsor = emptyUserAnswers
-      .withPage(ReportIdPage, reportId)
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()

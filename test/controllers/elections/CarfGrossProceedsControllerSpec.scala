@@ -42,7 +42,6 @@ class CarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
   val fiName                            = "Test FI"
   val formProvider                      = new CarfGrossProceedsFormProvider()
   val form                              = formProvider(reportingYear.toString)
-  val mockSessionRepository             = mock[SessionRepository]
   private val fiDetails                 = FiIdentifiers("fiId", fiName)
   implicit val electionsId: ElectionsId = ElectionsId(reportingYear, fiDetails.fiId)
 
@@ -109,7 +108,6 @@ class CarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
         .withPage(ElectionsIdPage, electionsId)
 
       val application = applicationBuilder(maybeUserAnswers = Some(userData))
-        .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
         .build()
 
       running(application) {
@@ -131,15 +129,12 @@ class CarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
         .withPage(FiDetailsPage, fiDetails)
         .withPage(ElectionsIdPage, electionsId)
 
-      val mockSessionRepository = mock[SessionRepository]
-
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
         applicationBuilder(maybeUserAnswers = Some(userData))
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository)
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
           )
           .build()
 

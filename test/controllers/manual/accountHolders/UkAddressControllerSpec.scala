@@ -19,7 +19,6 @@ package controllers.manual.accountHolders
 import base.SpecBase
 import connectors.DatabaseConnector
 import forms.manual.accountHolders.UkAddressFormProvider
-import models.SubmissionsConstants.CRS
 import models.manual.accountHolders.IndividualName
 import models.manual.accountHolders.IndividualOrOrganisation.Individual
 import models.response.AddressLookup
@@ -44,12 +43,11 @@ class UkAddressControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  val formProvider                = new UkAddressFormProvider()
-  val form                        = formProvider()
-  implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
-  lazy val ukAddressRoute         = controllers.manual.accountHolders.routes.UkAddressController.onPageLoad(NormalMode).url
-  val testName                    = IndividualName("test", "last")
-  val countries                   = Countries.ukTerritories
+  val formProvider        = new UkAddressFormProvider()
+  val form                = formProvider()
+  lazy val ukAddressRoute = controllers.manual.accountHolders.routes.UkAddressController.onPageLoad(NormalMode).url
+  val testName            = IndividualName("test", "last")
+  val countries           = Countries.ukTerritories
 
   val userAnswers = UserAnswers(
     userAnswersId,

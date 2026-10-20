@@ -20,14 +20,12 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.account.NumberTypeFormProvider
-import models.SubmissionsConstants.CRS
 import models.viewModels.AccountId
-import models.{NormalMode, NumberType, ReportId}
+import models.{NormalMode, NumberType}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.ReportIdPage
 import pages.manual.account.{CurrentAccountIdPage, NumberTypePage}
 import play.api.inject.bind
 import play.api.mvc.Call
@@ -43,13 +41,11 @@ class NumberTypeControllerSpec extends SpecBase with MockitoSugar {
 
   lazy val numberTypeRoute: String = controllers.manual.account.routes.NumberTypeController.onPageLoad(NormalMode).url
 
-  val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
-  val accountId          = AccountId("TestAccountId")
-  val formProvider       = new NumberTypeFormProvider()
-  val form               = formProvider()
+  val accountId    = AccountId("TestAccountId")
+  val formProvider = new NumberTypeFormProvider()
+  val form         = formProvider()
 
   val ua = emptyUserAnswers
-    .withPage(ReportIdPage, reportId)
     .withPage(CurrentAccountIdPage()(reportId), accountId)
 
   "NumberType Controller" - {
@@ -90,15 +86,15 @@ class NumberTypeControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to the next page when valid data is submitted" in {
 
-      val mockSessionRepository = mock[DatabaseConnector]
+      val dbConnector = mock[DatabaseConnector]
 
-      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+      when(dbConnector.set(any())(any())) thenReturn Future.successful(())
 
       val application =
         applicationBuilder(maybeUserAnswers = Some(ua))
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockSessionRepository)
+            bind[DatabaseConnector].toInstance(dbConnector)
           )
           .build()
 

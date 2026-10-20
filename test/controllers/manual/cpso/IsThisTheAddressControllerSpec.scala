@@ -46,8 +46,7 @@ class IsThisTheAddressControllerSpec extends SpecBase with MockitoSugar {
   val formProvider = new IsThisTheAddressFormProvider()
   val form         = formProvider(CRS)
 
-  implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
-  val cpsoId: CPSOId              = CPSOId("some-id")
+  val cpsoId: CPSOId = CPSOId("some-id")
 
   val addressLookup =
     AddressLookup(990091234514L, Some("2 Other place"), None, Some("Some District"), None, "Town", Some("County"), "postcode", Some(Country.GB))
@@ -60,7 +59,6 @@ class IsThisTheAddressControllerSpec extends SpecBase with MockitoSugar {
   "IsThisTheAddress Controller" - {
 
     val ua = emptyUserAnswers
-      .withPage(ReportIdPage, reportId)
       .withPage(CurrentCPSOIdPage()(reportId), cpsoId)
       .withPage(IndividualOrOrganisationPage(cpsoId)(reportId), IndividualOrOrganisation.Individual)
       .withPage(IndividualNamePage(cpsoId)(reportId), name)

@@ -20,7 +20,7 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.accountHolders.SelfCertificationFormProvider
-import models.SubmissionsConstants.{CRS, FATCA}
+import models.SubmissionsConstants.FATCA
 import models.manual.accountHolders.IndividualName
 import models.manual.accountHolders.IndividualOrOrganisation.Individual
 import models.manual.accountHolders.SelfCertification
@@ -50,7 +50,6 @@ class SelfCertificationControllerSpec extends SpecBase with MockitoSugar {
   val currentId                   = AccountHolderId("acc-id")
   val formProvider                = new SelfCertificationFormProvider()
   val form                        = formProvider()
-  implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
 
   "SelfCertification Controller" - {
 

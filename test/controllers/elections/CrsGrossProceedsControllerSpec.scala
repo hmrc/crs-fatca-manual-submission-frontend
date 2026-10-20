@@ -43,8 +43,6 @@ class CrsGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
   val formProvider = new CrsGrossProceedsFormProvider()
   val form         = formProvider()
 
-  val mockSessionRepository = mock[SessionRepository]
-
   override def beforeEach(): Unit =
     reset(mockSessionRepository)
     super.beforeEach()
@@ -107,7 +105,6 @@ class CrsGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
         .withPage(ElectionsIdPage, electionsId)
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
-        .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
         .build()
 
       running(application) {
@@ -128,15 +125,12 @@ class CrsGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
         .withPage(FiDetailsPage, fiDetails)
         .withPage(ElectionsIdPage, electionsId)
 
-      val mockSessionRepository = mock[SessionRepository]
-
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
         applicationBuilder(maybeUserAnswers = Some(userAnswers))
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository)
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
           )
           .build()
 
