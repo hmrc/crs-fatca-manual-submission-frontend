@@ -636,10 +636,10 @@ account.havePayments.fatca.title = Were any payments made to this account, a pay
 account.havePayments.crs.heading = Were any payments made to this account in {0}?
 account.havePayments.fatca.heading = Were any payments made to this account, a payee or an owner in {0}?
 account.havePayments.checkYourAnswersLabel.crs = Were any payments made to this account in {0}?
-account.havePayments.checkYourAnswersLabel.fatca = Were any payments made to this account a payee or an owner in {0}?
+account.havePayments.checkYourAnswersLabel.fatca = Were any payments made to this account, a payee or an owner in {0}?
 account.havePayments.crs.error.required = Select yes if there were any payments made to this account in {0}
 account.havePayments.fatca.error.required = Select yes if there were any payments made to this account, a payee or an owner in {0}
-account.havePayments.change.hidden.crs = Change if any payments were were made to this account in {0}
+account.havePayments.change.hidden.crs = Change if any payments were made to this account in {0}
 account.havePayments.change.hidden.fatca = Change if any payments were made to this account, a payee or an owner in {0}
 
 
