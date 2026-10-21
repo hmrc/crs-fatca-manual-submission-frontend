@@ -43,7 +43,7 @@ class ResidentForTaxControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
+  implicit override val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
 
   private val cpsoId       = CPSOId("cpso-id")
   private val cpsoName     = "Some Name"

@@ -457,3 +457,12 @@ GET        /manual/cp-so/identification-number                        controller
 POST       /manual/cp-so/identification-number                        controllers.manual.cpso.TaxIdentificationNumberController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/cp-so/change-identification-number                  controllers.manual.cpso.TaxIdentificationNumberController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/cp-so/change-identification-number                controllers.manual.cpso.TaxIdentificationNumberController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/cp-so/tax-resident-countries                        controllers.manual.cpso.TaxResidentCountriesController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/cp-so/tax-resident-countries                     controllers.manual.cpso.TaxResidentCountriesController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/cp-so/change-tax-resident-countries                  controllers.manual.cpso.TaxResidentCountriesController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/cp-so/change-tax-resident-countries                 controllers.manual.cpso.TaxResidentCountriesController.onSubmit(mode: Mode = CheckMode)
+
+GET         /manual/cp-so/tax-resident-countries/:id/change        controllers.manual.cpso.CurrentTaxResidentIdController.onChangeRedirect(id: Int)
+GET         /manual/cp-so/tax-resident-countries/:id/remove        controllers.manual.cpso.CurrentTaxResidentIdController.onRemoveRedirect(id: Int)
+

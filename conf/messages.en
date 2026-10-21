@@ -1121,3 +1121,14 @@ cpso.taxIdentificationNumber.error.tin.giinOrSsn.invalid = Tax identification nu
 cpso.taxIdentificationNumber.error.tin.organization.is.blacklisted = Tax identification number must not be 000000000, 222222222, 000222111, 333333333 or 888888888
 cpso.taxIdentificationNumber.error.tin.individual.is.blacklisted = Tax identification number must not be 000000000, 666666666 or 888888888
 
+
+cpso.crs.taxResidentCountries.title = You have {0} where the controlling person is resident for tax
+cpso.fatca.taxResidentCountries.title = You have {0} where the substantial owner is resident for tax
+cpso.taxResidentCountries.heading = You have {0} where {1} is resident for tax
+cpso.taxResidentCountries.sub.heading = Do you need to add another country?
+cpso.taxResidentCountries.btn = Add a country
+cpso.taxResidentCountries.p1 = You must add at least one country.
+cpso.taxResidentCountries.error.required = 	Select yes if you need to add another country
+
+cpso.taxResidentCountries.checkYourAnswersLabel = taxResidentCountries
+cpso.taxResidentCountries.change.hidden = TaxResidentCountries

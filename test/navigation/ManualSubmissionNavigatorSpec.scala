@@ -958,7 +958,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               controllers.manual.cpso.routes.TaxIdentificationNumberController.onPageLoad(NormalMode)
           }
 
-          "must go to under construction page when answer is no" in {
+          "must go to tax resident country list page when answer is no" in {
 
             val ua = UserAnswers("id")
               .withPage(pages.manual.cpso.HaveTaxIdentificationNumberPage(0, currentCPSOId, reportId), false)
@@ -968,7 +968,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               NormalMode,
               ua
             ) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.cpso.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
           }
 
           "must go to journey recovery page when an answer is not provided" in {
@@ -989,7 +989,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
           implicit val reportId: ReportId = ReportId(CRS, 2024, None, "TestFIID")
           val currentCPSOId               = CPSOId("testid")
 
-          "must go to under construction page when answe" in {
+          "must go to tax resident list  page when answer" in {
 
             val ua = UserAnswers("id")
               .withPage(pages.manual.cpso.TaxIdentificationNumberPage(0, currentCPSOId, reportId), "some-number")
@@ -999,7 +999,18 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
               NormalMode,
               ua
             ) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.cpso.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
+          }
+
+          "must go to Journey recovery page when TaxIdentificationNumberPage is not defined" in {
+
+            val ua = UserAnswers("id")
+            navigator.nextPage(
+              pages.manual.cpso.TaxIdentificationNumberPage(0, currentCPSOId, reportId),
+              NormalMode,
+              ua
+            ) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
           }
         }
       }
