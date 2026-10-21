@@ -19,6 +19,7 @@ package navigation
 import base.SpecBase
 import models.*
 import models.SubmissionsConstants.{CRS, FATCA}
+import models.manual.TaxResidentInformation
 import models.manual.accountHolders.*
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
 import models.response.{Address, AddressLookup, Country}

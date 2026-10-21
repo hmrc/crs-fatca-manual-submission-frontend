@@ -26,8 +26,7 @@ import pages.manual.accountHolders.{RemoveTaxResidentCountryPage, ResidentTaxPag
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import connectors.DatabaseConnector
-import models.manual.RemoveCountryMessage
-import models.manual.accountHolders.TaxResidentInformation
+import models.manual.{RemoveCountryMessage, TaxResidentInformation}
 import models.response.Country
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.accountHolders.RemoveTaxResidentCountryView

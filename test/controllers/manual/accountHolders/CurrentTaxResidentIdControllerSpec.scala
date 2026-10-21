@@ -19,10 +19,11 @@ package controllers.manual.accountHolders
 import base.SpecBase
 import connectors.DatabaseConnector
 import models.SubmissionsConstants.CRS
-import models.manual.accountHolders.{IndividualOrOrganisation, TaxResidentInformation}
+import models.manual.TaxResidentInformation
+import models.manual.accountHolders.IndividualOrOrganisation
 import models.response.Country
 import models.viewModels.AccountHolderId
-import models.{CheckMode, ReportId}
+import models.{NormalMode, ReportId}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -78,7 +79,7 @@ class CurrentTaxResidentIdControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(CheckMode).url
+        redirectLocation(result).value mustEqual controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(NormalMode).url
       }
     }
 
@@ -111,7 +112,7 @@ class CurrentTaxResidentIdControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual controllers.manual.accountHolders.routes.RemoveTaxResidentCountryController.onPageLoad(CheckMode).url
+        redirectLocation(result).value mustEqual controllers.manual.accountHolders.routes.RemoveTaxResidentCountryController.onPageLoad(NormalMode).url
       }
     }
 

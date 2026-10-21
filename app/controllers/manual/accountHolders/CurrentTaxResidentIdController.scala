@@ -19,12 +19,12 @@ package controllers.manual.accountHolders
 import connectors.DatabaseConnector
 import controllers.actions.*
 import models.requests.AccountHolderNameRequest
-import models.{CheckMode, ReportId}
+import models.{NormalMode, ReportId}
 import pages.manual.accountHolders.{CurrentTaxResidentCountryIndexPage, TaxResidentCountriesListPage}
 import play.api.Logging
 import play.api.i18n.I18nSupport
-import play.api.mvc.Results.Redirect
 import play.api.mvc.*
+import play.api.mvc.Results.Redirect
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.Inject
@@ -44,7 +44,7 @@ class CurrentTaxResidentIdController @Inject() (
 
       implicit val reportId: ReportId = request.reportId
 
-      redirectWithValidIndex(id, controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(CheckMode))
+      redirectWithValidIndex(id, controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(NormalMode))
   }
 
   def onRemoveRedirect(id: Int): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired().async {
@@ -52,7 +52,7 @@ class CurrentTaxResidentIdController @Inject() (
 
       implicit val reportId: ReportId = request.reportId
 
-      redirectWithValidIndex(id, controllers.manual.accountHolders.routes.RemoveTaxResidentCountryController.onPageLoad(CheckMode))
+      redirectWithValidIndex(id, controllers.manual.accountHolders.routes.RemoveTaxResidentCountryController.onPageLoad(NormalMode))
   }
 
   private def redirectWithValidIndex(id: Int, successCall: Call)(implicit request: AccountHolderNameRequest[AnyContent], reportId: ReportId): Future[Result] = {

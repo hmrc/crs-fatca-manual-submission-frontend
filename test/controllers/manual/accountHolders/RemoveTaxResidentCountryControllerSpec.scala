@@ -20,8 +20,8 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.accountHolders.RemoveTaxResidentCountryFormProvider
-import models.manual.RemoveCountryMessage
-import models.manual.accountHolders.{IndividualOrOrganisation, TaxResidentInformation}
+import models.manual.{RemoveCountryMessage, TaxResidentInformation}
+import models.manual.accountHolders.IndividualOrOrganisation
 import models.response.Country
 import models.viewModels.AccountHolderId
 import models.{NormalMode, ReportId}
