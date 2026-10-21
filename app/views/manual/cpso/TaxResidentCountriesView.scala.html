@@ -25,14 +25,19 @@
     govukButton: GovukButton,
     heading: components.Heading,
     paragraph: components.Paragraph,
+    notificationBanner: views.html.components.SuccessNotificationBanner
 )
 
-@(form: Form[_], mode: Mode, cpsoName: String = "Sue Coe", regime: String = "crs", countries: Seq[String] = Seq("United Kingdom"))(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, cpsoName: String, regime: String, countries: Seq[String])(implicit request: Request[_], messages: Messages, flash: Flash)
 
 @layout(pageTitle = title(form, messages(s"cpso.${regime}.taxResidentCountries.title", countryCountText(countries.size))),
     mainContentLayout = Some(ThreeQuartersMainContent.apply _)) {
 
     @formHelper(action = controllers.manual.cpso.routes.TaxResidentCountriesController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+
+        @flash.get("country-removed").map { country =>
+            @notificationBanner(messages("cpso.taxResidentCountries.country.removed", country))
+        }
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
@@ -44,10 +49,10 @@
             <dl class="govuk-summary-list hmrc-list-with-actions hmrc-list-with-actions--short">
                 @for(row <- TaxResidentCountryRow.rows(countries)) {
                     <div class="govuk-summary-list__row">
-                        <dt class="govuk-summary-list__key govuk-!-font-weight-regular hmrc-summary-list__key" style="line-height:1.4;width:75%">
+                        <dt class="govuk-summary-list__key govuk-!-font-weight-regular hmrc-summary-list__key" style="line-height:1.4;width:65%">
                             @row.country
                         </dt>
-                        <dd class="govuk-summary-list__actions hmrc-summary-list__actions" style="width:25%">
+                        <dd class="govuk-summary-list__actions hmrc-summary-list__actions" style="width:35%">
                             <ul class="govuk-summary-list__actions-list">
                                 <li class="govuk-summary-list__actions-list-item">
                                     <a class="govuk-link" href="@row.changeUrl">

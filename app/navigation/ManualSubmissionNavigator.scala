@@ -248,26 +248,30 @@ class ManualSubmissionNavigator @Inject() () {
       handleHaveTaxIdentificationNumberNavigationForCPSO(index, ua, mode, cpsoId)
     case (pages.manual.cpso.TaxIdentificationNumberPage(index, cpsoId, reportId), mode, ua) =>
       handleTaxIdentificationNumberPageNavigationForCPSO(index, ua, mode, cpsoId)
+    case (pages.manual.cpso.DoYouWantToAddTaxResidentCountryPage(cpsoId, reportId), mode, ua) =>
+      handleDoYouWantToAddTaxResidentCountryPageNavigationForCPSO(ua, mode, cpsoId)
+    case (pages.manual.cpso.RemoveTaxResidentCountryPage(cpsoId, reportId), mode, ua) =>
+      controllers.manual.cpso.routes.TaxResidentCountriesController.onPageLoad(mode)
 
   }
 
   private def sponsorNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
-    case (HaveSponsorPage(), mode, ua)                      => haveSponsorNavigation(mode, ua)
-    case (SponsorNamePage(), mode, _)                       => controllers.manual.sponsor.routes.WhatIsGIINForSponsorController.onPageLoad(mode)
-    case (WhatIsGIINForSponsorPage(), mode, _)              => controllers.manual.sponsor.routes.IsSponsorBasedInUKController.onPageLoad(mode)
-    case (IsSponsorBasedInUKPage(), mode, ua)               => handleSponsorBasedUKNavigation(ua, mode)
-    case (UKPostcodePage(), mode, ua)                       => handleUKPostcodeNavigation(ua, mode)
-    case (AddressNonUkPage(), mode, ua)                     => handleNavigationToSponsorResidentTaxView(ua, mode)
-    case (WhatIsAddressForSponsorPage(), mode, ua)          => handleWhatIsAddressForSponsorNavigation(ua, mode)
-    case (IsThisAddressForSponsorPage(), mode, ua)          => handleIsThisAddressForSponsorNavigation(ua, mode)
-    case (UkAddressPage(), mode, ua)                        => handleNavigationToSponsorResidentTaxView(ua, mode)
-    case (SponsorResidentForTaxPage(_), mode, ua)           => controllers.manual.sponsor.routes.TaxResidentCountriesController.onPageLoad(mode)
-    case (DoYouWantToAddTaxResidentCountryPage(), mode, ua) => handleTaxResidentCountriesOptionNavigation(ua)
-    case (RemoveTaxResidentCountryPage(), mode, _)          => controllers.manual.sponsor.routes.TaxResidentCountriesController.onPageLoad(mode)
+    case (HaveSponsorPage(), mode, ua)             => haveSponsorNavigation(mode, ua)
+    case (SponsorNamePage(), mode, _)              => controllers.manual.sponsor.routes.WhatIsGIINForSponsorController.onPageLoad(mode)
+    case (WhatIsGIINForSponsorPage(), mode, _)     => controllers.manual.sponsor.routes.IsSponsorBasedInUKController.onPageLoad(mode)
+    case (IsSponsorBasedInUKPage(), mode, ua)      => handleSponsorBasedUKNavigation(ua, mode)
+    case (UKPostcodePage(), mode, ua)              => handleUKPostcodeNavigation(ua, mode)
+    case (AddressNonUkPage(), mode, ua)            => handleNavigationToSponsorResidentTaxView(ua, mode)
+    case (WhatIsAddressForSponsorPage(), mode, ua) => handleWhatIsAddressForSponsorNavigation(ua, mode)
+    case (IsThisAddressForSponsorPage(), mode, ua) => handleIsThisAddressForSponsorNavigation(ua, mode)
+    case (UkAddressPage(), mode, ua)               => handleNavigationToSponsorResidentTaxView(ua, mode)
+    case (SponsorResidentForTaxPage(_), mode, ua)  => controllers.manual.sponsor.routes.TaxResidentCountriesController.onPageLoad(mode)
+    case (pages.manual.sponsor.DoYouWantToAddTaxResidentCountryPage(), mode, ua) => handleTaxResidentCountriesOptionNavigation(ua)
+    case (pages.manual.sponsor.RemoveTaxResidentCountryPage(), mode, _) => controllers.manual.sponsor.routes.TaxResidentCountriesController.onPageLoad(mode)
   }
 
   private def handleTaxResidentCountriesOptionNavigation(ua: UserAnswers)(implicit reportId: ReportId): Call =
-    ua.get(DoYouWantToAddTaxResidentCountryPage()) match {
+    ua.get(pages.manual.sponsor.DoYouWantToAddTaxResidentCountryPage()) match {
       case Some(true) => controllers.manual.sponsor.routes.SponsorResidentForTaxController.onPageLoad(NormalMode)
       case _          => controllers.manual.sponsor.routes.CheckAnswersController.onPageLoad()
     }
@@ -473,4 +477,14 @@ class ManualSubmissionNavigator @Inject() () {
       case Some(_) => controllers.manual.cpso.routes.TaxResidentCountriesController.onPageLoad(mode)
       case None    => routes.JourneyRecoveryController.onPageLoad()
     }
+
+  private def handleDoYouWantToAddTaxResidentCountryPageNavigationForCPSO(userAnswers: UserAnswers, mode: Mode, cpsoId: CPSOId)(implicit
+    reportId: ReportId
+  ) =
+    userAnswers.get(pages.manual.cpso.DoYouWantToAddTaxResidentCountryPage(cpsoId, reportId)) match {
+      case Some(true)  => controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(mode)
+      case Some(false) => routes.UnderConstructionController.onPageLoad()
+      case None        => routes.JourneyRecoveryController.onPageLoad()
+    }
+
 }

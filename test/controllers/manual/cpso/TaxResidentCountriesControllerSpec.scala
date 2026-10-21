@@ -21,17 +21,27 @@ import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.cpso.TaxResidentCountriesFormProvider
 import models.SubmissionsConstants.CRS
+import models.manual.cpso.IndividualName
+import models.viewModels.manual.cpso.CPSOId
 import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.cpso.TaxResidentCountriesPage
+import pages.manual.cpso.{
+  CurrentCPSOIdPage,
+  CurrentTaxResidentCountryIndexPage,
+  DoYouWantToAddTaxResidentCountryPage,
+  IndividualNamePage,
+  ResidentForTaxPage,
+  TaxResidentCountriesPage
+}
 import play.api.inject.bind
 import play.api.mvc.Call
+import play.api.mvc.ControllerHelpers.request2flash
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import views.html.manual.cpso.TaxResidentCountriesView
 
 import scala.concurrent.Future
@@ -43,11 +53,22 @@ class TaxResidentCountriesControllerSpec extends SpecBase with MockitoSugar {
   val formProvider = new TaxResidentCountriesFormProvider()
   val form         = formProvider()
 
+  val cpsoId       = CPSOId("cpso-id")
+  val cpsoName     = "Some Name"
+  val currentIndex = 0
+
+  private val regime = reportId.regime.value.toLowerCase()
+
   lazy val taxResidentCountriesRoute = controllers.manual.cpso.routes.TaxResidentCountriesController.onPageLoad(NormalMode).url
 
   "TaxResidentCountries Controller" - {
 
-    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
+    val ua = emptyUserAnswers
+      .withPage(ReportIdPage, reportId)
+      .withPage(ReportIdPage, reportId)
+      .withPage(CurrentCPSOIdPage(), cpsoId)
+      .withPage(IndividualNamePage(cpsoId), IndividualName("Some", "Name"))
+      .withPage(CurrentTaxResidentCountryIndexPage(cpsoId, reportId), currentIndex)
 
     "must return OK and the correct view for a GET" in {
 
@@ -61,15 +82,18 @@ class TaxResidentCountriesControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[TaxResidentCountriesView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, cpsoName, regime, countries = Seq.empty)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-
-      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
-
-      val userAnswers = ua.set(TaxResidentCountriesPage(), true).success.value
+      val userAnswers = emptyUserAnswers
+        .withPage(ReportIdPage, reportId)
+        .withPage(ReportIdPage, reportId)
+        .withPage(CurrentCPSOIdPage(), cpsoId)
+        .withPage(IndividualNamePage(cpsoId), IndividualName("Some", "Name"))
+        .withPage(CurrentTaxResidentCountryIndexPage(cpsoId, reportId), currentIndex)
+        .withPage(DoYouWantToAddTaxResidentCountryPage(cpsoId, reportId), true)
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
@@ -81,7 +105,7 @@ class TaxResidentCountriesControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode, cpsoName, regime, countries = Seq.empty)(request, messages(application)).toString
       }
     }
 
@@ -127,7 +151,7 @@ class TaxResidentCountriesControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, cpsoName, regime, countries = Seq.empty)(request, messages(application)).toString
       }
     }
 

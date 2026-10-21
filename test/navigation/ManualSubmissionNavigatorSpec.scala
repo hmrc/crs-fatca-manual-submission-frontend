@@ -634,6 +634,7 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
 
       "cpso" - {
         val currentCPSOId = CPSOId("testid")
+
         "IndividualOrOrganisationPage" - {
           "must go to cpo IndividualName page when submitted" in {
             val ua = UserAnswers("id")
@@ -1007,6 +1008,46 @@ class ManualSubmissionNavigatorSpec extends SpecBase {
             val ua = UserAnswers("id")
             navigator.nextPage(
               pages.manual.cpso.TaxIdentificationNumberPage(0, currentCPSOId, reportId),
+              NormalMode,
+              ua
+            ) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
+        }
+
+        "DoYouWantToAddTaxResidentCountryPage" - {
+          implicit val reportId: ReportId = ReportId(CRS, 2024, None, "TestFIID")
+          val currentCPSOId               = CPSOId("testid")
+
+          "must got to resident tax page when answer is yes" in {
+            val ua = UserAnswers("id")
+              .withPage(pages.manual.cpso.DoYouWantToAddTaxResidentCountryPage(currentCPSOId, reportId), true)
+
+            navigator.nextPage(
+              pages.manual.cpso.DoYouWantToAddTaxResidentCountryPage(currentCPSOId, reportId),
+              NormalMode,
+              ua
+            ) mustBe
+              controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(NormalMode)
+
+          }
+          "must got to under construction page when answer is no" in {
+            val ua = UserAnswers("id")
+              .withPage(pages.manual.cpso.DoYouWantToAddTaxResidentCountryPage(currentCPSOId, reportId), false)
+
+            navigator.nextPage(
+              pages.manual.cpso.DoYouWantToAddTaxResidentCountryPage(currentCPSOId, reportId),
+              NormalMode,
+              ua
+            ) mustBe
+              controllers.routes.UnderConstructionController.onPageLoad()
+          }
+
+          "must got to journey recovery page when DoYouWantToAddTaxResidentCountryPage is not defined" in {
+            val ua = UserAnswers("id")
+
+            navigator.nextPage(
+              pages.manual.cpso.DoYouWantToAddTaxResidentCountryPage(currentCPSOId, reportId),
               NormalMode,
               ua
             ) mustBe

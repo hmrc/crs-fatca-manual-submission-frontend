@@ -51,7 +51,7 @@ class CurrentTaxResidentIdController @Inject() (
 
       implicit val reportId: ReportId = request.reportId
 
-      redirectWithValidIndex(id, controllers.manual.sponsor.routes.RemoveTaxResidentCountryController.onPageLoad(CheckMode))
+      redirectWithValidIndex(id, controllers.manual.cpso.routes.RemoveTaxResidentCountryController.onPageLoad(CheckMode))
   }
 
   private def redirectWithValidIndex(id: Int, successCall: Call)(implicit request: CPSONameRequest[AnyContent], reportId: ReportId): Future[Result] = {

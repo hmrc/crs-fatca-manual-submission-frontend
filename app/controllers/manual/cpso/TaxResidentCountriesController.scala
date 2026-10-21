@@ -16,12 +16,13 @@
 
 package controllers.manual.cpso
 
-import controllers.actions._
+import controllers.actions.*
 import forms.manual.cpso.TaxResidentCountriesFormProvider
+
 import javax.inject.Inject
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.cpso.TaxResidentCountriesPage
+import pages.manual.cpso.{DoYouWantToAddTaxResidentCountryPage, TaxResidentCountriesListPage, TaxResidentCountriesPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import connectors.DatabaseConnector
@@ -34,10 +35,7 @@ class TaxResidentCountriesController @Inject() (
   override val messagesApi: MessagesApi,
   repository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
-  identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  reportIdAction: ReportIdRequiredAction,
+  actions: Actions,
   formProvider: TaxResidentCountriesFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: TaxResidentCountriesView
@@ -47,33 +45,46 @@ class TaxResidentCountriesController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequired() {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
 
-      val preparedForm = request.userAnswers.get(TaxResidentCountriesPage()) match {
+      val taxResidentCountries = request.userAnswers
+        .get(TaxResidentCountriesListPage(request.cpsoId, reportId)) match {
+        case Some(countries) => countries.map(_.country.description)
+        case None            => Seq.empty
+      }
+
+      val preparedForm = request.userAnswers.get(DoYouWantToAddTaxResidentCountryPage(request.cpsoId, reportId)) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
 
-      Ok(view(preparedForm, mode))
+      Ok(view(preparedForm, mode, request.cpsoName, reportId.regime.value.toLowerCase(), taxResidentCountries))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequired().async {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
 
+      val taxResidentCountries = request.userAnswers
+        .get(TaxResidentCountriesListPage(request.cpsoId, reportId)) match {
+        case Some(countries) => countries.map(_.country.description)
+        case None            => Seq.empty
+      }
+
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+          formWithErrors =>
+            Future.successful(BadRequest(view(formWithErrors, mode, request.cpsoName, reportId.regime.value.toLowerCase(), taxResidentCountries))),
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(TaxResidentCountriesPage(), value))
+              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(DoYouWantToAddTaxResidentCountryPage(request.cpsoId, reportId), value))
               _              <- repository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(TaxResidentCountriesPage(), mode, updatedAnswers))
+            } yield Redirect(navigator.nextPage(DoYouWantToAddTaxResidentCountryPage(request.cpsoId, reportId), mode, updatedAnswers))
         )
   }
 }

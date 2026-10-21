@@ -1132,3 +1132,12 @@ cpso.taxResidentCountries.error.required = 	Select yes if you need to add anothe
 
 cpso.taxResidentCountries.checkYourAnswersLabel = taxResidentCountries
 cpso.taxResidentCountries.change.hidden = TaxResidentCountries
+
+cpso.crs.removeTaxResidentCountry.title = Are you sure you want to remove this tax-resident country for the controlling person?
+cpso.fatca.removeTaxResidentCountry.title = Are you sure you want to remove this tax-resident country for the substantial owner?
+cpso.removeTaxResidentCountry.heading = Are you sure you want to remove {0} as a tax-resident country for {1}?
+cpso.removeTaxResidentCountry.checkYourAnswersLabel = removeTaxResidentCountry
+cpso.crs.removeTaxResidentCountry.error.required = 	Select yes if you are sure you want to remove this tax-resident country for the controlling person
+cpso.fatca.removeTaxResidentCountry.error.required = 	Select yes if you are sure you want to remove this tax-resident country for the substantial owner
+cpso.taxResidentCountries.country.removed  = {0} removed.
+cpso.removeTaxResidentCountry.change.hidden = RemoveTaxResidentCountry

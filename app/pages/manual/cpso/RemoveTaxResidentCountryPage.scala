@@ -21,6 +21,6 @@ import models.viewModels.manual.cpso.CPSOId
 import pages.QuestionPage
 import play.api.libs.json.JsPath
 
-final case class DoYouNeedToAddTaxResidentCountryPage(currentId: CPSOId, reportId: ReportId) extends QuestionPage[Boolean]:
+final case class RemoveTaxResidentCountryPage(currentId: CPSOId, reportId: ReportId) extends QuestionPage[Boolean]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "cp-so" \ currentId.value \ "doYouNeedToAddTaxResidentCountry"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "cp-so" \ currentId.value \ "removeTaxResidentCountry"
