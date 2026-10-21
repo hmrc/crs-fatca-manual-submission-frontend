@@ -47,8 +47,6 @@ class CPSOAddressNonUkControllerSpec extends SpecBase with MockitoSugar {
   private val formProvider = new CPSOAddressNonUkFormProvider()
   private val form         = formProvider()
 
-  implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
-
   private val countries = Countries.nonUkTerritories(CRS)
 
   private val validAddress = AddressNonUk(

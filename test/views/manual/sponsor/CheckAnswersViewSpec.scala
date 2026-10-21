@@ -18,7 +18,6 @@ package views.manual.sponsor
 
 import base.SpecBase
 import models.ReportId
-import models.SubmissionsConstants.CRS
 import models.response.Country
 import org.jsoup.Jsoup
 import org.jsoup.select.Elements
@@ -41,7 +40,6 @@ class CheckAnswersViewSpec extends SpecBase {
 
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
   implicit private val messages: Messages               = messagesControllerComponents.messagesApi.preferred(Seq(Lang("en")))
-  implicit val reportId: ReportId                       = ReportId(CRS, 2025, None, "testFiID")
   val fiName                                            = "testFiName"
 
   "CheckAnswersView" - {

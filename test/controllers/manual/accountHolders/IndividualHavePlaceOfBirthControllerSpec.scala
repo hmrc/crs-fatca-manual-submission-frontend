@@ -22,6 +22,7 @@ import controllers.routes
 import forms.manual.accountHolders.IndividualHavePlaceOfBirthFormProvider
 import models.SubmissionsConstants.CRS
 import models.manual.accountHolders.IndividualName
+import models.manual.accountHolders.IndividualOrOrganisation.Individual
 import models.viewModels.AccountHolderId
 import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
@@ -29,7 +30,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.accountHolders.{AccountHolderIndividualNamePage, CurrentAccountHolderIdPage, IndividualHavePlaceOfBirthPage}
+import pages.manual.accountHolders.{AccountHolderIndividualNamePage, CurrentAccountHolderIdPage, IndividualHavePlaceOfBirthPage, IndividualOrOrganisationPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -42,20 +43,20 @@ class IndividualHavePlaceOfBirthControllerSpec extends SpecBase with MockitoSuga
 
   def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new IndividualHavePlaceOfBirthFormProvider()
-  val form         = formProvider()
+  private val form = new IndividualHavePlaceOfBirthFormProvider()()
 
-  lazy val individualHavePlaceOfBirthRoute = controllers.manual.accountHolders.routes.IndividualHavePlaceOfBirthController.onPageLoad(NormalMode).url
+  private lazy val individualHavePlaceOfBirthRoute = controllers.manual.accountHolders.routes.IndividualHavePlaceOfBirthController.onPageLoad(NormalMode).url
 
   "IndividualHavePlaceOfBirth Controller" - {
 
-    val reportId       = ReportId(CRS, 2025, None, "TestfiID")
-    val accountId      = AccountHolderId("testId")
-    val individualName = IndividualName("testFirst", "testLast")
+    val reportId        = ReportId(CRS, 2025, None, "TestfiID")
+    val accountHolderId = AccountHolderId("testId")
+    val individualName  = IndividualName("testFirst", "testLast")
     val ua = emptyUserAnswers
       .withPage(ReportIdPage, reportId)
-      .withPage(AccountHolderIndividualNamePage(accountId)(reportId), individualName)
-      .withPage(CurrentAccountHolderIdPage()(reportId), accountId)
+      .withPage(CurrentAccountHolderIdPage()(reportId), accountHolderId)
+      .withPage(IndividualOrOrganisationPage(accountHolderId)(reportId), Individual)
+      .withPage(AccountHolderIndividualNamePage(accountHolderId)(reportId), individualName)
 
     "must return OK and the correct view for a GET" in {
 
@@ -75,7 +76,7 @@ class IndividualHavePlaceOfBirthControllerSpec extends SpecBase with MockitoSuga
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = ua.set(IndividualHavePlaceOfBirthPage(accountId)(reportId), true).success.value
+      val userAnswers = ua.set(IndividualHavePlaceOfBirthPage(accountHolderId)(reportId), true).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 

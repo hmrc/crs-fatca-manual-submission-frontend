@@ -17,7 +17,6 @@
 package controllers.manual.reportdetails
 
 import base.SpecBase
-import connectors.DatabaseConnector
 import controllers.manual.reportdetails.routes.TypeOfReportController
 import controllers.routes
 import forms.manual.reportdetails.TypeOfReportFormProvider
@@ -82,16 +81,12 @@ class TypeOfReportControllerSpec extends SpecBase {
     }
 
     "must redirect to the next page when valid data is submitted" in {
-
-      val mockSessionRepository = mock[DatabaseConnector]
-
-      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
-
+      when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(ua)))
+      when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
       val application =
         applicationBuilder(maybeUserAnswers = Some(ua))
           .overrides(
-            bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockSessionRepository)
+            bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute))
           )
           .build()
 

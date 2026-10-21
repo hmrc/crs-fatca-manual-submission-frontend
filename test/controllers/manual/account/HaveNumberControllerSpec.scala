@@ -20,14 +20,12 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.account.HaveNumberFormProvider
-import models.SubmissionsConstants.CRS
+import models.NormalMode
 import models.viewModels.AccountId
-import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.ReportIdPage
 import pages.manual.account.{CurrentAccountIdPage, HaveNumberPage}
 import play.api.inject.bind
 import play.api.mvc.Call
@@ -49,9 +47,7 @@ class HaveNumberControllerSpec extends SpecBase with MockitoSugar {
   "HaveNumber Controller" - {
 
     val accountId: AccountId = AccountId("TestAccountId")
-    val reportId             = ReportId(CRS, 2025, None, "TestfiID")
     val ua = emptyUserAnswers
-      .withPage(ReportIdPage, reportId)
       .withPage(CurrentAccountIdPage()(reportId), accountId)
 
     "must return OK and the correct view for a GET" in {
@@ -90,15 +86,15 @@ class HaveNumberControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to the next page when valid data is submitted" in {
 
-      val mockSessionRepository = mock[DatabaseConnector]
+      val mockDBConnector = mock[DatabaseConnector]
 
-      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+      when(mockDBConnector.set(any())(any())) thenReturn Future.successful(())
 
       val application =
         applicationBuilder(maybeUserAnswers = Some(ua))
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockSessionRepository)
+            bind[DatabaseConnector].toInstance(mockDBConnector)
           )
           .build()
 

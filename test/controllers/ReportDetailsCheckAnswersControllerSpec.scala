@@ -72,6 +72,7 @@ class ReportDetailsCheckAnswersControllerSpec extends SpecBase {
         val mockDatabaseConnector = mock[DatabaseConnector]
         when(mockDatabaseConnector.get()(any())).thenReturn(Future(None))
         when(mockDatabaseConnector.set(any())(any())).thenReturn(Future.successful(()))
+        when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
 
         val application = applicationBuilder(maybeUserAnswers = Some(ua))
           .overrides(bind[DatabaseConnector].toInstance(mockDatabaseConnector))

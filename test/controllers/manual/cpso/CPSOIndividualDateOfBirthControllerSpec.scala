@@ -24,12 +24,11 @@ import models.SubmissionsConstants.CRS
 import models.manual.accountHolders.IndividualDateOfBirth
 import models.manual.cpso.IndividualName
 import models.viewModels.manual.cpso.CPSOId
-import models.{NormalMode, ReportId}
+import models.NormalMode
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.ReportIdPage
 import pages.manual.cpso.{CPSOIndividualDateOfBirthPage, CurrentCPSOIdPage, IndividualNamePage}
 import play.api.inject.bind
 import play.api.mvc.Call
@@ -54,9 +53,6 @@ class CPSOIndividualDateOfBirthControllerSpec extends SpecBase with MockitoSugar
 
   "CPSOIndividualDateOfBirth Controller" - {
 
-    implicit val reportId: ReportId =
-      ReportId(CRS, 2025, None, "TestfiID")
-
     val cpsoId =
       CPSOId("testid")
 
@@ -71,7 +67,6 @@ class CPSOIndividualDateOfBirthControllerSpec extends SpecBase with MockitoSugar
 
     val ua =
       emptyUserAnswers
-        .withPage(ReportIdPage, reportId)
         .withPage(
           CurrentCPSOIdPage()(reportId),
           cpsoId
@@ -150,10 +145,10 @@ class CPSOIndividualDateOfBirthControllerSpec extends SpecBase with MockitoSugar
 
     "must redirect to the next page when valid data is submitted" in {
 
-      val mockSessionRepository =
+      val dbConnector =
         mock[DatabaseConnector]
 
-      when(mockSessionRepository.set(any())(any()))
+      when(dbConnector.set(any())(any()))
         .thenReturn(Future.successful(()))
 
       val application =
@@ -163,8 +158,7 @@ class CPSOIndividualDateOfBirthControllerSpec extends SpecBase with MockitoSugar
               .toInstance(
                 new FakeManualSubmissionNavigator(onwardRoute)
               ),
-            bind[DatabaseConnector]
-              .toInstance(mockSessionRepository)
+            bind[DatabaseConnector].toInstance(dbConnector)
           )
           .build()
 
@@ -274,7 +268,6 @@ class CPSOIndividualDateOfBirthControllerSpec extends SpecBase with MockitoSugar
 
       val userAnswers =
         emptyUserAnswers
-          .withPage(ReportIdPage, reportId)
           .withPage(
             CurrentCPSOIdPage()(reportId),
             cpsoId
@@ -301,7 +294,6 @@ class CPSOIndividualDateOfBirthControllerSpec extends SpecBase with MockitoSugar
 
       val userAnswers =
         emptyUserAnswers
-          .withPage(ReportIdPage, reportId)
           .withPage(
             CurrentCPSOIdPage()(reportId),
             cpsoId

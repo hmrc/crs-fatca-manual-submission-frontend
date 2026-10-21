@@ -24,8 +24,8 @@ import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{ElectionsIdPage, FiDetailsPage}
 import pages.elections.CRSThresholdsPage
+import pages.{ElectionsIdPage, FiDetailsPage}
 import play.api.data.Form
 import play.api.inject.bind
 import play.api.mvc.Call
@@ -42,10 +42,9 @@ class CRSThresholdsControllerSpec extends SpecBase with MockitoSugar {
   val testFIName    = "Test FI"
   val reportingYear = 2027
 
-  val formProvider                             = new CRSThresholdsFormProvider()
-  val form: Form[Boolean]                      = formProvider()
-  val mockSessionRepository: SessionRepository = mock[SessionRepository]
-  implicit val electionsId: ElectionsId        = ElectionsId(reportingYear, "fiID")
+  val formProvider                      = new CRSThresholdsFormProvider()
+  val form: Form[Boolean]               = formProvider()
+  implicit val electionsId: ElectionsId = ElectionsId(reportingYear, "fiID")
 
   lazy val cRSThresholdsRoute: String = controllers.elections.routes.CRSThresholdsController.onPageLoad(NormalMode, reportingYear).url
 
@@ -55,19 +54,18 @@ class CRSThresholdsControllerSpec extends SpecBase with MockitoSugar {
 
   "CRSThresholds Controller" - {
 
+    val answers = emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI")).withPage(ElectionsIdPage, electionsId)
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(maybeUserAnswers =
         Some(
-          emptyUserAnswers.withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))
-            withPage (ElectionsIdPage, electionsId)
+          answers
         )
       )
-        .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
         .build()
 
       running(application) {
-        when(mockSessionRepository.get(any())) thenReturn Future.successful(Some(emptyUserAnswers))
+        when(mockSessionRepository.get(any())) thenReturn Future.successful(Some(answers))
         val request = FakeRequest(GET, cRSThresholdsRoute)
 
         val result = route(application, request).value
@@ -87,7 +85,6 @@ class CRSThresholdsControllerSpec extends SpecBase with MockitoSugar {
         .withPage(ElectionsIdPage, electionsId)
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
-        .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
         .build()
 
       running(application) {
@@ -109,14 +106,11 @@ class CRSThresholdsControllerSpec extends SpecBase with MockitoSugar {
       val application =
         applicationBuilder(maybeUserAnswers =
           Some(
-            emptyUserAnswers
-              .withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))
-              .withPage(ElectionsIdPage, electionsId)
+            answers
           )
         )
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository)
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
           )
           .build()
 
@@ -138,14 +132,11 @@ class CRSThresholdsControllerSpec extends SpecBase with MockitoSugar {
       val application =
         applicationBuilder(maybeUserAnswers =
           Some(
-            emptyUserAnswers
-              .withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))
-              .withPage(ElectionsIdPage, electionsId)
+            answers
           )
         )
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository)
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
           )
           .build()
 
@@ -165,14 +156,10 @@ class CRSThresholdsControllerSpec extends SpecBase with MockitoSugar {
 
       val application = applicationBuilder(maybeUserAnswers =
         Some(
-          emptyUserAnswers
-            .withPage(FiDetailsPage, FiIdentifiers("fiID", "Test FI"))
-            .withPage(ElectionsIdPage, electionsId)
+          answers
         )
-      )
-        .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
-        .build()
-      when(mockSessionRepository.get(any())) thenReturn Future.successful(Some(emptyUserAnswers))
+      ).build()
+      when(mockSessionRepository.get(any())) thenReturn Future.successful(Some(answers))
 
       running(application) {
         val request =
@@ -238,6 +225,8 @@ class CRSThresholdsControllerSpec extends SpecBase with MockitoSugar {
     "must redirect to Journey Recovery for a POST if no Fidtails data is found" in {
       val userAnswers = emptyUserAnswers
         .withPage(ElectionsIdPage, electionsId)
+      when(mockSessionRepository.get(any())) thenReturn Future.successful(Some(userAnswers))
+
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {

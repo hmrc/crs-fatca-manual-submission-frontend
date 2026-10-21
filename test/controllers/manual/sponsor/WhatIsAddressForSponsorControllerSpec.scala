@@ -20,14 +20,12 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.sponsor.WhatIsAddressForSponsorFormProvider
-import models.SubmissionsConstants.CRS
+import models.NormalMode
 import models.response.{Address, AddressLookup, Country}
-import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.ReportIdPage
 import pages.manual.sponsor.{AddressLookupPage, SponsorNamePage, WhatIsAddressForSponsorPage}
 import play.api.inject.bind
 import play.api.mvc.Call
@@ -48,8 +46,6 @@ class WhatIsAddressForSponsorControllerSpec extends SpecBase with MockitoSugar {
   private val formProvider = new WhatIsAddressForSponsorFormProvider()
   private val form         = formProvider()
 
-  implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
-
   private val sponsorName = "Test Sponsor Ltd"
 
   val addressLookup: AddressLookup =
@@ -63,7 +59,6 @@ class WhatIsAddressForSponsorControllerSpec extends SpecBase with MockitoSugar {
 
   private val baseAnswers =
     emptyUserAnswers
-      .withPage(ReportIdPage, reportId)
       .withPage(SponsorNamePage(), sponsorName)
       .withPage(AddressLookupPage(), addresses)
 
@@ -108,15 +103,15 @@ class WhatIsAddressForSponsorControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to the next page when valid data is submitted" in {
 
-      val mockSessionRepository = mock[DatabaseConnector]
+      val dbConnector = mock[DatabaseConnector]
 
-      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+      when(dbConnector.set(any())(any())) thenReturn Future.successful(())
 
       val application =
         applicationBuilder(maybeUserAnswers = Some(baseAnswers))
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockSessionRepository)
+            bind[DatabaseConnector].toInstance(dbConnector)
           )
           .build()
 
@@ -185,7 +180,6 @@ class WhatIsAddressForSponsorControllerSpec extends SpecBase with MockitoSugar {
     "must redirect to Journey Recovery for a GET if SponsorNamePage is missing" in {
 
       val answers = emptyUserAnswers
-        .withPage(ReportIdPage, reportId)
         .set(AddressLookupPage(), addresses)
         .success
         .value
@@ -204,7 +198,6 @@ class WhatIsAddressForSponsorControllerSpec extends SpecBase with MockitoSugar {
     "must redirect to Journey Recovery for a GET if AddressLookupPage is missing" in {
 
       val answers = emptyUserAnswers
-        .withPage(ReportIdPage, reportId)
         .set(SponsorNamePage(), sponsorName)
         .success
         .value

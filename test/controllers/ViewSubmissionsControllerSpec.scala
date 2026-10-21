@@ -26,7 +26,6 @@ import org.mockito.Mockito.when
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import repositories.SessionRepository
 import services.{SubmissionHistoryService, ViewFIService}
 import uk.gov.hmrc.http.InternalServerException
 import views.html.ViewSubmissionsView
@@ -52,7 +51,6 @@ class ViewSubmissionsControllerSpec extends SpecBase {
   private val mappedCards: Map[String, List[SubmissionCard]] = Map("ref1" -> List(submissionCard))
   val mockSubmissionService: SubmissionHistoryService        = mock[SubmissionHistoryService]
   val mockFiService: ViewFIService                           = mock[ViewFIService]
-  val mockSessionRepository: SessionRepository               = mock[SessionRepository]
   "ViewSubmissions Controller" - {
     val reportStartYear = 2014
 
@@ -61,7 +59,6 @@ class ViewSubmissionsControllerSpec extends SpecBase {
       val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers))
         .overrides(
           bind[SubmissionHistoryService].toInstance(mockSubmissionService),
-          bind[SessionRepository].toInstance(mockSessionRepository),
           bind[ViewFIService].toInstance(mockFiService)
         )
         .build()
@@ -101,7 +98,6 @@ class ViewSubmissionsControllerSpec extends SpecBase {
       val application = applicationBuilder(maybeUserAnswers = Some(emptyUserAnswers))
         .overrides(
           bind[SubmissionHistoryService].toInstance(mockSubmissionService),
-          bind[SessionRepository].toInstance(mockSessionRepository),
           bind[ViewFIService].toInstance(mockFiService)
         )
         .build()

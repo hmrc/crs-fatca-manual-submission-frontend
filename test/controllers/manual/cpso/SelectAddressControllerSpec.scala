@@ -47,11 +47,10 @@ class SelectAddressControllerSpec extends SpecBase with MockitoSugar {
 
   lazy val selectAddressRoute = controllers.manual.cpso.routes.SelectAddressController.onPageLoad(NormalMode).url
 
-  val formProvider                = new SelectAddressFormProvider()
-  val form                        = formProvider(CRS)
-  implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
-  val controllingName             = "test last"
-  val currentId                   = CPSOId("cpso-id")
+  val formProvider    = new SelectAddressFormProvider()
+  val form            = formProvider(CRS)
+  val controllingName = "test last"
+  val currentId       = CPSOId("cpso-id")
 
   val addressLookup =
     AddressLookup(990091234514L, Some("2 Other place"), None, Some("Some District"), None, "Town", Some("County"), "postcode", Some(Country.GB))

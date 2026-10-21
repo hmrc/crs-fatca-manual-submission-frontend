@@ -18,12 +18,9 @@ package controllers.manual.filercategory
 
 import base.SpecBase
 import connectors.DatabaseConnector
-import models.ReportId
-import models.SubmissionsConstants.CRS
 import org.mockito.ArgumentMatchers.{any, eq as meq}
 import org.mockito.Mockito.{reset, verify, when}
 import org.scalatestplus.mockito.MockitoSugar.mock
-import pages.ReportIdPage
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
@@ -36,7 +33,7 @@ import scala.concurrent.Future
 class FilerCategoryCheckAnswersControllerSpec extends SpecBase {
 
   private val mockUtil: CheckAnswersUtil = mock[CheckAnswersUtil]
-  private val mockSessionRepository      = mock[DatabaseConnector]
+  private val dbConnector                = mock[DatabaseConnector]
 
   def onPageLoadRoute: String =
     controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad().url
@@ -44,15 +41,13 @@ class FilerCategoryCheckAnswersControllerSpec extends SpecBase {
   def onSubmitRoute: String =
     controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onSubmit().url
 
-  override def beforeEach(): Unit = {
-    super.beforeEach()
+  override def afterEach(): Unit = {
+    super.afterEach()
     reset(mockUtil)
-    reset(mockSessionRepository)
+    reset(dbConnector)
   }
-  implicit private val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
 
   private val ua = emptyUserAnswers
-    .withPage(ReportIdPage, reportId)
 
   "FilerCategoryCheckAnswersController" - {
 
@@ -62,12 +57,12 @@ class FilerCategoryCheckAnswersControllerSpec extends SpecBase {
 
         val list: SummaryList = SummaryList(Seq.empty)
         when(mockUtil.getFilerCategoryRows(any())(any(), any())) thenReturn list
-        when(mockSessionRepository.get()(any())) thenReturn Future.successful(Some(ua))
+        when(dbConnector.get()(any())) thenReturn Future.successful(Some(ua))
 
         val application =
           applicationBuilder(maybeUserAnswers = Some(ua))
             .overrides(
-              bind[DatabaseConnector].toInstance(mockSessionRepository),
+              bind[DatabaseConnector].toInstance(dbConnector),
               bind[CheckAnswersUtil].toInstance(mockUtil)
             )
             .build()
