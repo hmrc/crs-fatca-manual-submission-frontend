@@ -204,6 +204,7 @@ class TaxIdentificationNumberControllerSpec extends SpecBase with MockitoSugar {
     "must render the view for a fatca report when the CP-SO is an individual" in {
 
       val answers = userAnswersFor(fatcaReportId, individualOrOrganisation = Some(IndividualOrOrganisation.Individual))
+      when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(emptyUserAnswers.withPage(ReportIdPage, fatcaReportId))))
 
       val application = applicationBuilder(maybeUserAnswers = Some(answers)).build()
 

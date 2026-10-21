@@ -44,8 +44,6 @@ class HaveTaxIdentificationNumberControllerSpec extends SpecBase with MockitoSug
 
   def onwardRoute = Call("GET", "/foo")
 
-  implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
-
   private val cpsoId   = CPSOId("cpso-id")
   private val cpsoName = "Some Name"
 
@@ -100,6 +98,7 @@ class HaveTaxIdentificationNumberControllerSpec extends SpecBase with MockitoSug
 
     "must redirect to journey recovery when fatca regime is used for a GET" in {
       val reportId2: ReportId = ReportId(FATCA, 2025, None, "TestfiID")
+      when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(emptyUserAnswers.withPage(ReportIdPage, reportId2))))
 
       val application = applicationBuilder(maybeUserAnswers =
         Some(
@@ -187,6 +186,7 @@ class HaveTaxIdentificationNumberControllerSpec extends SpecBase with MockitoSug
 
     "must redirect to journey recovery when fatca regime is used in submission" in {
       val reportId2: ReportId = ReportId(FATCA, 2025, None, "TestfiID")
+      when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(emptyUserAnswers.withPage(ReportIdPage, reportId2))))
 
       val application =
         applicationBuilder(maybeUserAnswers =
