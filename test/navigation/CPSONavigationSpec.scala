@@ -15,6 +15,7 @@
  */
 
 package navigation
+
 import base.SpecBase
 import models.*
 import models.SubmissionsConstants.{CRS, FATCA}
@@ -26,7 +27,17 @@ import models.manual.cpso.IndividualOrOrganisation
 import models.response.{Address, AddressLookup, Country}
 import models.viewModels.manual.cpso.CPSOId
 import pages.*
-import pages.manual.cpso.{CPSOAddressNonUkPage, CPSOWhereAreTheyBasedPage, CpsoOrganisationNamePage, CpsoSelfCertificationPage, HaveTaxIdentificationNumberPage, ResidentForTaxPage, AddressLookupPage as AddressLookupPageForCpso, SelectAddressPage as SelectAddressPageForCPSO, UkPostCodePage as UkPostCodePageForCpso}
+import pages.manual.cpso.{
+  AddressLookupPage as AddressLookupPageForCpso,
+  CPSOAddressNonUkPage,
+  CPSOWhereAreTheyBasedPage,
+  CpsoOrganisationNamePage,
+  CpsoSelfCertificationPage,
+  HaveTaxIdentificationNumberPage,
+  ResidentForTaxPage,
+  SelectAddressPage as SelectAddressPageForCPSO,
+  UkPostCodePage as UkPostCodePageForCpso
+}
 import pages.manual.sponsor.*
 
 import java.time.LocalDate
@@ -43,10 +54,10 @@ class CPSONavigationSpec extends SpecBase {
   )
 
   val navigator = new ManualSubmissionNavigator
-  
+
   "cpso" - {
     val currentCPSOId = CPSOId("testid")
-    
+
     "IndividualOrOrganisationPage" - {
       "must go to cpo IndividualName page when submitted" in {
         val ua = UserAnswers("id")
@@ -147,7 +158,7 @@ class CPSONavigationSpec extends SpecBase {
         "must go to controlling-person-type page when submitted" in {
           val ua = UserAnswers("id")
             .withPage(pages.manual.cpso.IndividualPlaceOfBirthPage(currentCPSOId, reportId),
-              models.manual.cpso.IndividualPlaceOfBirth(Some("city"), Some("region"), "FR")
+                      models.manual.cpso.IndividualPlaceOfBirth(Some("city"), Some("region"), "FR")
             )
           navigator.nextPage(pages.manual.cpso.IndividualPlaceOfBirthPage(currentCPSOId, reportId), NormalMode, ua) mustBe
             controllers.manual.cpso.routes.ControllingPersonTypeController.onPageLoad(NormalMode)
@@ -160,7 +171,7 @@ class CPSONavigationSpec extends SpecBase {
         "must go to CPSOWhereAreTheyBased page when submitted" in {
           val ua = UserAnswers("id")
             .withPage(pages.manual.cpso.IndividualPlaceOfBirthPage(currentCPSOId, reportId),
-              models.manual.cpso.IndividualPlaceOfBirth(Some("city"), Some("region"), "FR")
+                      models.manual.cpso.IndividualPlaceOfBirth(Some("city"), Some("region"), "FR")
             )
           navigator.nextPage(pages.manual.cpso.IndividualPlaceOfBirthPage(currentCPSOId, reportId), NormalMode, ua) mustBe
             controllers.manual.cpso.routes.CPSOWhereAreTheyBasedController.onPageLoad(NormalMode)
@@ -205,16 +216,7 @@ class CPSONavigationSpec extends SpecBase {
     "UkPostcodePage  for cp-so" - {
       val currentCPSOId = CPSOId("testid")
       val addressLookup: AddressLookup =
-        AddressLookup(200000706253L,
-          Some("1 Address line 1 Road"),
-          None,
-          Some("Address line 2 Road"),
-          None,
-          "Town",
-          Some("County"),
-          "zz11zz",
-          Some(Country.GB)
-        )
+        AddressLookup(200000706253L, Some("1 Address line 1 Road"), None, Some("Address line 2 Road"), None, "Town", Some("County"), "zz11zz", Some(Country.GB))
 
       "must go to IsThisAddressForCPSO when one address is found" in {
         val address: Seq[AddressLookup] = Seq(addressLookup)
@@ -253,7 +255,7 @@ class CPSONavigationSpec extends SpecBase {
     }
 
     "CPSOAddressNonUk page" - {
-      val country = Country("GB", "UK")
+      val country                = Country("GB", "UK")
       val taxResidentInformation = TaxResidentInformation(country)
 
       "must go to resident-for-tax  page when submitted and there a no resident tax countries" in {
@@ -283,18 +285,18 @@ class CPSONavigationSpec extends SpecBase {
     }
 
     "SelectAddressPage for cpso" - {
-      val country = Country("GB", "UK")
+      val country                = Country("GB", "UK")
       val taxResidentInformation = TaxResidentInformation(country)
 
       implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
       val address = Address(uprn = None,
-        addressLine1 = "string",
-        addressLine2 = None,
-        addressLine3 = Some("string"),
-        addressLine4 = None,
-        town = "town",
-        postCode = None,
-        country = Country.GB
+                            addressLine1 = "string",
+                            addressLine2 = None,
+                            addressLine3 = Some("string"),
+                            addressLine4 = None,
+                            town = "town",
+                            postCode = None,
+                            country = Country.GB
       )
       val currentId = CPSOId("holder-id")
 
@@ -327,7 +329,7 @@ class CPSONavigationSpec extends SpecBase {
 
     "ResidentForTaxPage cpso " - {
       implicit val reportId: ReportId = ReportId(CRS, 2024, None, "TestFIID")
-      val currentCPSOId = CPSOId("testid")
+      val currentCPSOId               = CPSOId("testid")
 
       "must go to have tax identification page when regime is crs" in {
 
@@ -343,7 +345,7 @@ class CPSONavigationSpec extends SpecBase {
 
       "must go to tax identification  page page when regime is fatca" in {
         implicit val reportId2: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
-        val ua = UserAnswers("id")
+        val ua                           = UserAnswers("id")
 
         navigator.nextPage(
           ResidentForTaxPage(0, currentCPSOId, reportId2),
@@ -356,7 +358,7 @@ class CPSONavigationSpec extends SpecBase {
 
     "HaveTaxIdentificationNumberPage cpso" - {
       implicit val reportId: ReportId = ReportId(CRS, 2024, None, "TestFIID")
-      val currentCPSOId = CPSOId("testid")
+      val currentCPSOId               = CPSOId("testid")
 
       "must go to have tax identification page when answer is yes" in {
 
@@ -400,7 +402,7 @@ class CPSONavigationSpec extends SpecBase {
 
     "TaxIdentificationNumberPage" - {
       implicit val reportId: ReportId = ReportId(CRS, 2024, None, "TestFIID")
-      val currentCPSOId = CPSOId("testid")
+      val currentCPSOId               = CPSOId("testid")
 
       "must go to under construction page when answe" in {
 
