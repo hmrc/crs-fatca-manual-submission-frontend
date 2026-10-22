@@ -90,10 +90,8 @@ class CheckDetailsForFinancialInstitutionController @Inject() (
       .find(_.TINType == UTR)
       .map(_.TIN)
 
-    val utr = (regime, maybeUtr) match {
-      case (CRS, None)      => throw MissingUTR
-      case (_, None)        => ""
-      case (_, Some(value)) => value
+    val utr = maybeUtr.getOrElse {
+      if (regime == CRS) throw MissingUTR else ""
     }
 
     view(

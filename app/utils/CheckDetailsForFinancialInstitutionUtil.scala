@@ -28,7 +28,7 @@ class CheckDetailsForFinancialInstitutionUtil {
   def getRows(fIDetail: FIDetail, regime: RegimeType)(implicit messages: Messages): SummaryList = {
 
     val addressRow =
-      toRow(messages("CheckDetailsForFinancialInstitution.value.address"), Some(fIDetail.AddressDetails.formatAddressDetails)) // todo fix format
+      toRow(messages("CheckDetailsForFinancialInstitution.value.address"), Some(fIDetail.AddressDetails.formatAddressDetails))
 
     val giinRows: Seq[SummaryListRow] = if (regime == FATCA) {
       fIDetail.GIIN match {
