@@ -19,8 +19,8 @@ package controllers.manual.sponsor
 import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.manual.sponsor.RemoveTaxResidentCountryFormProvider
+import models.manual.RemoveCountryMessage
 import models.response.Country
-import models.sponsor.RemoveCountryMessage
 import models.{Countries, Mode, ReportId, UserAnswers}
 import navigation.ManualSubmissionNavigator
 import pages.manual.sponsor.{RemoveTaxResidentCountryPage, SponsorResidentForTaxPage, TaxResidentCountriesListPage}

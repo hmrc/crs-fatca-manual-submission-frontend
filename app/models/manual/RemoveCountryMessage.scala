@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package models.sponsor
+package models.manual
 
 val otherCountryCodes = Seq("XX")
 
