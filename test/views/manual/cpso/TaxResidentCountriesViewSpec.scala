@@ -18,7 +18,7 @@ package views.manual.cpso
 
 import base.SpecBase
 import forms.manual.cpso.TaxResidentCountriesFormProvider
-import models.{CheckMode, Mode, NormalMode}
+import models.{Mode, NormalMode}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.data.Form

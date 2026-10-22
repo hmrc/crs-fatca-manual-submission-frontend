@@ -20,17 +20,15 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import models.SubmissionsConstants.CRS
 import models.manual.cpso.{IndividualName, IndividualOrOrganisation}
-import models.TaxResidentInformation
 import models.response.Country
-import models.viewModels.AccountHolderId
 import models.viewModels.manual.cpso.CPSOId
-import models.{CheckMode, ReportId}
+import models.{CheckMode, ReportId, TaxResidentInformation}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
 import pages.manual.FINamePage
-import pages.manual.cpso.{CpsoOrganisationNamePage, CurrentCPSOIdPage, IndividualNamePage, IndividualOrOrganisationPage, TaxResidentCountriesListPage}
+import pages.manual.cpso.*
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
