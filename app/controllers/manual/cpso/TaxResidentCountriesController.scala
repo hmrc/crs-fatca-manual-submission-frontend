@@ -16,19 +16,18 @@
 
 package controllers.manual.cpso
 
+import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.manual.cpso.TaxResidentCountriesFormProvider
-
-import javax.inject.Inject
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.cpso.{DoYouWantToAddTaxResidentCountryPage, TaxResidentCountriesListPage, TaxResidentCountriesPage}
+import pages.manual.cpso.{DoYouWantToAddTaxResidentCountryPage, TaxResidentCountriesListPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import connectors.DatabaseConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.cpso.TaxResidentCountriesView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class TaxResidentCountriesController @Inject() (
