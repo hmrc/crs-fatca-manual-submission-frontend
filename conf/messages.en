@@ -1008,7 +1008,6 @@ organisationCrs.change.hidden = organisationCrs
 organisationCrs.passiveWithMultiplePersons = Passive non-financial entity with one or more controlling reportable persons
 organisationCrs.crsReportable = CRS reportable person
 organisationCrs.passiveCrsPerson = Passive non-financial entity that is a CRS reportable person
-organisationCrs.empty =
 
 cpso.controllingPersonType.title = What type of controlling person are they?
 cpso.controllingPersonType.heading = What type of controlling person is {0}?
@@ -1110,6 +1109,28 @@ accountHolders.taxIdentificationNumber.error.tin.giinOrSsn.invalid = Tax identif
 accountHolders.taxIdentificationNumber.error.tin.organization.is.blacklisted = Tax identification number must not be 000000000, 222222222, 000222111, 333333333 or 888888888
 accountHolders.taxIdentificationNumber.error.tin.individual.is.blacklisted = Tax identification number must not be 000000000, 666666666 or 888888888
 accountHolders.taxIdentificationNumber.tin.change.hidden = tin
+
+accountHolders.taxResidentCountries.title = You have {0} where the account holder is resident for tax
+accountHolders.taxResidentCountries.heading = You have {0} where {1} is resident for tax
+accountHolders.taxResidentCountries.sub.heading = Do you need to add another country?
+accountHolders.taxResidentCountries.error.required = Select yes if you need to add another country
+accountHolders.taxResidentCountries.p1 = You must add at least one country.
+accountHolders.taxResidentCountries.btn = Add a country
+accountHolders.taxResidentCountries.country.removed = {0} removed.
+accountHolders.taxResidentCountries.change.hidden = TaxResidentCountries
+accountHolders.taxResidentCountries.checkYourAnswersSummaryHeading = Tax resident countries
+accountHolders.taxResidentCountries.checkYourAnswersLink = Add, change or remove
+accountHolders.taxResidentCountries.checkYourAnswersLabel = Where is the account holder resident for tax?
+
+accountHolders.removeTaxResidentCountry.definite.articles.countries.title = Are you sure you want to remove the {0} as a tax resident country for the account holder?
+accountHolders.removeTaxResidentCountry.other.countries.title = Are you sure you want to remove ‘Other country’ as a tax resident country for the account holder?
+accountHolders.removeTaxResidentCountry.all.countries.title = Are you sure you want to remove {0} as a tax resident country for the account holder?
+accountHolders.removeTaxResidentCountry.definite.articles.countries.heading = Are you sure you want to remove the {0} as a tax resident country for {1}?
+accountHolders.removeTaxResidentCountry.other.countries.heading = Are you sure you want to remove ‘Other country’ as a tax resident country for {0}?
+accountHolders.removeTaxResidentCountry.all.countries.heading = Are you sure you want to remove {0} as a tax resident country for {1}?
+accountHolders.removeTaxResidentCountry.checkYourAnswersLabel = removeTaxResidentCountry
+accountHolders.removeTaxResidentCountry.error.required = Select yes if you are sure you want to remove this tax-resident country for the account holder
+accountHolders.removeTaxResidentCountry.change.hidden = RemoveTaxResidentCountry
 
 
 CheckDetailsForFinancialInstitution.title = Check the details for the financial institution

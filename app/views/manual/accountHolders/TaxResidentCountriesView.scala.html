@@ -1,0 +1,105 @@
+@*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import viewmodels.manual.accountHolders.TaxResidentCountryRow
+@import viewmodels.govuk._
+@import  views.html.components._
+
+@this(
+    layout: templates.Layout,
+    formHelper: FormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    govukRadios: GovukRadios,
+    heading: components.Heading,
+    paragraph: components.Paragraph,
+    govukButton: GovukButton,
+    notificationBanner: views.html.components.SuccessNotificationBanner
+
+)
+
+@(form: Form[_], mode: Mode, accountHolderName: String, countries: Seq[String])(implicit request: Request[_], messages: Messages, flash: Flash)
+
+@layout(pageTitle = title(form, messages("accountHolders.taxResidentCountries.title",countryCountText(countries.size))),
+mainContentLayout = Some(ThreeQuartersMainContent.apply _)
+) {
+
+    @formHelper(action = controllers.manual.accountHolders.routes.TaxResidentCountriesController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+        @flash.get("country-removed").map { country =>
+            @notificationBanner(messages("accountHolders.taxResidentCountries.country.removed", country))
+        }
+
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummaryViewModel(form))
+        }
+
+        @heading(messages("accountHolders.taxResidentCountries.heading",countryCountText(countries.size), accountHolderName))
+
+        @if(countries.nonEmpty) {
+            <dl class="govuk-summary-list hmrc-list-with-actions hmrc-list-with-actions--short">
+                @for(row <- TaxResidentCountryRow.rows(countries)) {
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key govuk-!-font-weight-regular hmrc-summary-list__key" style="line-height:1.4;width:75%">
+                            @row.country
+                        </dt>
+                        <dd class="govuk-summary-list__actions hmrc-summary-list__actions" style="width:25%">
+                            <ul class="govuk-summary-list__actions-list">
+                                <li class="govuk-summary-list__actions-list-item">
+                                    <a class="govuk-link" href="@row.changeUrl">
+                                        <span aria-hidden="true" id="Change-country-@{row.country}">Change</span>
+                                        <span class="govuk-visually-hidden">Change @row.country to a different country</span>
+                                    </a>
+                                </li>
+                                <li class="govuk-summary-list__actions-list-item">
+                                    <a class="govuk-link" href="@row.removeUrl">
+                                        <span aria-hidden="true" id="remove-country-@{row.country}">Remove</span>
+                                        <span class="govuk-visually-hidden">Remove @row.country from the list</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </dd>
+                    </div>
+                }
+            </dl>
+
+            @govukRadios(
+                RadiosViewModel.yesNo(
+                field = form("value"),
+                legend = LegendViewModel(messages("accountHolders.taxResidentCountries.sub.heading")).withCssClass("govuk-fieldset__legend--m"))
+            )
+
+            @govukButton(
+            ButtonViewModel(messages("site.continue"))
+            .withAttribute("id" -> "submit")
+            )
+        } else {
+            @paragraph(messages("accountHolders.taxResidentCountries.p1"))
+            @govukButton(
+            ButtonViewModel(messages("accountHolders.taxResidentCountries.btn"))
+            .asLink(controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(mode).url)
+            )
+        }
+
+    }
+}
+
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.notificationbanner.NotificationBanner
+@countryCountText(count: Int) = @{
+    count match {
+        case 0 => "not added any countries"
+        case 1 => "added 1 country"
+        case n => s"added $n countries"
+    }
+}

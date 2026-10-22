@@ -21,8 +21,9 @@ import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.accountHolders.ResidentTaxFormProvider
 import models.SubmissionsConstants.CRS
+import models.manual.TaxResidentInformation
 import models.manual.accountHolders.IndividualOrOrganisation.Individual
-import models.manual.accountHolders.{IndividualName, TaxResidentInformation}
+import models.manual.accountHolders.IndividualName
 import models.response.Country
 import models.viewModels.AccountHolderId
 import models.{Countries, NormalMode, ReportId}
