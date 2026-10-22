@@ -17,7 +17,6 @@
 package controllers.manual
 
 import base.SpecBase
-import config.FrontendAppConfig
 import controllers.routes
 import forms.manual.HasFinishedCheckingFormProvider
 import models.ServiceErrors.NoFiDetailFound
@@ -71,11 +70,10 @@ class CheckDetailsForFinancialInstitutionControllerSpec extends SpecBase {
       val application = applicationWithFiDetail(answers)
 
       running(application) {
-        val request   = FakeRequest(GET, getRoute)
-        val result    = route(application, request).value
-        val view      = application.injector.instanceOf[CheckDetailsForFinancialInstitutionView]
-        val util      = application.injector.instanceOf[CheckDetailsForFinancialInstitutionUtil]
-        val appConfig = application.injector.instanceOf[FrontendAppConfig]
+        val request = FakeRequest(GET, getRoute)
+        val result  = route(application, request).value
+        val view    = application.injector.instanceOf[CheckDetailsForFinancialInstitutionView]
+        val util    = application.injector.instanceOf[CheckDetailsForFinancialInstitutionUtil]
 
         status(result) mustBe OK
         contentAsString(result) mustBe view(
@@ -86,7 +84,7 @@ class CheckDetailsForFinancialInstitutionControllerSpec extends SpecBase {
           hasGiin = true,
           fiIsUser = fiDetailWithUtr.IsFIUser,
           utr = "1234567890",
-          linkUrl = appConfig.changeFiUrl(fiDetailWithUtr.FIID)
+          linkUrl = util.changeFiUrl(fiDetailWithUtr.FIID)
         )(request, messages(application)).toString
       }
     }
@@ -123,7 +121,6 @@ class CheckDetailsForFinancialInstitutionControllerSpec extends SpecBase {
         val result         = route(application, request).value
         val view           = application.injector.instanceOf[CheckDetailsForFinancialInstitutionView]
         val util           = application.injector.instanceOf[CheckDetailsForFinancialInstitutionUtil]
-        val appConfig      = application.injector.instanceOf[FrontendAppConfig]
         val formWithErrors = form.bind(Map("value" -> "invalid"))
 
         status(result) mustBe BAD_REQUEST
@@ -135,7 +132,7 @@ class CheckDetailsForFinancialInstitutionControllerSpec extends SpecBase {
           hasGiin = true,
           fiIsUser = fiDetailWithUtr.IsFIUser,
           utr = "1234567890",
-          linkUrl = appConfig.changeFiUrl(fiDetailWithUtr.FIID)
+          linkUrl = util.changeFiUrl(fiDetailWithUtr.FIID)
         )(request, messages(application)).toString
       }
     }

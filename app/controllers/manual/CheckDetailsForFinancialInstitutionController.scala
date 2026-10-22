@@ -102,7 +102,7 @@ class CheckDetailsForFinancialInstitutionController @Inject() (
       fiIsUser = fiDetail.IsFIUser,
       hasGiin = fiDetail.GIIN.isDefined,
       utr = utr,
-      linkUrl = appConfig.changeFiUrl(fiDetail.FIID)
+      linkUrl = util.changeFiUrl(fiDetail.FIID, fiDetail.IsFIUser)
     )
   }
 

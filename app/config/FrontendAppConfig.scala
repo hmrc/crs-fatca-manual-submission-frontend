@@ -59,6 +59,4 @@ class FrontendAppConfig @Inject() (configuration: Configuration, servicesConfig:
 
   val fIManagementFrontendUrl: String = servicesConfig.baseUrl("crs-fatca-fi-management-frontend")
     + configuration.get[String]("microservice.services.crs-fatca-fi-management-frontend.base-path")
-
-  def changeFiUrl(fiId: String): String = s"$fIManagementFrontendUrl/change-answers/$fiId"
 }

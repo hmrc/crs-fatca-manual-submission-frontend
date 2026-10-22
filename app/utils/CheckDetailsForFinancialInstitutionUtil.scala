@@ -16,6 +16,7 @@
 
 package utils
 
+import config.FrontendAppConfig
 import models.SubmissionsConstants.*
 import models.response.FIDetail
 import play.api.i18n.Messages
@@ -23,7 +24,15 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryList, SummaryListRow, Value}
 import viewmodels.govuk.all.SummaryListViewModel
 
-class CheckDetailsForFinancialInstitutionUtil {
+import javax.inject.Inject
+
+class CheckDetailsForFinancialInstitutionUtil @Inject (appConfig: FrontendAppConfig) {
+
+  def changeFiUrl(fiId: String, isFIUser: Boolean): String = if (isFIUser) {
+    s"${appConfig.fIManagementFrontendUrl}/registered-business/change-answers/$fiId"
+  } else {
+    s"${appConfig.fIManagementFrontendUrl}/change-answers/$fiId"
+  }
 
   def getRows(fIDetail: FIDetail, regime: RegimeType)(implicit messages: Messages): SummaryList = {
 
