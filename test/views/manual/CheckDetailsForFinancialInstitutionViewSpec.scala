@@ -20,7 +20,7 @@ import base.SpecBase
 import forms.manual.HasFinishedCheckingFormProvider
 import models.SubmissionsConstants.{CRS, FATCA}
 import org.jsoup.Jsoup
-import play.api.i18n.{Lang, Messages}
+import play.api.i18n.Messages
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import viewmodels.govuk.all.SummaryListViewModel
@@ -76,7 +76,7 @@ class CheckDetailsForFinancialInstitutionViewSpec extends SpecBase {
         doc.select("#submit").text() mustBe messages("site.continue")
       }
       "must render the error summary and mark the radios as invalid when the answer is missing" in {
-        val formWithErrors = form.bind(Map("value" -> "invalid"))
+        val formWithErrors = form.bind(Map.empty[String, String])
         val doc            = renderView(CRS, hasGiin = false, fiIsUser = true, formToRender = formWithErrors)
 
         doc.select(".govuk-error-summary__list").text() must include(messages("hasFinishedChecking.error.required"))
@@ -87,9 +87,10 @@ class CheckDetailsForFinancialInstitutionViewSpec extends SpecBase {
     "when regime is FATCA" - {
 
       "must show the GIIN requirement and hide the checking question for FATCA without a GIIN" in {
-        val doc = renderView(FATCA, hasGiin = false)
+        val doc            = renderView(FATCA, hasGiin = false)
+        val changeLinkText = messages("CheckDetailsForFinancialInstitution.para.1.link.fatcaNoGiin", fiName)
 
-        doc.text() must include(messages("CheckDetailsForFinancialInstitution.para.1.fatcaNoGiin"))
+        doc.text() must include(messages("CheckDetailsForFinancialInstitution.para.1.fatcaNoGiin", changeLinkText))
         doc.select("a[href=" + changeDetailsUrl + "]").text() must include(
           messages("CheckDetailsForFinancialInstitution.para.1.link.fatcaNoGiin", fiName)
         )
