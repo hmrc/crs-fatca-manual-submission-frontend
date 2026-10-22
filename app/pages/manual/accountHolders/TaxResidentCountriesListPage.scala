@@ -17,7 +17,7 @@
 package pages.manual.accountHolders
 
 import models.ReportId
-import models.TaxResidentInformation
+import models.manual.TaxResidentInformation
 import models.viewModels.AccountHolderId
 import pages.QuestionPage
 import play.api.libs.json.JsPath

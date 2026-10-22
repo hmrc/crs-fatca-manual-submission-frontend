@@ -19,6 +19,7 @@ package navigation
 import controllers.manual.reportdetails.routes.*
 import controllers.routes
 import models.*
+import models.SubmissionsConstants.CRS
 import models.viewModels.manual.cpso.CPSOId
 import pages.*
 import pages.manual.cpso.{
@@ -230,6 +231,19 @@ class ManualSubmissionNavigator @Inject() () {
       case (Some(true), Some(address)) => handleNavigationToSponsorResidentTaxView(userAnswers, mode)
       case (Some(false), _)            => controllers.manual.sponsor.routes.UkAddressController.onPageLoad(mode)
       case (_, _)                      => routes.JourneyRecoveryController.onPageLoad()
+    }
+
+  private def handleResidentForTaxNavigationForCPSO(mode: Mode)(implicit reportId: ReportId) =
+    if (reportId.regime == CRS) controllers.manual.cpso.routes.HaveTaxIdentificationNumberController.onPageLoad(mode)
+    else controllers.manual.cpso.routes.TaxIdentificationNumberController.onPageLoad(mode)
+
+  private def handleHaveTaxIdentificationNumberNavigationForCPSO(index: Int, userAnswers: UserAnswers, mode: Mode, cpsoId: CPSOId)(implicit
+    reportId: ReportId
+  ) =
+    userAnswers.get(HaveTaxIdentificationNumberPage(index, cpsoId, reportId)) match {
+      case Some(true)  => controllers.manual.cpso.routes.TaxIdentificationNumberController.onPageLoad(mode)
+      case Some(false) => routes.UnderConstructionController.onPageLoad()
+      case None        => routes.JourneyRecoveryController.onPageLoad()
     }
 
 }

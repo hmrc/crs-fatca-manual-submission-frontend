@@ -56,7 +56,7 @@ class ResidentTaxControllerSpec extends SpecBase with MockitoSugar {
 
   "ResidentTax Controller" - {
     val country                = Country("GB", "UK")
-    val taxResidentInformation = TaxResidentInformation(country)
+    val taxResidentInformation = models.manual.TaxResidentInformation(country)
     val ua = emptyUserAnswers
       .withPage(ReportIdPage, reportId)
       .withPage(CurrentAccountHolderIdPage(), currentAccountHolderId)
