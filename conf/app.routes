@@ -418,6 +418,16 @@ POST       /manual/account-holder/organisation-crs-type                       co
 GET        /manual/account-holder/change-organisation-crs-type                controllers.manual.accountHolders.OrganisationCrsController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/account-holder/change-organisation-crs-type                controllers.manual.accountHolders.OrganisationCrsController.onSubmit(mode: Mode = CheckMode)
 
+GET        /manual/account-holder/provide-equity-interest-type                       controllers.manual.accountHolders.ProvideEquityInterestTypeController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account-holder/provide-equity-interest-type                       controllers.manual.accountHolders.ProvideEquityInterestTypeController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account-holder/change-provide-equity-interest-type                controllers.manual.accountHolders.ProvideEquityInterestTypeController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account-holder/change-provide-equity-interest-type                controllers.manual.accountHolders.ProvideEquityInterestTypeController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/account-holder/equity-interest-type                       controllers.manual.accountHolders.EquityInterestTypeController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account-holder/equity-interest-type                       controllers.manual.accountHolders.EquityInterestTypeController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account-holder/change-equity-interest-type                controllers.manual.accountHolders.EquityInterestTypeController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account-holder/change-equity-interest-type                controllers.manual.accountHolders.EquityInterestTypeController.onSubmit(mode: Mode = CheckMode)
+
 GET        /manual/cp-so/controlling-person-type                      controllers.manual.cpso.ControllingPersonTypeController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/cp-so/controlling-person-type                        controllers.manual.cpso.ControllingPersonTypeController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/cp-so/change-controlling-person-type                  controllers.manual.cpso.ControllingPersonTypeController.onPageLoad(mode: Mode = CheckMode)
