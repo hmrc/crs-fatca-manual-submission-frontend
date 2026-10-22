@@ -26,7 +26,6 @@ import models.manual.cpso.IndividualOrOrganisation
 import models.response.{Address, AddressLookup, Country}
 import models.viewModels.manual.cpso.CPSOId
 import pages.*
-import pages.manual.accountHolders.UkAddressPage as AccountHolderUkAddressPage
 import pages.manual.cpso.{CPSOAddressNonUkPage, CPSOWhereAreTheyBasedPage, CpsoOrganisationNamePage, CpsoSelfCertificationPage, HaveTaxIdentificationNumberPage, ResidentForTaxPage, AddressLookupPage as AddressLookupPageForCpso, SelectAddressPage as SelectAddressPageForCPSO, UkPostCodePage as UkPostCodePageForCpso}
 import pages.manual.sponsor.*
 
