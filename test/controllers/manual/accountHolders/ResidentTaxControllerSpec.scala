@@ -22,11 +22,11 @@ import controllers.routes
 import forms.manual.accountHolders.ResidentTaxFormProvider
 import models.SubmissionsConstants.CRS
 import models.manual.TaxResidentInformation
-import models.manual.accountHolders.IndividualOrOrganisation.Individual
 import models.manual.accountHolders.IndividualName
+import models.manual.accountHolders.IndividualOrOrganisation.Individual
 import models.response.Country
 import models.viewModels.AccountHolderId
-import models.{Countries, NormalMode, ReportId, TaxResidentInformation}
+import models.{Countries, NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when

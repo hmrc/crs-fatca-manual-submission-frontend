@@ -22,39 +22,14 @@ import models.*
 import models.CrsOrFatca.Fatca
 import models.SubmissionsConstants.{CRS, FATCA}
 import models.manual.account.PaymentType.*
-import models.manual.account.{PaymentType, WasAccountOpen, WhatAccountType}
-import models.response.{Address, AddressLookup, Country}
-import models.viewModels.AccountId
-import pages.*
-import pages.manual.account.*
-import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
-import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
-import pages.manual.sponsor.*
 import models.manual.account.{AccountPayment, PaymentType, WasAccountOpen, WhatAccountType}
-import models.manual.accountHolders.IndividualDateOfBirth
-import models.manual.cpso.CpsoSelfCertification.Yes
-import models.manual.cpso.IndividualOrOrganisation
 import models.response.{Address, AddressLookup, Country}
 import models.viewModels.AccountId
-import models.viewModels.manual.cpso.CPSOId
 import pages.*
 import pages.manual.account.*
-import pages.manual.cpso.{
-  AddressLookupPage as AddressLookupPageForCpso,
-  AddressUkPage,
-  CPSOAddressNonUkPage,
-  CPSOWhereAreTheyBasedPage,
-  CpsoOrganisationNamePage,
-  CpsoSelfCertificationPage,
-  IsThisTheAddressPage as IsThisTheAddressPageForCpso,
-  SelectAddressPage as SelectAddressPageForCPSO,
-  UkPostCodePage as UkPostCodePageForCpso
-}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import pages.manual.sponsor.*
-
-import java.time.LocalDate
 
 class ManualSubmissionNavigatorSpec extends SpecBase {
 
