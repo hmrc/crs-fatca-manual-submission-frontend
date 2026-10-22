@@ -20,11 +20,13 @@ import base.SpecBase
 import models.*
 import models.SubmissionsConstants.{CRS, FATCA}
 import models.manual.TaxResidentInformation
+import models.manual.account.WhatAccountType
 import models.manual.accountHolders.*
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
 import models.response.{Address, AddressLookup, Country}
 import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
+import pages.manual.account.WhatAccountTypePage
 import pages.manual.accountHolders.*
 
 import java.time.LocalDate
@@ -455,16 +457,19 @@ class AccountHolderNavigatorSpec extends SpecBase {
               controllers.routes.UnderConstructionController.onPageLoad()
           }
 
-          "must go to self certification page for a yes answer when regime is CRS " in {
-            val reportId2: ReportId = ReportId(CRS, 2024, None, "TestFIID")
-            val ua = UserAnswers("id")
-              .withPage(IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId2), true)
-              .withPage(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId2), Seq(taxResidentInformation))
+          "must go to self certification page for a yes answer when regime is CRS" in {
+            val crsReportId     = ReportId(CRS, 2025, None, "TestFIID")
+            val accountHolderId = AccountHolderId("holder-id")
+            val accountId       = AccountId("account-1")
 
-            navigator.nextPage(IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId2), NormalMode, ua)(reportId2) mustBe
+            val ua = UserAnswers("id")
+              .withPage(IsThisTheAddressForAccountHoldersPage(accountHolderId, crsReportId), true)
+              .withPage(AccountPage(crsReportId, accountHolderId), Set(accountId))
+              .withPage(WhatAccountTypePage(accountId)(crsReportId), WhatAccountType.Custodial)
+
+            navigator.nextPage(IsThisTheAddressForAccountHoldersPage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
               controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(NormalMode)
           }
-
           "must go to address uk for a no answer" in {
             val ua = UserAnswers("id")
               .withPage(IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId), false)
@@ -482,107 +487,210 @@ class AccountHolderNavigatorSpec extends SpecBase {
         }
 
         "SelectAddressPage" - {
-          val country                     = Country("GB", "UK")
-          val taxResidentInformation      = TaxResidentInformation(country)
-          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
-          val address = Address(uprn = None,
-                                addressLine1 = "string",
-                                addressLine2 = None,
-                                addressLine3 = Some("string"),
-                                addressLine4 = None,
-                                town = "town",
-                                postCode = None,
-                                country = Country.GB
-          )
+
+          val crsReportId     = ReportId(CRS, 2025, None, "TestFIID")
+          val fatcaReportId   = ReportId(FATCA, 2025, None, "TestFIID")
           val accountHolderId = AccountHolderId("holder-id")
+          val accountId1      = AccountId("account-1")
+          val accountId2      = AccountId("account-2")
 
-          "must go to self certification page if regime is crs" in {
-            val reportId2: ReportId = ReportId(CRS, 2024, None, "TestFIID")
+          val address = Address(
+            uprn = None,
+            addressLine1 = "string",
+            addressLine2 = None,
+            addressLine3 = Some("string"),
+            addressLine4 = None,
+            town = "town",
+            postCode = None,
+            country = Country.GB
+          )
+
+          "must go to Resident Tax for FATCA when no tax resident countries are present" in {
             val ua = UserAnswers("id")
-              .withPage(SelectAddressPage(accountHolderId, reportId2), address)
+              .withPage(SelectAddressPage(accountHolderId, fatcaReportId), address)
 
-            navigator.nextPage(SelectAddressPage(accountHolderId, reportId2), NormalMode, ua)(reportId2) mustBe
-              controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(NormalMode)
+            navigator.nextPage(SelectAddressPage(accountHolderId, fatcaReportId), NormalMode, ua)(fatcaReportId) mustBe
+              controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(NormalMode)
           }
-
-          "must go to under construction if there are tax residents specified" in {
+          "must go to under construction for FATCA when tax resident countries are present" in {
             val ua = UserAnswers("id")
-              .withPage(SelectAddressPage(accountHolderId, reportId), address)
-              .withPage(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId), Seq(taxResidentInformation))
+              .withPage(SelectAddressPage(accountHolderId, fatcaReportId), address)
+              .withPage(
+                pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, fatcaReportId),
+                Seq(TaxResidentInformation(Country.GB))
+              )
 
-            navigator.nextPage(SelectAddressPage(accountHolderId, reportId), NormalMode, ua) mustBe
+            navigator.nextPage(SelectAddressPage(accountHolderId, fatcaReportId), NormalMode, ua)(fatcaReportId) mustBe
               controllers.routes.UnderConstructionController.onPageLoad()
           }
 
-          "must go to tax residents page when there are no tax resident countries are present" in {
+          "must go to Provide Equity Interest Type for CRS with a CRS1104 account" in {
             val ua = UserAnswers("id")
-              .withPage(SelectAddressPage(accountHolderId, reportId), address)
-              .withPage(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId), Seq())
+              .withPage(SelectAddressPage(accountHolderId, crsReportId), address)
+              .withPage(AccountPage(crsReportId, accountHolderId), Set(accountId1))
+              .withPage(WhatAccountTypePage(accountId1)(crsReportId), WhatAccountType.InvestmentEntity)
 
-            navigator.nextPage(SelectAddressPage(accountHolderId, reportId), NormalMode, ua) mustBe
-              controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(NormalMode)
+            navigator.nextPage(SelectAddressPage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
+              controllers.manual.accountHolders.routes.ProvideEquityInterestTypeController.onPageLoad(NormalMode)
           }
 
-          "must go to tax residents page when tax resident countries are not specified in useranswers" in {
+          "must go to Provide Equity Interest Type when one of multiple accounts is CRS1104" in {
             val ua = UserAnswers("id")
-              .withPage(SelectAddressPage(accountHolderId, reportId), address)
+              .withPage(SelectAddressPage(accountHolderId, crsReportId), address)
+              .withPage(AccountPage(crsReportId, accountHolderId), Set(accountId1, accountId2))
+              .withPage(WhatAccountTypePage(accountId1)(crsReportId), WhatAccountType.Custodial)
+              .withPage(WhatAccountTypePage(accountId2)(crsReportId), WhatAccountType.InvestmentEntity)
 
-            navigator.nextPage(SelectAddressPage(accountHolderId, reportId), NormalMode, ua) mustBe
-              controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(NormalMode)
+            navigator.nextPage(SelectAddressPage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
+              controllers.manual.accountHolders.routes.ProvideEquityInterestTypeController.onPageLoad(NormalMode)
           }
 
+          "must go to Self Certification for CRS without a CRS1104 account" in {
+            val ua = UserAnswers("id")
+              .withPage(SelectAddressPage(accountHolderId, crsReportId), address)
+              .withPage(AccountPage(crsReportId, accountHolderId), Set(accountId1, accountId2))
+              .withPage(WhatAccountTypePage(accountId1)(crsReportId), WhatAccountType.Depository)
+              .withPage(WhatAccountTypePage(accountId2)(crsReportId), WhatAccountType.Custodial)
+
+            navigator.nextPage(SelectAddressPage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
+              controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(NormalMode)
+          }
+
+          "must only check accounts associated with the current account holder" in {
+            val ua = UserAnswers("id")
+              .withPage(SelectAddressPage(accountHolderId, crsReportId), address)
+              .withPage(AccountPage(crsReportId, accountHolderId), Set(accountId1))
+              .withPage(WhatAccountTypePage(accountId1)(crsReportId), WhatAccountType.Custodial)
+              .withPage(WhatAccountTypePage(accountId2)(crsReportId), WhatAccountType.InvestmentEntity)
+
+            navigator.nextPage(SelectAddressPage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
+              controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(NormalMode)
+          }
+
+          "must go to Journey Recovery when associated accounts are missing" in {
+            val ua = UserAnswers("id")
+              .withPage(SelectAddressPage(accountHolderId, crsReportId), address)
+
+            navigator.nextPage(SelectAddressPage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
+
+          "must go to Journey Recovery when associated accounts are empty" in {
+            val ua = UserAnswers("id")
+              .withPage(SelectAddressPage(accountHolderId, crsReportId), address)
+              .withPage(AccountPage(crsReportId, accountHolderId), Set.empty[AccountId])
+
+            navigator.nextPage(SelectAddressPage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
+
+          "must go to Journey Recovery when an associated account type is missing" in {
+            val ua = UserAnswers("id")
+              .withPage(SelectAddressPage(accountHolderId, crsReportId), address)
+              .withPage(AccountPage(crsReportId, accountHolderId), Set(accountId1, accountId2))
+              .withPage(WhatAccountTypePage(accountId1)(crsReportId), WhatAccountType.InvestmentEntity)
+
+            navigator.nextPage(SelectAddressPage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
         }
 
         "UKAddressPage" - {
-          val country                     = Country("GB", "UK")
-          val taxResidentInformation      = TaxResidentInformation(country)
-          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
-          val address = Address(uprn = None,
-                                addressLine1 = "string",
-                                addressLine2 = None,
-                                addressLine3 = Some("string"),
-                                addressLine4 = None,
-                                town = "town",
-                                postCode = None,
-                                country = Country.GB
-          ).ukAddress
+
+          val crsReportId     = ReportId(CRS, 2025, None, "TestFIID")
+          val fatcaReportId   = ReportId(FATCA, 2025, None, "TestFIID")
           val accountHolderId = AccountHolderId("holder-id")
+          val accountId1      = AccountId("account-1")
+          val accountId2      = AccountId("account-2")
 
-          "must go to account holder self certification if regime is crs" in {
-            implicit val reportId2: ReportId = ReportId(CRS, 2024, None, "TestFIID")
+          val address = Address(
+            uprn = None,
+            addressLine1 = "string",
+            addressLine2 = None,
+            addressLine3 = Some("string"),
+            addressLine4 = None,
+            town = "town",
+            postCode = None,
+            country = Country.GB
+          ).ukAddress
+
+          "must go to Resident Tax for FATCA when no tax resident countries are present" in {
             val ua = UserAnswers("id")
-              .withPage(UkAddressPage(accountHolderId, reportId2), address)
+              .withPage(UkAddressPage(accountHolderId, fatcaReportId), address)
 
-            navigator.nextPage(UkAddressPage(accountHolderId, reportId2), NormalMode, ua) mustBe
+            navigator.nextPage(UkAddressPage(accountHolderId, fatcaReportId), NormalMode, ua)(fatcaReportId) mustBe
+              controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(NormalMode)
+          }
+
+          "must go to Provide Equity Interest Type for CRS with a CRS1104 account" in {
+            val ua = UserAnswers("id")
+              .withPage(UkAddressPage(accountHolderId, crsReportId), address)
+              .withPage(AccountPage(crsReportId, accountHolderId), Set(accountId1))
+              .withPage(WhatAccountTypePage(accountId1)(crsReportId), WhatAccountType.InvestmentEntity)
+
+            navigator.nextPage(UkAddressPage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
+              controllers.manual.accountHolders.routes.ProvideEquityInterestTypeController.onPageLoad(NormalMode)
+          }
+
+          "must go to Provide Equity Interest Type when one of multiple accounts is CRS1104" in {
+            val ua = UserAnswers("id")
+              .withPage(UkAddressPage(accountHolderId, crsReportId), address)
+              .withPage(AccountPage(crsReportId, accountHolderId), Set(accountId1, accountId2))
+              .withPage(WhatAccountTypePage(accountId1)(crsReportId), WhatAccountType.Custodial)
+              .withPage(WhatAccountTypePage(accountId2)(crsReportId), WhatAccountType.InvestmentEntity)
+
+            navigator.nextPage(UkAddressPage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
+              controllers.manual.accountHolders.routes.ProvideEquityInterestTypeController.onPageLoad(NormalMode)
+          }
+
+          "must go to Self Certification for CRS without a CRS1104 account" in {
+            val ua = UserAnswers("id")
+              .withPage(UkAddressPage(accountHolderId, crsReportId), address)
+              .withPage(AccountPage(crsReportId, accountHolderId), Set(accountId1, accountId2))
+              .withPage(WhatAccountTypePage(accountId1)(crsReportId), WhatAccountType.Depository)
+              .withPage(WhatAccountTypePage(accountId2)(crsReportId), WhatAccountType.Custodial)
+
+            navigator.nextPage(UkAddressPage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
               controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(NormalMode)
           }
 
-          "must go to tax resident page when regime is FATCA and there are no tax resident countries specified" in {
+          "must only check accounts associated with the current account holder" in {
             val ua = UserAnswers("id")
-              .withPage(UkAddressPage(accountHolderId, reportId), address)
+              .withPage(UkAddressPage(accountHolderId, crsReportId), address)
+              .withPage(AccountPage(crsReportId, accountHolderId), Set(accountId1))
+              .withPage(WhatAccountTypePage(accountId1)(crsReportId), WhatAccountType.Custodial)
+              .withPage(WhatAccountTypePage(accountId2)(crsReportId), WhatAccountType.InvestmentEntity)
 
-            navigator.nextPage(UkAddressPage(accountHolderId, reportId), NormalMode, ua) mustBe
-              controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(NormalMode)
+            navigator.nextPage(UkAddressPage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
+              controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(NormalMode)
           }
 
-          "must go to tax resident page when regime is FATCA and the tax resident countries specified is empty" in {
+          "must go to Journey Recovery when associated accounts are missing" in {
             val ua = UserAnswers("id")
-              .withPage(UkAddressPage(accountHolderId, reportId), address)
-              .withPage(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId), Seq())
+              .withPage(UkAddressPage(accountHolderId, crsReportId), address)
 
-            navigator.nextPage(UkAddressPage(accountHolderId, reportId), NormalMode, ua) mustBe
-              controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(NormalMode)
+            navigator.nextPage(UkAddressPage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
           }
 
-          "must go to under construction page when regime is FATCA and there are  tax resident countries specified" in {
+          "must go to Journey Recovery when associated accounts are empty" in {
             val ua = UserAnswers("id")
-              .withPage(UkAddressPage(accountHolderId, reportId), address)
-              .withPage(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId), Seq(taxResidentInformation))
+              .withPage(UkAddressPage(accountHolderId, crsReportId), address)
+              .withPage(AccountPage(crsReportId, accountHolderId), Set.empty[AccountId])
 
-            navigator.nextPage(UkAddressPage(accountHolderId, reportId), NormalMode, ua) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+            navigator.nextPage(UkAddressPage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
           }
 
+          "must go to Journey Recovery when an associated account type is missing" in {
+            val ua = UserAnswers("id")
+              .withPage(UkAddressPage(accountHolderId, crsReportId), address)
+              .withPage(AccountPage(crsReportId, accountHolderId), Set(accountId1, accountId2))
+              .withPage(WhatAccountTypePage(accountId1)(crsReportId), WhatAccountType.InvestmentEntity)
+
+            navigator.nextPage(UkAddressPage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
         }
 
         "Account holder SelfCertificationPage" - {
@@ -618,47 +726,107 @@ class AccountHolderNavigatorSpec extends SpecBase {
         }
 
         "AccountHolderAddressNonUk Page" - {
-          val country                     = Country("GB", "UK")
-          val taxResidentInformation      = TaxResidentInformation(country)
-          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
-          val accountHolderId             = AccountHolderId("holder-id")
 
-          "must go to resident tax page when regime is FATCA and there are no tax residents" in {
+          val accountHolderId = AccountHolderId("holder-id")
+          val crsReportId     = ReportId(CRS, 2025, None, "TestFIID")
+          val fatcaReportId   = ReportId(FATCA, 2025, None, "TestFIID")
+          val accountId1      = AccountId("account-1")
+          val accountId2      = AccountId("account-2")
+
+          "must go to under construction for FATCA" in {
             val ua = UserAnswers("id")
-              .withPage(AccountHolderAddressNonUkPage(accountHolderId, reportId), nonUkAddress)
+              .withPage(AccountHolderAddressNonUkPage(accountHolderId, fatcaReportId), nonUkAddress)
+              .withPage(
+                pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, fatcaReportId),
+                Seq(TaxResidentInformation(Country.GB))
+              )
 
-            navigator.nextPage(AccountHolderAddressNonUkPage(accountHolderId, reportId), NormalMode, ua) mustBe
-              controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(NormalMode)
-          }
-
-          "must go to resident tax page when regime is FATCA and tax residents are empty" in {
-            val ua = UserAnswers("id")
-              .withPage(AccountHolderAddressNonUkPage(accountHolderId, reportId), nonUkAddress)
-              .withPage(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId), Seq())
-
-            navigator.nextPage(AccountHolderAddressNonUkPage(accountHolderId, reportId), NormalMode, ua) mustBe
-              controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(NormalMode)
-          }
-
-          "must go to under construction page when regime is FATCA and tax residents are populated" in {
-            val ua = UserAnswers("id")
-              .withPage(AccountHolderAddressNonUkPage(accountHolderId, reportId), nonUkAddress)
-              .withPage(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId), Seq(taxResidentInformation))
-
-            navigator.nextPage(AccountHolderAddressNonUkPage(accountHolderId, reportId), NormalMode, ua) mustBe
+            navigator.nextPage(AccountHolderAddressNonUkPage(accountHolderId, fatcaReportId), NormalMode, ua)(fatcaReportId) mustBe
               controllers.routes.UnderConstructionController.onPageLoad()
           }
 
-          "must go to self certification page when regime is CRS" in {
-            implicit val reportId2: ReportId = ReportId(CRS, 2024, None, "TestFIID")
+          "must go to Resident Tax for FATCA when no tax resident countries are present" in {
             val ua = UserAnswers("id")
-              .withPage(AccountHolderAddressNonUkPage(accountHolderId, reportId2), nonUkAddress)
-              .withPage(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId2), Seq(taxResidentInformation))
+              .withPage(AccountHolderAddressNonUkPage(accountHolderId, fatcaReportId), nonUkAddress)
 
-            navigator.nextPage(AccountHolderAddressNonUkPage(accountHolderId, reportId2), NormalMode, ua)(reportId2) mustBe
+            navigator.nextPage(AccountHolderAddressNonUkPage(accountHolderId, fatcaReportId), NormalMode, ua)(fatcaReportId) mustBe
+              controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(NormalMode)
+          }
+
+          "must go to Resident Tax for FATCA when tax resident countries are empty" in {
+            val ua = UserAnswers("id")
+              .withPage(AccountHolderAddressNonUkPage(accountHolderId, fatcaReportId), nonUkAddress)
+              .withPage(
+                pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, fatcaReportId),
+                Seq.empty[TaxResidentInformation]
+              )
+
+            navigator.nextPage(AccountHolderAddressNonUkPage(accountHolderId, fatcaReportId), NormalMode, ua)(fatcaReportId) mustBe
+              controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(NormalMode)
+          }
+
+          "must go to Provide Equity Interest Type for CRS with a CRS1104 account" in {
+            val ua = UserAnswers("id")
+              .withPage(AccountPage(crsReportId, accountHolderId), Set(accountId1))
+              .withPage(WhatAccountTypePage(accountId1)(crsReportId), WhatAccountType.InvestmentEntity)
+
+            navigator.nextPage(AccountHolderAddressNonUkPage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
+              controllers.manual.accountHolders.routes.ProvideEquityInterestTypeController.onPageLoad(NormalMode)
+          }
+
+          "must go to Provide Equity Interest Type when one of multiple accounts is CRS1104" in {
+            val ua = UserAnswers("id")
+              .withPage(AccountPage(crsReportId, accountHolderId), Set(accountId1, accountId2))
+              .withPage(WhatAccountTypePage(accountId1)(crsReportId), WhatAccountType.Custodial)
+              .withPage(WhatAccountTypePage(accountId2)(crsReportId), WhatAccountType.InvestmentEntity)
+
+            navigator.nextPage(AccountHolderAddressNonUkPage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
+              controllers.manual.accountHolders.routes.ProvideEquityInterestTypeController.onPageLoad(NormalMode)
+          }
+
+          "must go to Self Certification for CRS without a CRS1104 account" in {
+            val ua = UserAnswers("id")
+              .withPage(AccountPage(crsReportId, accountHolderId), Set(accountId1, accountId2))
+              .withPage(WhatAccountTypePage(accountId1)(crsReportId), WhatAccountType.Depository)
+              .withPage(WhatAccountTypePage(accountId2)(crsReportId), WhatAccountType.Custodial)
+
+            navigator.nextPage(AccountHolderAddressNonUkPage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
               controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(NormalMode)
           }
 
+          "must only check accounts associated with the current account holder" in {
+            val ua = UserAnswers("id")
+              .withPage(AccountPage(crsReportId, accountHolderId), Set(accountId1))
+              .withPage(WhatAccountTypePage(accountId1)(crsReportId), WhatAccountType.Custodial)
+              .withPage(WhatAccountTypePage(accountId2)(crsReportId), WhatAccountType.InvestmentEntity)
+
+            navigator.nextPage(AccountHolderAddressNonUkPage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
+              controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(NormalMode)
+          }
+
+          "must go to Journey Recovery when associated accounts are missing" in {
+            val ua = UserAnswers("id")
+
+            navigator.nextPage(AccountHolderAddressNonUkPage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
+
+          "must go to Journey Recovery when associated accounts are empty" in {
+            val ua = UserAnswers("id")
+              .withPage(AccountPage(crsReportId, accountHolderId), Set.empty[AccountId])
+
+            navigator.nextPage(AccountHolderAddressNonUkPage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
+
+          "must go to Journey Recovery when an associated account type is missing" in {
+            val ua = UserAnswers("id")
+              .withPage(AccountPage(crsReportId, accountHolderId), Set(accountId1, accountId2))
+              .withPage(WhatAccountTypePage(accountId1)(crsReportId), WhatAccountType.InvestmentEntity)
+
+            navigator.nextPage(AccountHolderAddressNonUkPage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
         }
 
         "UKPostcodePageForAccountHolder" - {
@@ -747,6 +915,42 @@ class AccountHolderNavigatorSpec extends SpecBase {
               controllers.manual.accountHolders.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
           }
 
+        }
+
+        "Equity interest routing" - {
+
+          val accountHolderId = AccountHolderId("equity-holder")
+          val crsReportId     = ReportId(CRS, 2025, None, "TestFIID")
+
+          "must go to Equity Interest Type when Provide Equity Interest Type is Yes" in {
+            val ua = UserAnswers("id")
+              .withPage(ProvideEquityInterestTypePage(accountHolderId, crsReportId), true)
+
+            navigator.nextPage(ProvideEquityInterestTypePage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
+              controllers.manual.accountHolders.routes.EquityInterestTypeController.onPageLoad(NormalMode)
+          }
+
+          "must go to Self Certification when Provide Equity Interest Type is No" in {
+            val ua = UserAnswers("id")
+              .withPage(ProvideEquityInterestTypePage(accountHolderId, crsReportId), false)
+
+            navigator.nextPage(ProvideEquityInterestTypePage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
+              controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(NormalMode)
+          }
+
+          "must go to Journey Recovery when Provide Equity Interest Type is unanswered" in {
+            val ua = UserAnswers("id")
+
+            navigator.nextPage(ProvideEquityInterestTypePage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
+              controllers.routes.JourneyRecoveryController.onPageLoad()
+          }
+
+          "must go to Self Certification after Equity Interest Type" in {
+            val ua = UserAnswers("id")
+
+            navigator.nextPage(EquityInterestTypePage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
+              controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(NormalMode)
+          }
         }
 
       }
