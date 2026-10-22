@@ -17,8 +17,8 @@
 package models.manual.sponsor
 
 import base.SpecBase
-import models.sponsor.RemoveCountryMessage
-import models.sponsor.RemoveCountryMessage.{AllOtherCountryMessage, NationsWithDefiniteArticlesMessage, OtherCountryMessage}
+import models.manual.RemoveCountryMessage
+import RemoveCountryMessage.{AllOtherCountryMessage, NationsWithDefiniteArticlesMessage, OtherCountryMessage}
 
 class RemoveCountryMessageSpec extends SpecBase {
 

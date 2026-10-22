@@ -19,7 +19,7 @@ package views.manual.sponsor
 import base.SpecBase
 import forms.manual.sponsor.RemoveTaxResidentCountryFormProvider
 import models.NormalMode
-import models.sponsor.RemoveCountryMessage.{AllOtherCountryMessage, NationsWithDefiniteArticlesMessage, OtherCountryMessage}
+import models.manual.RemoveCountryMessage.{AllOtherCountryMessage, NationsWithDefiniteArticlesMessage, OtherCountryMessage}
 import org.jsoup.Jsoup
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package models.manual.accountHolders
+package models.manual
 
 import models.response.Country
 import play.api.libs.json.{Json, OFormat}
