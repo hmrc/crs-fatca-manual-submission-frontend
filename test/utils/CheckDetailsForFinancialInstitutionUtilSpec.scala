@@ -17,19 +17,35 @@
 package utils
 
 import base.SpecBase
+import config.FrontendAppConfig
 import models.SubmissionsConstants.{CRS, FATCA}
 import models.response.{AddressDetails, TINDetails, TINType}
+import org.mockito.Mockito.when
 import play.api.i18n.Messages
 import play.api.test.Helpers.stubMessages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 
 class CheckDetailsForFinancialInstitutionUtilSpec extends SpecBase {
 
-  private val util = new CheckDetailsForFinancialInstitutionUtil()
+  private val frontendUrl   = "fi-management-url"
+  private val mockAppConfig = mock[FrontendAppConfig]
+  when(mockAppConfig.fIManagementFrontendUrl).thenReturn(frontendUrl)
+  private val util = new CheckDetailsForFinancialInstitutionUtil(mockAppConfig)
 
   implicit private val messages: Messages = stubMessages()
 
   "CheckDetailsForFinancialInstitutionUtil" - {
+
+    "changeFiUrl" - {
+
+      "must return the registered business change URL for an FI user" in {
+        util.changeFiUrl("fi-123", isFIUser = true) mustBe s"$frontendUrl/registered-business/change-answers/fi-123"
+      }
+
+      "must return the standard change URL for a non-user FI" in {
+        util.changeFiUrl("fi-123", isFIUser = false) mustBe s"$frontendUrl/change-answers/fi-123"
+      }
+    }
 
     "getRows" - {
 

@@ -84,7 +84,7 @@ class CheckDetailsForFinancialInstitutionControllerSpec extends SpecBase {
           hasGiin = true,
           fiIsUser = fiDetailWithUtr.IsFIUser,
           utr = "1234567890",
-          linkUrl = util.changeFiUrl(fiDetailWithUtr.FIID)
+          linkUrl = util.changeFiUrl(fiDetailWithUtr.FIID, fiDetailWithUtr.IsFIUser)
         )(request, messages(application)).toString
       }
     }
@@ -132,7 +132,7 @@ class CheckDetailsForFinancialInstitutionControllerSpec extends SpecBase {
           hasGiin = true,
           fiIsUser = fiDetailWithUtr.IsFIUser,
           utr = "1234567890",
-          linkUrl = util.changeFiUrl(fiDetailWithUtr.FIID)
+          linkUrl = util.changeFiUrl(fiDetailWithUtr.FIID, fiDetailWithUtr.IsFIUser)
         )(request, messages(application)).toString
       }
     }

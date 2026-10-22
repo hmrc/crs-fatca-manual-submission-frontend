@@ -16,7 +16,6 @@
 
 package controllers.manual
 
-import config.FrontendAppConfig
 import controllers.actions.Actions
 import forms.manual.HasFinishedCheckingFormProvider
 import models.ServiceErrors.{MissingUTR, NoFiDetailFound}
@@ -42,7 +41,6 @@ class CheckDetailsForFinancialInstitutionController @Inject() (
   view: CheckDetailsForFinancialInstitutionView,
   service: ViewFIService,
   util: CheckDetailsForFinancialInstitutionUtil,
-  appConfig: FrontendAppConfig,
   formProvider: HasFinishedCheckingFormProvider
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
