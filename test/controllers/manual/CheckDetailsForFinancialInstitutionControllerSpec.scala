@@ -46,17 +46,17 @@ class CheckDetailsForFinancialInstitutionControllerSpec extends SpecBase {
     GIIN = Some("GIIN123")
   )
 
-  private def answersFor(reportId: ReportId): UserAnswers =
+  private def baseUa(reportId: ReportId): UserAnswers =
     emptyUserAnswers.withPage(ReportIdPage, reportId)
 
   private def applicationWithFiDetail(
-    answerSet: UserAnswers = answersFor(reportId),
+    userAnswers: UserAnswers = baseUa(reportId),
     detail: FIDetail = fiDetailWithUtr
-  ): play.api.Application = {
+  ) = {
     val mockService = mock[ViewFIService]
     when(mockService.getFIDetail(any(), any())(using any())).thenReturn(Future.successful(detail))
 
-    applicationBuilder(maybeUserAnswers = Some(answerSet))
+    applicationBuilder(maybeUserAnswers = Some(userAnswers))
       .overrides(bind[ViewFIService].toInstance(mockService))
       .build()
   }
@@ -67,7 +67,7 @@ class CheckDetailsForFinancialInstitutionControllerSpec extends SpecBase {
   "CheckDetailsForFinancialInstitution Controller" - {
 
     "must return OK and the correct view for a GET" in {
-      val answers     = answersFor(reportId)
+      val answers     = baseUa(reportId)
       val application = applicationWithFiDetail(answers)
 
       running(application) {
@@ -143,7 +143,7 @@ class CheckDetailsForFinancialInstitutionControllerSpec extends SpecBase {
     "must redirect to Journey Recovery when no FI detail is found" in {
       val mockService = mock[ViewFIService]
       when(mockService.getFIDetail(any(), any())(using any())).thenReturn(Future.failed(NoFiDetailFound))
-      val application = applicationBuilder(maybeUserAnswers = Some(answersFor(reportId)))
+      val application = applicationBuilder(maybeUserAnswers = Some(baseUa(reportId)))
         .overrides(bind[ViewFIService].toInstance(mockService))
         .build()
 
@@ -170,7 +170,7 @@ class CheckDetailsForFinancialInstitutionControllerSpec extends SpecBase {
 
     "must support FATCA FIs without a UTR" in {
       val fatcaReportId = ReportId(FATCA, 2025, None, "TestfiID")
-      val answers       = answersFor(fatcaReportId)
+      val answers       = baseUa(fatcaReportId)
       val detail        = fiDetailWithUtr.copy(TINDetails = None)
       val application   = applicationWithFiDetail(answers, detail)
 

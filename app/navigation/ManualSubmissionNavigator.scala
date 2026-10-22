@@ -136,7 +136,7 @@ class ManualSubmissionNavigator @Inject() () {
             case CRS =>
               controllers.manual.accountHolders.routes.OrganisationCrsController.onPageLoad(mode)
 
-            case FATCA =>
+            case _ =>
               controllers.manual.accountHolders.routes.OrganisationFatcaController.onPageLoad(mode)
           }
 

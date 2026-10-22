@@ -17,7 +17,7 @@
 package models.response
 
 import play.api.libs.json.{Json, OFormat}
-import play.twirl.api.{Html, HtmlFormat}
+import play.twirl.api.HtmlFormat
 
 final case class ViewFIDetailsResponse(ViewFIDetails: ViewFIDetails)
 
