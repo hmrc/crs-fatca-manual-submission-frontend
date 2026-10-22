@@ -21,11 +21,12 @@ import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.accountHolders.ResidentTaxFormProvider
 import models.SubmissionsConstants.CRS
-import models.manual.accountHolders.IndividualOrOrganisation.Individual
+import models.manual.TaxResidentInformation
 import models.manual.accountHolders.IndividualName
+import models.manual.accountHolders.IndividualOrOrganisation.Individual
 import models.response.Country
 import models.viewModels.AccountHolderId
-import models.{Countries, NormalMode, ReportId, TaxResidentInformation}
+import models.{Countries, NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -55,7 +56,7 @@ class ResidentTaxControllerSpec extends SpecBase with MockitoSugar {
 
   "ResidentTax Controller" - {
     val country                = Country("GB", "UK")
-    val taxResidentInformation = TaxResidentInformation(country)
+    val taxResidentInformation = models.manual.TaxResidentInformation(country)
     val ua = emptyUserAnswers
       .withPage(ReportIdPage, reportId)
       .withPage(CurrentAccountHolderIdPage(), currentAccountHolderId)

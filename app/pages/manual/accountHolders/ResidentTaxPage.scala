@@ -16,12 +16,23 @@
 
 package pages.manual.accountHolders
 
-import models.ReportId
+import models.{ReportId, UserAnswers}
 import models.response.Country
 import models.viewModels.AccountHolderId
 import pages.QuestionPage
 import play.api.libs.json.JsPath
 
+import scala.util.{Success, Try}
+
 final case class ResidentTaxPage(index: Int, currentId: AccountHolderId, reportId: ReportId) extends QuestionPage[Country]:
 
   override def path: JsPath = JsPath \ reportId.mongoKey \ "accountHolder" \ currentId.value \ "taxResidentCountries" \ index \ "country"
+
+  override def cleanupWithReportId(
+    value: Option[Country],
+    userData: UserAnswers
+  )(implicit reportId: ReportId): Try[UserAnswers] =
+    (value, userData.get(CurrentAccountHolderIdPage())) match {
+      case (Some(_), Some(currentId)) => userData.remove(DoYouWantToAddTaxResidentCountryPage(currentId, reportId))
+      case (_, _)                     => Success(userData)
+    }

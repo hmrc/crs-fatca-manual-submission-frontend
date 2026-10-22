@@ -400,9 +400,6 @@ POST       /manual/account/number                                               
 GET        /manual/account/change-number                                          controllers.manual.account.WhatIsAccountNumberController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/account/change-number                                          controllers.manual.account.WhatIsAccountNumberController.onSubmit(mode: Mode = CheckMode)
 
-GET        /manual/account/check-answers                                      controllers.manual.account.AccountCheckAnswersController.onPageLoad()
-POST       /manual/account/check-answers                                      controllers.manual.account.AccountCheckAnswersController.onSubmit()
-
 GET        /manual/account-holder/organisation-name                       controllers.manual.accountHolders.OrganisationNameController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/account-holder/organisation-name                       controllers.manual.accountHolders.OrganisationNameController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/account-holder/change-organisation-name                 controllers.manual.accountHolders.OrganisationNameController.onPageLoad(mode: Mode = CheckMode)
@@ -418,6 +415,16 @@ POST       /manual/account-holder/organisation-crs-type                       co
 GET        /manual/account-holder/change-organisation-crs-type                controllers.manual.accountHolders.OrganisationCrsController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/account-holder/change-organisation-crs-type                controllers.manual.accountHolders.OrganisationCrsController.onSubmit(mode: Mode = CheckMode)
 
+GET        /manual/account-holder/provide-equity-interest-type                       controllers.manual.accountHolders.ProvideEquityInterestTypeController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account-holder/provide-equity-interest-type                       controllers.manual.accountHolders.ProvideEquityInterestTypeController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account-holder/change-provide-equity-interest-type                controllers.manual.accountHolders.ProvideEquityInterestTypeController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account-holder/change-provide-equity-interest-type                controllers.manual.accountHolders.ProvideEquityInterestTypeController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/account-holder/equity-interest-type                       controllers.manual.accountHolders.EquityInterestTypeController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account-holder/equity-interest-type                       controllers.manual.accountHolders.EquityInterestTypeController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account-holder/change-equity-interest-type                controllers.manual.accountHolders.EquityInterestTypeController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account-holder/change-equity-interest-type                controllers.manual.accountHolders.EquityInterestTypeController.onSubmit(mode: Mode = CheckMode)
+
 GET        /manual/cp-so/controlling-person-type                      controllers.manual.cpso.ControllingPersonTypeController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/cp-so/controlling-person-type                        controllers.manual.cpso.ControllingPersonTypeController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/cp-so/change-controlling-person-type                  controllers.manual.cpso.ControllingPersonTypeController.onPageLoad(mode: Mode = CheckMode)
@@ -427,6 +434,7 @@ GET        /manual/account-holder/account                controllers.manual.acco
 POST       /manual/account-holder/account                controllers.manual.accountHolders.AccountController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/account-holder/change-account         controllers.manual.accountHolders.AccountController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/account-holder/change-account         controllers.manual.accountHolders.AccountController.onSubmit(mode: Mode = CheckMode)
+
 
 GET        /manual/account-holder/resident-for-tax                        controllers.manual.accountHolders.ResidentTaxController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/account-holder/resident-for-tax                         controllers.manual.accountHolders.ResidentTaxController.onSubmit(mode: Mode = NormalMode)
@@ -442,6 +450,22 @@ GET        /manual/account-holder/identification-number                         
 POST       /manual/account-holder/identification-number                         controllers.manual.accountHolders.TaxIdentificationNumberController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/account-holder/change-identification-number                  controllers.manual.accountHolders.TaxIdentificationNumberController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/account-holder/change-identification-number                   controllers.manual.accountHolders.TaxIdentificationNumberController.onSubmit(mode: Mode = CheckMode)
+
+GET         /manual/account-holder/tax-resident-countries                   controllers.manual.accountHolders.TaxResidentCountriesController.onPageLoad(mode: Mode = NormalMode)
+POST        /manual/account-holder/tax-resident-countries                   controllers.manual.accountHolders.TaxResidentCountriesController.onSubmit(mode: Mode = NormalMode)
+GET         /manual/account-holder/change-tax-resident-countries            controllers.manual.accountHolders.TaxResidentCountriesController.onPageLoad(mode: Mode = CheckMode)
+POST        /manual/account-holder/change-tax-resident-countries            controllers.manual.accountHolders.TaxResidentCountriesController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/account-holder/remove-tax-resident-country                        controllers.manual.accountHolders.RemoveTaxResidentCountryController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account-holder/remove-tax-resident-country                        controllers.manual.accountHolders.RemoveTaxResidentCountryController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account-holder/change-remove-tax-resident-country                  controllers.manual.accountHolders.RemoveTaxResidentCountryController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/account-holder/change-remove-tax-resident-country                  controllers.manual.accountHolders.RemoveTaxResidentCountryController.onSubmit(mode: Mode = CheckMode)
+
+GET         /manual/account-holder/tax-resident-countries/:id/change        controllers.manual.accountHolders.CurrentTaxResidentIdController.onChangeRedirect(id: Int)
+GET         /manual/account-holder/tax-resident-countries/:id/remove        controllers.manual.accountHolders.CurrentTaxResidentIdController.onRemoveRedirect(id: Int)
+
+GET        /manual/account/check-answers                                      controllers.manual.account.AccountCheckAnswersController.onPageLoad()
+POST       /manual/account/check-answers                                      controllers.manual.account.AccountCheckAnswersController.onSubmit()
 
 GET        /manual/cp-so/resident-for-tax                       controllers.manual.cpso.ResidentForTaxController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/cp-so/resident-for-tax                        controllers.manual.cpso.ResidentForTaxController.onSubmit(mode: Mode = NormalMode)
