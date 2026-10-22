@@ -20,58 +20,85 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.cpso.RemoveTaxResidentCountryFormProvider
-import models.SubmissionsConstants.CRS
-import models.{NormalMode, ReportId}
+import models.manual.cpso.IndividualName
+import models.response.Country
+import models.viewModels.manual.cpso.CPSOId
+import models.{CheckMode, Countries, NormalMode, TaxResidentInformation, UserAnswers}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
+import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.cpso.RemoveTaxResidentCountryPage
+import pages.manual.cpso.{CurrentCPSOIdPage, CurrentTaxResidentCountryIndexPage, IndividualNamePage, ResidentForTaxPage, TaxResidentCountriesListPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import views.html.manual.cpso.RemoveTaxResidentCountryView
 
 import scala.concurrent.Future
 
 class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
+  private def onwardRoute: Call = Call("GET", "/foo")
 
-  val formProvider = new RemoveTaxResidentCountryFormProvider()
-  val form         = formProvider()
+  private val cpsoId   = CPSOId("cpso-id")
+  private val cpsoName = "Some Name"
 
-  lazy val removeTaxResidentCountryRoute = controllers.manual.cpso.routes.RemoveTaxResidentCountryController.onPageLoad(NormalMode).url
+  private val currentIndex = 1
+
+  private val regime = reportId.regime.value.toLowerCase()
+
+  private val country = Countries.allCountries(reportId.regime).find(_.code == "DE").value
+
+  private val taxResidentCountries = Seq(
+    TaxResidentInformation(Countries.allCountries(reportId.regime).find(_.code == "FR").value),
+    TaxResidentInformation(country),
+    TaxResidentInformation(Countries.allCountries(reportId.regime).find(_.code == "ES").value)
+  )
+
+  private val formProvider = new RemoveTaxResidentCountryFormProvider()
+  private val form         = formProvider(reportId.regime)
+
+  private lazy val removeTaxResidentCountryRoute =
+    controllers.manual.cpso.routes.RemoveTaxResidentCountryController.onPageLoad(NormalMode).url
+
+  private def taxResidentCountriesPage: TaxResidentCountriesListPage =
+    new TaxResidentCountriesListPage(cpsoId, reportId)
+
+  private def userAnswersFor(
+    residentCountry: Option[Country] = Some(country),
+    countries: Option[Seq[TaxResidentInformation]] = Some(taxResidentCountries)
+  ): UserAnswers = {
+    val answers = emptyUserAnswers
+      .withPage(ReportIdPage, reportId)
+      .withPage(CurrentCPSOIdPage(), cpsoId)
+      .withPage(IndividualNamePage(cpsoId), IndividualName("Some", "Name"))
+      .withPage(CurrentTaxResidentCountryIndexPage(cpsoId, reportId), currentIndex)
+
+    val withCountries = countries.fold(answers)(
+      value => answers.withPage(taxResidentCountriesPage, value)
+    )
+
+    residentCountry.fold(withCountries)(
+      value => withCountries.withPage(ResidentForTaxPage(currentIndex, cpsoId, reportId), value)
+    )
+  }
+
+  private lazy val defaultAnswers = userAnswersFor()
+
+  private def savesTheAnswers(answers: UserAnswers, repository: DatabaseConnector): UserAnswers = {
+    val captor = ArgumentCaptor.forClass(classOf[UserAnswers])
+    verify(repository).set(captor.capture())(any())
+    captor.getValue
+  }
 
   "RemoveTaxResidentCountry Controller" - {
 
-    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
-
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
-
-      running(application) {
-        val request = FakeRequest(GET, removeTaxResidentCountryRoute)
-
-        val result = route(application, request).value
-
-        val view = application.injector.instanceOf[RemoveTaxResidentCountryView]
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
-      }
-    }
-
-    "must populate the view correctly on a GET when the question has previously been answered" in {
-
-      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
-
-      val userAnswers = ua.set(RemoveTaxResidentCountryPage(), true).success.value
-
-      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(defaultAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, removeTaxResidentCountryRoute)
@@ -81,21 +108,52 @@ class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual
+          view(form, NormalMode, country.description, cpsoName, regime)(request, messages(application)).toString
       }
     }
 
-    "must redirect to the next page when valid data is submitted" in {
+    "must redirect to Journey Recovery for a GET when no country has been selected for the current tax resident country" in {
 
-      val mockSessionRepository = mock[DatabaseConnector]
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswersFor(residentCountry = None, countries = None))).build()
 
-      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+      running(application) {
+        val request = FakeRequest(GET, removeTaxResidentCountryRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Journey Recovery for a GET when the selected country is not a known country" in {
+
+      val unknownCountry = Country("ZZ", "Nowhere")
+
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswersFor(residentCountry = Some(unknownCountry)))).build()
+
+      running(application) {
+        val request = FakeRequest(GET, removeTaxResidentCountryRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must remove the country, save the answers, flash the removed country and redirect to the next page when the user says yes" in {
+
+      val mockRepository = mock[DatabaseConnector]
+
+      when(mockRepository.set(any())(any())) thenReturn Future.successful(())
 
       val application =
-        applicationBuilder(maybeUserAnswers = Some(ua))
+        applicationBuilder(maybeUserAnswers = Some(defaultAnswers))
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockSessionRepository)
+            bind[DatabaseConnector].toInstance(mockRepository)
           )
           .build()
 
@@ -108,12 +166,45 @@ class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar 
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
+        flash(result).get("country-removed") mustBe Some(country.description)
+
+        savesTheAnswers(defaultAnswers, mockRepository).get(taxResidentCountriesPage) mustBe
+          Some(taxResidentCountries.patch(currentIndex, Nil, 1))
+      }
+    }
+
+    "must keep the country, save the answers and redirect without a flash message when the user says no" in {
+
+      val mockRepository = mock[DatabaseConnector]
+
+      when(mockRepository.set(any())(any())) thenReturn Future.successful(())
+
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(defaultAnswers))
+          .overrides(
+            bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
+            bind[DatabaseConnector].toInstance(mockRepository)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, removeTaxResidentCountryRoute)
+            .withFormUrlEncodedBody(("value", "false"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual onwardRoute.url
+        flash(result).get("country-removed") mustBe None
+
+        savesTheAnswers(defaultAnswers, mockRepository).get(taxResidentCountriesPage) mustBe Some(taxResidentCountries)
       }
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(defaultAnswers)).build()
 
       running(application) {
         val request =
@@ -127,7 +218,24 @@ class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar 
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual
+          view(boundForm, NormalMode, country.description, cpsoName, regime)(request, messages(application)).toString
+      }
+    }
+
+    "must redirect to Journey Recovery for a POST when no country has been selected for the current tax resident country" in {
+
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswersFor(residentCountry = None, countries = None))).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, removeTaxResidentCountryRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 

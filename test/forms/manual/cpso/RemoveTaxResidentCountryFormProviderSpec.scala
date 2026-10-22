@@ -24,27 +24,28 @@ class RemoveTaxResidentCountryFormProviderSpec extends BooleanFieldBehaviours {
 
   val invalidKey = "error.boolean"
 
-  def form(regimeType: RegimeType) = new RemoveTaxResidentCountryFormProvider()(regimeType)
+  def formProvider(regimeType: RegimeType) = new RemoveTaxResidentCountryFormProvider()(regimeType)
 
   ".value" - {
     Seq(CRS, FATCA).foreach {
       regime =>
-        val requiredKey = s"cpso.${regime.value.toLowerCase}.removeTaxResidentCountry.error.required"
-        val fieldName   = "value"
-        val form        = form(regime)
+        s"for the ${regime.value} regime" - {
+          val requiredKey = s"cpso.${regime.value.toLowerCase}.removeTaxResidentCountry.error.required"
+          val fieldName   = "value"
+          val form        = formProvider(regime)
 
-        behave like booleanField(
-          form,
-          fieldName,
-          invalidError = FormError(fieldName, invalidKey)
-        )
+          behave like booleanField(
+            form,
+            fieldName,
+            invalidError = FormError(fieldName, invalidKey)
+          )
 
-        behave like mandatoryField(
-          form,
-          fieldName,
-          requiredError = FormError(fieldName, requiredKey)
-        )
+          behave like mandatoryField(
+            form,
+            fieldName,
+            requiredError = FormError(fieldName, requiredKey)
+          )
+        }
     }
-
   }
 }

@@ -20,10 +20,10 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.cpso.TaxResidentCountriesFormProvider
-import models.SubmissionsConstants.CRS
 import models.manual.cpso.IndividualName
+import models.response.Country
 import models.viewModels.manual.cpso.CPSOId
-import models.{NormalMode, ReportId}
+import models.{NormalMode, TaxResidentInformation}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -35,11 +35,10 @@ import pages.manual.cpso.{
   DoYouWantToAddTaxResidentCountryPage,
   IndividualNamePage,
   ResidentForTaxPage,
-  TaxResidentCountriesPage
+  TaxResidentCountriesListPage
 }
 import play.api.inject.bind
 import play.api.mvc.Call
-import play.api.mvc.ControllerHelpers.request2flash
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import views.html.manual.cpso.TaxResidentCountriesView
@@ -59,12 +58,16 @@ class TaxResidentCountriesControllerSpec extends SpecBase with MockitoSugar {
 
   private val regime = reportId.regime.value.toLowerCase()
 
+  private val taxResidentCountries = Seq(
+    TaxResidentInformation(Country("FR", "France")),
+    TaxResidentInformation(Country("DE", "Germany"))
+  )
+
   lazy val taxResidentCountriesRoute = controllers.manual.cpso.routes.TaxResidentCountriesController.onPageLoad(NormalMode).url
 
   "TaxResidentCountries Controller" - {
 
     val ua = emptyUserAnswers
-      .withPage(ReportIdPage, reportId)
       .withPage(ReportIdPage, reportId)
       .withPage(CurrentCPSOIdPage(), cpsoId)
       .withPage(IndividualNamePage(cpsoId), IndividualName("Some", "Name"))
@@ -82,17 +85,53 @@ class TaxResidentCountriesControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[TaxResidentCountriesView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, cpsoName, regime, countries = Seq.empty)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, cpsoName, regime, countries = Seq.empty)(request,
+                                                                                                          messages(application),
+                                                                                                          request.flash
+        ).toString
+      }
+    }
+
+    "must pass the tax resident countries from user answers to the view" in {
+
+      val userAnswers = ua.withPage(new TaxResidentCountriesListPage(cpsoId, reportId), taxResidentCountries)
+
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, taxResidentCountriesRoute)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[TaxResidentCountriesView]
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual
+          view(form, NormalMode, cpsoName, regime, countries = Seq("France", "Germany"))(request, messages(application), request.flash).toString
+      }
+    }
+
+    "must render the success banner when a country has been removed" in {
+
+      val request = FakeRequest(GET, taxResidentCountriesRoute).withFlash("country-removed" -> "France")
+
+      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+
+      running(application) {
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[TaxResidentCountriesView]
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual
+          view(form, NormalMode, cpsoName, regime, countries = Seq.empty)(request, messages(application), request.flash).toString
+        contentAsString(result) must include("govuk-notification-banner--success")
+        contentAsString(result) must include("France removed.")
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-      val userAnswers = emptyUserAnswers
-        .withPage(ReportIdPage, reportId)
-        .withPage(ReportIdPage, reportId)
-        .withPage(CurrentCPSOIdPage(), cpsoId)
-        .withPage(IndividualNamePage(cpsoId), IndividualName("Some", "Name"))
-        .withPage(CurrentTaxResidentCountryIndexPage(cpsoId, reportId), currentIndex)
+      val userAnswers = ua
         .withPage(DoYouWantToAddTaxResidentCountryPage(cpsoId, reportId), true)
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
@@ -105,7 +144,10 @@ class TaxResidentCountriesControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode, cpsoName, regime, countries = Seq.empty)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode, cpsoName, regime, countries = Seq.empty)(request,
+                                                                                                                     messages(application),
+                                                                                                                     request.flash
+        ).toString
       }
     }
 
@@ -151,7 +193,10 @@ class TaxResidentCountriesControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, cpsoName, regime, countries = Seq.empty)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, cpsoName, regime, countries = Seq.empty)(request,
+                                                                                                               messages(application),
+                                                                                                               request.flash
+        ).toString
       }
     }
 

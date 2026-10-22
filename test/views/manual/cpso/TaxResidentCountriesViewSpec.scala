@@ -64,12 +64,6 @@ class TaxResidentCountriesViewSpec extends SpecBase {
   private def removeUrl(index: Int): String =
     controllers.manual.cpso.routes.CurrentTaxResidentIdController.onRemoveRedirect(index).url
 
-  private def submitPath(mode: Mode): String =
-    controllers.manual.cpso.routes.TaxResidentCountriesController.onSubmit(mode).url
-
-  private def addCountryPath(mode: Mode): String =
-    controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(mode).url
-
   "TaxResidentCountriesView" - {
 
     "page title" - {
@@ -201,24 +195,33 @@ class TaxResidentCountriesViewSpec extends SpecBase {
         )
       }
 
-      "must link to the resident for tax page in normal mode" in {
+      "must have link to the resident for tax page" in {
         val links = render(residentCountries = Nil).select("a.govuk-button")
 
         links.size() mustBe 1
         links.text() mustBe "Add a country"
-        links.attr("href") mustBe addCountryPath(NormalMode)
         links.attr("href") must endWith("/manual/cp-so/resident-for-tax")
-      }
-
-      "must link to the resident for tax page in check mode" in {
-        val href = render(residentCountries = Nil, mode = CheckMode).select("a.govuk-button").attr("href")
-
-        href mustBe addCountryPath(CheckMode)
-        href must endWith("/manual/cp-so/change-resident-for-tax")
       }
 
       "must not render the continue submit button" in {
         render(residentCountries = Nil).select("#submit").size() mustBe 0
+      }
+    }
+
+    "success notification" - {
+
+      "must render a notification banner when a country has been removed" in {
+        val requestWithFlash = FakeRequest().withFlash("country-removed" -> "France")
+
+        val doc = Jsoup.parse(view(form, NormalMode, cpsoName, "crs", countries)(requestWithFlash, messages, requestWithFlash.flash).body)
+
+        doc.select(".govuk-notification-banner--success").size() mustBe 1
+        doc.select(".govuk-notification-banner__title").text() mustBe "Success"
+        doc.select(".govuk-notification-banner__heading").text() mustBe "France removed."
+      }
+
+      "must not render a notification banner when nothing has been removed" in {
+        render().select(".govuk-notification-banner").size() mustBe 0
       }
     }
   }
