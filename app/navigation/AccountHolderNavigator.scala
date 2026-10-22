@@ -31,6 +31,7 @@ import pages.manual.accountHolders.{
   AccountPage,
   AddressLookupForAccountHolderPage,
   DoYouWantToAddTaxResidentCountryPage as AccHolderDoYouWantToAddTaxResidentCountryPage,
+  EquityInterestTypePage,
   HaveTaxIdenticationNumberPage,
   IndividualHavePlaceOfBirthPage,
   IndividualOrOrganisationPage,
@@ -46,8 +47,7 @@ import pages.manual.accountHolders.{
   TaxIdentificationNumberPage,
   UkAddressPage as AccountHolderUkAddressPage,
   UkPostCodeForAccountHolderPage,
-  WhereAreTheyBasedPage,
-  EquityInterestTypePage
+  WhereAreTheyBasedPage
 }
 import play.api.mvc.Call
 
