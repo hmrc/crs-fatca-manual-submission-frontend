@@ -16,6 +16,6 @@
 
 @this()
 
-@(headingContent: String, size: String = "l", level: String = "h1")
+@(headingContent: String, size: String = "l", level: String = "h1", extraClasses: String = "")
 
-<@level class="govuk-heading-@size wrappable">@headingContent</@level>
+<@level class="govuk-heading-@size wrappable @extraClasses">@headingContent</@level>

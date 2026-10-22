@@ -441,4 +441,8 @@ POST        /manual/account-holder/change-have-identification-number            
 GET        /manual/account-holder/identification-number                         controllers.manual.accountHolders.TaxIdentificationNumberController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/account-holder/identification-number                         controllers.manual.accountHolders.TaxIdentificationNumberController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/account-holder/change-identification-number                  controllers.manual.accountHolders.TaxIdentificationNumberController.onPageLoad(mode: Mode = CheckMode)
-POST       /manual/account-holder/change-identification-number                   controllers.manual.accountHolders.TaxIdentificationNumberController.onSubmit(mode: Mode = CheckMode)
+POST       /manual/account-holder/change-identification-number                  controllers.manual.accountHolders.TaxIdentificationNumberController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/reporting-financial-institution                              controllers.manual.CheckDetailsForFinancialInstitutionController.onPageLoad()
+POST        /manual/reporting-financial-institution                             controllers.manual.CheckDetailsForFinancialInstitutionController.onSubmit()
+
