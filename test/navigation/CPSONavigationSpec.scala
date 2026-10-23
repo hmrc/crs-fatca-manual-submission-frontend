@@ -375,7 +375,7 @@ class CPSONavigationSpec extends SpecBase {
           controllers.manual.cpso.routes.TaxIdentificationNumberController.onPageLoad(NormalMode)
       }
 
-      "must go to under construction page when answer is no" in {
+      "must go to tax resident country list page when answer is no" in {
 
         val ua = UserAnswers("id")
           .withPage(pages.manual.cpso.HaveTaxIdentificationNumberPage(0, currentCPSOId, reportId), false)
@@ -385,7 +385,7 @@ class CPSONavigationSpec extends SpecBase {
           NormalMode,
           ua
         ) mustBe
-          controllers.routes.UnderConstructionController.onPageLoad()
+          controllers.manual.cpso.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
       }
 
       "must go to journey recovery page when an answer is not provided" in {
@@ -406,7 +406,7 @@ class CPSONavigationSpec extends SpecBase {
       implicit val reportId: ReportId = ReportId(CRS, 2024, None, "TestFIID")
       val currentCPSOId               = CPSOId("testid")
 
-      "must go to under construction page when answe" in {
+      "must go to tax resident list  page when answer" in {
 
         val ua = UserAnswers("id")
           .withPage(pages.manual.cpso.TaxIdentificationNumberPage(0, currentCPSOId, reportId), "some-number")
@@ -416,7 +416,18 @@ class CPSONavigationSpec extends SpecBase {
           NormalMode,
           ua
         ) mustBe
-          controllers.routes.UnderConstructionController.onPageLoad()
+          controllers.manual.cpso.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
+      }
+
+      "must go to Journey recovery page when TaxIdentificationNumberPage is not defined" in {
+
+        val ua = UserAnswers("id")
+        navigator.nextPage(
+          pages.manual.cpso.TaxIdentificationNumberPage(0, currentCPSOId, reportId),
+          NormalMode,
+          ua
+        ) mustBe
+          controllers.routes.JourneyRecoveryController.onPageLoad()
       }
     }
 
@@ -508,6 +519,46 @@ class CPSONavigationSpec extends SpecBase {
         val ua = UserAnswers("id")
 
         navigator.nextPage(IsThisTheAddressPageForCpso(currentCPSOId, reportId), NormalMode, ua) mustBe
+          controllers.routes.JourneyRecoveryController.onPageLoad()
+      }
+    }
+
+    "DoYouWantToAddTaxResidentCountryPage" - {
+      implicit val reportId: ReportId = ReportId(CRS, 2024, None, "TestFIID")
+      val currentCPSOId               = CPSOId("testid")
+
+      "must got to resident tax page when answer is yes" in {
+        val ua = UserAnswers("id")
+          .withPage(pages.manual.cpso.DoYouWantToAddTaxResidentCountryPage(currentCPSOId, reportId), true)
+
+        navigator.nextPage(
+          pages.manual.cpso.DoYouWantToAddTaxResidentCountryPage(currentCPSOId, reportId),
+          NormalMode,
+          ua
+        ) mustBe
+          controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(NormalMode)
+
+      }
+      "must got to under construction page when answer is no" in {
+        val ua = UserAnswers("id")
+          .withPage(pages.manual.cpso.DoYouWantToAddTaxResidentCountryPage(currentCPSOId, reportId), false)
+
+        navigator.nextPage(
+          pages.manual.cpso.DoYouWantToAddTaxResidentCountryPage(currentCPSOId, reportId),
+          NormalMode,
+          ua
+        ) mustBe
+          controllers.routes.UnderConstructionController.onPageLoad()
+      }
+
+      "must got to journey recovery page when DoYouWantToAddTaxResidentCountryPage is not defined" in {
+        val ua = UserAnswers("id")
+
+        navigator.nextPage(
+          pages.manual.cpso.DoYouWantToAddTaxResidentCountryPage(currentCPSOId, reportId),
+          NormalMode,
+          ua
+        ) mustBe
           controllers.routes.JourneyRecoveryController.onPageLoad()
       }
     }
