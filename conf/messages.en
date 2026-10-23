@@ -995,19 +995,19 @@ organisationFatca.heading = What type of account holder is {0}?
 organisationFatca.checkYourAnswersLabel = What type of account holder is {0}?
 organisationFatca.error.required = Select what type of account holder this is
 organisationFatca.change.hidden = organisationFatca
-organisationFatca.ownerDocumented = Owner-documented foreign financial institution with specified US owners
-organisationFatca.passive = Passive non-financial foreign entity with substantial US owners, or controlling persons
-organisationFatca.nonParticipating = Non-participating foreign financial institution
-organisationFatca.specifiedPerson = Specified US person
+organisationFatca.FATCA101 = Owner-documented foreign financial institution with specified US owners
+organisationFatca.FATCA102 = Passive non-financial foreign entity with substantial US owners, or controlling persons
+organisationFatca.FATCA103 = Non-participating foreign financial institution
+organisationFatca.FATCA104 = Specified US person
 
 organisationCrs.title = What type of account holder is this?
 organisationCrs.heading = What type of account holder is {0}?
 organisationCrs.checkYourAnswersLabel = What type of account holder is {0}?
 organisationCrs.error.required = Select what type of account holder this is
 organisationCrs.change.hidden = organisationCrs
-organisationCrs.passiveWithMultiplePersons = Passive non-financial entity with one or more controlling reportable persons
-organisationCrs.crsReportable = CRS reportable person
-organisationCrs.passiveCrsPerson = Passive non-financial entity that is a CRS reportable person
+organisationCrs.CRS101 = Passive non-financial entity with one or more controlling reportable persons
+organisationCrs.CRS102 = CRS reportable person
+organisationCrs.CRS103 = Passive non-financial entity that is a CRS reportable person
 
 cpso.controllingPersonType.title = What type of controlling person are they?
 cpso.controllingPersonType.heading = What type of controlling person is {0}?
