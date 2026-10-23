@@ -35,7 +35,7 @@ class FinancialInstitutionsConnector @Inject() (http: HttpClientV2, config: Fron
     hc: HeaderCarrier
   ): Future[Option[FIDetail]] =
     http
-      .get(url"${config.fIManagementUrl}/crs-fatca-fi-management/financial-institutions/$subscriptionId/$fiId")
+      .get(url"${config.fIManagementBackendUrl}/crs-fatca-fi-management/financial-institutions/$subscriptionId/$fiId")
       .execute[HttpResponse]
       .flatMap {
         response =>
