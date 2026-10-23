@@ -466,3 +466,19 @@ GET         /manual/account-holder/tax-resident-countries/:id/remove        cont
 
 GET        /manual/account/check-answers                                      controllers.manual.account.AccountCheckAnswersController.onPageLoad()
 POST       /manual/account/check-answers                                      controllers.manual.account.AccountCheckAnswersController.onSubmit()
+
+GET        /manual/cp-so/resident-for-tax                       controllers.manual.cpso.ResidentForTaxController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/cp-so/resident-for-tax                        controllers.manual.cpso.ResidentForTaxController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/cp-so/change-resident-for-tax                   controllers.manual.cpso.ResidentForTaxController.onPageLoad(mode: Mode = CheckMode)
+POST       //manual/cp-so/change-resident-for-tax                   controllers.manual.cpso.ResidentForTaxController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/cp-so/have-identification-number                        controllers.manual.cpso.HaveTaxIdentificationNumberController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/cp-so/have-identification-number                        controllers.manual.cpso.HaveTaxIdentificationNumberController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/cp-so/change-have-identification-number                   controllers.manual.cpso.HaveTaxIdentificationNumberController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/cp-so/change-have-identification-number                   controllers.manual.cpso.HaveTaxIdentificationNumberController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/cp-so/identification-number                        controllers.manual.cpso.TaxIdentificationNumberController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/cp-so/identification-number                        controllers.manual.cpso.TaxIdentificationNumberController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/cp-so/change-identification-number                  controllers.manual.cpso.TaxIdentificationNumberController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/cp-so/change-identification-number                controllers.manual.cpso.TaxIdentificationNumberController.onSubmit(mode: Mode = CheckMode)
+
