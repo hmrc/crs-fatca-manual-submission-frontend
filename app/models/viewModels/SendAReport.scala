@@ -16,6 +16,7 @@
 
 package models.viewModels
 
+import models.SubmissionsConstants.CRS
 import models.{NormalMode, ReportId, UserAnswers}
 import pages.manual.accountHolders.AccountHoldersPage
 
@@ -93,7 +94,7 @@ final case class SendAReportSections(
           ),
           task("sendAReport.accountsInformation.accountHolders", accountHolders, href = handleAccountHolderNavigation(userAnswers, reportId)),
           task(
-            "sendAReport.accountsInformation.controllingPersons",
+            controllingPersonsOrSubstantialOwnerMessageKey,
             controllingPersons,
             href = Some(controllers.routes.UnderConstructionController.onPageLoad().url)
           ),
@@ -102,6 +103,9 @@ final case class SendAReportSections(
         ).flatten
       )
     ).filter(_.tasks.nonEmpty)
+
+  def controllingPersonsOrSubstantialOwnerMessageKey =
+    if reportId.regime == CRS then "sendAReport.accountsInformation.controllingPersons" else "sendAReport.accountsInformation.substantialOwner"
 }
 
 final case class SendAReportSection(
