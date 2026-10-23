@@ -17,7 +17,7 @@
 package viewmodels.checkAnswers.manual.accountHolders
 
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.accountHolders.{CurrentAccountHolderIdPage, IndividualOrOrganisationPage}
+import pages.manual.accountHolders.{AccountHolderOrganisationNamePage, CurrentAccountHolderIdPage}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
@@ -25,26 +25,22 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist.*
 import viewmodels.implicits.*
 
-object individualOrOrganisationSummary {
+object OrganisationNameSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
     for {
-      currentAccountHolderId <- answers.get(CurrentAccountHolderIdPage()(reportId))
-      answer                 <- answers.get(IndividualOrOrganisationPage(currentAccountHolderId)(reportId))
-    } yield
-
-      val value = ValueViewModel(
-        HtmlContent(
-          HtmlFormat.escape(messages(s"individualOrOrganisation.$answer"))
-        )
-      )
+      currentId <- answers.get(CurrentAccountHolderIdPage()(reportId))
+      answer    <- answers.get(AccountHolderOrganisationNamePage(currentId)(reportId))
+    } yield {
+      val value = HtmlFormat.escape(answer).toString + "<br/>"
 
       SummaryListRowViewModel(
-        key = "individualOrOrganisation.checkYourAnswersLabel",
-        value = value,
+        key = "organisationName.checkYourAnswersLabel",
+        value = ValueViewModel(HtmlContent(value)),
         actions = Seq(
-          ActionItemViewModel("site.change", controllers.manual.accountHolders.routes.IndividualOrOrganisationController.onPageLoad(CheckMode).url)
-            .withVisuallyHiddenText(messages("individualOrOrganisation.change.hidden"))
+          ActionItemViewModel("site.change", controllers.manual.accountHolders.routes.OrganisationNameController.onPageLoad(CheckMode).url)
+            .withVisuallyHiddenText(messages("organisationName.change.hidden"))
         )
       )
+    }
 }

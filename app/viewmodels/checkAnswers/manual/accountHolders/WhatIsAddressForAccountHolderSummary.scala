@@ -55,7 +55,7 @@ object WhatIsAddressForAccountHolderSummary {
         ),
         actions = Seq(
           ActionItemViewModel("site.change", controllers.routes.UnderConstructionController.onPageLoad().url)
-            .withVisuallyHiddenText(messages("whatIsAddressForSponsor.change.hidden"))
+            .withVisuallyHiddenText(messages("whatIsAddressForAccountHolder.change.hidden"))
         )
       )
     }

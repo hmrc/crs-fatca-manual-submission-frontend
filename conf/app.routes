@@ -466,3 +466,6 @@ GET         /manual/account-holder/tax-resident-countries/:id/remove        cont
 
 GET        /manual/account/check-answers                                      controllers.manual.account.AccountCheckAnswersController.onPageLoad()
 POST       /manual/account/check-answers                                      controllers.manual.account.AccountCheckAnswersController.onSubmit()
+
+GET        /manual/account-holder/check-answers                                      controllers.manual.accountHolders.CheckAnswersController.onPageLoad()
+POST       /manual/account-holder/check-answers                                      controllers.manual.accountHolders.CheckAnswersController.onSubmit()
