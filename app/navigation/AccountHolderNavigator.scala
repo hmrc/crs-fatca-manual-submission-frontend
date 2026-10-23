@@ -19,9 +19,11 @@ package navigation
 import controllers.routes
 import models.*
 import models.SubmissionsConstants.{CRS, FATCA}
+import models.manual.account.WhatAccountType
 import models.manual.accountHolders.IndividualOrOrganisation
 import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
+import pages.manual.account.WhatAccountTypePage
 import pages.manual.accountHolders.{
   AccountHolderAddressNonUkPage,
   AccountHolderIndividualNamePage,
@@ -29,6 +31,7 @@ import pages.manual.accountHolders.{
   AccountPage,
   AddressLookupForAccountHolderPage,
   DoYouWantToAddTaxResidentCountryPage as AccHolderDoYouWantToAddTaxResidentCountryPage,
+  EquityInterestTypePage,
   HaveTaxIdenticationNumberPage,
   IndividualHavePlaceOfBirthPage,
   IndividualOrOrganisationPage,
@@ -36,6 +39,7 @@ import pages.manual.accountHolders.{
   IsThisTheAddressForAccountHoldersPage,
   OrganisationCrsPage,
   OrganisationFatcaPage,
+  ProvideEquityInterestTypePage,
   RemoveTaxResidentCountryPage as AccRemoveTaxResidentCountryPage,
   ResidentTaxPage,
   SelectAddressPage,
@@ -157,6 +161,13 @@ object AccountHolderNavigator {
         case None        => controllers.routes.JourneyRecoveryController.onPageLoad()
       }
     case (AccRemoveTaxResidentCountryPage(_, _), mode, _) => controllers.manual.accountHolders.routes.TaxResidentCountriesController.onPageLoad(mode)
+    case (ProvideEquityInterestTypePage(id, reportId), mode, ua) =>
+      ua.get(ProvideEquityInterestTypePage(id, reportId)) match {
+        case Some(true)  => controllers.manual.accountHolders.routes.EquityInterestTypeController.onPageLoad(mode)
+        case Some(false) => controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
+        case None        => routes.JourneyRecoveryController.onPageLoad()
+      }
+    case (EquityInterestTypePage(_, _), mode, _) => controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
   }
 
   private def handleIndividualHavePlaceOfBirthNavigation(accountId: AccountHolderId, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
@@ -186,7 +197,7 @@ object AccountHolderNavigator {
             case None                                 => controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(mode)
           }
         } else {
-          controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
+          handleEquityInterestRouting(userAnswers, mode, accountHolderId)
         }
 
       case Some(false) => controllers.manual.accountHolders.routes.UkAddressController.onPageLoad(mode)
@@ -203,7 +214,7 @@ object AccountHolderNavigator {
         case None                                 => controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(mode)
       }
     } else {
-      controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
+      handleEquityInterestRouting(userAnswers, mode, accountHolderId)
     }
 
   private def handleAccountHolderAddressNonUkPageNavigationForAccountHolders(userAnswers: UserAnswers, mode: Mode, accountHolderId: AccountHolderId)(implicit
@@ -216,7 +227,7 @@ object AccountHolderNavigator {
         case None                                 => controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(mode)
       }
     } else {
-      controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
+      handleEquityInterestRouting(userAnswers, mode, accountHolderId)
     }
 
   private def handleSelectAddressPageNavigationForAccountHolders(userAnswers: UserAnswers, mode: Mode, accountHolderId: AccountHolderId)(implicit
@@ -229,7 +240,7 @@ object AccountHolderNavigator {
         case None                                 => controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(mode)
       }
     } else {
-      controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
+      handleEquityInterestRouting(userAnswers, mode, accountHolderId)
     }
 
   private def handleHaveTaxIdenticationNumberPageNavigationForAccountHolders(userAnswers: UserAnswers,
@@ -258,4 +269,25 @@ object AccountHolderNavigator {
       case Some(_)                              => controllers.routes.UnderConstructionController.onPageLoad()
       case None                                 => controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(mode)
     }
+
+  private def handleEquityInterestRouting(ua: UserAnswers, mode: Mode, accountHolderId: AccountHolderId)(implicit reportId: ReportId): Call =
+    reportId.regime match {
+      case CRS =>
+        ua.get(AccountPage(reportId, accountHolderId)) match {
+          case Some(accountIds) if accountIds.nonEmpty =>
+            val accountTypes = accountIds.map(
+              id => ua.get(WhatAccountTypePage(id))
+            )
+
+            if (accountTypes.exists(_.isEmpty)) routes.JourneyRecoveryController.onPageLoad()
+            else if (accountTypes.flatten.contains(WhatAccountType.InvestmentEntity))
+              controllers.manual.accountHolders.routes.ProvideEquityInterestTypeController.onPageLoad(mode)
+            else
+              controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
+
+          case _ => routes.JourneyRecoveryController.onPageLoad()
+        }
+      case _ => routes.JourneyRecoveryController.onPageLoad()
+    }
+
 }

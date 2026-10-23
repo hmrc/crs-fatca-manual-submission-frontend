@@ -51,9 +51,9 @@ class TaxIdentificationNumberController @Inject() (
       implicit val reportId: ReportId = request.reportId
 
       val countryOption                  = request.userAnswers.get(ResidentTaxPage(request.currentIndex, request.accountHolderId, reportId))
-      val individualOrOrganizationOption = request.userAnswers.get(IndividualOrOrganisationPage(request.accountHolderId))
+      val individualOrOrganisationOption = request.userAnswers.get(IndividualOrOrganisationPage(request.accountHolderId))
 
-      (countryOption, individualOrOrganizationOption)
+      (countryOption, individualOrOrganisationOption)
         .mapN {
           (country, individualOrOrganization) =>
             val form = formProvider(country, reportId, individualOrOrganization)
@@ -78,9 +78,9 @@ class TaxIdentificationNumberController @Inject() (
       val currentIndex                = request.currentIndex
 
       val countryOption                  = request.userAnswers.get(ResidentTaxPage(request.currentIndex, request.accountHolderId, reportId))
-      val individualOrOrganizationOption = request.userAnswers.get(IndividualOrOrganisationPage(request.accountHolderId))
+      val individualOrOrganisationOption = request.userAnswers.get(IndividualOrOrganisationPage(request.accountHolderId))
 
-      (countryOption, individualOrOrganizationOption)
+      (countryOption, individualOrOrganisationOption)
         .mapN {
           (country, individualOrOrganization) =>
             val form = formProvider(country, reportId, individualOrOrganization)

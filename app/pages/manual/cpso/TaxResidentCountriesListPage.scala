@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package models.manual.cpso
+package pages.manual.cpso
 
-import play.api.libs.json.*
+import models.ReportId
+import models.TaxResidentInformation
+import models.viewModels.manual.cpso.CPSOId
+import pages.QuestionPage
+import play.api.libs.json.JsPath
 
-case class UkPostCode(value: String, value2: String)
+class TaxResidentCountriesListPage(currentId: CPSOId, reportId: ReportId) extends QuestionPage[Seq[TaxResidentInformation]] {
 
-object UkPostCode {
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "cp-so" \ currentId.value \ "taxResidentCountries"
 
-  implicit val format: OFormat[UkPostCode] = Json.format
 }
