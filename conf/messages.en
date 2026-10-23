@@ -1131,3 +1131,34 @@ accountHolders.removeTaxResidentCountry.all.countries.heading = Are you sure you
 accountHolders.removeTaxResidentCountry.checkYourAnswersLabel = removeTaxResidentCountry
 accountHolders.removeTaxResidentCountry.error.required = Select yes if you are sure you want to remove this tax-resident country for the account holder
 accountHolders.removeTaxResidentCountry.change.hidden = RemoveTaxResidentCountry
+
+cpso.crs.residentForTax.title = Where is the controlling person resident for tax?
+cpso.fatca.residentForTax.title = Where is the substantial owner resident for tax?
+cpso.residentForTax.heading = Where is {0} resident for tax?
+cpso.residentForTax.paragraph = If they are resident for tax in more than one country, then you can add other countries on the next page.
+cpso.crs.residentForTax.error.country.required = Select where the controlling person is resident for tax
+cpso.fatca.residentForTax.error.country.required = Select where the substantial owner is resident for tax
+cpso.residentForTax.checkYourAnswersLabel = ResidentForTax
+cpso.residentForTax.country.change.hidden = country
+
+cpso.crs.haveTaxIdentificationNumber.title = Do you have a tax identification number for the controlling person for the country?
+cpso.fatca.haveTaxIdentificationNumber.title = Do you have a tax identification number for the substantial owner for the country?
+cpso.haveTaxIdentificationNumber.other.heading = Do you have a tax identification number for {0} for {1}?
+cpso.haveTaxIdentificationNumber.heading = Do you have a tax identification number for {0} for {1}?
+cpso.haveTaxIdentificationNumber.heading = Do you have a tax identification number for {0} for {1}?
+cpso.haveTaxIdentificationNumber.checkYourAnswersLabel = haveTaxIdentificationNumber
+cpso.crs.haveTaxIdentificationNumber.error.required = Select yes if you have a tax identification number for the controlling person for the country
+cpso.fatca.haveTaxIdentificationNumber.error.required = Select yes if you have a tax identification number for the substantial owner for the country
+cpso.haveTaxIdentificationNumber.change.hidden = HaveTaxIdentificationNumber
+
+cpso.crs.taxIdentificationNumber.title = What is the tax identification number for the controlling person for the country?
+cpso.fatca.taxIdentificationNumber.title = What is the tax identification number for the substantial owner for the country?
+cpso.taxIdentificationNumber.heading = What is the tax identification number for {0} for {1}?
+cpso.taxIdentificationNumber.other.heading = What is the tax identification number for {0} for {1}?
+cpso.crs.taxIdentificationNumber.error.tin.required = Enter the tax identification number for the controlling person for the country
+cpso.fatca.taxIdentificationNumber.error.tin.required = Enter the tax identification number for the substantial owner for the country
+cpso.taxIdentificationNumber.error.tin.length = Tax identification number must be 200 characters or less
+cpso.taxIdentificationNumber.error.tin.invalidChars = Tax identification number must not include a double dash (--), ampersand hash (&#) or forward slash asterisk (/*)
+cpso.taxIdentificationNumber.error.tin.giinOrSsn.invalid = Tax identification number must be a Global Intermediary Identification Number (GIIN) or in the format 000-00-0000, 00-0000000 or 000000000
+cpso.taxIdentificationNumber.error.tin.organization.is.blacklisted = Tax identification number must not be 000000000, 222222222, 000222111, 333333333 or 888888888
+cpso.taxIdentificationNumber.error.tin.individual.is.blacklisted = Tax identification number must not be 000000000, 666666666 or 888888888
