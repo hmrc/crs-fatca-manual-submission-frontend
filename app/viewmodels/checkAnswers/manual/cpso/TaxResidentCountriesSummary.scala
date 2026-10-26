@@ -18,27 +18,44 @@ package viewmodels.checkAnswers.manual.cpso
 
 import controllers.manual.cpso.routes
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.cpso.TaxResidentCountriesPage
+import pages.manual.cpso.{CurrentCPSOIdPage, RemoveTaxResidentCountryPage, TaxResidentCountriesListPage}
 import play.api.i18n.Messages
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
-import viewmodels.govuk.summarylist._
-import viewmodels.implicits._
+import uk.gov.hmrc.govukfrontend.views.Aliases.CardTitle
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
+import viewmodels.govuk.summarylist.*
+import viewmodels.implicits.*
 
 object TaxResidentCountriesSummary {
 
-  def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
-    answers.get(TaxResidentCountriesPage()).map {
-      answer =>
+  def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryList] =
+    for {
+      currentAccountHolderId <- answers.get(CurrentCPSOIdPage()(reportId))
+      answer                 <- answers.get(TaxResidentCountriesListPage(currentAccountHolderId, reportId))
+    } yield {
 
-        val value = if (answer) "site.yes" else "site.no"
+      val countryList = answer.map(_.country.description).mkString("<br>")
 
-        SummaryListRowViewModel(
-          key = "taxResidentCountries.checkYourAnswersLabel",
-          value = ValueViewModel(value),
-          actions = Seq(
-            ActionItemViewModel("site.change", routes.TaxResidentCountriesController.onPageLoad(CheckMode).url)
-              .withVisuallyHiddenText(messages("taxResidentCountries.change.hidden"))
+      SummaryListViewModel(
+        rows = Seq(
+          SummaryListRowViewModel(
+            key = "taxResidentCountries.checkYourAnswersLabel",
+            value = ValueViewModel(
+              HtmlContent(countryList)
+            )
           )
-        )
+        ),
+        card = CardViewModel(
+          title = CardTitle(
+            content = "taxResidentCountries.checkYourAnswersSummaryHeading"
+          ),
+          actions = Seq(
+            ActionItemViewModel(
+              href = controllers.manual.sponsor.routes.TaxResidentCountriesController.onPageLoad(CheckMode).url,
+              content = "taxResidentCountries.checkYourAnswersLink"
+            )
+          )
+        ).withCssClass("govuk-!-margin-bottom-6")
+      )
     }
 }
