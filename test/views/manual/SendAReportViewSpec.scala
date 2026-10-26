@@ -92,7 +92,7 @@ class SendAReportViewSpec extends SpecBase {
         pageText must include("Filer-category")
         pageText must include("Accounts")
         pageText must include("Account holders")
-        pageText must include("Controlling persons or substantial owners")
+        pageText must include("Controlling persons")
         pageText must include("TBC")
       }
 

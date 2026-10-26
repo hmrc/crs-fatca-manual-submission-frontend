@@ -23,7 +23,15 @@ import models.{AddressUk, CrsOrFatca, NumberType, TypeOfReport, UkAddress, UkPos
 import org.scalacheck.Arbitrary.*
 import org.scalacheck.{Arbitrary, Gen}
 
+import models.AccountHolder
+import org.scalacheck.{Arbitrary, Gen}
+
 trait ModelGenerators {
+
+  implicit lazy val arbitraryAccountHolder: Arbitrary[AccountHolder] =
+    Arbitrary {
+      Gen.oneOf(AccountHolder.values)
+    }
 
   implicit lazy val arbitraryAddressUk: Arbitrary[AddressUk] =
     Arbitrary {

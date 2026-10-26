@@ -24,7 +24,44 @@ import org.scalatest.matchers.must.Matchers
 
 class AccountHolderSpec extends AnyFreeSpec with Matchers {
 
-  private val eligibleOrganisationTypes = Seq("CRS101", "FATCA101", "FATCA102")
+  "AccountHolder.cpsoIsMandatory" - {
+    Seq(
+      Some("CRS101") -> true,
+      Some("CRS100") -> false,
+      Some("CRS102") -> false,
+      Some("CRS103") -> false,
+      Some("") -> false,
+      None -> false
+    ).foreach {
+      case (organisationType, expected) =>
+        s"must return $expected when the CRS organisation type is ${organisationType.getOrElse("not set")}" in {
+          AccountHolder(individualOrOrganisation = Some(Organisation), organisationCrs = organisationType)
+            .cpsoIsMandatory(CRS) mustBe expected
+        }
+    }
+
+    Seq(
+      Some("FATCA101") -> false,
+      Some("FATCA102") -> false,
+      Some("FATCA103") -> false,
+      Some("FATCA104") -> false,
+      Some("") -> false,
+      None -> false
+    ).foreach {
+      case (organisationType, expected) =>
+        s"must return $expected when the FATCA organisation type is ${organisationType.getOrElse("not set")}" in {
+          AccountHolder(individualOrOrganisation = Some(Organisation), organisationFatca = organisationType)
+            .cpsoIsMandatory(CRS) mustBe expected
+        }
+    }
+
+    "must return false for an individual account holder" in {
+      AccountHolder(individualOrOrganisation = Some(Individual))
+        .cpsoIsMandatory(CRS) mustBe false
+    }
+
+
+  }
 
   "AccountHolder.canHaveCPSO" - {
 

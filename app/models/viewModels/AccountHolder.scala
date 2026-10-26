@@ -18,13 +18,13 @@ package models.viewModels
 
 import models.SubmissionsConstants.{CRS, RegimeType}
 import models.manual.accountHolders.IndividualOrOrganisation
-import models.manual.accountHolders.IndividualOrOrganisation.Individual
 import play.api.libs.json.{Json, OFormat}
 
 case class AccountHolder(individualOrOrganisation: Option[IndividualOrOrganisation] = None,
                          organisationName: Option[String] = None,
                          organisationFatca: Option[String] = None,
-                         organisationCrs: Option[String] = None
+                         organisationCrs: Option[String] = None,
+                         cpsos: Option[Seq[String]] = None
 ) {
 
   private def accountHolderType(regimeType: RegimeType) = if regimeType == CRS then organisationCrs else organisationFatca
@@ -37,6 +37,14 @@ case class AccountHolder(individualOrOrganisation: Option[IndividualOrOrganisati
         accountHolderType(regimeType: RegimeType).exists(
           i => Seq("CRS101", "FATCA101", "FATCA102").contains(i)
         )
+    }
+    
+  def cpsoIsMandatory(regimeType: RegimeType): Boolean =
+    individualOrOrganisation match {
+      case None                                      => false
+      case Some(IndividualOrOrganisation.Individual) => false
+      case Some(IndividualOrOrganisation.Organisation) =>
+        regimeType == CRS && accountHolderType(regimeType: RegimeType).contains("CRS101")
     }
 }
 
