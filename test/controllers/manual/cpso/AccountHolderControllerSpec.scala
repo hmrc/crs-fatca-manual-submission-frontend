@@ -43,11 +43,11 @@ class AccountHolderControllerSpec extends SpecBase with MockitoSugar {
   lazy val accountHolderRoute = controllers.manual.cpso.routes.AccountHolderController.onPageLoad(NormalMode).url
 
   val formProvider = new AccountHolderFormProvider()
-  val form = formProvider()
+  val form         = formProvider()
 
   "AccountHolder Controller" - {
 
-    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS,2025,None,"testFiID"))
+    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "testFiID"))
 
     "must return OK and the correct view for a GET" in {
 
@@ -68,7 +68,7 @@ class AccountHolderControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      implicit val reportId = ReportId(CRS,2025,None,"testFiID")
+      implicit val reportId = ReportId(CRS, 2025, None, "testFiID")
 
       val userAnswers = ua.set(AccountHolderPage(), AccountHolder.values.toSet).success.value
 

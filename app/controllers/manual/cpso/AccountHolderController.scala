@@ -58,23 +58,27 @@ class AccountHolderController @Inject() (
 
       implicit val reportId: ReportId = request.reportId
 
-      viewFIService.getFIDetail(request.fatcaId, reportId.fiId)
-        .map { fiDetail =>
-          //need to getfidetails
-          val accountHolders = AccountHolders
-            .existingAccountHolders(request.userAnswers)
-            .filter((_, accountHolder) => accountHolder.canHaveCPSO(reportId.regime))
+      viewFIService
+        .getFIDetail(request.fatcaId, reportId.fiId)
+        .map {
+          fiDetail =>
+            // need to getfidetails
+            val accountHolders = AccountHolders
+              .existingAccountHolders(request.userAnswers)
+              .filter(
+                (_, accountHolder) => accountHolder.canHaveCPSO(reportId.regime)
+              )
 
-          //below will be added to intemediary controller
-          //val anyCPSOExist: Boolean = accountHolders.exists((accountHolderId, accountHolders) => accountHolders.cpsos.getOrElse(Seq.empty).nonEmpty)
-          println(accountHolders)
+            // below will be added to intemediary controller
+            // val anyCPSOExist: Boolean = accountHolders.exists((accountHolderId, accountHolders) => accountHolders.cpsos.getOrElse(Seq.empty).nonEmpty)
+            println(accountHolders)
 
-          val preparedForm = request.userAnswers.get(AccountHolderPage()) match {
-            case None => form
-            case Some(value) => form.fill(value)
-          }
+            val preparedForm = request.userAnswers.get(AccountHolderPage()) match {
+              case None        => form
+              case Some(value) => form.fill(value)
+            }
 
-          Ok(view(preparedForm, mode, fiDetail.FIName, AccountHolders.checkboxOptions(accountHolders), reportId.regime.value))
+            Ok(view(preparedForm, mode, fiDetail.FIName, AccountHolders.checkboxOptions(accountHolders), reportId.regime.value))
         }
         .recover {
           case NoFiDetailFound =>

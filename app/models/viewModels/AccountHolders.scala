@@ -43,7 +43,7 @@ object AccountHolders {
             ).validate[Map[String, AccountHolder]]
 
           for {
-            currentId <- currentAccountHolderId
+            currentId      <- currentAccountHolderId
             accountHolders <- accountHolderEntries
           } yield AccountHolders(currentId, accountHolders)
       }
@@ -68,11 +68,16 @@ object AccountHolders {
   }
 
   def existingAccountHolders(userAnswers: UserAnswers)(implicit reportId: ReportId): Seq[(String, AccountHolder)] =
-    userAnswers.get(AccountHoldersPage())
+    userAnswers
+      .get(AccountHoldersPage())
       .map(
         _.accountHolders
-          .map((accountHolderID, accountHolder) => (accountHolderID, accountHolder)).toSeq
-      ).getOrElse(Seq.empty)
+          .map(
+            (accountHolderID, accountHolder) => (accountHolderID, accountHolder)
+          )
+          .toSeq
+      )
+      .getOrElse(Seq.empty)
 
   def checkboxOptions(accountHolders: Seq[(String, AccountHolder)]): Seq[CheckboxItem] =
     accountHolders.zipWithIndex.map {

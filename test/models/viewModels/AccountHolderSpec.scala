@@ -30,8 +30,8 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
       Some("CRS100") -> false,
       Some("CRS102") -> false,
       Some("CRS103") -> false,
-      Some("") -> false,
-      None -> false
+      Some("")       -> false,
+      None           -> false
     ).foreach {
       case (organisationType, expected) =>
         s"must return $expected when the CRS organisation type is ${organisationType.getOrElse("not set")}" in {
@@ -45,8 +45,8 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
       Some("FATCA102") -> false,
       Some("FATCA103") -> false,
       Some("FATCA104") -> false,
-      Some("") -> false,
-      None -> false
+      Some("")         -> false,
+      None             -> false
     ).foreach {
       case (organisationType, expected) =>
         s"must return $expected when the FATCA organisation type is ${organisationType.getOrElse("not set")}" in {
@@ -59,7 +59,6 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
       AccountHolder(individualOrOrganisation = Some(Individual))
         .cpsoIsMandatory(CRS) mustBe false
     }
-
 
   }
 

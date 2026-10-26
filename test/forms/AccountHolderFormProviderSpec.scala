@@ -26,13 +26,13 @@ class AccountHolderFormProviderSpec extends CheckboxFieldBehaviours {
 
   ".value" - {
 
-    val fieldName = "value"
+    val fieldName   = "value"
     val requiredKey = "accountHolder.error.required"
 
     behave like checkboxField[AccountHolder](
       form,
       fieldName,
-      validValues  = AccountHolder.values,
+      validValues = AccountHolder.values,
       invalidError = FormError(s"$fieldName[0]", "error.invalid")
     )
 

@@ -34,7 +34,6 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers with ScalaCheckPropert
 
       forAll(gen) {
         accountHolder =>
-
           JsString(accountHolder.toString).validate[AccountHolder].asOpt.value mustEqual accountHolder
       }
     }
@@ -45,7 +44,6 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers with ScalaCheckPropert
 
       forAll(gen) {
         invalidValue =>
-
           JsString(invalidValue).validate[AccountHolder] mustEqual JsError("error.invalid")
       }
     }
@@ -56,7 +54,6 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers with ScalaCheckPropert
 
       forAll(gen) {
         accountHolder =>
-
           Json.toJson(accountHolder) mustEqual JsString(accountHolder.toString)
       }
     }

@@ -38,7 +38,7 @@ case class AccountHolder(individualOrOrganisation: Option[IndividualOrOrganisati
           i => Seq("CRS101", "FATCA101", "FATCA102").contains(i)
         )
     }
-    
+
   def cpsoIsMandatory(regimeType: RegimeType): Boolean =
     individualOrOrganisation match {
       case None                                      => false
