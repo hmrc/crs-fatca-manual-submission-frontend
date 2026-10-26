@@ -38,7 +38,7 @@ class CheckDetailsForFinancialInstitutionViewSpec extends SpecBase {
   private val list             = SummaryListViewModel(Seq.empty)
   private val fiName           = "someFinancialInstitution"
   private val changeDetailsUrl = "/change-answers/someFiId"
-  private val utr              = "1234567890"
+  private val utr              = Some("1234567890")
 
   private def renderView(
     regime: models.SubmissionsConstants.RegimeType,
@@ -68,7 +68,7 @@ class CheckDetailsForFinancialInstitutionViewSpec extends SpecBase {
         doc.title() must include(messages("CheckDetailsForFinancialInstitution.title"))
         doc.select("h1").text() mustBe messages("CheckDetailsForFinancialInstitution.heading", fiName)
         doc.text() must include("We’ll use these details for your report.")
-        doc.text() must include(messages("CheckDetailsForFinancialInstitution.para.2.crsFiIsUser", utr))
+        doc.text() must include(messages("CheckDetailsForFinancialInstitution.para.2.crsFiIsUser", utr.get))
         doc.select("a[href=" + changeDetailsUrl + "]").text() must include(s"change these details for $fiName if needed")
         doc.select(".govuk-radios__item").size() mustBe 2
         doc.select(".govuk-fieldset__legend").text() must include(messages("hasFinishedChecking.subheading", fiName))

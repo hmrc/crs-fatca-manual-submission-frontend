@@ -29,7 +29,7 @@
     govukErrorSummary: GovukErrorSummary,
 )
 
-@(form: Form[_], list: SummaryList, fiName: String, regime: RegimeType , hasGiin: Boolean = false, fiIsUser: Boolean, utr: String, linkUrl: String)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], list: SummaryList, fiName: String, regime: RegimeType , hasGiin: Boolean = false, fiIsUser: Boolean, utr: Option[String], linkUrl: String)(implicit request: Request[_], messages: Messages)
 
 @isCrs = @{regime == CRS}
 @isFatca = @{regime == FATCA}
@@ -57,7 +57,8 @@
             <div class="govuk-!-margin-bottom-5">
                 @govukSummaryList(list)
             </div>
-            @para(if(isCrs && fiIsUser) "CheckDetailsForFinancialInstitution.para.2.crsFiIsUser" else "" , args = Seq(utr))
+            @utr.filter(_ => isCrs && fiIsUser).fold(HtmlFormat.empty)(utrValue =>
+                para("CheckDetailsForFinancialInstitution.para.2.crsFiIsUser", args = Seq(utrValue)))
 
             @if((isFatca && hasGiin) || isCrs) {
                 @govukRadios(

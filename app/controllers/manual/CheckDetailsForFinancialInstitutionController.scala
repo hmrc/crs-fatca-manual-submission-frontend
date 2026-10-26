@@ -18,8 +18,8 @@ package controllers.manual
 
 import controllers.actions.Actions
 import forms.manual.HasFinishedCheckingFormProvider
-import models.ServiceErrors.{MissingUTR, NoFiDetailFound}
-import models.SubmissionsConstants.{CRS, RegimeType}
+import models.ServiceErrors.NoFiDetailFound
+import models.SubmissionsConstants.RegimeType
 import models.response.FIDetail
 import models.response.TINType.UTR
 import play.api.Logging
@@ -83,15 +83,10 @@ class CheckDetailsForFinancialInstitutionController @Inject() (
     request: Request[_],
     messages: Messages
   ): Html = {
-    val maybeUtr = fiDetail.TINDetails
+    val maybeUtr: Option[String] = fiDetail.TINDetails
       .getOrElse(Seq.empty)
       .find(_.TINType == UTR)
       .map(_.TIN)
-
-    val utr = maybeUtr.getOrElse {
-      if (regime == CRS) throw MissingUTR else ""
-    }
-
     view(
       form,
       list = util.getRows(fiDetail, regime),
@@ -99,7 +94,7 @@ class CheckDetailsForFinancialInstitutionController @Inject() (
       fiName = fiDetail.FIName,
       fiIsUser = fiDetail.IsFIUser,
       hasGiin = fiDetail.GIIN.isDefined,
-      utr = utr,
+      utr = maybeUtr,
       linkUrl = util.changeFiUrl(fiDetail.FIID, fiDetail.IsFIUser)
     )
   }
@@ -108,9 +103,6 @@ class CheckDetailsForFinancialInstitutionController @Inject() (
     result.recover {
       case NoFiDetailFound =>
         logger.error(s"Failed to retrieve FIDetail for FiID $fiId")
-        Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
-      case MissingUTR =>
-        logger.error(s"Missing UTR from FIDetail for FiID $fiId when regime is CRS")
         Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
     }
 }

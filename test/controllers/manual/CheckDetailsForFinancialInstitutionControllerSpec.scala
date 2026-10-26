@@ -45,6 +45,11 @@ class CheckDetailsForFinancialInstitutionControllerSpec extends SpecBase {
     GIIN = Some("GIIN123")
   )
 
+  private val fiDetailWithTURN: FIDetail = fiDetail.copy(
+    TINDetails = Some(Seq(TINDetails(TINType.TURN, "0987654321", "GB"))),
+    GIIN = Some("GIIN123")
+  )
+
   private def baseUa(reportId: ReportId): UserAnswers =
     emptyUserAnswers.withPage(ReportIdPage, reportId)
 
@@ -65,7 +70,7 @@ class CheckDetailsForFinancialInstitutionControllerSpec extends SpecBase {
 
   "CheckDetailsForFinancialInstitution Controller" - {
 
-    "must return OK and the correct view for a GET" in {
+    "must return OK and the correct view for a GET (fi is user)" in {
       val answers     = baseUa(reportId)
       val application = applicationWithFiDetail(answers)
 
@@ -83,8 +88,31 @@ class CheckDetailsForFinancialInstitutionControllerSpec extends SpecBase {
           reportId.regime,
           hasGiin = true,
           fiIsUser = fiDetailWithUtr.IsFIUser,
-          utr = "1234567890",
+          utr = Some("1234567890"),
           linkUrl = util.changeFiUrl(fiDetailWithUtr.FIID, fiDetailWithUtr.IsFIUser)
+        )(request, messages(application)).toString
+      }
+    }
+    "must return OK and the correct view for a GET (fi is not user)" in {
+      val answers     = baseUa(reportId)
+      val application = applicationWithFiDetail(answers, detail = fiDetailWithTURN)
+
+      running(application) {
+        val request = FakeRequest(GET, getRoute)
+        val result  = route(application, request).value
+        val view    = application.injector.instanceOf[CheckDetailsForFinancialInstitutionView]
+        val util    = application.injector.instanceOf[CheckDetailsForFinancialInstitutionUtil]
+
+        status(result) mustBe OK
+        contentAsString(result) mustBe view(
+          form,
+          util.getRows(fiDetailWithTURN, reportId.regime)(messages(application)),
+          fiDetailWithTURN.FIName,
+          reportId.regime,
+          hasGiin = true,
+          fiIsUser = fiDetailWithTURN.IsFIUser,
+          utr = None,
+          linkUrl = util.changeFiUrl(fiDetailWithTURN.FIID, fiDetailWithTURN.IsFIUser)
         )(request, messages(application)).toString
       }
     }
@@ -131,7 +159,7 @@ class CheckDetailsForFinancialInstitutionControllerSpec extends SpecBase {
           reportId.regime,
           hasGiin = true,
           fiIsUser = fiDetailWithUtr.IsFIUser,
-          utr = "1234567890",
+          utr = Some("1234567890"),
           linkUrl = util.changeFiUrl(fiDetailWithUtr.FIID, fiDetailWithUtr.IsFIUser)
         )(request, messages(application)).toString
       }
@@ -143,18 +171,6 @@ class CheckDetailsForFinancialInstitutionControllerSpec extends SpecBase {
       val application = applicationBuilder(maybeUserAnswers = Some(baseUa(reportId)))
         .overrides(bind[ViewFIService].toInstance(mockService))
         .build()
-
-      running(application) {
-        val request = FakeRequest(GET, getRoute)
-        val result  = route(application, request).value
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe routes.JourneyRecoveryController.onPageLoad().url
-      }
-    }
-
-    "must redirect to Journey Recovery when a CRS FI has no UTR" in {
-      val application = applicationWithFiDetail(detail = fiDetailWithUtr.copy(TINDetails = None))
 
       running(application) {
         val request = FakeRequest(GET, getRoute)
