@@ -64,7 +64,8 @@ class CheckDetailsForFinancialInstitutionUtilSpec extends SpecBase {
           TINDetails = Some(
             Seq(
               TINDetails(TINType.UTR, "1234567890", "GB"),
-              TINDetails(TINType.CRN, "09876543", "GB")
+              TINDetails(TINType.CRN, "CRN123", "GB"),
+              TINDetails(TINType.TURN, "TURN123", "GB")
             )
           )
         )
@@ -78,8 +79,38 @@ class CheckDetailsForFinancialInstitutionUtilSpec extends SpecBase {
           HtmlContent(messages("CheckDetailsForFinancialInstitution.value.address")) -> HtmlContent(
             "Line 1<br>Line 2<br>Line 4<br>GB<br>AB1 2CD"
           ),
-          HtmlContent("UTR") -> HtmlContent("1234567890"),
-          HtmlContent("CRN") -> HtmlContent("09876543")
+          HtmlContent(messages("CheckDetailsForFinancialInstitution.tinType.utr")) -> HtmlContent("1234567890")
+        )
+      }
+
+      "must choose CRN when UTR is absent and TURN is also present" in {
+        val detail = fiDetail.copy(
+          TINDetails = Some(
+            Seq(
+              TINDetails(TINType.TURN, "TURN123", "GB"),
+              TINDetails(TINType.CRN, "CRN123", "GB")
+            )
+          )
+        )
+
+        val tinRows = util.getRows(detail, CRS).rows.drop(2)
+
+        tinRows.map(
+          row => row.key.content -> row.value.content
+        ) mustBe Seq(
+          HtmlContent(messages("CheckDetailsForFinancialInstitution.tinType.crn")) -> HtmlContent("CRN123")
+        )
+      }
+
+      "must choose TURN when UTR and CRN are absent" in {
+        val detail = fiDetail.copy(TINDetails = Some(Seq(TINDetails(TINType.TURN, "TURN123", "GB"))))
+
+        val tinRows = util.getRows(detail, CRS).rows.drop(2)
+
+        tinRows.map(
+          row => row.key.content -> row.value.content
+        ) mustBe Seq(
+          HtmlContent(messages("CheckDetailsForFinancialInstitution.tinType.turn")) -> HtmlContent("TURN123")
         )
       }
 

@@ -1182,8 +1182,11 @@ CheckDetailsForFinancialInstitution.key.noTin = Identification number
 CheckDetailsForFinancialInstitution.value.noTin = Not provided. We’ll use ‘NOTIN’ in your report
 CheckDetailsForFinancialInstitution.key.fiName = Financial institution name
 CheckDetailsForFinancialInstitution.value.address = Main business address
+CheckDetailsForFinancialInstitution.tinType.utr = Unique Taxpayer Reference
+CheckDetailsForFinancialInstitution.tinType.crn = Company Registration Number
+CheckDetailsForFinancialInstitution.tinType.turn = Trust Unique Reference Number
+CheckDetailsForFinancialInstitution.tinType.other = Other
 
 hasFinishedChecking.subheading = Have you finished checking these details for {0}?
 hasFinishedChecking.para = You’ll still be able to change these details later before sending your report.
 hasFinishedChecking.error.required = Select yes if you have finished checking these details for the financial institution
-

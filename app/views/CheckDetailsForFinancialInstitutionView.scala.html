@@ -54,9 +54,9 @@
             @heading(headingContent = messages("CheckDetailsForFinancialInstitution.heading", fiName))
 
             @para(if(!isCrs && !hasGiin) "CheckDetailsForFinancialInstitution.para.1.fatcaNoGiin" else "CheckDetailsForFinancialInstitution.para.1", htmlArgs = Seq(changeLink))
-
-            @govukSummaryList(list)
-
+            <div class="govuk-!-margin-bottom-5">
+                @govukSummaryList(list)
+            </div>
             @para(if(isCrs && fiIsUser) "CheckDetailsForFinancialInstitution.para.2.crsFiIsUser" else "" , args = Seq(utr))
 
             @if((isFatca && hasGiin) || isCrs) {

@@ -18,7 +18,7 @@ package utils
 
 import config.FrontendAppConfig
 import models.SubmissionsConstants.*
-import models.response.FIDetail
+import models.response.{FIDetail, TINType}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryList, SummaryListRow, Value}
@@ -50,13 +50,18 @@ class CheckDetailsForFinancialInstitutionUtil @Inject (appConfig: FrontendAppCon
       val noTIN = toRow(messages("CheckDetailsForFinancialInstitution.key.noTin"), Some(messages("CheckDetailsForFinancialInstitution.value.noTin")))
 
       if (regime == CRS) {
-        fIDetail.TINDetails
-          .map(
-            _.flatMap(
-              tin => toRow(tin.TINType.toString, Some(tin.TIN))
-            )
+        val tinDetails = fIDetail.TINDetails.getOrElse(Seq.empty)
+        val orderedPriorityTin = Seq(TINType.UTR, TINType.CRN, TINType.TURN).iterator
+          .flatMap(
+            tinType => tinDetails.find(_.TINType == tinType)
           )
-          .getOrElse(noTIN)
+          .take(1)
+          .toSeq
+
+        orderedPriorityTin match {
+          case Seq(tin) => toRow(tin.toKey, Some(tin.TIN))
+          case _        => noTIN
+        }
       } else { Seq.empty }
     }
 
