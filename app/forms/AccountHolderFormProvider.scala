@@ -16,12 +16,13 @@
 
 package forms
 
-import javax.inject.Inject
 import forms.mappings.Mappings
+import models.Enumerable
+import models.viewModels.AccountHolderId
 import play.api.data.Form
 import play.api.data.Forms.set
-import models.{AccountHolder, Enumerable}
-import models.viewModels.AccountHolderId
+
+import javax.inject.Inject
 
 class AccountHolderFormProvider @Inject() extends Mappings {
 

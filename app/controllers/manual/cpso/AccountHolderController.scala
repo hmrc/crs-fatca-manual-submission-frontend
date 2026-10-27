@@ -20,7 +20,7 @@ import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.AccountHolderFormProvider
 import models.ServiceErrors.NoFiDetailFound
-import models.viewModels.{AccountHolders, Accounts}
+import models.viewModels.AccountHolders
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
 import pages.manual.cpso.AccountHolderPage
@@ -60,7 +60,7 @@ class AccountHolderController @Inject() (
             val accountHolders = AccountHolders
               .existingAccountHolders(request.userAnswers)
               .filter(
-                (_, accountHolder) => accountHolder.canHaveCPSO(reportId.regime)
+                (_, accountHolder) => accountHolder.canHaveCPSO(reportId.regime) && accountHolder.organisationName.nonEmpty
               )
             val existingIds = accountHolders.map(_._1).toSet
             val preparedForm = request.userAnswers

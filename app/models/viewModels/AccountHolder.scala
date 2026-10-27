@@ -23,8 +23,7 @@ import play.api.libs.json.{Json, OFormat}
 case class AccountHolder(individualOrOrganisation: Option[IndividualOrOrganisation] = None,
                          organisationName: Option[String] = None,
                          organisationFatca: Option[String] = None,
-                         organisationCrs: Option[String] = None,
-                         cpsos: Option[Seq[String]] = None
+                         organisationCrs: Option[String] = None
 ) {
 
   private def accountHolderType(regimeType: RegimeType) = if regimeType == CRS then organisationCrs else organisationFatca
