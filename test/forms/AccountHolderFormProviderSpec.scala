@@ -36,10 +36,10 @@ class AccountHolderFormProviderSpec extends CheckboxFieldBehaviours {
     val fieldName   = "value"
     val requiredKey = "cpso.accountHolder.error.required"
 
-    behave like checkboxField[AccountHolder](
+    behave like checkboxField(
       form,
       fieldName,
-      validValues = AccountHolder.values,
+      validValues = accountHolderIds,
       invalidError = FormError(s"$fieldName[0]", "error.invalid")
     )
 
