@@ -18,7 +18,7 @@ package generators
 
 import models.manual.account.{PaymentType, WasAccountOpen, WhatAccountType}
 import models.manual.accountHolders.{IndividualName, SelfCertification}
-import models.manual.cpso.{CpsoSelfCertification, IndividualOrOrganisation, UkPostCode}
+import models.manual.cpso.{CpsoSelfCertification, IndividualOrOrganisation}
 import models.{AddressUk, CrsOrFatca, NumberType, TypeOfReport, UkAddress, UkPostCodeForAccountHolder}
 import org.scalacheck.Arbitrary.*
 import org.scalacheck.{Arbitrary, Gen}
@@ -31,14 +31,6 @@ trait ModelGenerators {
         address1 <- arbitrary[String]
         address2 <- arbitrary[String]
       } yield AddressUk(address1, address2)
-    }
-
-  implicit lazy val arbitraryUkPostCode: Arbitrary[UkPostCode] =
-    Arbitrary {
-      for {
-        value  <- arbitrary[String]
-        value2 <- arbitrary[String]
-      } yield UkPostCode(value, value2)
     }
 
   implicit lazy val arbitrarySelfCertification: Arbitrary[SelfCertification] =
