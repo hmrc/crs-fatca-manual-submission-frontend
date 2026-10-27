@@ -61,11 +61,11 @@ class CheckDetailsForFinancialInstitutionUtilSpec extends SpecBase {
             PostalCode = Some("AB1 2CD")
           ),
           GIIN = Some("GIIN-123"),
+          IsFIUser = false,
           TINDetails = Some(
             Seq(
               TINDetails(TINType.UTR, "1234567890", "GB"),
-              TINDetails(TINType.CRN, "CRN123", "GB"),
-              TINDetails(TINType.TURN, "TURN123", "GB")
+              TINDetails(TINType.CRN, "CRN123", "GB")
             )
           )
         )
@@ -79,18 +79,15 @@ class CheckDetailsForFinancialInstitutionUtilSpec extends SpecBase {
           HtmlContent(messages("CheckDetailsForFinancialInstitution.value.address")) -> HtmlContent(
             "Line 1<br>Line 2<br>Line 4<br>GB<br>AB1 2CD"
           ),
-          HtmlContent(messages("CheckDetailsForFinancialInstitution.tinType.utr")) -> HtmlContent("1234567890")
+          HtmlContent(messages("CheckDetailsForFinancialInstitution.tinType.utr")) -> HtmlContent("1234567890"),
+          HtmlContent(messages("CheckDetailsForFinancialInstitution.tinType.crn")) -> HtmlContent("CRN123")
         )
       }
 
-      "must choose CRN when UTR is absent and TURN is also present" in {
+      "must include the CRN row when a UTR is absent" in {
         val detail = fiDetail.copy(
-          TINDetails = Some(
-            Seq(
-              TINDetails(TINType.TURN, "TURN123", "GB"),
-              TINDetails(TINType.CRN, "CRN123", "GB")
-            )
-          )
+          IsFIUser = false,
+          TINDetails = Some(Seq(TINDetails(TINType.CRN, "CRN123", "GB")))
         )
 
         val tinRows = util.getRows(detail, CRS).rows.drop(2)
@@ -102,8 +99,11 @@ class CheckDetailsForFinancialInstitutionUtilSpec extends SpecBase {
         )
       }
 
-      "must choose TURN when UTR and CRN are absent" in {
-        val detail = fiDetail.copy(TINDetails = Some(Seq(TINDetails(TINType.TURN, "TURN123", "GB"))))
+      "must include only the TURN row when it is present without UTR or CRN" in {
+        val detail = fiDetail.copy(
+          IsFIUser = false,
+          TINDetails = Some(Seq(TINDetails(TINType.TURN, "TURN123", "GB")))
+        )
 
         val tinRows = util.getRows(detail, CRS).rows.drop(2)
 
@@ -114,8 +114,8 @@ class CheckDetailsForFinancialInstitutionUtilSpec extends SpecBase {
         )
       }
 
-      "must show the no-TIN fallback row and omit GIIN for CRS when those values are absent" in {
-        val result = util.getRows(fiDetail.copy(GIIN = None, TINDetails = None), CRS)
+      "must show the no-TIN fallback row for a non-user FI without TIN details" in {
+        val result = util.getRows(fiDetail.copy(IsFIUser = false, GIIN = None, TINDetails = None), CRS)
 
         result.rows.map(
           row => row.key.content -> row.value.content
@@ -127,6 +127,26 @@ class CheckDetailsForFinancialInstitutionUtilSpec extends SpecBase {
           HtmlContent(messages("CheckDetailsForFinancialInstitution.key.noTin")) -> HtmlContent(
             messages("CheckDetailsForFinancialInstitution.value.noTin")
           )
+        )
+      }
+
+      "must omit TIN rows for an FI user" in {
+        val detail = fiDetail.copy(
+          IsFIUser = true,
+          TINDetails = Some(
+            Seq(
+              TINDetails(TINType.UTR, "1234567890", "GB"),
+              TINDetails(TINType.CRN, "CRN123", "GB"),
+              TINDetails(TINType.TURN, "TURN123", "GB")
+            )
+          )
+        )
+
+        val result = util.getRows(detail, CRS)
+
+        result.rows.map(_.key.content) mustBe Seq(
+          HtmlContent(messages("CheckDetailsForFinancialInstitution.key.fiName")),
+          HtmlContent(messages("CheckDetailsForFinancialInstitution.value.address"))
         )
       }
 

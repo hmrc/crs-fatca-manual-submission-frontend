@@ -34,10 +34,6 @@
 @isCrs = @{regime == CRS}
 @isFatca = @{regime == FATCA}
 
-@legendContent = @{ HtmlContent(HtmlFormat.fill(
-    Seq(heading(headingContent = messages("hasFinishedChecking.subheading", fiName), size = "m", level = "h2", extraClasses = "govuk-!-padding-top-4"),
-        para("hasFinishedChecking.para"))))}
-
 @changeLink = @{link(href = linkUrl,
                     message = messages(
                         if(!isCrs && !hasGiin) "CheckDetailsForFinancialInstitution.para.1.link.fatcaNoGiin"
@@ -60,11 +56,14 @@
             @utr.filter(_ => isCrs && fiIsUser).fold(HtmlFormat.empty)(utrValue =>
                 para("CheckDetailsForFinancialInstitution.para.2.crsFiIsUser", args = Seq(utrValue)))
 
+
             @if((isFatca && hasGiin) || isCrs) {
+                @heading(headingContent = messages("hasFinishedChecking.subheading", fiName), size = "m", level = "h2", extraClasses = "govuk-!-padding-top-4")
+                @para("hasFinishedChecking.para")
                 @govukRadios(
                     RadiosViewModel.yesNo(
                         field = form("value"),
-                        legend = LegendViewModel(legendContent)
+                        legend = LegendViewModel(messages("hasFinishedChecking.subheading", fiName)).withCssClass("govuk-visually-hidden govuk-!-display-block")
                     )
                 )
 

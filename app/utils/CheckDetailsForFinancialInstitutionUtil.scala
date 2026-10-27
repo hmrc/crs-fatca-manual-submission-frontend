@@ -48,19 +48,23 @@ class CheckDetailsForFinancialInstitutionUtil @Inject (appConfig: FrontendAppCon
 
     val tinRows: Seq[SummaryListRow] = {
       val noTIN = toRow(messages("CheckDetailsForFinancialInstitution.key.noTin"), Some(messages("CheckDetailsForFinancialInstitution.value.noTin")))
-
-      if (regime == CRS) {
+      if (regime == CRS && !fIDetail.IsFIUser) {
         val tinDetails = fIDetail.TINDetails.getOrElse(Seq.empty)
-        val orderedPriorityTin = Seq(TINType.UTR, TINType.CRN, TINType.TURN).iterator
-          .flatMap(
-            tinType => tinDetails.find(_.TINType == tinType)
-          )
-          .take(1)
-          .toSeq
+        val utrAndCrn = Seq(TINType.UTR, TINType.CRN).flatMap(
+          tinType => tinDetails.find(_.TINType == tinType)
+        )
 
-        orderedPriorityTin match {
-          case Seq(tin) => toRow(tin.toKey, Some(tin.TIN))
-          case _        => noTIN
+        if (utrAndCrn.nonEmpty) {
+          utrAndCrn.flatMap(
+            tin => toRow(tin.toKey, Some(tin.TIN))
+          )
+        } else {
+          tinDetails
+            .find(_.TINType == TINType.TURN)
+            .map(
+              tin => toRow(tin.toKey, Some(tin.TIN))
+            )
+            .getOrElse(noTIN)
         }
       } else { Seq.empty }
     }

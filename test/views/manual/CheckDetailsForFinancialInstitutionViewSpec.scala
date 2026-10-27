@@ -71,8 +71,8 @@ class CheckDetailsForFinancialInstitutionViewSpec extends SpecBase {
         doc.text() must include(messages("CheckDetailsForFinancialInstitution.para.2.crsFiIsUser", utr.get))
         doc.select("a[href=" + changeDetailsUrl + "]").text() must include(s"change these details for $fiName if needed")
         doc.select(".govuk-radios__item").size() mustBe 2
-        doc.select(".govuk-fieldset__legend").text() must include(messages("hasFinishedChecking.subheading", fiName))
-        doc.select(".govuk-fieldset__legend").text() must include(messages("hasFinishedChecking.para"))
+        doc.text() must include(messages("hasFinishedChecking.subheading", fiName))
+        doc.text() must include(messages("hasFinishedChecking.para"))
         doc.select("#submit").text() mustBe messages("site.continue")
       }
       "must render the error summary and mark the radios as invalid when the answer is missing" in {
@@ -102,8 +102,8 @@ class CheckDetailsForFinancialInstitutionViewSpec extends SpecBase {
         val doc = renderView(FATCA, hasGiin = true)
 
         doc.select(".govuk-radios__item").size() mustBe 2
-        doc.select(".govuk-fieldset__legend").text() must include(messages("hasFinishedChecking.subheading", fiName))
-        doc.select(".govuk-fieldset__legend").text() must include(messages("hasFinishedChecking.para"))
+        doc.text() must include(messages("hasFinishedChecking.subheading", fiName))
+        doc.text() must include(messages("hasFinishedChecking.para"))
         doc.text() must not include messages("CheckDetailsForFinancialInstitution.para.2.crsFiIsUser", utr)
       }
     }
