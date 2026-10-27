@@ -539,7 +539,7 @@ individualOrOrganisation.title = Is the account holder an individual or organisa
 individualOrOrganisation.heading = Is the account holder an individual or organisation?
 individualOrOrganisation.individual = Individual
 individualOrOrganisation.organisation = Organisation
-individualOrOrganisation.checkYourAnswersLabel = individualOrOrganisation
+individualOrOrganisation.checkYourAnswersLabel = Is the account holder an individual or organisation?
 individualOrOrganisation.error.required = Select whether the account holder is an individual or organisation
 individualOrOrganisation.change.hidden = IndividualOrOrganisation
 
@@ -566,6 +566,7 @@ individualName.error.FirstName.doubledash = The first name must not include a do
 individualName.error.LastName.doubledash = The last name must not include a double dash (--)
 individualName.FirstName.change.hidden = FirstName
 individualName.LastName.change.hidden = LastName
+individualName.change.hidden = Change the name of the account holder
 
 cpso.individualName.crs.title = What is the name of the controlling person?
 cpso.individualName.fatca.title = What is the name of the substantial owner?
@@ -987,7 +988,7 @@ organisationName.error.required = Enter the name of the account holder
 organisationName.error.length = Account holder name must be 200 characters or less
 organisationName.error.invalid = Account holder name must only include letters a to z, numbers 0 to 9, ampersands (&), apostrophes, backslashes, carets (^), grave accents (`), hyphens and spaces
 organisationName.error.invalid-combination = Account holder name must not include a double dash (--)
-organisationName.change.hidden = OrganisationName
+organisationName.change.hidden = Change the name of the account holder
 organisationName.empty =
 
 organisationFatca.title = What type of account holder is this?
@@ -1004,7 +1005,7 @@ organisationCrs.title = What type of account holder is this?
 organisationCrs.heading = What type of account holder is {0}?
 organisationCrs.checkYourAnswersLabel = What type of account holder is {0}?
 organisationCrs.error.required = Select what type of account holder this is
-organisationCrs.change.hidden = organisationCrs
+organisationCrs.change.hidden = Change what type of account holder they are
 organisationCrs.passiveWithMultiplePersons = Passive non-financial entity with one or more controlling reportable persons
 organisationCrs.crsReportable = CRS reportable person
 organisationCrs.passiveCrsPerson = Passive non-financial entity that is a CRS reportable person
@@ -1061,7 +1062,7 @@ accountHolder.account.para.link = add an account
 accountHolder.account.question = Which accounts does this account holder hold?
 accountHolder.account.question.hint = Select at least one account number or identifier.
 accountHolder.account.sendAReport.link = Back to send a {0} report for {1}
-accountHolder.account.checkYourAnswersLabel = Accounts held by this account holder
+accountHolder.account.checkYourAnswersLabel = Which accounts does this account holder hold?
 accountHolder.account.error.required = Select at least one account number or identifier
 accountHolders.residentTax.paragraph = If they are resident for tax in more than one country, then you can add other countries after this one.
 accountHolder.account.change.hidden = Account
@@ -1162,3 +1163,7 @@ cpso.taxIdentificationNumber.error.tin.invalidChars = Tax identification number 
 cpso.taxIdentificationNumber.error.tin.giinOrSsn.invalid = Tax identification number must be a Global Intermediary Identification Number (GIIN) or in the format 000-00-0000, 00-0000000 or 000000000
 cpso.taxIdentificationNumber.error.tin.organization.is.blacklisted = Tax identification number must not be 000000000, 222222222, 000222111, 333333333 or 888888888
 cpso.taxIdentificationNumber.error.tin.individual.is.blacklisted = Tax identification number must not be 000000000, 666666666 or 888888888
+
+accountHolders.checkAnswers.title = Check your answers for the account holder
+accountHolders.checkAnswers.heading = Check your answers for the account holder
+

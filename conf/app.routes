@@ -482,3 +482,6 @@ POST       /manual/cp-so/identification-number                        controller
 GET        /manual/cp-so/change-identification-number                  controllers.manual.cpso.TaxIdentificationNumberController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/cp-so/change-identification-number                controllers.manual.cpso.TaxIdentificationNumberController.onSubmit(mode: Mode = CheckMode)
 
+GET        /manual/account-holder/check-answers                                      controllers.manual.accountHolders.CheckAnswersController.onPageLoad()
+POST       /manual/account-holder/check-answers                                      controllers.manual.accountHolders.CheckAnswersController.onSubmit()
+
