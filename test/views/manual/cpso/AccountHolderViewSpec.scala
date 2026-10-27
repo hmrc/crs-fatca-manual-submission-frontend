@@ -18,6 +18,7 @@ package views.manual.cpso
 
 import base.SpecBase
 import forms.AccountHolderFormProvider
+import models.viewModels.AccountHolderId
 import models.{AccountHolder, Mode, NormalMode}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -44,9 +45,8 @@ class AccountHolderViewSpec extends SpecBase {
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
   implicit private val messages: Messages               = messagesControllerComponents.messagesApi.preferred(Seq(Lang("en")))
 
-  // todo update this wnen formprovider is changed
-  private val formProvider                   = new AccountHolderFormProvider()
-  private val form: Form[Set[AccountHolder]] = formProvider()
+  private val formProvider                     = new AccountHolderFormProvider()
+  private val form: Form[Set[AccountHolderId]] = formProvider(Seq.empty)
 
   private val fiName = "Some Fi Name"
 
@@ -63,7 +63,6 @@ class AccountHolderViewSpec extends SpecBase {
     regimeName: String = "crs"
   ): Document =
     Jsoup.parse(view(boundForm, mode, name, checkboxOptions, regimeName).body)
-
 
   private def addAccountPath(mode: Mode): String =
     controllers.manual.accountHolders.routes.AccountController.onPageLoad(mode).url

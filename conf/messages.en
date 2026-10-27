@@ -1177,6 +1177,7 @@ cpso.crs.checkbox.accountHolder.paragraph = You must add at least one controllin
 cpso.fatca.checkbox.accountHolder.paragraph = You can add one or more substantial owners for the account holder if their organisation is either:
 cpso.fatca.checkbox.accountHolder.bullet1 = an owner-documented foreign financial institution with specified US owners
 cpso.fatca.checkbox.accountHolder.bullet2 = a passive non-financial foreign entity with substantial US owners, or controlling persons
+cpso.accountHolder.error.required = Select at least one account holder
 accountHolder.a = one
 accountHolder.b = two
 accountHolder.checkYourAnswersLabel = Account holders linked to this controlling person

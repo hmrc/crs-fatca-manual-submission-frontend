@@ -17,16 +17,30 @@
 package forms
 
 import javax.inject.Inject
-
 import forms.mappings.Mappings
 import play.api.data.Form
 import play.api.data.Forms.set
-import models.AccountHolder
+import models.{AccountHolder, Enumerable}
+import models.viewModels.AccountHolderId
 
 class AccountHolderFormProvider @Inject() extends Mappings {
 
-  def apply(): Form[Set[AccountHolder]] =
+  def apply(accountIds: Seq[AccountHolderId]): Form[Set[AccountHolderId]] = {
+
+    implicit val accountIdEnumerable: Enumerable[AccountHolderId] =
+      Enumerable(
+        accountIds.map(
+          accountId => accountId.value -> accountId
+        ): _*
+      )
+
     Form(
-      "value" -> set(enumerable[AccountHolder]("accountHolder.error.required")).verifying(nonEmptySet("accountHolder.error.required"))
+      "value" ->
+        set(
+          enumerable("cpso.accountHolder.error.required")
+        ).verifying(
+          nonEmptySet("cpso.accountHolder.error.required")
+        )
     )
+  }
 }

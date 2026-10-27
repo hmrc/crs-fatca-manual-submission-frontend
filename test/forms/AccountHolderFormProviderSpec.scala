@@ -18,16 +18,23 @@ package forms
 
 import forms.behaviours.CheckboxFieldBehaviours
 import models.AccountHolder
+import models.viewModels.AccountHolderId
 import play.api.data.FormError
 
 class AccountHolderFormProviderSpec extends CheckboxFieldBehaviours {
 
-  val form = new AccountHolderFormProvider()()
+  private val accountHolderIds = Seq(
+    AccountHolderId("1"),
+    AccountHolderId("2"),
+    AccountHolderId("3")
+  )
+
+  val form = new AccountHolderFormProvider()(accountHolderIds)
 
   ".value" - {
 
     val fieldName   = "value"
-    val requiredKey = "accountHolder.error.required"
+    val requiredKey = "cpso.accountHolder.error.required"
 
     behave like checkboxField[AccountHolder](
       form,

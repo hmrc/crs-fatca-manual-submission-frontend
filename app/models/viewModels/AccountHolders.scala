@@ -67,26 +67,26 @@ object AccountHolders {
     }
   }
 
-  def existingAccountHolders(userAnswers: UserAnswers)(implicit reportId: ReportId): Seq[(String, AccountHolder)] =
+  def existingAccountHolders(userAnswers: UserAnswers)(implicit reportId: ReportId): Seq[(AccountHolderId, AccountHolder)] =
     userAnswers
       .get(AccountHoldersPage())
       .map(
         _.accountHolders
           .map(
-            (accountHolderID, accountHolder) => (accountHolderID, accountHolder)
+            (accountHolderID, accountHolder) => (AccountHolderId(accountHolderID), accountHolder)
           )
           .toSeq
       )
       .getOrElse(Seq.empty)
 
-  def checkboxOptions(accountHolders: Seq[(String, AccountHolder)]): Seq[CheckboxItem] =
+  def checkboxOptions(accountHolders: Seq[(AccountHolderId, AccountHolder)]): Seq[CheckboxItem] =
     accountHolders.zipWithIndex.map {
       case ((accountHolderId, accountHolder), index) =>
         CheckboxItemViewModel(
           content = Text(accountHolder.organisationName.getOrElse("")),
           fieldId = "value",
           index = index,
-          value = accountHolderId
+          value = accountHolderId.value
         ).copy(name = Some(s"value[$index]"))
     }
 

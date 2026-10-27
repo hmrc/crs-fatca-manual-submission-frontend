@@ -20,7 +20,7 @@ import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.AccountHolderFormProvider
 import models.ServiceErrors.NoFiDetailFound
-import models.viewModels.AccountHolders
+import models.viewModels.{AccountHolders, Accounts}
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
 import pages.manual.cpso.AccountHolderPage
@@ -38,10 +38,7 @@ class AccountHolderController @Inject() (
   override val messagesApi: MessagesApi,
   repository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
-  identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  reportIdAction: ReportIdRequiredAction,
+  actions: Actions,
   formProvider: AccountHolderFormProvider,
   viewFIService: ViewFIService,
   val controllerComponents: MessagesControllerComponents,
@@ -51,9 +48,7 @@ class AccountHolderController @Inject() (
     with I18nSupport
     with Logging {
 
-  val form = formProvider()
-
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
+  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndCPSOIdCreation().async {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
@@ -62,22 +57,16 @@ class AccountHolderController @Inject() (
         .getFIDetail(request.fatcaId, reportId.fiId)
         .map {
           fiDetail =>
-            // need to getfidetails
             val accountHolders = AccountHolders
               .existingAccountHolders(request.userAnswers)
               .filter(
                 (_, accountHolder) => accountHolder.canHaveCPSO(reportId.regime)
               )
-
-            // below will be added to intemediary controller
-            // val anyCPSOExist: Boolean = accountHolders.exists((accountHolderId, accountHolders) => accountHolders.cpsos.getOrElse(Seq.empty).nonEmpty)
-            println(accountHolders)
-
-            val preparedForm = request.userAnswers.get(AccountHolderPage()) match {
-              case None        => form
-              case Some(value) => form.fill(value)
-            }
-
+            val existingIds = accountHolders.map(_._1).toSet
+            val preparedForm = request.userAnswers
+              .get(AccountHolderPage(request.cpsoId, reportId))
+              .map(_ intersect existingIds)
+              .fold(formProvider(existingIds.toSeq))(formProvider(existingIds.toSeq).fill)
             Ok(view(preparedForm, mode, fiDetail.FIName, AccountHolders.checkboxOptions(accountHolders), reportId.regime.value))
         }
         .recover {
@@ -88,20 +77,37 @@ class AccountHolderController @Inject() (
 
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndCPSOIdCreation().async {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
-
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, "Some Fi Name", Seq.empty, "CRS"))),
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(AccountHolderPage(), value))
-              _              <- repository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(AccountHolderPage(), mode, updatedAnswers))
-        )
+      viewFIService
+        .getFIDetail(request.fatcaId, reportId.fiId)
+        .flatMap {
+          fiDetail =>
+            val accountHolders = AccountHolders
+              .existingAccountHolders(request.userAnswers)
+              .filter(
+                (_, accountHolder) => accountHolder.canHaveCPSO(reportId.regime)
+              )
+            val existingIds = accountHolders.map(_._1)
+            val form        = formProvider(existingIds)
+            val options     = AccountHolders.checkboxOptions(accountHolders)
+            form
+              .bindFromRequest()
+              .fold(
+                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiDetail.FIName, options, reportId.regime.value))),
+                value =>
+                  for {
+                    updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(AccountHolderPage(request.cpsoId, reportId), value))
+                    _              <- repository.set(updatedAnswers)
+                  } yield Redirect(navigator.nextPage(AccountHolderPage(request.cpsoId, reportId), mode, updatedAnswers))
+              )
+        }
+        .recover {
+          case NoFiDetailFound =>
+            logger.error(s"Failed to retrieve FIDetail for FiID ${reportId.fiId}")
+            Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+        }
   }
 }

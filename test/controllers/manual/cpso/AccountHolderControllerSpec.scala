@@ -43,7 +43,7 @@ class AccountHolderControllerSpec extends SpecBase with MockitoSugar {
   lazy val accountHolderRoute = controllers.manual.cpso.routes.AccountHolderController.onPageLoad(NormalMode).url
 
   val formProvider = new AccountHolderFormProvider()
-  val form         = formProvider()
+  val form         = formProvider(Seq.empty)
 
   "AccountHolder Controller" - {
 
