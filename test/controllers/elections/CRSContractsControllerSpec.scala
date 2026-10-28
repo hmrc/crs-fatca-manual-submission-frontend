@@ -41,7 +41,7 @@ class CRSContractsControllerSpec extends SpecBase with MockitoSugar {
 
   val formProvider                      = new CRSContractsFormProvider()
   val form: Form[Boolean]               = formProvider()
-  val testFIName                        = "Test FI" // TODO : Require update after integration
+  val testFIName                        = "Test FI"
   val reportingYear                     = 2027
   implicit val electionsId: ElectionsId = ElectionsId(reportingYear, "fiID")
 

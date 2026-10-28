@@ -435,7 +435,6 @@ POST       /manual/account-holder/account                controllers.manual.acco
 GET        /manual/account-holder/change-account         controllers.manual.accountHolders.AccountController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/account-holder/change-account         controllers.manual.accountHolders.AccountController.onSubmit(mode: Mode = CheckMode)
 
-
 GET        /manual/account-holder/resident-for-tax                        controllers.manual.accountHolders.ResidentTaxController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/account-holder/resident-for-tax                         controllers.manual.accountHolders.ResidentTaxController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/account-holder/change-resident-for-tax                   controllers.manual.accountHolders.ResidentTaxController.onPageLoad(mode: Mode = CheckMode)
@@ -449,7 +448,7 @@ POST        /manual/account-holder/change-have-identification-number            
 GET        /manual/account-holder/identification-number                         controllers.manual.accountHolders.TaxIdentificationNumberController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/account-holder/identification-number                         controllers.manual.accountHolders.TaxIdentificationNumberController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/account-holder/change-identification-number                  controllers.manual.accountHolders.TaxIdentificationNumberController.onPageLoad(mode: Mode = CheckMode)
-POST       /manual/account-holder/change-identification-number                   controllers.manual.accountHolders.TaxIdentificationNumberController.onSubmit(mode: Mode = CheckMode)
+POST       /manual/account-holder/change-identification-number                  controllers.manual.accountHolders.TaxIdentificationNumberController.onSubmit(mode: Mode = CheckMode)
 
 GET         /manual/account-holder/tax-resident-countries                   controllers.manual.accountHolders.TaxResidentCountriesController.onPageLoad(mode: Mode = NormalMode)
 POST        /manual/account-holder/tax-resident-countries                   controllers.manual.accountHolders.TaxResidentCountriesController.onSubmit(mode: Mode = NormalMode)
@@ -482,6 +481,8 @@ POST       /manual/cp-so/identification-number                        controller
 GET        /manual/cp-so/change-identification-number                  controllers.manual.cpso.TaxIdentificationNumberController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/cp-so/change-identification-number                controllers.manual.cpso.TaxIdentificationNumberController.onSubmit(mode: Mode = CheckMode)
 
+GET        /manual/reporting-financial-institution                              controllers.manual.CheckDetailsForFinancialInstitutionController.onPageLoad()
+POST        /manual/reporting-financial-institution                             controllers.manual.CheckDetailsForFinancialInstitutionController.onSubmit()
 
 GET         /manual/cp-so/account-holder                       controllers.manual.cpso.AccountHolderController.onPageLoad(mode: Mode = NormalMode)
 POST        /manual/cp-so/account-holder                       controllers.manual.cpso.AccountHolderController.onSubmit(mode: Mode = NormalMode)
@@ -489,4 +490,5 @@ GET         /manual/cp-so/change-account-holder                 controllers.manu
 POST        /manual/cp-so/change-account-holder                 controllers.manual.cpso.AccountHolderController.onSubmit(mode: Mode = CheckMode)
 
 GET        /manual/cp-so/check-cpso-add-or-allowed      controllers.manual.cpso.CheckCPSOAddedOrAllowedController.onChangeRedirect(mode: Mode = NormalMode)
+
 

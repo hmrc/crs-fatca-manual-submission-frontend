@@ -1164,6 +1164,32 @@ cpso.taxIdentificationNumber.error.tin.giinOrSsn.invalid = Tax identification nu
 cpso.taxIdentificationNumber.error.tin.organization.is.blacklisted = Tax identification number must not be 000000000, 222222222, 000222111, 333333333 or 888888888
 cpso.taxIdentificationNumber.error.tin.individual.is.blacklisted = Tax identification number must not be 000000000, 666666666 or 888888888
 
+CheckDetailsForFinancialInstitution.title = Check the details for the financial institution
+CheckDetailsForFinancialInstitution.heading = Check the details for {0}
+
+CheckDetailsForFinancialInstitution.para.1 = We’ll use these details for your report. You can {0}.
+CheckDetailsForFinancialInstitution.para.1.link = change these details for {0} if needed
+
+CheckDetailsForFinancialInstitution.para.1.fatcaNoGiin = We’ll use these details for your report. You must {0}.
+CheckDetailsForFinancialInstitution.para.1.link.fatcaNoGiin = provide the Global Intermediary Identification Number (GIIN) for {0} and change other details if needed
+CheckDetailsForFinancialInstitution.para.2.crsFiIsUser = We’ll also use the Unique Taxpayer Reference {0} for the business you registered as.
+
+CheckDetailsForFinancialInstitution.key.giin = Global Intermediary Identification Number
+CheckDetailsForFinancialInstitution.key.noGiin = GIIN
+CheckDetailsForFinancialInstitution.value.noGiin = Not provided
+CheckDetailsForFinancialInstitution.key.noTin = Identification number
+CheckDetailsForFinancialInstitution.value.noTin = Not provided. We’ll use ‘NOTIN’ in your report
+CheckDetailsForFinancialInstitution.key.fiName = Financial institution name
+CheckDetailsForFinancialInstitution.value.address = Main business address
+CheckDetailsForFinancialInstitution.tinType.utr = Unique Taxpayer Reference
+CheckDetailsForFinancialInstitution.tinType.crn = Company Registration Number
+CheckDetailsForFinancialInstitution.tinType.turn = Trust Unique Reference Number
+CheckDetailsForFinancialInstitution.tinType.other = Other
+
+hasFinishedChecking.subheading = Have you finished checking these details for {0}?
+hasFinishedChecking.para = You’ll still be able to change these details later before sending your report.
+hasFinishedChecking.error.required = Select yes if you have finished checking these details for the financial institution
+
 cpso.crs.accountHolder.title = Account holders linked to this controlling person
 cpso.fatca.accountHolder.title = Account holders linked to this substantial owner
 cpso.crs.accountHolder.heading= Account holders linked to this controlling person
