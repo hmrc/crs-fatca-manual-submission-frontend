@@ -33,9 +33,9 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
       Some("")       -> false,
       None           -> false
     ).foreach {
-      case (organisationType, expected) =>
-        s"must return $expected when the CRS organisation type is ${organisationType.getOrElse("not set")}" in {
-          AccountHolder(individualOrOrganisation = Some(Organisation), organisationCrs = organisationType)
+      case (accountHolderType, expected) =>
+        s"must return $expected when the CRS organisation type is ${accountHolderType.getOrElse("not set")}" in {
+          AccountHolder(individualOrOrganisation = Some(Organisation), accountHolderType = accountHolderType)
             .cpsoIsMandatory(CRS) mustBe expected
         }
     }
@@ -48,9 +48,9 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
       Some("")         -> false,
       None             -> false
     ).foreach {
-      case (organisationType, expected) =>
-        s"must return $expected when the FATCA organisation type is ${organisationType.getOrElse("not set")}" in {
-          AccountHolder(individualOrOrganisation = Some(Organisation), organisationFatca = organisationType)
+      case (accountHolderType, expected) =>
+        s"must return $expected when the FATCA organisation type is ${accountHolderType.getOrElse("not set")}" in {
+          AccountHolder(individualOrOrganisation = Some(Organisation), accountHolderType = accountHolderType)
             .cpsoIsMandatory(CRS) mustBe expected
         }
     }
@@ -70,36 +70,30 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
         regime =>
           s"for the ${regime.value} regime, even when an eligible organisation type is present" in {
             AccountHolder(
-              individualOrOrganisation = Some(Individual),
-              organisationFatca = Some("FATCA101"),
-              organisationCrs = Some("CRS101")
-            ).canHaveCPSO(regime) mustBe false
+              individualOrOrganisation = Some(Individual)
+            ).canHaveCPSO() mustBe false
           }
       }
     }
 
     "must be false when the individual or organisation question has not been answered" - {
 
-      Seq[RegimeType](CRS, FATCA, CRFA).foreach {
-        regime =>
-          s"for the ${regime.value} regime, even when an eligible organisation type is present" in {
-            AccountHolder(
-              individualOrOrganisation = None,
-              organisationFatca = Some("FATCA101"),
-              organisationCrs = Some("CRS101")
-            ).canHaveCPSO(regime) mustBe false
-          }
+      "Even when an eligible organisation type is present" in {
+        AccountHolder(
+          individualOrOrganisation = None,
+          accountHolderType = Some("FATCA101")
+        ).canHaveCPSO() mustBe false
       }
 
-      "when no organisation type is set" in {
-        AccountHolder().canHaveCPSO(CRS) mustBe false
-        AccountHolder().canHaveCPSO(FATCA) mustBe false
+      "when no account holder type type is set" in {
+        AccountHolder().canHaveCPSO() mustBe false
+        AccountHolder().canHaveCPSO() mustBe false
       }
     }
 
     "for a CRS report" - {
 
-      "must read the CRS organisation type" - {
+      "must read the CRS account holder type" - {
 
         Seq(
           Some("CRS101") -> true,
@@ -109,23 +103,18 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
           Some("")       -> false,
           None           -> false
         ).foreach {
-          case (organisationType, expected) =>
-            s"must return $expected when the CRS organisation type is ${organisationType.getOrElse("not set")}" in {
-              AccountHolder(individualOrOrganisation = Some(Organisation), organisationCrs = organisationType)
-                .canHaveCPSO(CRS) mustBe expected
+          case (accountHolderType, expected) =>
+            s"must return $expected when the CRS organisation type is ${accountHolderType.getOrElse("not set")}" in {
+              AccountHolder(individualOrOrganisation = Some(Organisation), accountHolderType = accountHolderType)
+                .canHaveCPSO() mustBe expected
             }
         }
-      }
-
-      "must ignore the FATCA organisation type" in {
-        AccountHolder(individualOrOrganisation = Some(Organisation), organisationFatca = Some("FATCA101"))
-          .canHaveCPSO(CRS) mustBe false
       }
     }
 
     "for a FATCA report" - {
 
-      "must read the FATCA organisation type" - {
+      "must read the FATCA accountHolder Type" - {
 
         Seq(
           Some("FATCA101") -> true,
@@ -135,17 +124,12 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
           Some("")         -> false,
           None             -> false
         ).foreach {
-          case (organisationType, expected) =>
-            s"must return $expected when the FATCA organisation type is ${organisationType.getOrElse("not set")}" in {
-              AccountHolder(individualOrOrganisation = Some(Organisation), organisationFatca = organisationType)
-                .canHaveCPSO(FATCA) mustBe expected
+          case (accountHolderType, expected) =>
+            s"must return $expected when the FATCA account holder type is ${accountHolderType.getOrElse("not set")}" in {
+              AccountHolder(individualOrOrganisation = Some(Organisation), accountHolderType = accountHolderType)
+                .canHaveCPSO() mustBe expected
             }
         }
-      }
-
-      "must ignore the CRS organisation type" in {
-        AccountHolder(individualOrOrganisation = Some(Organisation), organisationCrs = Some("CRS101"))
-          .canHaveCPSO(FATCA) mustBe false
       }
     }
 

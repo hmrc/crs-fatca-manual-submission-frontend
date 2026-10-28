@@ -60,7 +60,7 @@ class AccountHolderController @Inject() (
             val accountHolders = AccountHolders
               .existingAccountHolders(request.userAnswers)
               .filter(
-                (_, accountHolder) => accountHolder.canHaveCPSO(reportId.regime) && accountHolder.organisationName.nonEmpty
+                (_, accountHolder) => accountHolder.canHaveCPSO() && accountHolder.organisationName.nonEmpty
               )
             val existingIds = accountHolders.map(_._1).toSet
             val preparedForm = request.userAnswers
@@ -88,7 +88,7 @@ class AccountHolderController @Inject() (
             val accountHolders = AccountHolders
               .existingAccountHolders(request.userAnswers)
               .filter(
-                (_, accountHolder) => accountHolder.canHaveCPSO(reportId.regime)
+                (_, accountHolder) => accountHolder.canHaveCPSO()
               )
             val existingIds = accountHolders.map(_._1)
             val form        = formProvider(existingIds)

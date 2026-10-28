@@ -37,12 +37,12 @@ class CheckCPSOAddedOrAllowedControllerSpec extends SpecBase with MockitoSugar {
   private val accountHolderRequiringCpso = AccountHolder(
     individualOrOrganisation = Some(Organisation),
     organisationName = Some("Alpha Holdings"),
-    organisationCrs = Some("CRS101")
+    accountHolderType = Some("CRS101")
   )
 
   private val accountHolderWithoutName = AccountHolder(
     individualOrOrganisation = Some(Organisation),
-    organisationCrs = Some("CRS101")
+    accountHolderType = Some("CRS101")
   )
 
   private val individualAccountHolder = AccountHolder(
@@ -53,7 +53,7 @@ class CheckCPSOAddedOrAllowedControllerSpec extends SpecBase with MockitoSugar {
   private val organisationThatCannotHaveCpso = AccountHolder(
     individualOrOrganisation = Some(Organisation),
     organisationName = Some("Gamma Holdings"),
-    organisationCrs = Some("CRS102")
+    accountHolderType = Some("CRS102")
   )
 
   private val cpso = ControllingOrSubstantialOwner(

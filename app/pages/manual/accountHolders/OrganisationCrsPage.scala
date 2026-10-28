@@ -24,6 +24,6 @@ import play.api.libs.json.JsPath
 
 final case class OrganisationCrsPage(accountHolderId: AccountHolderId)(implicit reportId: ReportId) extends QuestionPage[OrganisationCrs]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "accountHolder" \ accountHolderId.value \ "organisationCrs"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "accountHolder" \ accountHolderId.value \ "accountHolderType"
 
   override def toString: String = "organisationCrs"

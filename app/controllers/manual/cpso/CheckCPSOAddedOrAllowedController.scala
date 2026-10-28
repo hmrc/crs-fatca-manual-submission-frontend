@@ -43,7 +43,7 @@ class CheckCPSOAddedOrAllowedController @Inject() (
       val accountHoldersRequireCpso = AccountHolders
         .existingAccountHolders(request.userAnswers)
         .filter(
-          (_, accountHolder) => accountHolder.canHaveCPSO(reportId.regime) && accountHolder.organisationName.nonEmpty
+          (_, accountHolder) => accountHolder.canHaveCPSO() && accountHolder.organisationName.nonEmpty
         )
         .nonEmpty
 

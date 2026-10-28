@@ -19,11 +19,8 @@ package generators
 import models.manual.account.{PaymentType, WasAccountOpen, WhatAccountType}
 import models.manual.accountHolders.{IndividualName, SelfCertification}
 import models.manual.cpso.{CpsoSelfCertification, IndividualOrOrganisation}
-import models.{AddressUk, CrsOrFatca, NumberType, TypeOfReport, UkAddress, UkPostCodeForAccountHolder}
+import models.{AccountHolder, AddressUk, CrsOrFatca, NumberType, TypeOfReport, UkAddress, UkPostCodeForAccountHolder}
 import org.scalacheck.Arbitrary.*
-import org.scalacheck.{Arbitrary, Gen}
-
-import models.AccountHolder
 import org.scalacheck.{Arbitrary, Gen}
 
 trait ModelGenerators {

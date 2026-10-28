@@ -19,7 +19,7 @@ package views.manual.cpso
 import base.SpecBase
 import forms.AccountHolderFormProvider
 import models.viewModels.AccountHolderId
-import models.{AccountHolder, Mode, NormalMode}
+import models.{Mode, NormalMode}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.data.Form

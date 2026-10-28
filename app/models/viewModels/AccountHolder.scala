@@ -22,18 +22,15 @@ import play.api.libs.json.{Json, OFormat}
 
 case class AccountHolder(individualOrOrganisation: Option[IndividualOrOrganisation] = None,
                          organisationName: Option[String] = None,
-                         organisationFatca: Option[String] = None,
-                         organisationCrs: Option[String] = None
+                         accountHolderType: Option[String] = None
 ) {
 
-  private def accountHolderType(regimeType: RegimeType) = if regimeType == CRS then organisationCrs else organisationFatca
-
-  def canHaveCPSO(regimeType: RegimeType) =
+  def canHaveCPSO() =
     individualOrOrganisation match {
       case None                                      => false
       case Some(IndividualOrOrganisation.Individual) => false
       case Some(IndividualOrOrganisation.Organisation) =>
-        accountHolderType(regimeType: RegimeType).exists(
+        accountHolderType.exists(
           i => Seq("CRS101", "FATCA101", "FATCA102").contains(i)
         )
     }
@@ -43,7 +40,7 @@ case class AccountHolder(individualOrOrganisation: Option[IndividualOrOrganisati
       case None                                      => false
       case Some(IndividualOrOrganisation.Individual) => false
       case Some(IndividualOrOrganisation.Organisation) =>
-        regimeType == CRS && accountHolderType(regimeType: RegimeType).contains("CRS101")
+        regimeType == CRS && accountHolderType.contains("CRS101")
     }
 }
 

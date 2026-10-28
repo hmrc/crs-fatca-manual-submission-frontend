@@ -56,7 +56,7 @@ class AccountHolderControllerSpec extends SpecBase with MockitoSugar {
   private val eligibleHolder = AccountHolder(
     individualOrOrganisation = Some(Organisation),
     organisationName = Some("Alpha Ltd"),
-    organisationCrs = Some("CRS101")
+    accountHolderType = Some("CRS101")
   )
 
   private val individualHolder = AccountHolder(
@@ -67,7 +67,7 @@ class AccountHolderControllerSpec extends SpecBase with MockitoSugar {
   private val ineligibleHolder = AccountHolder(
     individualOrOrganisation = Some(Organisation),
     organisationName = Some("Gamma Ltd"),
-    organisationCrs = Some("CRS102")
+    accountHolderType = Some("CRS102")
   )
 
   private val allAccountHolders = AccountHolders(
@@ -88,9 +88,6 @@ class AccountHolderControllerSpec extends SpecBase with MockitoSugar {
 
   private lazy val accountHolderRoute =
     controllers.manual.cpso.routes.AccountHolderController.onPageLoad(NormalMode).url
-
-  private lazy val changeAccountHolderRoute =
-    controllers.manual.cpso.routes.AccountHolderController.onPageLoad(CheckMode).url
 
   private def userAnswersFor(
     accountHolders: AccountHolders = allAccountHolders,
