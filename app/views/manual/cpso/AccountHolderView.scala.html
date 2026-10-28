@@ -25,7 +25,7 @@
     link: components.Link
 )
 
-@(form: Form[_], mode: Mode, fiName: String = "Some Fi Name", options: Seq[CheckboxItem] = Seq.empty, regime: String = "CRS")(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, fiName: String, options: Seq[CheckboxItem], regime: String)(implicit request: Request[_], messages: Messages)
 
 @changeLink = {
 @link(
