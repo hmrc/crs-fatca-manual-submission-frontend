@@ -487,3 +487,6 @@ GET         /manual/cp-so/account-holder                       controllers.manua
 POST        /manual/cp-so/account-holder                       controllers.manual.cpso.AccountHolderController.onSubmit(mode: Mode = NormalMode)
 GET         /manual/cp-so/change-account-holder                 controllers.manual.cpso.AccountHolderController.onPageLoad(mode: Mode = CheckMode)
 POST        /manual/cp-so/change-account-holder                 controllers.manual.cpso.AccountHolderController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/cp-so/check-cpso-add-or-allowed      controllers.manual.cpso.CheckCPSOAddedOrAllowedController.onChangeRedirect(mode: Mode = NormalMode)
+
