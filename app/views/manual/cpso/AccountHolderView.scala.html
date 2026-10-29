@@ -1,0 +1,102 @@
+@*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@this(
+    layout: templates.Layout,
+    formHelper: FormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    govukCheckboxes: GovukCheckboxes,
+    govukButton: GovukButton,
+    heading: components.Heading,
+    paragraph: components.Paragraph,
+    link: components.Link
+)
+
+@(form: Form[_], mode: Mode, fiName: String, options: Seq[CheckboxItem], regime: String)(implicit request: Request[_], messages: Messages)
+
+@changeLink = {
+@link(
+    href = routes.UnderConstructionController.onPageLoad().url,
+    message= messages("cpso.accountHolder.para.link"),
+    asPara = false
+)
+}
+@isCRS(regime: String) = @{if ("crs".equalsIgnoreCase(regime)) true else false}
+
+@layout(pageTitle = title(form, messages(s"cpso.${regime.toLowerCase}.accountHolder.title"))) {
+
+    @formHelper(action = controllers.manual.cpso.routes.AccountHolderController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "value_0")))
+        }
+
+        @heading(messages(s"cpso.${regime.toLowerCase}.accountHolder.heading"))
+
+        @if(options.isEmpty){
+            <p class="govuk-body">
+                @Html(messages("cpso.accountHolder.para",
+                link(
+                    href = controllers.manual.accountHolders.routes.AccountController.onPageLoad(mode).url,
+                    message= messages("cpso.accountHolder.para.link"),
+                    asPara = false
+                )
+
+                ))
+            </p>
+            @link(
+                href = controllers.manual.routes.SendAReportController.onPageLoad().url,
+                message= messages("accountHolder.account.sendAReport.link", regime.toUpperCase, fiName),
+                asPara = true
+            )
+        }else {
+            <p class="govuk-body">
+                @Html(messages("cpso.accountHolder.para",
+                    link(
+                        href = controllers.manual.accountHolders.routes.AccountController.onPageLoad(mode).url,
+                        message= messages("cpso.accountHolder.para.link"),
+                        asPara = false
+                    )
+
+                ))
+            </p>
+            @if(isCRS(regime)) {
+                @paragraph( messages("cpso.crs.checkbox.accountHolder.paragraph"))
+            }else {
+                <p class="govuk-body govuk-!-margin-bottom-2 wrappable">
+                    @messages("cpso.fatca.checkbox.accountHolder.paragraph")
+
+                    <ul class="govuk-list govuk-list--bullet wrappable">
+                        <li>@messages("cpso.fatca.checkbox.accountHolder.bullet1")</li>
+                        <li>@messages("cpso.fatca.checkbox.accountHolder.bullet2")</li>
+                    </ul>
+                </p>
+            }
+            @govukCheckboxes(
+                CheckboxesViewModel(
+                    form   = form,
+                    name   = "value",
+                    legend = LegendViewModel(messages(s"cpso.${regime.toLowerCase}.checkbox.accountHolder.heading")).withCssClass("govuk-fieldset__legend--m wrappable"),
+                    items  = options
+                ).withHint(HintViewModel(messages("cpso.accountHolder.question.hint")))
+            )
+
+            @govukButton(
+                ButtonViewModel(messages("site.continue"))
+            )
+        }
+    }
+}

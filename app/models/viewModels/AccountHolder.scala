@@ -16,10 +16,33 @@
 
 package models.viewModels
 
+import models.SubmissionsConstants.{CRS, RegimeType}
 import models.manual.accountHolders.IndividualOrOrganisation
 import play.api.libs.json.{Json, OFormat}
 
-case class AccountHolder(individualOrOrganisation: Option[IndividualOrOrganisation] = None)
+case class AccountHolder(individualOrOrganisation: Option[IndividualOrOrganisation] = None,
+                         organisationName: Option[String] = None,
+                         accountHolderType: Option[String] = None
+) {
+
+  def canHaveCPSO() =
+    individualOrOrganisation match {
+      case None                                      => false
+      case Some(IndividualOrOrganisation.Individual) => false
+      case Some(IndividualOrOrganisation.Organisation) =>
+        accountHolderType.exists(
+          i => Seq("CRS101", "FATCA101", "FATCA102").contains(i)
+        )
+    }
+
+  def cpsoIsMandatory(regimeType: RegimeType): Boolean =
+    individualOrOrganisation match {
+      case None                                      => false
+      case Some(IndividualOrOrganisation.Individual) => false
+      case Some(IndividualOrOrganisation.Organisation) =>
+        regimeType == CRS && accountHolderType.contains("CRS101")
+    }
+}
 
 object AccountHolder {
   implicit val format: OFormat[AccountHolder] = Json.format[AccountHolder]

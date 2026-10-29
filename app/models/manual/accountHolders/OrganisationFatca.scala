@@ -25,10 +25,10 @@ sealed trait OrganisationFatca
 
 object OrganisationFatca extends Enumerable.Implicits {
 
-  case object OwnerDocumented extends WithName("ownerDocumented") with OrganisationFatca
-  case object Passive extends WithName("passive") with OrganisationFatca
-  case object NonParticipating extends WithName("nonParticipating") with OrganisationFatca
-  case object SpecifiedPerson extends WithName("specifiedPerson") with OrganisationFatca
+  case object OwnerDocumented extends WithName("FATCA101") with OrganisationFatca
+  case object Passive extends WithName("FATCA102") with OrganisationFatca
+  case object NonParticipating extends WithName("FATCA103") with OrganisationFatca
+  case object SpecifiedPerson extends WithName("FATCA104") with OrganisationFatca
 
   val values: Seq[OrganisationFatca] = Seq(
     OwnerDocumented,

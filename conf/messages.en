@@ -195,7 +195,8 @@ sendAReport.filerCategory.subHeading = Filer-category
 sendAReport.accountsInformation.heading = Add accounts information
 sendAReport.accountsInformation.accounts = Accounts
 sendAReport.accountsInformation.accountHolders = Account holders
-sendAReport.accountsInformation.controllingPersons = Controlling persons or substantial owners
+sendAReport.accountsInformation.controllingPersons = Controlling persons
+sendAReport.accountsInformation.substantialOwner = Substantial owners
 sendAReport.accountsInformation.TBC = TBC
 sendAReport.status.notStarted = Not started
 sendAReport.status.completed = Completed
@@ -995,19 +996,19 @@ organisationFatca.heading = What type of account holder is {0}?
 organisationFatca.checkYourAnswersLabel = What type of account holder is {0}?
 organisationFatca.error.required = Select what type of account holder this is
 organisationFatca.change.hidden = organisationFatca
-organisationFatca.ownerDocumented = Owner-documented foreign financial institution with specified US owners
-organisationFatca.passive = Passive non-financial foreign entity with substantial US owners, or controlling persons
-organisationFatca.nonParticipating = Non-participating foreign financial institution
-organisationFatca.specifiedPerson = Specified US person
+organisationFatca.FATCA101 = Owner-documented foreign financial institution with specified US owners
+organisationFatca.FATCA102 = Passive non-financial foreign entity with substantial US owners, or controlling persons
+organisationFatca.FATCA103 = Non-participating foreign financial institution
+organisationFatca.FATCA104 = Specified US person
 
 organisationCrs.title = What type of account holder is this?
 organisationCrs.heading = What type of account holder is {0}?
 organisationCrs.checkYourAnswersLabel = What type of account holder is {0}?
 organisationCrs.error.required = Select what type of account holder this is
 organisationCrs.change.hidden = organisationCrs
-organisationCrs.passiveWithMultiplePersons = Passive non-financial entity with one or more controlling reportable persons
-organisationCrs.crsReportable = CRS reportable person
-organisationCrs.passiveCrsPerson = Passive non-financial entity that is a CRS reportable person
+organisationCrs.CRS101 = Passive non-financial entity with one or more controlling reportable persons
+organisationCrs.CRS102 = CRS reportable person
+organisationCrs.CRS103 = Passive non-financial entity that is a CRS reportable person
 
 cpso.controllingPersonType.title = What type of controlling person are they?
 cpso.controllingPersonType.heading = What type of controlling person is {0}?
@@ -1163,8 +1164,6 @@ cpso.taxIdentificationNumber.error.tin.giinOrSsn.invalid = Tax identification nu
 cpso.taxIdentificationNumber.error.tin.organization.is.blacklisted = Tax identification number must not be 000000000, 222222222, 000222111, 333333333 or 888888888
 cpso.taxIdentificationNumber.error.tin.individual.is.blacklisted = Tax identification number must not be 000000000, 666666666 or 888888888
 
-
-
 CheckDetailsForFinancialInstitution.title = Check the details for the financial institution
 CheckDetailsForFinancialInstitution.heading = Check the details for {0}
 
@@ -1190,3 +1189,18 @@ CheckDetailsForFinancialInstitution.tinType.other = Other
 hasFinishedChecking.subheading = Have you finished checking these details for {0}?
 hasFinishedChecking.para = You’ll still be able to change these details later before sending your report.
 hasFinishedChecking.error.required = Select yes if you have finished checking these details for the financial institution
+
+cpso.crs.accountHolder.title = Account holders linked to this controlling person
+cpso.fatca.accountHolder.title = Account holders linked to this substantial owner
+cpso.crs.accountHolder.heading= Account holders linked to this controlling person
+cpso.fatca.accountHolder.heading= Account holders linked to this substantial owner
+cpso.accountHolder.para = You must {0} first for it to appear as an option.
+cpso.accountHolder.para.link = add an account holder
+cpso.accountHolder.question.hint = Select at least one account holder.
+cpso.crs.checkbox.accountHolder.heading = Which account holders are linked to this controlling person?
+cpso.fatca.checkbox.accountHolder.heading = Which account holders are linked to this substantial owner?
+cpso.crs.checkbox.accountHolder.paragraph = You must add at least one controlling person for the account holder if their organisation is a passive non-financial entity.
+cpso.fatca.checkbox.accountHolder.paragraph = You can add one or more substantial owners for the account holder if their organisation is either:
+cpso.fatca.checkbox.accountHolder.bullet1 = an owner-documented foreign financial institution with specified US owners
+cpso.fatca.checkbox.accountHolder.bullet2 = a passive non-financial foreign entity with substantial US owners, or controlling persons
+cpso.accountHolder.error.required = Select at least one account holder
