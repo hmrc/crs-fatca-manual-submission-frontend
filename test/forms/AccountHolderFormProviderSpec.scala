@@ -17,7 +17,6 @@
 package forms
 
 import forms.behaviours.CheckboxFieldBehaviours
-import models.AccountHolder
 import models.viewModels.AccountHolderId
 import play.api.data.FormError
 

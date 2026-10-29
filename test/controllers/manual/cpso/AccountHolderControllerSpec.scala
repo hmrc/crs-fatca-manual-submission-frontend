@@ -25,7 +25,7 @@ import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organi
 import models.response.FIDetail
 import models.viewModels.manual.cpso.CPSOId
 import models.viewModels.{AccountHolder, AccountHolderId, AccountHolders}
-import models.{CheckMode, Mode, NormalMode, UserAnswers}
+import models.{Mode, NormalMode, UserAnswers}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
