@@ -58,7 +58,7 @@ class RemoveTaxResidentCountryController @Inject() (
             .find(_.code == value.code)
             .fold(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())) {
               country =>
-                Ok(view(form, mode, country.description, request.cpsoName, reportId.regime.value.toLowerCase))
+                Ok(view(form, mode, country, request.cpsoName, reportId.regime.value.toLowerCase))
             }
       }
   }
@@ -81,8 +81,7 @@ class RemoveTaxResidentCountryController @Inject() (
                   form
                     .bindFromRequest()
                     .fold(
-                      formWithErrors =>
-                        Future.successful(BadRequest(view(formWithErrors, mode, country.description, request.cpsoName, reportId.regime.value.toLowerCase))),
+                      formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, country, request.cpsoName, reportId.regime.value.toLowerCase))),
                       value =>
                         val taxResidentCountries: Seq[TaxResidentInformation] =
                           request.userAnswers.get(TaxResidentCountriesListPage(request.cpsoId, reportId)).getOrElse(Seq())

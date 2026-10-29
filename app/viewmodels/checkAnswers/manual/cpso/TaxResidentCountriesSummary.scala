@@ -16,9 +16,8 @@
 
 package viewmodels.checkAnswers.manual.cpso
 
-import controllers.manual.cpso.routes
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.cpso.{CurrentCPSOIdPage, RemoveTaxResidentCountryPage, TaxResidentCountriesListPage}
+import pages.manual.cpso.{CurrentCPSOIdPage, TaxResidentCountriesListPage}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.CardTitle
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent

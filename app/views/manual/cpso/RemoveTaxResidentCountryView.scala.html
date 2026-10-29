@@ -14,6 +14,7 @@
  * limitations under the License.
  *@
 
+@import models.response.Country
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
@@ -22,7 +23,7 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode, country: String, cpsoName: String, regime: String)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, country: Country, cpsoName: String, regime: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages(s"cpso.${regime}.removeTaxResidentCountry.title"))) {
 
@@ -35,7 +36,13 @@
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = LegendViewModel(messages("cpso.removeTaxResidentCountry.heading", country, cpsoName)).asPageHeading()
+                legend = LegendViewModel(
+                    if(country.code == "XX") {
+                        messages("cpso.removeTaxResidentCountry.heading", s"‘${country.displayNameInSentence.getOrElse(country.description)}’", cpsoName)
+                    }else {
+                        messages("cpso.removeTaxResidentCountry.heading", country.displayNameInSentence.getOrElse(country.description), cpsoName)
+                    }
+                ).asPageHeading()
             )
         )
 

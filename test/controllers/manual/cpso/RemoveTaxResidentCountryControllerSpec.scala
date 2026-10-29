@@ -109,7 +109,7 @@ class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar 
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual
-          view(form, NormalMode, country.description, cpsoName, regime)(request, messages(application)).toString
+          view(form, NormalMode, country, cpsoName, regime)(request, messages(application)).toString
       }
     }
 
@@ -219,7 +219,7 @@ class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar 
 
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual
-          view(boundForm, NormalMode, country.description, cpsoName, regime)(request, messages(application)).toString
+          view(boundForm, NormalMode, country, cpsoName, regime)(request, messages(application)).toString
       }
     }
 

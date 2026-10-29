@@ -19,7 +19,8 @@ package views.manual.cpso
 import base.SpecBase
 import forms.manual.cpso.RemoveTaxResidentCountryFormProvider
 import models.SubmissionsConstants.CRS
-import models.{Mode, NormalMode}
+import models.response.Country
+import models.{Countries, Mode, NormalMode}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.data.Form
@@ -45,13 +46,14 @@ class RemoveTaxResidentCountryViewSpec extends SpecBase {
   private val formProvider        = new RemoveTaxResidentCountryFormProvider()
   private val form: Form[Boolean] = formProvider(CRS)
 
-  private val country  = "Germany"
+  private val country  = Countries.allCountries(reportId.regime).find(_.code == "DE").value
+  private val france   = Countries.allCountries(reportId.regime).find(_.code == "FR").value
   private val cpsoName = "Some Name"
 
   private def render(
     boundForm: Form[_] = form,
     mode: Mode = NormalMode,
-    countryName: String = country,
+    countryName: Country = country,
     name: String = cpsoName,
     regimeName: String = "crs"
   ): Document =
@@ -77,7 +79,7 @@ class RemoveTaxResidentCountryViewSpec extends SpecBase {
     "page heading" - {
 
       "must display header name" in {
-        render(countryName = "France", name = "Someone Else").select("h1").text() mustBe
+        render(countryName = france, name = "Someone Else").select("h1").text() mustBe
           "Are you sure you want to remove France as a tax-resident country for Someone Else?"
       }
     }
