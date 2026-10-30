@@ -33,7 +33,7 @@ import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
 import pages.manual.accountHolders.AccountHoldersPage
-import pages.manual.cpso.{AccountHolderPage, CurrentCPSOIdPage}
+import pages.manual.cpso.{AccountHolderIdsPage, CurrentCPSOIdPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -99,7 +99,7 @@ class AccountHolderControllerSpec extends SpecBase with MockitoSugar {
       .withPage(AccountHoldersPage(), accountHolders)
 
     selected.fold(answers)(
-      ids => answers.withPage(AccountHolderPage(cpsoId, reportId), ids)
+      ids => answers.withPage(AccountHolderIdsPage(cpsoId, reportId), ids)
     )
   }
 
@@ -256,7 +256,7 @@ class AccountHolderControllerSpec extends SpecBase with MockitoSugar {
         val captor = ArgumentCaptor.forClass(classOf[UserAnswers])
         verify(mockRepository).set(captor.capture())(any())
 
-        captor.getValue.get(AccountHolderPage(cpsoId, reportId)) mustBe Some(Set(eligibleHolderId))
+        captor.getValue.get(AccountHolderIdsPage(cpsoId, reportId)) mustBe Some(Set(eligibleHolderId))
       }
     }
 

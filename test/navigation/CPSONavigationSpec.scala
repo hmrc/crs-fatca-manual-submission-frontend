@@ -29,7 +29,7 @@ import models.viewModels.AccountHolderId
 import models.viewModels.manual.cpso.CPSOId
 import pages.*
 import pages.manual.cpso.{
-  AccountHolderPage,
+  AccountHolderIdsPage,
   AddressLookupPage as AddressLookupPageForCpso,
   AddressUkPage,
   CPSOAddressNonUkPage,
@@ -523,34 +523,34 @@ class CPSONavigationSpec extends SpecBase {
 
       "must go to individual Name page when regime is crs and accountHolderIds are present" in {
         val ua = UserAnswers("id")
-          .withPage(AccountHolderPage(currentCPSOId, reportId), accountHolderIds)
+          .withPage(AccountHolderIdsPage(currentCPSOId, reportId), accountHolderIds)
 
-        navigator.nextPage(AccountHolderPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+        navigator.nextPage(AccountHolderIdsPage(currentCPSOId, reportId), NormalMode, ua) mustBe
           controllers.manual.cpso.routes.IndividualNameController.onPageLoad(NormalMode)
       }
 
       "must go to individual Or organisation page when regime is fatca and accountHolderIds are present" in {
         val fatcaReportId = reportId.copy(regime = FATCA)
         val ua = UserAnswers("id")
-          .withPage(AccountHolderPage(currentCPSOId, fatcaReportId), accountHolderIds)
+          .withPage(AccountHolderIdsPage(currentCPSOId, fatcaReportId), accountHolderIds)
 
-        navigator.nextPage(AccountHolderPage(currentCPSOId, fatcaReportId), NormalMode, ua)(fatcaReportId) mustBe
+        navigator.nextPage(AccountHolderIdsPage(currentCPSOId, fatcaReportId), NormalMode, ua)(fatcaReportId) mustBe
           controllers.manual.cpso.routes.IndividualOrOrganisationController.onPageLoad(NormalMode)
       }
 
       "must go to journey recovery for non crs or fatca regime" in {
         val carfReportId = reportId.copy(regime = CRFA)
         val ua = UserAnswers("id")
-          .withPage(AccountHolderPage(currentCPSOId, carfReportId), accountHolderIds)
+          .withPage(AccountHolderIdsPage(currentCPSOId, carfReportId), accountHolderIds)
 
-        navigator.nextPage(AccountHolderPage(currentCPSOId, carfReportId), NormalMode, ua)(carfReportId) mustBe
+        navigator.nextPage(AccountHolderIdsPage(currentCPSOId, carfReportId), NormalMode, ua)(carfReportId) mustBe
           controllers.routes.JourneyRecoveryController.onPageLoad()
       }
 
       "must go to journey recovery when accountHolderIds are not present" in {
         val ua = UserAnswers("id")
 
-        navigator.nextPage(AccountHolderPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+        navigator.nextPage(AccountHolderIdsPage(currentCPSOId, reportId), NormalMode, ua) mustBe
           controllers.routes.JourneyRecoveryController.onPageLoad()
       }
     }

@@ -129,7 +129,7 @@ class ManualSubmissionNavigator @Inject() () {
       handleHaveTaxIdentificationNumberNavigationForCPSO(index, ua, mode, cpsoId)
     case (pages.manual.cpso.TaxIdentificationNumberPage(index, cpsoId, reportId), mode, ua) =>
       routes.UnderConstructionController.onPageLoad()
-    case (pages.manual.cpso.AccountHolderPage(cpsoId, reportId), mode, ua) =>
+    case (pages.manual.cpso.AccountHolderIdsPage(cpsoId, reportId), mode, ua) =>
       handleAccountHolderPageNavigationForCPSO(ua, mode, cpsoId)
   }
 
@@ -249,7 +249,7 @@ class ManualSubmissionNavigator @Inject() () {
     }
 
   private def handleAccountHolderPageNavigationForCPSO(userAnswers: UserAnswers, mode: Mode, cpsoId: CPSOId)(implicit reportId: ReportId) =
-    userAnswers.get(AccountHolderPage(cpsoId, reportId)) match {
+    userAnswers.get(AccountHolderIdsPage(cpsoId, reportId)) match {
       case Some(accountHolderIds) =>
         reportId.regime match {
           case CRS   => controllers.manual.cpso.routes.IndividualNameController.onPageLoad(mode)

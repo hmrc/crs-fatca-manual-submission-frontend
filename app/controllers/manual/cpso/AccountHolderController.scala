@@ -23,7 +23,7 @@ import models.ServiceErrors.NoFiDetailFound
 import models.viewModels.AccountHolders
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.cpso.AccountHolderPage
+import pages.manual.cpso.AccountHolderIdsPage
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -64,7 +64,7 @@ class AccountHolderController @Inject() (
               )
             val existingIds = accountHolders.map(_._1).toSet
             val preparedForm = request.userAnswers
-              .get(AccountHolderPage(request.cpsoId, reportId))
+              .get(AccountHolderIdsPage(request.cpsoId, reportId))
               .map(_ intersect existingIds)
               .fold(formProvider(existingIds.toSeq))(formProvider(existingIds.toSeq).fill)
             Ok(view(preparedForm, mode, fiDetail.FIName, AccountHolders.checkboxOptions(accountHolders), reportId.regime.value))
@@ -99,9 +99,9 @@ class AccountHolderController @Inject() (
                 formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiDetail.FIName, options, reportId.regime.value))),
                 value =>
                   for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(AccountHolderPage(request.cpsoId, reportId), value))
+                    updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(AccountHolderIdsPage(request.cpsoId, reportId), value))
                     _              <- repository.set(updatedAnswers)
-                  } yield Redirect(navigator.nextPage(AccountHolderPage(request.cpsoId, reportId), mode, updatedAnswers))
+                  } yield Redirect(navigator.nextPage(AccountHolderIdsPage(request.cpsoId, reportId), mode, updatedAnswers))
               )
         }
         .recover {
