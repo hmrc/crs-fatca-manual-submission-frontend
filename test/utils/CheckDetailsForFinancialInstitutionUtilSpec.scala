@@ -29,7 +29,7 @@ class CheckDetailsForFinancialInstitutionUtilSpec extends SpecBase {
 
   private val frontendUrl   = "fi-management-url"
   private val mockAppConfig = mock[FrontendAppConfig]
-  when(mockAppConfig.fIManagementFrontendUrl).thenReturn(frontendUrl)
+  when(mockAppConfig.manageReportsLink).thenReturn(frontendUrl)
   private val util = new CheckDetailsForFinancialInstitutionUtil(mockAppConfig)
 
   implicit private val messages: Messages = stubMessages()
