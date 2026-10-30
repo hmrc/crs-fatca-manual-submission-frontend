@@ -491,4 +491,7 @@ POST        /manual/cp-so/change-account-holder                 controllers.manu
 
 GET        /manual/cp-so/check-cpso-add-or-allowed      controllers.manual.cpso.CheckCPSOAddedOrAllowedController.onChangeRedirect(mode: Mode = NormalMode)
 
-
+GET        /manual/account-holders                         controllers.manual.accountHolders.AccountHolderListController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account-holders                         controllers.manual.accountHolders.AccountHolderListController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/change-account-holders                  controllers.manual.accountHolders.AccountHolderListController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/change-account-holders                  controllers.manual.accountHolders.AccountHolderListController.onSubmit(mode: Mode = CheckMode)

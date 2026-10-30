@@ -1204,3 +1204,13 @@ cpso.fatca.checkbox.accountHolder.paragraph = You can add one or more substantia
 cpso.fatca.checkbox.accountHolder.bullet1 = an owner-documented foreign financial institution with specified US owners
 cpso.fatca.checkbox.accountHolder.bullet2 = a passive non-financial foreign entity with substantial US owners, or controlling persons
 cpso.accountHolder.error.required = Select at least one account holder
+
+accountHolderList.title = accountHolderList
+accountHolderList.empty.heading = You have not added any account holders
+accountHolderList.one.heading = You have added 1 account holder
+accountHolderList.many.heading = You have added {0} account holders
+accountHolderList.empty.paragraph = You must add at least one account holder for each account.
+accountHolderList.empty.button.txt = Add an account holder
+accountHolderList.checkYourAnswersLabel = accountHolderList
+accountHolderList.error.required = Select yes if accountHolderList
+accountHolderList.change.hidden = AccountHolderList
