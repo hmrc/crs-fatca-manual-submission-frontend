@@ -45,7 +45,6 @@ class CheckCPSOAddedOrAllowedController @Inject() (
         .exists(
           (_, accountHolder) => accountHolder.canHaveCPSO() && accountHolder.organisationName.nonEmpty
         )
-      
 
       if (haveCpsoBeenAdded) {
         logger.info("redirecting to controlling-persons-or-substantial-owners")
