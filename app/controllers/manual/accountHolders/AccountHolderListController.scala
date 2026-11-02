@@ -30,18 +30,20 @@ import views.html.manual.accountHolders.AccountHolderListView
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class AccountHolderListController @Inject()(
-                                         override val messagesApi: MessagesApi,
-                                         repository: DatabaseConnector,
-                                         navigator: ManualSubmissionNavigator,
-                                         identify: IdentifierAction,
-                                         getData: DataRetrievalAction,
-                                         requireData: DataRequiredAction,
-                                         reportIdAction: ReportIdRequiredAction,
-                                         formProvider: AccountHolderListFormProvider,
-                                         val controllerComponents: MessagesControllerComponents,
-                                         view: AccountHolderListView
-                                 )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+class AccountHolderListController @Inject() (
+  override val messagesApi: MessagesApi,
+  repository: DatabaseConnector,
+  navigator: ManualSubmissionNavigator,
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
+  reportIdAction: ReportIdRequiredAction,
+  formProvider: AccountHolderListFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: AccountHolderListView
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
+    with I18nSupport {
 
   val form = formProvider()
 
@@ -51,7 +53,7 @@ class AccountHolderListController @Inject()(
       implicit val reportId: ReportId = request.reportId
 
       val preparedForm = request.userAnswers.get(AccountHolderListPage()) match {
-        case None => form
+        case None        => form
         case Some(value) => form.fill(value)
       }
 
@@ -63,15 +65,15 @@ class AccountHolderListController @Inject()(
 
       implicit val reportId: ReportId = request.reportId
 
-      form.bindFromRequest().fold(
-        formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors, mode))),
-
-        value =>
-          for {
-            updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(AccountHolderListPage(), value))
-            _              <- repository.set(updatedAnswers)
-          } yield Redirect(navigator.nextPage(AccountHolderListPage(), mode, updatedAnswers))
-      )
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(AccountHolderListPage(), value))
+              _              <- repository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(AccountHolderListPage(), mode, updatedAnswers))
+        )
   }
 }

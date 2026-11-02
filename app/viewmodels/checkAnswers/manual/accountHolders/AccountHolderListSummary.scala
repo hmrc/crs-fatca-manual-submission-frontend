@@ -24,7 +24,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
-object AccountHolderListSummary  {
+object AccountHolderListSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
     answers.get(AccountHolderListPage()).map {
@@ -33,8 +33,8 @@ object AccountHolderListSummary  {
         val value = if (answer) "site.yes" else "site.no"
 
         SummaryListRowViewModel(
-          key     = "accountHolderList.checkYourAnswersLabel",
-          value   = ValueViewModel(value),
+          key = "accountHolderList.checkYourAnswersLabel",
+          value = ValueViewModel(value),
           actions = Seq(
             ActionItemViewModel("site.change", routes.AccountHolderListController.onPageLoad(CheckMode).url)
               .withVisuallyHiddenText(messages("accountHolderList.change.hidden"))

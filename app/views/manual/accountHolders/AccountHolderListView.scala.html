@@ -17,16 +17,27 @@
 @import models.viewModels.AccountHolder
 @import models.viewModels.AccountHolderId
 @import viewmodels.govuk.ThreeQuartersMainContent
+@import views.html.manual.accountHolders.partials.contentForOneAccountWithoutAnAccountHolder
+@import views.html.manual.accountHolders.partials.AccountHolderTable
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
     govukRadios: GovukRadios,
     govukButton: GovukButton,
-    heading: components.Heading
+    heading: components.Heading,
+    link: components.Link
 )
 
-@(form: Form[_], mode: Mode, fiName: String = "My Fi Name", accountHolders: Seq[(AccountHolderId, AccountHolder)] = Seq.empty)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, fiName: String = "My Fi Name", accountHolders: Seq[(AccountHolderId, AccountHolder)] = Seq((AccountHolderId("GB00888888"), AccountHolder(organisationName = Some("Alpha Holding")))), accountsWithOutAccountHolders: Seq[String] = Seq("GB0022222"), regime: String = "CRS")(implicit request: Request[_], messages: Messages)
+
+@changeLink = {
+@link(
+    href = routes.UnderConstructionController.onPageLoad().url,
+    message= messages("cpso.accountHolder.para.link"),
+    asPara = false
+)
+}
 
 @layout(pageTitle = title(form, accountHolderCountHeaderOrTitleText(accountHolders.size)), mainContentLayout = Some(ThreeQuartersMainContent.apply _)) {
 
@@ -36,32 +47,65 @@
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
+        @heading(accountHolderCountHeaderOrTitleText(accountHolders.size))
         @if(accountHolders.isEmpty) {
-            @heading(accountHolderCountHeaderOrTitleText(accountHolders.size))
 
-            <p class="govuk-body">@messages("accountHolderList.empty.paragraph")</p>
+            @if(accountsWithOutAccountHolders.nonEmpty) {
+              @if(accountsWithOutAccountHolders.size == 1) {
+                  @contentForOneAccountWithoutAnAccountHolder(link, govukRadios, govukButton, heading)(accountsWithOutAccountHolders.headOption.getOrElse(""), fiName, regime, mode)
+              }else {
+                  <p class="govuk-body">@messages("accountHolderList.empty.paragraph")</p>
 
-            <p class="govuk-body">
-                @govukButton(
-                    ButtonViewModel(messages("accountHolderList.empty.button.txt"))
-                    .asLink(controllers.manual.cpso.routes.AccountHolderController.onSubmit(mode).url)
-                )
-            </p>
+                  <p class="govuk-body govuk-!-margin-bottom-2">@messages("accountHolderList.many.account.missing.accountHolder.paragraph")</p>
 
+                  <ul class="govuk-list govuk-list--bullet wrappable">
+                      @for(accountId <- accountsWithOutAccountHolders) {
+                        <li>@accountId</li>
+                      }
+                  </ul>
+
+                  <p class="govuk-body govuk-!-margin-bottom-2">@messages("accountHolderList.many.account.missing.accountHolder.paragraph2")</p>
+
+                  <ul class="govuk-list govuk-list--bullet wrappable">
+                    <li>@messages("accountHolderList.many.account.missing.accountHolder.bullet1")</li>
+                    <li>@messages("accountHolderList.many.account.missing.accountHolder.bullet2")</li>
+                  </ul>
+
+                  @govukButton(
+                      ButtonViewModel(messages("accountHolderList.empty.button.txt"))
+                      .asLink(controllers.manual.cpso.routes.AccountHolderController.onSubmit(mode).url)
+                  )
+                  <p>
+                      @link(
+                          href = controllers.manual.routes.SendAReportController.onPageLoad().url,
+                          message= messages("accountHolder.account.sendAReport.link", regime.toUpperCase, fiName),
+                          asPara = true
+                      )
+                  </p>
+              }
+            }
         }else {
+            @AccountHolderTable()(accountHolders)
 
+            @{
+                if(accountsWithOutAccountHolders.size == 1) {
+                    @contentForOneAccountWithoutAnAccountHolder(link, govukRadios, govukButton, heading)(accountsWithOutAccountHolders.headOption.getOrElse(""), fiName, regime, mode)
+                } else if(accountsWithOutAccountHolders.size > 1) {
+
+                }
+            }
         }
 
-        @govukRadios(
-            RadiosViewModel.yesNo(
-                field = form("value"),
-                legend = LegendViewModel(messages("accountHolderList.heading")).asPageHeading()
-            )
-        )
+@*//        @govukRadios(*@
+@*//            RadiosViewModel.yesNo(*@
+@*//                field = form("value"),*@
+@*//                legend = LegendViewModel(messages("accountHolderList.heading")).asPageHeading()*@
+@*//            )*@
+@*//        )*@
 
-        @govukButton(
-            ButtonViewModel(messages("site.saveContinue"))
-        )
+@*//        @govukButton(*@
+@*//            ButtonViewModel(messages("site.saveContinue"))*@
+@*//        )*@
     }
 }
 @accountHolderCountHeaderOrTitleText(count: Int)(implicit messages: Messages) = @{
