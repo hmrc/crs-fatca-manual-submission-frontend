@@ -18,7 +18,7 @@ package controllers.manual.accountHolders
 
 import connectors.DatabaseConnector
 import controllers.actions.Actions
-import models.ReportId
+import models.{NormalMode, ReportId}
 import models.requests.ReportIdRequest
 import models.viewModels.AccountHolderId
 import pages.manual.accountHolders.CurrentAccountHolderIdPage
@@ -52,7 +52,7 @@ class CurrentAccountHolderIdController @Inject() (
 
       implicit val reportId: ReportId = request.reportId
       // todo need to redirect
-      redirectWithValidAccountHolderId(accountHolderId, controllers.routes.UnderConstructionController.onPageLoad())
+      redirectWithValidAccountHolderId(accountHolderId, controllers.manual.accountHolders.routes.RemoveAccountHolderController.onPageLoad(NormalMode))
 
   }
 
