@@ -21,6 +21,8 @@ import connectors.DatabaseConnector
 import controllers.routes
 import forms.AccountHolderFormProvider
 import models.ServiceErrors.NoFiDetailFound
+import models.manual.accountHolders.AccountHolderTypes
+import models.manual.accountHolders.AccountHolderTypes.*
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
 import models.response.FIDetail
 import models.viewModels.manual.cpso.CPSOId
@@ -56,7 +58,7 @@ class AccountHolderControllerSpec extends SpecBase with MockitoSugar {
   private val eligibleHolder = AccountHolder(
     individualOrOrganisation = Some(Organisation),
     organisationName = Some("Alpha Ltd"),
-    accountHolderType = Some("CRS101")
+    accountHolderType = Some(PassiveNonFinancialWithOneOrMoreControllingPerson)
   )
 
   private val individualHolder = AccountHolder(
@@ -67,7 +69,7 @@ class AccountHolderControllerSpec extends SpecBase with MockitoSugar {
   private val ineligibleHolder = AccountHolder(
     individualOrOrganisation = Some(Organisation),
     organisationName = Some("Gamma Ltd"),
-    accountHolderType = Some("CRS102")
+    accountHolderType = Some(CrsReportablePerson)
   )
 
   private val allAccountHolders = AccountHolders(
