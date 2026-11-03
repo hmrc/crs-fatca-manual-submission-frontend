@@ -23,7 +23,7 @@
     heading: components.Heading,
 )
 
-@(form: Form[_], mode: Mode, regime: String = "FATCA", accountHolder: String = "Account Holdings Fake")(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, regime: String, accountHolder: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("accountHolder.removeAccountHolder.title"))) {
 

@@ -27,14 +27,19 @@
     govukRadios: GovukRadios,
     govukButton: GovukButton,
     heading: components.Heading,
-    link: components.Link
+    link: components.Link,
+    notificationBanner: views.html.components.SuccessNotificationBanner
 )
 
-@(form: Form[_], mode: Mode, fiName: String, accountHolders: Seq[(AccountHolderId, AccountHolder)], accountsWithOutAccountHolders: Seq[String], regime: String)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, fiName: String, accountHolders: Seq[(AccountHolderId, AccountHolder)], accountsWithOutAccountHolders: Seq[String], regime: String)(implicit request: Request[_], messages: Messages, flash: Flash)
 
 @layout(pageTitle = title(form, accountHolderCountHeaderOrTitleText(accountHolders.size)), mainContentLayout = Some(ThreeQuartersMainContent.apply _)) {
 
     @formHelper(action = controllers.manual.accountHolders.routes.AccountHolderListController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+
+        @flash.get("account-holder-removed").map { ah =>
+            @notificationBanner(messages("accountHolderList.accountHolder.removed", ah))
+        }
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))

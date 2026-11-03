@@ -39,6 +39,7 @@ import play.api.Application
 import play.api.data.Form
 import play.api.inject.bind
 import play.api.mvc.Call
+import play.api.mvc.ControllerHelpers.request2flash
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.ViewFIService

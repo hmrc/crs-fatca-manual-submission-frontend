@@ -64,6 +64,8 @@ class AccountHolderListController @Inject() (
         .getFIDetail(request.fatcaId, reportId.fiId)
         .map {
           fiDetail =>
+            println(s"${accountHolders(request.userAnswers)} ************")
+            println(s"${request.userAnswers} ************")
             Ok(
               view(form, mode, fiDetail.FIName, accountHolders(request.userAnswers), accountsWithoutAnAccountHolder(request.userAnswers), reportId.regime.value)
             )

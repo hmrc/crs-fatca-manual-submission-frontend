@@ -16,15 +16,18 @@
 
 package controllers.manual.accountHolders
 
-import controllers.actions._
+import controllers.actions.*
 import forms.manual.accountHolders.RemoveAccountHolderFormProvider
+
 import javax.inject.Inject
-import models.{Mode, ReportId}
+import models.{Mode, ReportId, UserAnswers}
 import navigation.ManualSubmissionNavigator
-import pages.manual.accountHolders.RemoveAccountHolderPage
+import pages.manual.accountHolders.{AccountHolderPage, RemoveAccountHolderPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import connectors.DatabaseConnector
+import controllers.routes
+import play.api.Logging
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.accountHolders.RemoveAccountHolderView
 
@@ -34,46 +37,54 @@ class RemoveAccountHolderController @Inject() (
   override val messagesApi: MessagesApi,
   repository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
-  identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  reportIdAction: ReportIdRequiredAction,
+  actions: Actions,
   formProvider: RemoveAccountHolderFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: RemoveAccountHolderView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with Logging {
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired() {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
 
-      val preparedForm = request.userAnswers.get(RemoveAccountHolderPage()) match {
-        case None        => form
-        case Some(value) => form.fill(value)
+      request.userAnswers.get(AccountHolderPage(request.accountHolderId, reportId)) match {
+        case None =>
+          logger.error("Missing an account holder")
+          Redirect(routes.JourneyRecoveryController.onPageLoad())
+        case Some(value) =>
+          Ok(view(form, mode, reportId.regime.value, request.accountHolderName))
       }
-
-      Ok(view(preparedForm, mode))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired().async {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
-
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(RemoveAccountHolderPage(), value))
-              _              <- repository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(RemoveAccountHolderPage(), mode, updatedAnswers))
-        )
+      request.userAnswers.get(AccountHolderPage(request.accountHolderId, reportId)) match {
+        case None =>
+          logger.error("Missing an account holder")
+          Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
+        case Some(value) =>
+          form
+            .bindFromRequest()
+            .fold(
+              formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, reportId.regime.value, request.accountHolderName))),
+              value =>
+                for {
+                  updatedAnswers   <- if(value) Future.fromTry(request.userAnswers.remove(AccountHolderPage(request.accountHolderId, reportId))) else Future.successful(request.userAnswers)
+                  _              <- repository.set(updatedAnswers)
+                } yield redirectWithFlash(value, mode, updatedAnswers, request.accountHolderName)
+            )
+      }
   }
+
+  private def redirectWithFlash(value: Boolean, mode: Mode, useranswers: UserAnswers, accountHolder: String)(implicit reportId: ReportId): Result =
+    if value then Redirect(navigator.nextPage(RemoveAccountHolderPage(), mode, useranswers)).flashing("account-holder-removed" -> accountHolder)
+    else Redirect(navigator.nextPage(RemoveAccountHolderPage(), mode, useranswers))
 }

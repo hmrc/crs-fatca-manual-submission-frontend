@@ -22,4 +22,4 @@ import play.api.libs.json.JsPath
 
 final case class RemoveAccountHolderPage()(implicit reportId: ReportId) extends QuestionPage[Boolean]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "removeAccountHolder"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "accountHolder" \ "removeAccountHolder"

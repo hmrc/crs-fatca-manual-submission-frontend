@@ -1243,7 +1243,7 @@ accountHolderList.many.account.missing.accountHolder.bullet2 = remove the accoun
 accountHolderList.radio.heading = Do you need to add another account holder?
 accountHolderList.checkYourAnswersLabel = accountHolderList
 accountHolderList.error.required = Select yes if you need to add another account holder
-accountHolderList.change.hidden = AccountHolderList
+accountHolderList.accountHolder.removed = Account holder {0} removed.
 
 accountHolder.removeAccountHolder.title = Remove this account holder
 accountHolder.removeAccountHolder.heading = Remove this account holder
