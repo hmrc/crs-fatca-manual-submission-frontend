@@ -42,10 +42,9 @@ class CheckCPSOAddedOrAllowedController @Inject() (
 
       val accountHoldersRequireCpso = AccountHolders
         .existingAccountHolders(request.userAnswers)
-        .filter(
+        .exists(
           (_, accountHolder) => accountHolder.canHaveCPSO() && accountHolder.organisationName.nonEmpty
         )
-        .nonEmpty
 
       if (haveCpsoBeenAdded) {
         logger.info("redirecting to controlling-persons-or-substantial-owners")

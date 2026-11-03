@@ -29,9 +29,9 @@ import javax.inject.Inject
 class CheckDetailsForFinancialInstitutionUtil @Inject (appConfig: FrontendAppConfig) {
 
   def changeFiUrl(fiId: String, isFIUser: Boolean): String = if (isFIUser) {
-    s"${appConfig.fIManagementFrontendUrl}/registered-business/change-answers/$fiId"
+    s"${appConfig.manageReportsLink}/registered-business/change-answers/$fiId"
   } else {
-    s"${appConfig.fIManagementFrontendUrl}/change-answers/$fiId"
+    s"${appConfig.manageReportsLink}/change-answers/$fiId"
   }
 
   def getRows(fIDetail: FIDetail, regime: RegimeType)(implicit messages: Messages): SummaryList = {
