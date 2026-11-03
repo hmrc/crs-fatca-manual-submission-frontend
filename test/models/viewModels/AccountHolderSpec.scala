@@ -17,6 +17,8 @@
 package models.viewModels
 
 import models.SubmissionsConstants.{CRFA, CRS, FATCA, RegimeType}
+import models.manual.accountHolders.AccountHolderTypes
+import models.manual.accountHolders.AccountHolderTypes.*
 import models.manual.accountHolders.IndividualOrOrganisation.Individual
 import models.manual.accountHolders.IndividualOrOrganisation.Organisation
 import org.scalatest.freespec.AnyFreeSpec
@@ -26,12 +28,10 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
 
   "AccountHolder.cpsoIsMandatory" - {
     Seq(
-      Some("CRS101") -> true,
-      Some("CRS100") -> false,
-      Some("CRS102") -> false,
-      Some("CRS103") -> false,
-      Some("")       -> false,
-      None           -> false
+      Some(PassiveNonFinancialWithOneOrMoreControllingPerson) -> true,
+      Some(CrsReportablePerson)                               -> false,
+      Some(PassiveNonFinancialEntityThatIsCRSReportable)      -> false,
+      None                                                    -> false
     ).foreach {
       case (accountHolderType, expected) =>
         s"must return $expected when the CRS organisation type is ${accountHolderType.getOrElse("not set")}" in {
@@ -41,12 +41,11 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
     }
 
     Seq(
-      Some("FATCA101") -> false,
-      Some("FATCA102") -> false,
-      Some("FATCA103") -> false,
-      Some("FATCA104") -> false,
-      Some("")         -> false,
-      None             -> false
+      Some(OwnerDocumentedForeignFinancialInstitution) -> false,
+      Some(PassiveNFFEWithSubstantial)                 -> false,
+      Some(NonParticipatingForeignFI)                  -> false,
+      Some(SpecifiedUSPerson)                          -> false,
+      None                                             -> false
     ).foreach {
       case (accountHolderType, expected) =>
         s"must return $expected when the FATCA organisation type is ${accountHolderType.getOrElse("not set")}" in {
@@ -81,7 +80,7 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
       "Even when an eligible organisation type is present" in {
         AccountHolder(
           individualOrOrganisation = None,
-          accountHolderType = Some("FATCA101")
+          accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution)
         ).canHaveCPSO() mustBe false
       }
 
@@ -96,12 +95,10 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
       "must read the CRS account holder type" - {
 
         Seq(
-          Some("CRS101") -> true,
-          Some("CRS100") -> false,
-          Some("CRS102") -> false,
-          Some("CRS103") -> false,
-          Some("")       -> false,
-          None           -> false
+          Some(PassiveNonFinancialWithOneOrMoreControllingPerson) -> true,
+          Some(CrsReportablePerson)                               -> false,
+          Some(PassiveNonFinancialEntityThatIsCRSReportable)      -> false,
+          None                                                    -> false
         ).foreach {
           case (accountHolderType, expected) =>
             s"must return $expected when the CRS organisation type is ${accountHolderType.getOrElse("not set")}" in {
@@ -117,12 +114,11 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
       "must read the FATCA accountHolder Type" - {
 
         Seq(
-          Some("FATCA101") -> true,
-          Some("FATCA102") -> true,
-          Some("FATCA100") -> false,
-          Some("FATCA103") -> false,
-          Some("")         -> false,
-          None             -> false
+          Some(OwnerDocumentedForeignFinancialInstitution) -> true,
+          Some(PassiveNFFEWithSubstantial)                 -> true,
+          Some(NonParticipatingForeignFI)                  -> false,
+          Some(SpecifiedUSPerson)                          -> false,
+          None                                             -> false
         ).foreach {
           case (accountHolderType, expected) =>
             s"must return $expected when the FATCA account holder type is ${accountHolderType.getOrElse("not set")}" in {

@@ -18,6 +18,8 @@ package controllers.manual.cpso
 
 import base.SpecBase
 import controllers.routes
+import models.manual.accountHolders.AccountHolderTypes
+import models.manual.accountHolders.AccountHolderTypes.*
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
 import models.manual.cpso.IndividualName
 import models.viewModels.manual.cpso.{CPSOId, ControllingOrSubstantialOwner, ControllingOrSubstantialOwners}
@@ -37,12 +39,12 @@ class CheckCPSOAddedOrAllowedControllerSpec extends SpecBase with MockitoSugar {
   private val accountHolderRequiringCpso = AccountHolder(
     individualOrOrganisation = Some(Organisation),
     organisationName = Some("Alpha Holdings"),
-    accountHolderType = Some("CRS101")
+    accountHolderType = Some(PassiveNonFinancialWithOneOrMoreControllingPerson)
   )
 
   private val accountHolderWithoutName = AccountHolder(
     individualOrOrganisation = Some(Organisation),
-    accountHolderType = Some("CRS101")
+    accountHolderType = Some(PassiveNonFinancialWithOneOrMoreControllingPerson)
   )
 
   private val individualAccountHolder = AccountHolder(
@@ -53,7 +55,7 @@ class CheckCPSOAddedOrAllowedControllerSpec extends SpecBase with MockitoSugar {
   private val organisationThatCannotHaveCpso = AccountHolder(
     individualOrOrganisation = Some(Organisation),
     organisationName = Some("Gamma Holdings"),
-    accountHolderType = Some("CRS102")
+    accountHolderType = Some(CrsReportablePerson)
   )
 
   private val cpso = ControllingOrSubstantialOwner(
