@@ -81,9 +81,6 @@ class AccountHolderListViewSpec extends SpecBase {
   private def linkWithText(doc: Document, text: String) =
     doc.select("a").asScala.find(_.text() == text)
 
-  private def submitPath(mode: Mode): String =
-    controllers.manual.accountHolders.routes.AccountHolderListController.onSubmit(mode).url
-
   private def addAccountHolderPath(mode: Mode): String =
     controllers.manual.accountHolders.routes.AccountController.onPageLoad(mode).url
 

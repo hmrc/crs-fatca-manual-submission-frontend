@@ -24,7 +24,7 @@ import scala.util.{Success, Try}
 
 final case class DoYouWantToAddAnotherAccountHolder()(implicit reportId: ReportId) extends QuestionPage[Boolean]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "doYouWantToAddAnotherAccountHolder"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "accountHolder" \ "doYouWantToAddAnotherAccountHolder"
 
   override def cleanupWithReportId(
     value: Option[Boolean],
