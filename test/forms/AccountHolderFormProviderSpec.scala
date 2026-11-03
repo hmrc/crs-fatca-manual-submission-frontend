@@ -28,19 +28,40 @@ class AccountHolderFormProviderSpec extends CheckboxFieldBehaviours {
     AccountHolderId("3")
   )
 
-  val form = new AccountHolderFormProvider()(accountHolderIds)
+  private val form = new AccountHolderFormProvider()(accountHolderIds)
 
   ".value" - {
 
     val fieldName   = "value"
     val requiredKey = "cpso.accountHolder.error.required"
 
-    behave like checkboxField(
-      form,
-      fieldName,
-      validValues = accountHolderIds,
-      invalidError = FormError(s"$fieldName[0]", "error.invalid")
-    )
+    accountHolderIds.zipWithIndex.foreach {
+      case (accountHolderId, index) =>
+        s"must bind `${accountHolderId.value}` successfully" in {
+          val result = form.bind(Map(s"$fieldName[$index]" -> accountHolderId.value))
+
+          result.get mustEqual Set(accountHolderId)
+          result.errors mustBe empty
+        }
+    }
+
+    "must bind several account holders at once" in {
+      val result = form.bind(
+        Map(
+          s"$fieldName[0]" -> accountHolderIds.head.value,
+          s"$fieldName[1]" -> accountHolderIds(1).value
+        )
+      )
+
+      result.get mustEqual Set(accountHolderIds.head, accountHolderIds(1))
+      result.errors mustBe empty
+    }
+
+    "must fail to bind when the answer is invalid" in {
+      form.bind(Map(s"$fieldName[0]" -> "invalid value")).errors must contain(
+        FormError(s"$fieldName[0]", "error.invalid")
+      )
+    }
 
     behave like mandatoryCheckboxField(
       form,
