@@ -23,10 +23,13 @@ import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.checkboxes.CheckboxItem
 import viewmodels.govuk.all.CheckboxItemViewModel
 
-case class AccountHolders(currentAccountHolderId: Option[AccountHolderId], accountHolders: Map[String, AccountHolder],  doYouWantToAddAnotherAccountHolder: Option[Boolean] = None)
+case class AccountHolders(currentAccountHolderId: Option[AccountHolderId],
+                          accountHolders: Map[String, AccountHolder],
+                          doYouWantToAddAnotherAccountHolder: Option[Boolean] = None
+)
 
 object AccountHolders {
-  private val CurrentAccountHolderId = "currentAccountHolderId"
+  private val CurrentAccountHolderId             = "currentAccountHolderId"
   private val DoYouWantToAddAnotherAccountHolder = "doYouWantToAddAnotherAccountHolder"
 
   implicit val format: OFormat[AccountHolders] = new OFormat[AccountHolders] {
@@ -43,12 +46,14 @@ object AccountHolders {
 
           val accountHolderEntries =
             JsObject(
-              obj.fields.filterNot(f => f._1 == CurrentAccountHolderId || f._1 == DoYouWantToAddAnotherAccountHolder)
+              obj.fields.filterNot(
+                f => f._1 == CurrentAccountHolderId || f._1 == DoYouWantToAddAnotherAccountHolder
+              )
             ).validate[Map[String, AccountHolder]]
 
           for {
-            currentId      <- currentAccountHolderId
-            accountHolders <- accountHolderEntries
+            currentId               <- currentAccountHolderId
+            accountHolders          <- accountHolderEntries
             addAnotherAccountHolder <- doYouWantToAddAnotherAccountHolder
           } yield AccountHolders(currentId, accountHolders, addAnotherAccountHolder)
       }

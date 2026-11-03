@@ -77,8 +77,10 @@ class RemoveAccountHolderController @Inject() (
               formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, reportId.regime.value, request.accountHolderName))),
               value =>
                 for {
-                  updatedAnswers   <- if(value) Future.fromTry(request.userAnswers.remove(AccountHolderPage(request.accountHolderId, reportId))) else Future.successful(request.userAnswers)
-                  _              <- repository.set(updatedAnswers)
+                  updatedAnswers <-
+                    if (value) Future.fromTry(request.userAnswers.remove(AccountHolderPage(request.accountHolderId, reportId)))
+                    else Future.successful(request.userAnswers)
+                  _ <- repository.set(updatedAnswers)
                 } yield redirectWithFlash(value, mode, updatedAnswers, request.accountHolderName)
             )
       }

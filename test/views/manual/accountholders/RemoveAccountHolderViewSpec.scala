@@ -18,7 +18,7 @@ package views.manual.accountholders
 
 import base.SpecBase
 import forms.manual.accountHolders.RemoveAccountHolderFormProvider
-import models.{CheckMode, Mode, NormalMode}
+import models.{Mode, NormalMode}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.data.Form
@@ -47,15 +47,12 @@ class RemoveAccountHolderViewSpec extends SpecBase {
   private val accountHolderName = "Alpha Holdings"
 
   private def render(
-                      boundForm: Form[_] = form,
-                      mode: Mode = NormalMode,
-                      regime: String = "FATCA",
-                      name: String = accountHolderName
-                    ): Document =
+    boundForm: Form[_] = form,
+    mode: Mode = NormalMode,
+    regime: String = "FATCA",
+    name: String = accountHolderName
+  ): Document =
     Jsoup.parse(view(boundForm, mode, regime, name).body)
-
-  private def submitPath(mode: Mode): String =
-    controllers.manual.accountHolders.routes.RemoveAccountHolderController.onSubmit(mode).url
 
   "RemoveAccountHolderView" - {
 
@@ -135,7 +132,7 @@ class RemoveAccountHolderViewSpec extends SpecBase {
         doc.select("label[for=value]").text() mustBe "Yes"
         doc.select("label[for=value-no]").text() mustBe "No"
       }
-      
+
     }
 
     "submit button" - {
@@ -147,6 +144,6 @@ class RemoveAccountHolderViewSpec extends SpecBase {
         doc.select(".govuk-button").text() mustBe "Save and continue"
       }
     }
-    
+
   }
 }

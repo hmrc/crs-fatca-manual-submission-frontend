@@ -26,7 +26,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.api.i18n.{Lang, Messages}
-import play.api.mvc.{AnyContent, MessagesControllerComponents}
+import play.api.mvc.{AnyContent, Flash, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import views.html.manual.accountHolders.AccountHolderListView
 
@@ -69,9 +69,10 @@ class AccountHolderListViewSpec extends SpecBase {
     mode: Mode = NormalMode,
     holders: Seq[(AccountHolderId, AccountHolder)] = Seq(alpha),
     accountsWithoutHolders: Seq[String] = oneAccount,
-    regime: String = "CRS"
+    regime: String = "CRS",
+    flash: Flash = Flash.emptyCookie
   ): Document =
-    Jsoup.parse(view(boundForm, mode, fiName, holders, accountsWithoutHolders, regime).body)
+    Jsoup.parse(view(boundForm, mode, fiName, holders, accountsWithoutHolders, regime)(request, messages, flash).body)
 
   private def pageHeading(doc: Document): String =
     doc.select("h1.govuk-heading-l").text()
@@ -266,6 +267,22 @@ class AccountHolderListViewSpec extends SpecBase {
         doc.select(".govuk-summary-list__row").size() mustBe 1
         paragraphTexts(doc) must contain("These accounts are missing an account holder:")
         doc.select("input[type=radio]").size() mustBe 0
+      }
+    }
+
+    "success notification" - {
+
+      "must render a notification banner when an account holder has been removed" in {
+        val doc = render(flash = Flash(Map("account-holder-removed" -> "Alpha Holdings")))
+
+        doc.select(".govuk-notification-banner--success").size() mustBe 1
+        doc.select(".govuk-notification-banner__title").text() mustBe "Success"
+        doc.select(".govuk-notification-banner__heading").text() mustBe
+          "Account holder Alpha Holdings removed."
+      }
+
+      "must not render a notification banner when no account holder has been removed" in {
+        render().select(".govuk-notification-banner").size() mustBe 0
       }
     }
   }

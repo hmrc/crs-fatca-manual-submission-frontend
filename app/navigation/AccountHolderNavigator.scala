@@ -24,7 +24,33 @@ import models.manual.accountHolders.IndividualOrOrganisation
 import models.viewModels.{AccountHolderId, AccountId}
 import pages.*
 import pages.manual.account.WhatAccountTypePage
-import pages.manual.accountHolders.{AccountHolderAddressNonUkPage, AccountHolderIndividualNamePage, AccountHolderOrganisationNamePage, AccountPage, AddressLookupForAccountHolderPage, DoYouWantToAddAnotherAccountHolder, EquityInterestTypePage, HaveTaxIdenticationNumberPage, IndividualHavePlaceOfBirthPage, IndividualOrOrganisationPage, IndividualPlaceOfBirthPage, IsThisTheAddressForAccountHoldersPage, OrganisationCrsPage, OrganisationFatcaPage, ProvideEquityInterestTypePage, RemoveAccountHolderPage, ResidentTaxPage, SelectAddressPage, TaxIdentificationNumberPage, UkPostCodeForAccountHolderPage, WhereAreTheyBasedPage, DoYouWantToAddTaxResidentCountryPage as AccHolderDoYouWantToAddTaxResidentCountryPage, RemoveTaxResidentCountryPage as AccRemoveTaxResidentCountryPage, SelfCertificationPage as AccountHolderSelfCertificationPage, UkAddressPage as AccountHolderUkAddressPage}
+import pages.manual.accountHolders.{
+  AccountHolderAddressNonUkPage,
+  AccountHolderIndividualNamePage,
+  AccountHolderOrganisationNamePage,
+  AccountPage,
+  AddressLookupForAccountHolderPage,
+  DoYouWantToAddAnotherAccountHolder,
+  DoYouWantToAddTaxResidentCountryPage as AccHolderDoYouWantToAddTaxResidentCountryPage,
+  EquityInterestTypePage,
+  HaveTaxIdenticationNumberPage,
+  IndividualHavePlaceOfBirthPage,
+  IndividualOrOrganisationPage,
+  IndividualPlaceOfBirthPage,
+  IsThisTheAddressForAccountHoldersPage,
+  OrganisationCrsPage,
+  OrganisationFatcaPage,
+  ProvideEquityInterestTypePage,
+  RemoveAccountHolderPage,
+  RemoveTaxResidentCountryPage as AccRemoveTaxResidentCountryPage,
+  ResidentTaxPage,
+  SelectAddressPage,
+  SelfCertificationPage as AccountHolderSelfCertificationPage,
+  TaxIdentificationNumberPage,
+  UkAddressPage as AccountHolderUkAddressPage,
+  UkPostCodeForAccountHolderPage,
+  WhereAreTheyBasedPage
+}
 import play.api.mvc.Call
 
 import javax.inject.Singleton

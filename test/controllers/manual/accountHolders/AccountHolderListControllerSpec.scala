@@ -39,7 +39,6 @@ import play.api.Application
 import play.api.data.Form
 import play.api.inject.bind
 import play.api.mvc.Call
-import play.api.mvc.ControllerHelpers.request2flash
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.ViewFIService
@@ -128,7 +127,7 @@ class AccountHolderListControllerSpec extends SpecBase with MockitoSugar {
         holders,
         Seq("GB11AAAA11111111111111"),
         reportId.regime.value
-      )(req, messages(app))
+      )(req, messages(app), req.flash)
       .toString
 
   "AccountHolderList Controller" - {
@@ -164,6 +163,25 @@ class AccountHolderListControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual expectedView(application, request, mode = CheckMode)
+      }
+    }
+
+    "must render the success banner when an account holder has been removed" in {
+
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(userAnswersFor()))
+          .overrides(bind[ViewFIService].toInstance(mockFiService()))
+          .build()
+
+      running(application) {
+        val request = FakeRequest(GET, accountHolderListRoute).withFlash("account-holder-removed" -> "Alpha Holdings")
+
+        val result = route(application, request).value
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual expectedView(application, request)
+        contentAsString(result) must include("govuk-notification-banner--success")
+        contentAsString(result) must include("Account holder Alpha Holdings removed.")
       }
     }
 

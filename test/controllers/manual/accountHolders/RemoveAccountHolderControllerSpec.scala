@@ -20,82 +20,102 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.accountHolders.RemoveAccountHolderFormProvider
-import models.SubmissionsConstants.CRS
-import models.{NormalMode, ReportId}
+import models.manual.accountHolders.IndividualOrOrganisation.Organisation
+import models.viewModels.AccountHolderId
+import models.{CheckMode, Mode, NormalMode, UserAnswers}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
+import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.accountHolders.RemoveAccountHolderPage
+import pages.manual.accountHolders.{AccountHolderOrganisationNamePage, AccountHolderPage, CurrentAccountHolderIdPage, IndividualOrOrganisationPage}
+import play.api.Application
+import play.api.data.Form
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import views.html.manual.accountHolders.RemoveAccountHolderView
 
 import scala.concurrent.Future
 
 class RemoveAccountHolderControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
+  private def onwardRoute: Call = Call("GET", "/foo")
 
-  val formProvider = new RemoveAccountHolderFormProvider()
-  val form         = formProvider()
+  private val accountHolderId   = AccountHolderId("21")
+  private val accountHolderName = "Alpha Holdings"
 
-  lazy val removeAccountHolderRoute = controllers.manual.accountHolders.routes.RemoveAccountHolderController.onPageLoad(NormalMode).url
+  private val formProvider        = new RemoveAccountHolderFormProvider()
+  private val form: Form[Boolean] = formProvider()
+
+  private lazy val removeAccountHolderRoute =
+    controllers.manual.accountHolders.routes.RemoveAccountHolderController.onPageLoad(NormalMode).url
+
+  private lazy val changeRemoveAccountHolderRoute =
+    controllers.manual.accountHolders.routes.RemoveAccountHolderController.onPageLoad(CheckMode).url
+
+  private def userAnswersFor(withName: Boolean = true): UserAnswers = {
+    val answers = emptyUserAnswers
+      .withPage(ReportIdPage, reportId)
+      .withPage(CurrentAccountHolderIdPage(), accountHolderId)
+      .withPage(IndividualOrOrganisationPage(accountHolderId), Organisation)
+
+    if (withName) answers.withPage(AccountHolderOrganisationNamePage(accountHolderId), accountHolderName) else answers
+  }
+
+  private def expectedView(
+    app: Application,
+    req: FakeRequest[?],
+    boundForm: Form[_] = form,
+    mode: Mode = NormalMode
+  ): String =
+    app.injector
+      .instanceOf[RemoveAccountHolderView]
+      .apply(boundForm, mode, reportId.regime.value, accountHolderName)(req, messages(app))
+      .toString
 
   "RemoveAccountHolder Controller" - {
 
-    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
-
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswersFor())).build()
 
       running(application) {
         val request = FakeRequest(GET, removeAccountHolderRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[RemoveAccountHolderView]
-
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual expectedView(application, request)
       }
     }
 
-    "must populate the view correctly on a GET when the question has previously been answered" in {
+    "must return OK and the correct view for a GET in check mode" in {
 
-      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
-
-      val userAnswers = ua.set(RemoveAccountHolderPage(), true).success.value
-
-      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswersFor())).build()
 
       running(application) {
-        val request = FakeRequest(GET, removeAccountHolderRoute)
-
-        val view = application.injector.instanceOf[RemoveAccountHolderView]
+        val request = FakeRequest(GET, changeRemoveAccountHolderRoute)
 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual expectedView(application, request, mode = CheckMode)
       }
     }
 
-    "must redirect to the next page when valid data is submitted" in {
+    "must remove the account holder, save the answers, flash the removed name and redirect when the user says yes" in {
 
-      val mockSessionRepository = mock[DatabaseConnector]
-
-      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+      val mockRepository = mock[DatabaseConnector]
+      when(mockRepository.set(any())(any())) thenReturn Future.successful(())
 
       val application =
-        applicationBuilder(maybeUserAnswers = Some(ua))
+        applicationBuilder(maybeUserAnswers = Some(userAnswersFor()))
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockSessionRepository)
+            bind[DatabaseConnector].toInstance(mockRepository)
           )
           .build()
 
@@ -108,12 +128,49 @@ class RemoveAccountHolderControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
+        flash(result).get("account-holder-removed") mustBe Some(accountHolderName)
+
+        val captor = ArgumentCaptor.forClass(classOf[UserAnswers])
+        verify(mockRepository).set(captor.capture())(any())
+
+        captor.getValue.get(AccountHolderPage(accountHolderId, reportId)) mustBe None
+      }
+    }
+
+    "must keep the account holder, save the answers and redirect without a flash message when the user says no" in {
+
+      val mockRepository = mock[DatabaseConnector]
+      when(mockRepository.set(any())(any())) thenReturn Future.successful(())
+
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(userAnswersFor()))
+          .overrides(
+            bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
+            bind[DatabaseConnector].toInstance(mockRepository)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, removeAccountHolderRoute)
+            .withFormUrlEncodedBody(("value", "false"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual onwardRoute.url
+        flash(result).get("account-holder-removed") mustBe None
+
+        val captor = ArgumentCaptor.forClass(classOf[UserAnswers])
+        verify(mockRepository).set(captor.capture())(any())
+
+        captor.getValue.get(AccountHolderPage(accountHolderId, reportId)) must not be empty
       }
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswersFor())).build()
 
       running(application) {
         val request =
@@ -122,12 +179,56 @@ class RemoveAccountHolderControllerSpec extends SpecBase with MockitoSugar {
 
         val boundForm = form.bind(Map("value" -> ""))
 
-        val view = application.injector.instanceOf[RemoveAccountHolderView]
-
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual expectedView(application, request, boundForm = boundForm)
+      }
+    }
+
+    "must redirect to Journey Recovery for a GET when no account holder has been selected" in {
+
+      val answers = emptyUserAnswers.withPage(ReportIdPage, reportId)
+
+      val application = applicationBuilder(maybeUserAnswers = Some(answers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, removeAccountHolderRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Journey Recovery for a GET when the account holder has no name" in {
+
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswersFor(withName = false))).build()
+
+      running(application) {
+        val request = FakeRequest(GET, removeAccountHolderRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Journey Recovery for a POST when the account holder has no name" in {
+
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswersFor(withName = false))).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, removeAccountHolderRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 
