@@ -20,82 +20,200 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.accountHolders.AccountHolderListFormProvider
-import models.SubmissionsConstants.CRS
-import models.{NormalMode, ReportId}
+import models.ServiceErrors.NoFiDetailFound
+import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
+import models.response.FIDetail
+import models.viewModels.{Account, AccountHolder, AccountHolderId, AccountHolders, AccountId, Accounts}
+import models.{CheckMode, Mode, NormalMode, UserAnswers}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
+import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.accountHolders.AccountHolderListPage
+import pages.manual.account.AccountsPage
+import pages.manual.accountHolders.{AccountHoldersPage, AccountPage, DoYouWantToAddAnotherAccountHolder}
+import play.api.Application
+import play.api.data.Form
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
+import services.ViewFIService
 import views.html.manual.accountHolders.AccountHolderListView
 
 import scala.concurrent.Future
 
 class AccountHolderListControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
+  private def onwardRoute: Call = Call("GET", "/foo")
 
-  val formProvider = new AccountHolderListFormProvider()
-  val form         = formProvider()
+  private val linkedAccount = Account(
+    haveNumber = Some(true),
+    whatIsAccountNumber = Some("GB33BUKB20201555555555"),
+    accountId = AccountId("80")
+  )
 
-  lazy val accountHolderListRoute = controllers.manual.accountHolders.routes.AccountHolderListController.onPageLoad(NormalMode).url
+  private val unlinkedAccount = Account(
+    haveNumber = Some(true),
+    whatIsAccountNumber = Some("GB11AAAA11111111111111"),
+    accountId = AccountId("82")
+  )
+
+  private val namedHolder = AccountHolder(
+    individualOrOrganisation = Some(Organisation),
+    organisationName = Some("Alpha Holdings"),
+    accountHolderType = Some("CRS101")
+  )
+
+  private val unnamedHolder = AccountHolder(
+    individualOrOrganisation = Some(Individual)
+  )
+
+  private val formProvider = new AccountHolderListFormProvider()
+  private val form         = formProvider()
+
+  private lazy val accountHolderListRoute =
+    controllers.manual.accountHolders.routes.AccountHolderListController.onPageLoad(NormalMode).url
+
+  private lazy val changeAccountHolderListRoute =
+    controllers.manual.accountHolders.routes.AccountHolderListController.onPageLoad(CheckMode).url
+
+  private def userAnswersFor(
+    holders: Map[String, AccountHolder] = Map("21" -> namedHolder),
+    links: Map[String, Set[AccountId]] = Map("21" -> Set(linkedAccount.accountId))
+  ): UserAnswers = {
+    val answers = emptyUserAnswers
+      .withPage(ReportIdPage, reportId)
+      .withPage(
+        AccountsPage(reportId),
+        Accounts(
+          currentAccountId = Some(linkedAccount.accountId),
+          accounts = Map(
+            linkedAccount.accountId.value   -> linkedAccount,
+            unlinkedAccount.accountId.value -> unlinkedAccount
+          )
+        )
+      )
+      .withPage(AccountHoldersPage(), AccountHolders(None, holders))
+
+    links.foldLeft(answers) {
+      case (updated, (accountHolderId, accountIds)) =>
+        updated.withPage(AccountPage(reportId, AccountHolderId(accountHolderId)), accountIds)
+    }
+  }
+
+  private def mockFiService(result: Future[FIDetail] = Future.successful(fiDetail)): ViewFIService = {
+    val service = mock[ViewFIService]
+    when(service.getFIDetail(any(), any())(using any())) thenReturn result
+    service
+  }
+
+  private def expectedView(
+    app: Application,
+    req: FakeRequest[?],
+    boundForm: Form[_] = form,
+    mode: Mode = NormalMode,
+    holders: Seq[(AccountHolderId, AccountHolder)] = Seq(AccountHolderId("21") -> namedHolder)
+  ): String =
+    app.injector
+      .instanceOf[AccountHolderListView]
+      .apply(
+        boundForm,
+        mode,
+        fiDetail.FIName,
+        holders,
+        Seq("GB11AAAA11111111111111"),
+        reportId.regime.value
+      )(req, messages(app))
+      .toString
 
   "AccountHolderList Controller" - {
 
-    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
-
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(userAnswersFor()))
+          .overrides(bind[ViewFIService].toInstance(mockFiService()))
+          .build()
 
       running(application) {
         val request = FakeRequest(GET, accountHolderListRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[AccountHolderListView]
-
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual expectedView(application, request)
       }
     }
 
-    "must populate the view correctly on a GET when the question has previously been answered" in {
-
-      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
-
-      val userAnswers = ua.set(AccountHolderListPage(), true).success.value
-
-      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
-
-      running(application) {
-        val request = FakeRequest(GET, accountHolderListRoute)
-
-        val view = application.injector.instanceOf[AccountHolderListView]
-
-        val result = route(application, request).value
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
-      }
-    }
-
-    "must redirect to the next page when valid data is submitted" in {
-
-      val mockSessionRepository = mock[DatabaseConnector]
-
-      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+    "must return OK and the correct view for a GET in check mode" in {
 
       val application =
-        applicationBuilder(maybeUserAnswers = Some(ua))
+        applicationBuilder(maybeUserAnswers = Some(userAnswersFor()))
+          .overrides(bind[ViewFIService].toInstance(mockFiService()))
+          .build()
+
+      running(application) {
+        val request = FakeRequest(GET, changeAccountHolderListRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual expectedView(application, request, mode = CheckMode)
+      }
+    }
+
+    "must not offer account holders without a name to the view" in {
+
+      val answers = userAnswersFor(
+        holders = Map("22" -> unnamedHolder),
+        links = Map("22" -> Set(linkedAccount.accountId))
+      )
+
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(answers))
+          .overrides(bind[ViewFIService].toInstance(mockFiService()))
+          .build()
+
+      running(application) {
+        val request = FakeRequest(GET, accountHolderListRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual expectedView(application, request, holders = Seq.empty)
+      }
+    }
+
+    "must redirect to Journey Recovery for a GET when the financial institution cannot be found" in {
+
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(userAnswersFor()))
+          .overrides(bind[ViewFIService].toInstance(mockFiService(Future.failed(NoFiDetailFound))))
+          .build()
+
+      running(application) {
+        val request = FakeRequest(GET, accountHolderListRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must save the answer and redirect to the next page when valid data is submitted" in {
+
+      val mockRepository = mock[DatabaseConnector]
+      when(mockRepository.set(any())(any())) thenReturn Future.successful(())
+
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(userAnswersFor()))
           .overrides(
+            bind[ViewFIService].toInstance(mockFiService()),
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockSessionRepository)
+            bind[DatabaseConnector].toInstance(mockRepository)
           )
           .build()
 
@@ -108,12 +226,20 @@ class AccountHolderListControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
+
+        val captor = ArgumentCaptor.forClass(classOf[UserAnswers])
+        verify(mockRepository).set(captor.capture())(any())
+
+        captor.getValue.get(DoYouWantToAddAnotherAccountHolder()) mustBe Some(true)
       }
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(userAnswersFor()))
+          .overrides(bind[ViewFIService].toInstance(mockFiService()))
+          .build()
 
       running(application) {
         val request =
@@ -122,12 +248,29 @@ class AccountHolderListControllerSpec extends SpecBase with MockitoSugar {
 
         val boundForm = form.bind(Map("value" -> ""))
 
-        val view = application.injector.instanceOf[AccountHolderListView]
-
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual expectedView(application, request, boundForm = boundForm)
+      }
+    }
+
+    "must redirect to Journey Recovery for a POST when the financial institution cannot be found" in {
+
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(userAnswersFor()))
+          .overrides(bind[ViewFIService].toInstance(mockFiService(Future.failed(NoFiDetailFound))))
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, accountHolderListRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 

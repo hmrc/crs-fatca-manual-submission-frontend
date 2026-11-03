@@ -18,7 +18,7 @@ package viewmodels.checkAnswers.manual.accountHolders
 
 import controllers.manual.accountHolders.routes
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.accountHolders.AccountHolderListPage
+import pages.manual.accountHolders.DoYouWantToAddAnotherAccountHolder
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
@@ -27,7 +27,7 @@ import viewmodels.implicits._
 object AccountHolderListSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
-    answers.get(AccountHolderListPage()).map {
+    answers.get(DoYouWantToAddAnotherAccountHolder()).map {
       answer =>
 
         val value = if (answer) "site.yes" else "site.no"

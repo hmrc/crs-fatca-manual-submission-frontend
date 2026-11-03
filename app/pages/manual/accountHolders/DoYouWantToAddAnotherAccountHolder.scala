@@ -16,10 +16,21 @@
 
 package pages.manual.accountHolders
 
-import models.ReportId
+import models.{ReportId, UserAnswers}
 import pages.QuestionPage
 import play.api.libs.json.JsPath
 
-final case class AccountHolderListPage()(implicit reportId: ReportId) extends QuestionPage[Boolean]:
+import scala.util.{Success, Try}
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "accountHolderList"
+final case class DoYouWantToAddAnotherAccountHolder()(implicit reportId: ReportId) extends QuestionPage[Boolean]:
+
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "doYouWantToAddAnotherAccountHolder"
+
+  override def cleanupWithReportId(
+    value: Option[Boolean],
+    userData: UserAnswers
+  )(implicit reportId: ReportId): Try[UserAnswers] =
+    value match {
+      case Some(true) => userData.remove(CurrentAccountHolderIdPage())
+      case _          => Success(userData)
+    }

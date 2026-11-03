@@ -19,13 +19,16 @@ package controllers.manual.accountHolders
 import connectors.DatabaseConnector
 import controllers.actions.Actions
 import models.ReportId
+import models.requests.ReportIdRequest
+import models.viewModels.AccountHolderId
+import pages.manual.accountHolders.CurrentAccountHolderIdPage
 import play.api.Logging
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.*
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class CurrentAccountHolderIdController @Inject() (
   repository: DatabaseConnector,
@@ -36,18 +39,30 @@ class CurrentAccountHolderIdController @Inject() (
     with I18nSupport
     with Logging {
 
-  def onChangeRedirect(accountHolderId: String): Action[AnyContent] = actions.withReportIdRequired() {
+  def onChangeRedirect(accountHolderId: String): Action[AnyContent] = actions.withReportIdRequired().async {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
-      Ok
+      // todo need accountHolder check your answers
+      redirectWithValidAccountHolderId(accountHolderId, controllers.routes.UnderConstructionController.onPageLoad())
   }
 
-  def onRemoveRedirect(accountHolderId: String): Action[AnyContent] = actions.withReportIdRequired() {
+  def onRemoveRedirect(accountHolderId: String): Action[AnyContent] = actions.withReportIdRequired().async {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
-      Ok
+      // todo need to redirect
+      redirectWithValidAccountHolderId(accountHolderId, controllers.routes.UnderConstructionController.onPageLoad())
+
   }
+
+  private def redirectWithValidAccountHolderId(accountHolderId: String, successCall: Call)(implicit
+    request: ReportIdRequest[AnyContent],
+    reportId: ReportId
+  ): Future[Result] =
+    for {
+      updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(CurrentAccountHolderIdPage(), AccountHolderId(accountHolderId)))
+      _              <- repository.set(updatedAnswers)
+    } yield Redirect(successCall)
 
 }

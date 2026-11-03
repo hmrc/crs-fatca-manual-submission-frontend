@@ -22,7 +22,7 @@ import forms.manual.accountHolders.AccountHolderListFormProvider
 import javax.inject.Inject
 import models.{Mode, ReportId, UserAnswers}
 import navigation.ManualSubmissionNavigator
-import pages.manual.accountHolders.AccountHolderListPage
+import pages.manual.accountHolders.DoYouWantToAddAnotherAccountHolder
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import connectors.DatabaseConnector
@@ -103,9 +103,9 @@ class AccountHolderListController @Inject() (
                   ),
                 value =>
                   for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(AccountHolderListPage(), value))
+                    updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(DoYouWantToAddAnotherAccountHolder(), value))
                     _              <- repository.set(updatedAnswers)
-                  } yield Redirect(navigator.nextPage(AccountHolderListPage(), mode, updatedAnswers))
+                  } yield Redirect(navigator.nextPage(DoYouWantToAddAnotherAccountHolder(), mode, updatedAnswers))
               )
         }
         .recover {

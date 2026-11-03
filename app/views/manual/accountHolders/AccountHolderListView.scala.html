@@ -32,14 +32,6 @@
 
 @(form: Form[_], mode: Mode, fiName: String, accountHolders: Seq[(AccountHolderId, AccountHolder)], accountsWithOutAccountHolders: Seq[String], regime: String)(implicit request: Request[_], messages: Messages)
 
-@changeLink = {
-@link(
-    href = routes.UnderConstructionController.onPageLoad().url,
-    message= messages("cpso.accountHolder.para.link"),
-    asPara = false
-)
-}
-
 @layout(pageTitle = title(form, accountHolderCountHeaderOrTitleText(accountHolders.size)), mainContentLayout = Some(ThreeQuartersMainContent.apply _)) {
 
     @formHelper(action = controllers.manual.accountHolders.routes.AccountHolderListController.onSubmit(mode), Symbol("autoComplete") -> "off") {

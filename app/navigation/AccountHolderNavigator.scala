@@ -30,6 +30,7 @@ import pages.manual.accountHolders.{
   AccountHolderOrganisationNamePage,
   AccountPage,
   AddressLookupForAccountHolderPage,
+  DoYouWantToAddAnotherAccountHolder,
   DoYouWantToAddTaxResidentCountryPage as AccHolderDoYouWantToAddTaxResidentCountryPage,
   EquityInterestTypePage,
   HaveTaxIdenticationNumberPage,
@@ -167,8 +168,17 @@ object AccountHolderNavigator {
         case Some(false) => controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
         case None        => routes.JourneyRecoveryController.onPageLoad()
       }
-    case (EquityInterestTypePage(_, _), mode, _) => controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
+    case (EquityInterestTypePage(_, _), mode, _)          => controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
+    case (DoYouWantToAddAnotherAccountHolder(), mode, ua) => handleDoYouWantToAddAnotherAccountHolderNavigation(mode, ua)
   }
+
+  // todo add test for this one
+  private def handleDoYouWantToAddAnotherAccountHolderNavigation(mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
+    userAnswers.get(DoYouWantToAddAnotherAccountHolder()) match {
+      case Some(true)  => controllers.manual.accountHolders.routes.AccountController.onPageLoad(mode)
+      case Some(false) => routes.UnderConstructionController.onPageLoad()
+      case _           => routes.JourneyRecoveryController.onPageLoad()
+    }
 
   private def handleIndividualHavePlaceOfBirthNavigation(accountId: AccountHolderId, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
     userAnswers.get(IndividualHavePlaceOfBirthPage(accountId)) match {
