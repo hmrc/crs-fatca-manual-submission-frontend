@@ -21,6 +21,8 @@ import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.accountHolders.AccountHolderListFormProvider
 import models.ServiceErrors.NoFiDetailFound
+import models.manual.accountHolders.AccountHolderTypes
+import models.manual.accountHolders.AccountHolderTypes.*
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
 import models.response.FIDetail
 import models.viewModels.{Account, AccountHolder, AccountHolderId, AccountHolders, AccountId, Accounts}
@@ -63,7 +65,7 @@ class AccountHolderListControllerSpec extends SpecBase with MockitoSugar {
   private val namedHolder = AccountHolder(
     individualOrOrganisation = Some(Organisation),
     organisationName = Some("Alpha Holdings"),
-    accountHolderType = Some("CRS101")
+    accountHolderType = Some(PassiveNonFinancialWithOneOrMoreControllingPerson)
   )
 
   private val unnamedHolder = AccountHolder(

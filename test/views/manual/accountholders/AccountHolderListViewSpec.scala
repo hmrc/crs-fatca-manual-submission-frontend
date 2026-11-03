@@ -18,6 +18,7 @@ package views.manual.accountholders
 
 import base.SpecBase
 import forms.manual.accountHolders.AccountHolderListFormProvider
+import models.manual.accountHolders.AccountHolderTypes.{PassiveNFFEWithSubstantial, PassiveNonFinancialWithOneOrMoreControllingPerson}
 import models.manual.accountHolders.IndividualOrOrganisation.Organisation
 import models.viewModels.{AccountHolder, AccountHolderId}
 import models.{CheckMode, Mode, NormalMode}
@@ -51,13 +52,13 @@ class AccountHolderListViewSpec extends SpecBase {
   private val alpha = AccountHolderId("21") -> AccountHolder(
     individualOrOrganisation = Some(Organisation),
     organisationName = Some("Alpha Holdings"),
-    accountHolderType = Some("CRS101")
+    accountHolderType = Some(PassiveNonFinancialWithOneOrMoreControllingPerson)
   )
 
   private val beta = AccountHolderId("22") -> AccountHolder(
     individualOrOrganisation = Some(Organisation),
     organisationName = Some("Beta Holdings"),
-    accountHolderType = Some("FATCA102")
+    accountHolderType = Some(PassiveNFFEWithSubstantial)
   )
 
   private val oneAccount  = Seq("GB11AAAA11111111111111")
