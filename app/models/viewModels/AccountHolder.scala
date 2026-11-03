@@ -17,12 +17,13 @@
 package models.viewModels
 
 import models.SubmissionsConstants.{CRS, RegimeType}
-import models.manual.accountHolders.IndividualOrOrganisation
+import models.manual.accountHolders.{IndividualName, IndividualOrOrganisation}
 import play.api.libs.json.{Json, OFormat}
 
 case class AccountHolder(individualOrOrganisation: Option[IndividualOrOrganisation] = None,
                          organisationName: Option[String] = None,
-                         accountHolderType: Option[String] = None
+                         accountHolderType: Option[String] = None,
+                         individualName: Option[IndividualName] = None
 ) {
 
   def canHaveCPSO() =
@@ -34,6 +35,10 @@ case class AccountHolder(individualOrOrganisation: Option[IndividualOrOrganisati
           i => Seq("CRS101", "FATCA101", "FATCA102").contains(i)
         )
     }
+
+  def getName(): String =
+    organisationName
+      .getOrElse(individualName.map(_.fullName).getOrElse(""))
 
   def cpsoIsMandatory(regimeType: RegimeType): Boolean =
     individualOrOrganisation match {

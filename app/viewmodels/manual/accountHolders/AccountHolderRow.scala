@@ -18,7 +18,7 @@ package viewmodels.manual.accountHolders
 
 import models.viewModels.{AccountHolder, AccountHolderId}
 
-case class AccountHolderRow(accountHolderName: String, changeUrl: String, removeUrl: String, isIncomplete: Boolean = true)
+case class AccountHolderRow(accountHolderName: String, changeUrl: String, removeUrl: String, isIncomplete: Boolean = false)
 
 object AccountHolderRow {
 

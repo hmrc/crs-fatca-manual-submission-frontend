@@ -16,15 +16,21 @@
 
 package controllers.manual.accountHolders
 
-import controllers.actions._
+import controllers.actions.*
 import forms.manual.accountHolders.AccountHolderListFormProvider
+
 import javax.inject.Inject
-import models.{Mode, ReportId}
+import models.{Mode, ReportId, UserAnswers}
 import navigation.ManualSubmissionNavigator
 import pages.manual.accountHolders.AccountHolderListPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import connectors.DatabaseConnector
+import models.ServiceErrors.NoFiDetailFound
+import models.viewModels.UnlinkedAccounts.*
+import models.viewModels.{AccountHolder, AccountHolderId, AccountHolders, UnlinkedAccounts}
+import play.api.Logging
+import services.ViewFIService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.accountHolders.AccountHolderListView
 
@@ -40,24 +46,34 @@ class AccountHolderListController @Inject() (
   reportIdAction: ReportIdRequiredAction,
   formProvider: AccountHolderListFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: AccountHolderListView
+  view: AccountHolderListView,
+  viewFIService: ViewFIService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with Logging {
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
 
-      val preparedForm = request.userAnswers.get(AccountHolderListPage()) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
+      viewFIService
+        .getFIDetail(request.fatcaId, reportId.fiId)
+        .map {
+          fiDetail =>
+            Ok(
+              view(form, mode, fiDetail.FIName, accountHolders(request.userAnswers), accountsWithoutAnAccountHolder(request.userAnswers), reportId.regime.value)
+            )
+        }
+        .recover {
+          case NoFiDetailFound =>
+            logger.error(s"Failed to retrieve FIDetail for FiID ${reportId.fiId}")
+            Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+        }
 
-      Ok(view(preparedForm, mode))
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
@@ -65,15 +81,44 @@ class AccountHolderListController @Inject() (
 
       implicit val reportId: ReportId = request.reportId
 
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(AccountHolderListPage(), value))
-              _              <- repository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(AccountHolderListPage(), mode, updatedAnswers))
-        )
+      viewFIService
+        .getFIDetail(request.fatcaId, reportId.fiId)
+        .flatMap {
+          fiDetail =>
+            form
+              .bindFromRequest()
+              .fold(
+                formWithErrors =>
+                  Future.successful(
+                    BadRequest(
+                      view(
+                        formWithErrors,
+                        mode,
+                        fiDetail.FIName,
+                        accountHolders(request.userAnswers),
+                        accountsWithoutAnAccountHolder(request.userAnswers),
+                        reportId.regime.value
+                      )
+                    )
+                  ),
+                value =>
+                  for {
+                    updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(AccountHolderListPage(), value))
+                    _              <- repository.set(updatedAnswers)
+                  } yield Redirect(navigator.nextPage(AccountHolderListPage(), mode, updatedAnswers))
+              )
+        }
+        .recover {
+          case NoFiDetailFound =>
+            logger.error(s"Failed to retrieve FIDetail for FiID ${reportId.fiId}")
+            Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+        }
   }
+
+  private def accountHolders(userAnswers: UserAnswers)(implicit reportId: ReportId): Seq[(AccountHolderId, AccountHolder)] =
+    AccountHolders
+      .existingAccountHolders(userAnswers)
+      .filter(
+        (_, accountHolder) => accountHolder.getName().nonEmpty
+      )
 }

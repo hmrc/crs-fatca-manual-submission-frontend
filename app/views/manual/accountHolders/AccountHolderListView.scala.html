@@ -19,6 +19,7 @@
 @import viewmodels.govuk.ThreeQuartersMainContent
 @import views.html.manual.accountHolders.partials.contentForOneAccountWithoutAnAccountHolder
 @import views.html.manual.accountHolders.partials.AccountHolderTable
+@import views.html.manual.accountHolders.partials.ContentForManyAccountsWithoutAccountHolder
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
@@ -29,7 +30,7 @@
     link: components.Link
 )
 
-@(form: Form[_], mode: Mode, fiName: String = "My Fi Name", accountHolders: Seq[(AccountHolderId, AccountHolder)] = Seq((AccountHolderId("GB00888888"), AccountHolder(organisationName = Some("Alpha Holding")))), accountsWithOutAccountHolders: Seq[String] = Seq("GB0022222"), regime: String = "CRS")(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, fiName: String, accountHolders: Seq[(AccountHolderId, AccountHolder)], accountsWithOutAccountHolders: Seq[String], regime: String)(implicit request: Request[_], messages: Messages)
 
 @changeLink = {
 @link(
@@ -54,58 +55,32 @@
               @if(accountsWithOutAccountHolders.size == 1) {
                   @contentForOneAccountWithoutAnAccountHolder(link, govukRadios, govukButton, heading)(accountsWithOutAccountHolders.headOption.getOrElse(""), fiName, regime, mode)
               }else {
-                  <p class="govuk-body">@messages("accountHolderList.empty.paragraph")</p>
-
-                  <p class="govuk-body govuk-!-margin-bottom-2">@messages("accountHolderList.many.account.missing.accountHolder.paragraph")</p>
-
-                  <ul class="govuk-list govuk-list--bullet wrappable">
-                      @for(accountId <- accountsWithOutAccountHolders) {
-                        <li>@accountId</li>
-                      }
-                  </ul>
-
-                  <p class="govuk-body govuk-!-margin-bottom-2">@messages("accountHolderList.many.account.missing.accountHolder.paragraph2")</p>
-
-                  <ul class="govuk-list govuk-list--bullet wrappable">
-                    <li>@messages("accountHolderList.many.account.missing.accountHolder.bullet1")</li>
-                    <li>@messages("accountHolderList.many.account.missing.accountHolder.bullet2")</li>
-                  </ul>
-
-                  @govukButton(
-                      ButtonViewModel(messages("accountHolderList.empty.button.txt"))
-                      .asLink(controllers.manual.cpso.routes.AccountHolderController.onSubmit(mode).url)
-                  )
-                  <p>
-                      @link(
-                          href = controllers.manual.routes.SendAReportController.onPageLoad().url,
-                          message= messages("accountHolder.account.sendAReport.link", regime.toUpperCase, fiName),
-                          asPara = true
-                      )
-                  </p>
+                  @ContentForManyAccountsWithoutAccountHolder(link, govukRadios, govukButton, heading)(accountsWithOutAccountHolders, fiName, regime, mode)
               }
             }
         }else {
             @AccountHolderTable()(accountHolders)
 
-            @{
-                if(accountsWithOutAccountHolders.size == 1) {
-                    @contentForOneAccountWithoutAnAccountHolder(link, govukRadios, govukButton, heading)(accountsWithOutAccountHolders.headOption.getOrElse(""), fiName, regime, mode)
-                } else if(accountsWithOutAccountHolders.size > 1) {
+            @if(accountsWithOutAccountHolders.size == 1) {
+                @contentForOneAccountWithoutAnAccountHolder(link, govukRadios, govukButton, heading)(accountsWithOutAccountHolders.headOption.getOrElse(""), fiName, regime, mode)
+            } else {
+                @if(accountsWithOutAccountHolders.size > 1) {
+                    @ContentForManyAccountsWithoutAccountHolder(link, govukRadios, govukButton, heading)(accountsWithOutAccountHolders, fiName, regime, mode)
 
+                } else {
+                    @govukRadios(
+                       RadiosViewModel.yesNo(
+                           field = form("value"),
+                            legend = LegendViewModel(messages("accountHolderList.radio.heading")).asPageHeading()
+                       ))
+                    @govukButton(ButtonViewModel(messages("site.saveContinue")))
                 }
             }
+
+
         }
 
-@*//        @govukRadios(*@
-@*//            RadiosViewModel.yesNo(*@
-@*//                field = form("value"),*@
-@*//                legend = LegendViewModel(messages("accountHolderList.heading")).asPageHeading()*@
-@*//            )*@
-@*//        )*@
 
-@*//        @govukButton(*@
-@*//            ButtonViewModel(messages("site.saveContinue"))*@
-@*//        )*@
     }
 }
 @accountHolderCountHeaderOrTitleText(count: Int)(implicit messages: Messages) = @{
