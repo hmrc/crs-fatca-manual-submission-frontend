@@ -32,7 +32,7 @@
 
 @govukButton(
     ButtonViewModel(messages("accountHolderList.empty.button.txt"))
-    .asLink(controllers.manual.accountHolders.routes.AccountController.onSubmit(mode).url)
+    .asLink(controllers.manual.accountHolders.routes.ClearAccountHolderIdAndRedirectToAccountHoldersController.onRedirect(mode).url)
 )
 <p>
 @link(

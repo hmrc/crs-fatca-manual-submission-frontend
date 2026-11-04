@@ -517,3 +517,7 @@ GET        /manual/account-holder/remove-account-holder                        c
 POST       /manual/account-holder/remove-account-holder                        controllers.manual.accountHolders.RemoveAccountHolderController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/account-holder/change-remove-account-holder                  controllers.manual.accountHolders.RemoveAccountHolderController.onPageLoad(mode: Mode = CheckMode)
 POST        /manual/account-holder/change-remove-account-holder                 controllers.manual.accountHolders.RemoveAccountHolderController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/account-holder/clear-account-holder-id      controllers.manual.accountHolders.ClearAccountHolderIdAndRedirectToAccountHoldersController.onRedirect(mode: Mode = NormalMode)
+GET        /manual/account-holder/change-clear-account-holder-id      controllers.manual.accountHolders.ClearAccountHolderIdAndRedirectToAccountHoldersController.onRedirect(mode: Mode = CheckMode)
+

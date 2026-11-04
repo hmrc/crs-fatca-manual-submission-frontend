@@ -17,8 +17,7 @@
 package pages.manual.accountHolders
 
 import models.ReportId
-import models.manual.account.AccountPayment
-import models.viewModels.{AccountHolder, AccountHolderId, AccountId}
+import models.viewModels.{AccountHolder, AccountHolderId}
 import pages.QuestionPage
 import play.api.libs.json.JsPath
 

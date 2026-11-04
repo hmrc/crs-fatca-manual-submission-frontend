@@ -84,7 +84,7 @@ class AccountHolderListViewSpec extends SpecBase {
     doc.select("a").asScala.find(_.text() == text)
 
   private def addAccountHolderPath(mode: Mode): String =
-    controllers.manual.accountHolders.routes.AccountController.onPageLoad(mode).url
+    controllers.manual.accountHolders.routes.ClearAccountHolderIdAndRedirectToAccountHoldersController.onRedirect(mode).url
 
   "AccountHolderListView" - {
 

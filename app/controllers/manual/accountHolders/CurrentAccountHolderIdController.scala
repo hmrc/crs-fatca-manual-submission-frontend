@@ -51,7 +51,6 @@ class CurrentAccountHolderIdController @Inject() (
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
-      // todo need to redirect
       redirectWithValidAccountHolderId(accountHolderId, controllers.manual.accountHolders.routes.RemoveAccountHolderController.onPageLoad(NormalMode))
 
   }
