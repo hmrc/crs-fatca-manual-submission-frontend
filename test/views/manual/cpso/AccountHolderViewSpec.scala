@@ -65,7 +65,7 @@ class AccountHolderViewSpec extends SpecBase {
     Jsoup.parse(view(boundForm, mode, name, checkboxOptions, regimeName).body)
 
   private def addAccountPath(mode: Mode): String =
-    controllers.routes.UnderConstructionController.onPageLoad().url // todo to be completed DAC6-4524
+    controllers.manual.cpso.routes.AccountHolderController.onPageLoad(mode).url
 
   private def sendAReportPath: String =
     controllers.manual.routes.SendAReportController.onPageLoad().url

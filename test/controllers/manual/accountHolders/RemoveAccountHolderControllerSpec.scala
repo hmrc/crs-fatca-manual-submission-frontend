@@ -89,9 +89,9 @@ class RemoveAccountHolderControllerSpec extends SpecBase with MockitoSugar {
     )
 
   private def userAnswersFor(
-                              withName: Boolean = true,
-                              owners: ControllingOrSubstantialOwners = ownersExclusiveToTheAccountHolder
-                            ): UserAnswers = {
+    withName: Boolean = true,
+    owners: ControllingOrSubstantialOwners = ownersExclusiveToTheAccountHolder
+  ): UserAnswers = {
     val answers = emptyUserAnswers
       .withPage(ReportIdPage, reportId)
       .withPage(CurrentAccountHolderIdPage(), accountHolderId)
@@ -102,11 +102,11 @@ class RemoveAccountHolderControllerSpec extends SpecBase with MockitoSugar {
   }
 
   private def expectedView(
-                            app: Application,
-                            req: FakeRequest[?],
-                            boundForm: Form[_] = form,
-                            mode: Mode = NormalMode
-                          ): String =
+    app: Application,
+    req: FakeRequest[?],
+    boundForm: Form[_] = form,
+    mode: Mode = NormalMode
+  ): String =
     app.injector
       .instanceOf[RemoveAccountHolderView]
       .apply(boundForm, mode, reportId.regime.value, accountHolderName)(req, messages(app))

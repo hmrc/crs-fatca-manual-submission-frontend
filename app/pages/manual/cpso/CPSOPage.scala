@@ -21,7 +21,6 @@ import models.viewModels.manual.cpso.{CPSOId, ControllingOrSubstantialOwner}
 import pages.QuestionPage
 import play.api.libs.json.JsPath
 
-
 final case class CPSOPage(cpsoId: CPSOId)(implicit reportId: ReportId) extends QuestionPage[ControllingOrSubstantialOwner]:
 
   override def path: JsPath = JsPath \ reportId.mongoKey \ "cp-so" \ cpsoId.value

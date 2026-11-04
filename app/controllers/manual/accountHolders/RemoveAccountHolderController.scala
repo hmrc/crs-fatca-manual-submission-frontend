@@ -38,15 +38,15 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Success, Try}
 
 class RemoveAccountHolderController @Inject() (
-                                                override val messagesApi: MessagesApi,
-                                                repository: DatabaseConnector,
-                                                navigator: ManualSubmissionNavigator,
-                                                actions: Actions,
-                                                formProvider: RemoveAccountHolderFormProvider,
-                                                val controllerComponents: MessagesControllerComponents,
-                                                view: RemoveAccountHolderView
-                                              )(implicit ec: ExecutionContext)
-  extends FrontendBaseController
+  override val messagesApi: MessagesApi,
+  repository: DatabaseConnector,
+  navigator: ManualSubmissionNavigator,
+  actions: Actions,
+  formProvider: RemoveAccountHolderFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: RemoveAccountHolderView
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport
     with Logging {
 
@@ -93,17 +93,17 @@ class RemoveAccountHolderController @Inject() (
   }
 
   private def removeAccountHolderAndLinkedCpsos(
-                                                 userAnswers: UserAnswers,
-                                                 accountHolderId: AccountHolderId
-                                               )(implicit reportId: ReportId): Try[UserAnswers] =
+    userAnswers: UserAnswers,
+    accountHolderId: AccountHolderId
+  )(implicit reportId: ReportId): Try[UserAnswers] =
     userAnswers
       .remove(AccountHolderPage(accountHolderId, reportId))
       .flatMap(unlinkAccountHolderFromCpsos(_, accountHolderId))
 
   private def unlinkAccountHolderFromCpsos(
-                                            userAnswers: UserAnswers,
-                                            accountHolderId: AccountHolderId
-                                          )(implicit reportId: ReportId): Try[UserAnswers] =
+    userAnswers: UserAnswers,
+    accountHolderId: AccountHolderId
+  )(implicit reportId: ReportId): Try[UserAnswers] =
     cpsoIdsLinkedTo(userAnswers, accountHolderId).foldLeft(Try(userAnswers)) {
       (answers, cpsoId) =>
         answers.flatMap {
@@ -122,7 +122,7 @@ class RemoveAccountHolderController @Inject() (
     }
 
   private def cpsoIdsLinkedTo(userAnswers: UserAnswers, accountHolderId: AccountHolderId)(implicit
-                                                                                          reportId: ReportId
+    reportId: ReportId
   ): Seq[CPSOId] =
     ControllingOrSubstantialOwners
       .existingCpsos(userAnswers)
