@@ -52,11 +52,11 @@ object IndividualPlaceOfBirthSummary {
       val value = HtmlFormat.escape(answer.city.getOrElse("")).toString + "<br/>" + HtmlFormat.escape(answer.region.getOrElse("")).toString
 
       SummaryListRowViewModel(
-        key = "accountholder.individualPlaceOfBirth.checkYourAnswersLabel",
+        key = "accountHolder.individualPlaceOfBirth.checkYourAnswersLabel",
         value = ValueViewModel(HtmlContent(value)),
         actions = Seq(
           ActionItemViewModel("site.change", controllers.manual.accountHolders.routes.IndividualPlaceOfBirthController.onPageLoad(CheckMode).url)
-            .withVisuallyHiddenText(messages("individualPlaceOfBirth.change.hidden"))
+            .withVisuallyHiddenText(messages("accountHolder.individualPlaceOfBirth.change.hidden"))
         )
       )
     }

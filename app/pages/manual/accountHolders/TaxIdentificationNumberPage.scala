@@ -23,4 +23,4 @@ import play.api.libs.json.JsPath
 
 final case class TaxIdentificationNumberPage(index: Int, currentId: AccountHolderId, reportId: ReportId) extends QuestionPage[String]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "accountHolder" \ currentId.value \ "taxResidentCountries" \ index \ "taxIdentificationNumber"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "accountHolder" \ currentId.value \ "taxResidentCountries" \ index \ "taxIdentifierNumber"

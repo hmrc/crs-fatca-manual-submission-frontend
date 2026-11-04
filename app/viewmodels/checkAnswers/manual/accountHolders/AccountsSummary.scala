@@ -59,7 +59,7 @@ object AccountsSummary {
           ActionItemViewModel(
             "site.change",
             routes.AccountController.onPageLoad(CheckMode).url
-          )
+          ).withVisuallyHiddenText(messages("accountHolder.account.change.hidden"))
         )
       )
     }

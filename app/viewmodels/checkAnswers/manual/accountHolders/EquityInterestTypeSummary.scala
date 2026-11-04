@@ -33,7 +33,7 @@ object EquityInterestTypeSummary {
     } yield
       val value = answer.types
         .map(
-          equityInterestType => messages(s"accountHolders.provideEquityInterestType.${equityInterestType.toString}")
+          equityInterestType => messages(s"accountHolders.equityInterestType.${equityInterestType.toString}")
         )
         .mkString(", ")
 

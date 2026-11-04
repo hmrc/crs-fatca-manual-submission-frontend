@@ -18,11 +18,22 @@ package utils
 
 import models.NumberType.{Iban, Semp}
 import models.SubmissionsConstants.{CRS, FATCA}
+import models.manual.accountHolders.IndividualOrOrganisation
+import models.viewModels.AccountHolderId
 import models.{ReportId, UserAnswers}
 import pages.manual.account.*
+import pages.manual.accountHolders.{
+  CurrentAccountHolderIdPage,
+  IndividualHaveDateOfBirthPage,
+  IndividualHavePlaceOfBirthPage,
+  IndividualOrOrganisationPage,
+  ProvideEquityInterestTypePage
+}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 import viewmodels.checkAnswers.manual.account.*
+import viewmodels.checkAnswers.manual.accountHolders
+import viewmodels.checkAnswers.manual.accountHolders.*
 import viewmodels.checkAnswers.manual.filercategory.{WhatTypeOfFilerIsSponsorSummary, WhatTypeOfFilerSummary}
 import viewmodels.checkAnswers.{CrsOrFatcaSummary, ReportingYearSummary, TypeOfReportSummary}
 import viewmodels.govuk.all.SummaryListViewModel
@@ -100,6 +111,57 @@ class CheckAnswersUtil @Inject() {
       }
 
     SummaryListViewModel(rows = rows).withCssClass("govuk-!-margin-bottom-3")
+  }
+
+  def getAccountHolderRows(ua: UserAnswers)(implicit messages: Messages, reportId: ReportId, accountHolderId: AccountHolderId): Seq[SummaryList] = {
+    val rows: Seq[SummaryListRow] =
+      (for {
+        currentAccountHolderId   <- ua.get(CurrentAccountHolderIdPage()(reportId))
+        individualOrOrganisation <- ua.get(IndividualOrOrganisationPage(currentAccountHolderId)(reportId))
+      } yield {
+        val individualDateOfBirthSummaries =
+          Seq(IndividualHaveDateOfBirthSummary.row(ua)).flatten ++
+            (if (ua.get(IndividualHaveDateOfBirthPage(currentAccountHolderId)(reportId)).contains(true))
+               Seq(IndividualDateOfBirthSummary.row(ua)).flatten
+             else Seq.empty)
+
+        val individualPlaceOfBirthSummaries =
+          Seq(IndividualHavePlaceOfBirthSummary.row(ua)).flatten ++
+            (if (ua.get(IndividualHavePlaceOfBirthPage(currentAccountHolderId)(reportId)).contains(true))
+               Seq(IndividualPlaceOfBirthSummary.row(ua)).flatten
+             else Seq.empty)
+
+        val individualSummaries =
+          Seq(IndividualNameSummary.row(ua)).flatten ++
+            individualDateOfBirthSummaries ++
+            individualPlaceOfBirthSummaries
+
+        val equityInterestTypeSummaries =
+          Seq(ProvideEquityInterestTypeSummary.row(ua)).flatten ++
+            (if (ua.get(ProvideEquityInterestTypePage(currentAccountHolderId, reportId)).contains(true))
+               Seq(EquityInterestTypeSummary.row(ua)).flatten
+             else Seq.empty)
+
+        val organisationSummaries =
+          Seq(OrganisationNameSummary.row(ua)).flatten ++
+            (if (reportId.regime == CRS) Seq(OrganisationCrsSummary.row(ua)).flatten
+             else Seq(OrganisationFatcaSummary.row(ua)).flatten) ++ equityInterestTypeSummaries
+
+        val accountHolderTypeSummaries = individualOrOrganisation match {
+          case IndividualOrOrganisation.Individual   => individualSummaries
+          case IndividualOrOrganisation.Organisation => organisationSummaries
+        }
+
+        Seq(
+          AccountsSummary.row(ua),
+          IndividualOrOrganisationSummary.row(ua)
+        ).flatten ++
+          accountHolderTypeSummaries ++
+          Seq(WhatIsAddressForAccountHolderSummary.row(ua)).flatten
+      }).getOrElse(Seq.empty)
+
+    Seq(SummaryListViewModel(rows = rows).withCssClass("govuk-!-margin-bottom-3"))
+      ++ AccountHolderTaxResidentCountriesSummary.row(ua)
   }
 
 }

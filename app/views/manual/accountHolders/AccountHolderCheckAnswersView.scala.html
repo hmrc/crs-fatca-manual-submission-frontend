@@ -21,11 +21,10 @@
     govukButton: GovukButton,
     formHelper: FormWithCSRF,
     govukSummaryList: GovukSummaryList,
-    summaryCard: components.AccountPaymentsCard,
     heading: components.Heading
 )
 
-@(list: SummaryList, payments: Seq[AccountPayment])(implicit request: Request[_], messages: Messages)
+@(lists: Seq[SummaryList])(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("accountHolders.checkAnswers.title"))) {
 
@@ -33,10 +32,8 @@
 
     @heading(headingContent = messages("accountHolders.checkAnswers.heading"), size = "l")
 
-    @govukSummaryList(list)
-
-    @if(payments.nonEmpty) {
-        @summaryCard(payments)
+    @for(list <- lists) {
+        @govukSummaryList(list)
     }
 
     @govukButton(

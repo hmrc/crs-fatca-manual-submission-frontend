@@ -18,36 +18,38 @@ package controllers.manual.accountHolders
 
 import controllers.actions.*
 import models.ReportId
+import models.viewModels.AccountHolderId
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.manual.accountholders.CheckAnswersUtil
-import views.html.manual.accountHolders.CheckAnswersView
+import utils.CheckAnswersUtil
+import views.html.manual.accountHolders.AccountHolderCheckAnswersView
 
 import javax.inject.Inject
 import scala.concurrent.Future
 
-class CheckAnswersController @Inject() (override val messagesApi: MessagesApi,
-                                        actions: Actions,
-                                        val controllerComponents: MessagesControllerComponents,
-                                        view: CheckAnswersView,
-                                        util: CheckAnswersUtil
+class AccountHolderCheckAnswersController @Inject() (override val messagesApi: MessagesApi,
+                                                     actions: Actions,
+                                                     val controllerComponents: MessagesControllerComponents,
+                                                     view: AccountHolderCheckAnswersView,
+                                                     util: CheckAnswersUtil
 ) extends FrontendBaseController
     with I18nSupport
     with Logging {
 
   def onPageLoad(): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired() {
     implicit request =>
-      implicit val reportId: ReportId = request.reportId
+      implicit val accountHolderId: AccountHolderId = request.accountHolderId
+      implicit val reportId: ReportId               = request.reportId
 
-      Ok(view(util.rows(request.userAnswers), Seq.empty))
+      Ok(view(util.getAccountHolderRows(request.userAnswers)))
 
   }
 
   def onSubmit: Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired().async {
     implicit request =>
-      Future.successful(Redirect(controllers.manual.routes.SendAReportController.onPageLoad().url))
+      Future.successful(Redirect(controllers.routes.UnderConstructionController.onPageLoad().url))
   }
 
 }

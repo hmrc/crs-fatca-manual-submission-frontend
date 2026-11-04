@@ -30,7 +30,7 @@ object TaskStatus {
 
 def handleAccountHolderNavigation(userAnswers: UserAnswers, reportId: ReportId) =
   userAnswers.get(AccountHoldersPage()(reportId)) match {
-    case Some(_) => Some(controllers.routes.UnderConstructionController.onPageLoad().url)
+    case Some(_) => Some(controllers.manual.accountHolders.routes.AccountController.onPageLoad(NormalMode).url) // TODO manual/account-holders
     case None    => Some(controllers.manual.accountHolders.routes.AccountController.onPageLoad(NormalMode).url)
   }
 
