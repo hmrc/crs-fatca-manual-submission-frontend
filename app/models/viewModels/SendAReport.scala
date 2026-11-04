@@ -61,9 +61,10 @@ final case class SendAReportSections(
       SendAReportSection(
         headingKey = "sendAReport.financialInstitution.heading",
         idPrefix = "financial-institution",
-        tasks = task("sendAReport.financialInstitution.subHeading",
-                     financialInstitutionDetails,
-                     href = Some(controllers.routes.UnderConstructionController.onPageLoad().url)
+        tasks = task(
+          "sendAReport.financialInstitution.subHeading",
+          financialInstitutionDetails,
+          href = Some(controllers.manual.routes.CheckDetailsForFinancialInstitutionController.onPageLoad().url)
         )
       ),
       SendAReportSection(

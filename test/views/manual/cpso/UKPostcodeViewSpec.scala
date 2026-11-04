@@ -66,7 +66,6 @@ class UKPostcodeViewSpec extends SpecBase {
         doc.select("p").text() must include("Enter the postcode to find the address automatically.")
       }
 
-      // todo update after create enter address form
       "must display link" in {
         doc.select("a#enter-manually-id").text() must include("Or enter the address manually")
         doc.select("a#enter-manually-id").attr("href") mustBe controllers.manual.cpso.routes.AddressUkController.onPageLoad(NormalMode).url

@@ -17,6 +17,7 @@
 package models.response
 
 import play.api.libs.json.{Json, OFormat}
+import play.twirl.api.HtmlFormat
 
 final case class ViewFIDetailsResponse(ViewFIDetails: ViewFIDetails)
 
@@ -76,7 +77,23 @@ final case class AddressDetails(
   AddressLine4: Option[String],
   CountryCode: Option[String],
   PostalCode: Option[String]
-)
+):
+
+  def formatAddressDetails: String =
+    val lines = Seq(
+      Some(AddressLine1),
+      AddressLine2,
+      AddressLine3,
+      AddressLine4,
+      CountryCode,
+      PostalCode
+    ).flatten.filter(_.trim.nonEmpty)
+
+    lines
+      .map(
+        line => HtmlFormat.escape(line).toString
+      )
+      .mkString("<br>")
 
 object AddressDetails:
   given format: OFormat[AddressDetails] = Json.format[AddressDetails]

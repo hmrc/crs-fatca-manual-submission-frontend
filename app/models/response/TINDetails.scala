@@ -16,9 +16,19 @@
 
 package models.response
 
+import models.response.TINType._
+import play.api.i18n.Messages
 import play.api.libs.json.{Json, OFormat}
 
-final case class TINDetails(TINType: TINType, TIN: String, IssuedBy: String)
+final case class TINDetails(TINType: TINType, TIN: String, IssuedBy: String) {
+
+  def toKey(implicit messages: Messages): String = TINType match {
+    case UTR   => messages("CheckDetailsForFinancialInstitution.tinType.utr")
+    case CRN   => messages("CheckDetailsForFinancialInstitution.tinType.crn")
+    case TURN  => messages("CheckDetailsForFinancialInstitution.tinType.turn")
+    case OTHER => messages("CheckDetailsForFinancialInstitution.tinType.other")
+  }
+}
 
 object TINDetails:
   given format: OFormat[TINDetails] = Json.format[TINDetails]
