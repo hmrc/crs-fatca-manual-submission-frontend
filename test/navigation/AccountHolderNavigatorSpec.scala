@@ -17,6 +17,7 @@
 package navigation
 
 import base.SpecBase
+import controllers.routes
 import models.*
 import models.SubmissionsConstants.{CRS, FATCA}
 import models.manual.TaxResidentInformation
@@ -950,6 +951,36 @@ class AccountHolderNavigatorSpec extends SpecBase {
 
             navigator.nextPage(EquityInterestTypePage(accountHolderId, crsReportId), NormalMode, ua)(crsReportId) mustBe
               controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(NormalMode)
+          }
+        }
+
+        "RemoveAccountHolderPage" - {
+          val ua = UserAnswers("id")
+
+          "must go to account holder list page" in {
+            navigator.nextPage(RemoveAccountHolderPage(), NormalMode, ua) mustBe
+              controllers.manual.accountHolders.routes.AccountHolderListController.onPageLoad(NormalMode)
+          }
+        }
+
+        "DoYouWantToAddAnotherAccountHolder" - {
+          val ua = UserAnswers("id")
+
+          "must go to account holders page when DoYouWantToAddAnotherAccountHolder is true" in {
+            val answers = ua.withPage(DoYouWantToAddAnotherAccountHolder(), true)
+            navigator.nextPage(DoYouWantToAddAnotherAccountHolder(), NormalMode, answers) mustBe
+              controllers.manual.accountHolders.routes.AccountController.onPageLoad(NormalMode)
+          }
+
+          "must go to under construction page when DoYouWantToAddAnotherAccountHolder is false" in {
+            val answers = ua.withPage(DoYouWantToAddAnotherAccountHolder(), false)
+            navigator.nextPage(DoYouWantToAddAnotherAccountHolder(), NormalMode, answers) mustBe
+              routes.UnderConstructionController.onPageLoad()
+          }
+
+          "must go to journey recovery page when DoYouWantToAddAnotherAccountHolder is not preset" in {
+            navigator.nextPage(DoYouWantToAddAnotherAccountHolder(), NormalMode, ua) mustBe
+              routes.JourneyRecoveryController.onPageLoad()
           }
         }
 

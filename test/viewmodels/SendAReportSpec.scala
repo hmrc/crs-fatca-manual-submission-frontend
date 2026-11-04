@@ -66,7 +66,11 @@ class SendAReportSpec extends SpecBase {
           "sendAReport.accountsInformation.heading",
           "accounts-information",
           List(
-            SendAReportTask("sendAReport.accountsInformation.accountHolders", NotStarted, Some(controllers.routes.UnderConstructionController.onPageLoad().url))
+            SendAReportTask(
+              "sendAReport.accountsInformation.accountHolders",
+              NotStarted,
+              Some(controllers.manual.accountHolders.routes.AccountController.onPageLoad(NormalMode).url)
+            )
           )
         )
       )

@@ -520,4 +520,3 @@ POST        /manual/account-holder/change-remove-account-holder                 
 
 GET        /manual/account-holder/clear-account-holder-id      controllers.manual.accountHolders.ClearAccountHolderIdAndRedirectToAccountHoldersController.onRedirect(mode: Mode = NormalMode)
 GET        /manual/account-holder/change-clear-account-holder-id      controllers.manual.accountHolders.ClearAccountHolderIdAndRedirectToAccountHoldersController.onRedirect(mode: Mode = CheckMode)
-

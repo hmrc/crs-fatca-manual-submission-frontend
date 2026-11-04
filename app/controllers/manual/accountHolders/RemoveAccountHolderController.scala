@@ -16,24 +16,23 @@
 
 package controllers.manual.accountHolders
 
+import connectors.DatabaseConnector
 import controllers.actions.*
+import controllers.routes
 import forms.manual.accountHolders.RemoveAccountHolderFormProvider
-
-import javax.inject.Inject
-import models.{Mode, ReportId, UserAnswers}
-import navigation.ManualSubmissionNavigator
 import models.viewModels.AccountHolderId
 import models.viewModels.manual.cpso.{CPSOId, ControllingOrSubstantialOwners}
+import models.{Mode, ReportId, UserAnswers}
+import navigation.ManualSubmissionNavigator
 import pages.manual.accountHolders.{AccountHolderPage, RemoveAccountHolderPage}
 import pages.manual.cpso.{AccountHolderIdsPage, CPSOPage, CurrentCPSOIdPage}
+import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import connectors.DatabaseConnector
-import controllers.routes
-import play.api.Logging
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.accountHolders.RemoveAccountHolderView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Success, Try}
 

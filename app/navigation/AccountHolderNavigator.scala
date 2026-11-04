@@ -171,10 +171,9 @@ object AccountHolderNavigator {
       }
     case (EquityInterestTypePage(_, _), mode, _)          => controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
     case (DoYouWantToAddAnotherAccountHolder(), mode, ua) => handleDoYouWantToAddAnotherAccountHolderNavigation(mode, ua)
-    case (RemoveAccountHolderPage(), mode, ua) => controllers.manual.accountHolders.routes.AccountHolderListController.onPageLoad(mode) // todo add test
+    case (RemoveAccountHolderPage(), mode, ua)            => controllers.manual.accountHolders.routes.AccountHolderListController.onPageLoad(mode)
   }
 
-  // todo add test for this one
   private def handleDoYouWantToAddAnotherAccountHolderNavigation(mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
     userAnswers.get(DoYouWantToAddAnotherAccountHolder()) match {
       case Some(true)  => controllers.manual.accountHolders.routes.AccountController.onPageLoad(mode)
