@@ -22,7 +22,10 @@ import forms.manual.accountHolders.RemoveAccountHolderFormProvider
 import javax.inject.Inject
 import models.{Mode, ReportId, UserAnswers}
 import navigation.ManualSubmissionNavigator
+import models.viewModels.AccountHolderId
+import models.viewModels.manual.cpso.{CPSOId, ControllingOrSubstantialOwners}
 import pages.manual.accountHolders.{AccountHolderPage, RemoveAccountHolderPage}
+import pages.manual.cpso.{AccountHolderIdsPage, CPSOPage, CurrentCPSOIdPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import connectors.DatabaseConnector
@@ -32,17 +35,18 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.accountHolders.RemoveAccountHolderView
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Success, Try}
 
 class RemoveAccountHolderController @Inject() (
-  override val messagesApi: MessagesApi,
-  repository: DatabaseConnector,
-  navigator: ManualSubmissionNavigator,
-  actions: Actions,
-  formProvider: RemoveAccountHolderFormProvider,
-  val controllerComponents: MessagesControllerComponents,
-  view: RemoveAccountHolderView
-)(implicit ec: ExecutionContext)
-    extends FrontendBaseController
+                                                override val messagesApi: MessagesApi,
+                                                repository: DatabaseConnector,
+                                                navigator: ManualSubmissionNavigator,
+                                                actions: Actions,
+                                                formProvider: RemoveAccountHolderFormProvider,
+                                                val controllerComponents: MessagesControllerComponents,
+                                                view: RemoveAccountHolderView
+                                              )(implicit ec: ExecutionContext)
+  extends FrontendBaseController
     with I18nSupport
     with Logging {
 
@@ -76,15 +80,56 @@ class RemoveAccountHolderController @Inject() (
             .fold(
               formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, reportId.regime.value, request.accountHolderName))),
               value =>
+                val answersAfterRemoval =
+                  if value then removeAccountHolderAndLinkedCpsos(request.userAnswers, request.accountHolderId)
+                  else Success(request.userAnswers)
+
                 for {
-                  updatedAnswers <-
-                    if (value) Future.fromTry(request.userAnswers.remove(AccountHolderPage(request.accountHolderId, reportId)))
-                    else Future.successful(request.userAnswers)
-                  _ <- repository.set(updatedAnswers)
+                  updatedAnswers <- Future.fromTry(answersAfterRemoval)
+                  _              <- repository.set(updatedAnswers)
                 } yield redirectWithFlash(value, mode, updatedAnswers, request.accountHolderName)
             )
       }
   }
+
+  private def removeAccountHolderAndLinkedCpsos(
+                                                 userAnswers: UserAnswers,
+                                                 accountHolderId: AccountHolderId
+                                               )(implicit reportId: ReportId): Try[UserAnswers] =
+    userAnswers
+      .remove(AccountHolderPage(accountHolderId, reportId))
+      .flatMap(unlinkAccountHolderFromCpsos(_, accountHolderId))
+
+  private def unlinkAccountHolderFromCpsos(
+                                            userAnswers: UserAnswers,
+                                            accountHolderId: AccountHolderId
+                                          )(implicit reportId: ReportId): Try[UserAnswers] =
+    cpsoIdsLinkedTo(userAnswers, accountHolderId).foldLeft(Try(userAnswers)) {
+      (answers, cpsoId) =>
+        answers.flatMap {
+          current =>
+            val remaining = current.get(AccountHolderIdsPage(cpsoId, reportId)).getOrElse(Set.empty) - accountHolderId
+
+            if remaining.isEmpty then
+              for {
+                withoutCpso <- current.remove(CPSOPage(cpsoId))
+                withoutCurrent <-
+                  if withoutCpso.get(CurrentCPSOIdPage()).contains(cpsoId) then withoutCpso.remove(CurrentCPSOIdPage())
+                  else Success(withoutCpso)
+              } yield withoutCurrent
+            else current.setWithReportId(AccountHolderIdsPage(cpsoId, reportId), remaining)
+        }
+    }
+
+  private def cpsoIdsLinkedTo(userAnswers: UserAnswers, accountHolderId: AccountHolderId)(implicit
+                                                                                          reportId: ReportId
+  ): Seq[CPSOId] =
+    ControllingOrSubstantialOwners
+      .existingCpsos(userAnswers)
+      .map(_._1)
+      .filter(
+        cpsoId => userAnswers.get(AccountHolderIdsPage(cpsoId, reportId)).exists(_.contains(accountHolderId))
+      )
 
   private def redirectWithFlash(value: Boolean, mode: Mode, useranswers: UserAnswers, accountHolder: String)(implicit reportId: ReportId): Result =
     if value then Redirect(navigator.nextPage(RemoveAccountHolderPage(), mode, useranswers)).flashing("account-holder-removed" -> accountHolder)
