@@ -157,7 +157,7 @@ class CheckAnswersUtil @Inject() {
           IndividualOrOrganisationSummary.row(ua)
         ).flatten ++
           accountHolderTypeSummaries ++
-          Seq(WhatIsAddressForAccountHolderSummary.row(ua)).flatten
+          Seq(AddressForAccountHolderSummary.row(ua)).flatten
       }).getOrElse(Seq.empty)
 
     Seq(SummaryListViewModel(rows = rows).withCssClass("govuk-!-margin-bottom-3"))

@@ -22,16 +22,45 @@ import models.SubmissionsConstants.{CRS, FATCA}
 import models.TypeOfReport.Information
 import models.manual.account.WasAccountOpen
 import models.manual.account.WhatAccountType.Custodial
+import models.manual.accountHolders.{
+  EquityInterestType,
+  EquityInterestTypes,
+  IndividualDateOfBirth,
+  IndividualName,
+  IndividualOrOrganisation as HolderType,
+  IndividualPlaceOfBirth,
+  OrganisationCrs,
+  OrganisationFatca
+}
 import models.manual.filercategory.{WhatTypeOfFiler, WhatTypeOfFilerIsSponsor}
-import models.viewModels.AccountId
+import models.viewModels.{AccountHolderId, AccountId}
 import models.{AccountBalance, CrsOrFatca, Currency, NumberType, ReportId, UserAnswers}
 import org.scalatest.freespec.AnyFreeSpec
 import pages.manual.account.*
+import pages.manual.accountHolders.{
+  AccountHolderIndividualNamePage,
+  AccountHolderOrganisationNamePage,
+  CurrentAccountHolderIdPage as CurrentAccountHolderIdForHolderPage,
+  EquityInterestTypePage,
+  IndividualDateOfBirthPage,
+  IndividualHaveDateOfBirthPage,
+  IndividualHavePlaceOfBirthPage,
+  IndividualOrOrganisationPage,
+  IndividualPlaceOfBirthPage,
+  OrganisationCrsPage,
+  OrganisationFatcaPage,
+  ProvideEquityInterestTypePage
+}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import play.api.i18n.Messages
 import play.api.test.Helpers.stubMessages
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 import viewmodels.checkAnswers.manual.account.*
+import viewmodels.checkAnswers.manual.accountHolders.*
+import viewmodels.govuk.all.{FluentSummaryList, SummaryListViewModel}
+
+import java.time.LocalDate
 
 class CheckAnswersUtilSpec extends SpecBase {
 
@@ -234,7 +263,9 @@ class CheckAnswersUtilSpec extends SpecBase {
 
               util.getAccountRows(ua).rows mustBe expected
             }
+
           }
+
         }
 
         "when the account is closed" - {
@@ -324,9 +355,247 @@ class CheckAnswersUtilSpec extends SpecBase {
             util.getAccountRows(ua).rows mustBe expected
           }
         }
-
       }
     }
 
+    "getAccountHolderRows" - {
+
+      implicit val accountHolderId: AccountHolderId = AccountHolderId("holder-id")
+
+      def getIndividualAnswers(implicit reportId: ReportId): UserAnswers =
+        emptyUserAnswers
+          .withPage(CurrentAccountHolderIdForHolderPage()(reportId), accountHolderId)
+          .withPage(IndividualOrOrganisationPage(accountHolderId)(reportId), HolderType.Individual)
+
+      def getOrganisationAnswers(implicit reportId: ReportId): UserAnswers =
+        emptyUserAnswers
+          .withPage(CurrentAccountHolderIdForHolderPage()(reportId), accountHolderId)
+          .withPage(IndividualOrOrganisationPage(accountHolderId)(reportId), HolderType.Organisation)
+
+      def expected(ua: UserAnswers, rows: Iterable[SummaryListRow]): Seq[SummaryList] =
+        Seq(SummaryListViewModel(rows = rows.toSeq).withCssClass("govuk-!-margin-bottom-3")) ++
+          AccountHolderTaxResidentCountriesSummary.row(ua)
+
+      "when the regime is CRS" - {
+
+        implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
+
+        "when the holder is an individual" - {
+
+          "must return the individual summaries in the expected order" in {
+            val ua = getIndividualAnswers
+              .withPage(AccountHolderIndividualNamePage(accountHolderId)(reportId), IndividualName("First", "Last"))
+              .withPage(IndividualHaveDateOfBirthPage(accountHolderId)(reportId), true)
+              .withPage(IndividualDateOfBirthPage(accountHolderId)(reportId), IndividualDateOfBirth(LocalDate.of(1990, 1, 2)))
+              .withPage(IndividualHavePlaceOfBirthPage(accountHolderId)(reportId), true)
+              .withPage(IndividualPlaceOfBirthPage(accountHolderId, reportId), IndividualPlaceOfBirth(Some("City"), None, "GB"))
+
+            val expectedRows = AccountsSummary.row(ua) ++
+              IndividualOrOrganisationSummary.row(ua) ++
+              IndividualNameSummary.row(ua) ++
+              IndividualHaveDateOfBirthSummary.row(ua) ++
+              IndividualDateOfBirthSummary.row(ua) ++
+              IndividualHavePlaceOfBirthSummary.row(ua) ++
+              IndividualPlaceOfBirthSummary.row(ua) ++
+              AddressForAccountHolderSummary.row(ua)
+
+            util.getAccountHolderRows(ua) mustBe expected(ua, expectedRows)
+          }
+
+          "when the IndividualHaveDateOfBirthPage is no" - {
+
+            "must show the date of birth answer and hide the date of birth" in {
+              val ua = getIndividualAnswers
+                .withPage(IndividualHaveDateOfBirthPage(accountHolderId)(reportId), false)
+                .withPage(IndividualDateOfBirthPage(accountHolderId)(reportId), IndividualDateOfBirth(LocalDate.of(1990, 1, 2)))
+
+              val expectedRows = AccountsSummary.row(ua) ++
+                IndividualOrOrganisationSummary.row(ua) ++
+                IndividualHaveDateOfBirthSummary.row(ua) ++
+                AddressForAccountHolderSummary.row(ua)
+
+              util.getAccountHolderRows(ua) mustBe expected(ua, expectedRows)
+            }
+          }
+
+          "when the IndividualHaveDateOfBirthPage is yes" - {
+
+            "must show the date of birth answer and hide the date of birth" in {
+              val ua = getIndividualAnswers
+                .withPage(IndividualHaveDateOfBirthPage(accountHolderId)(reportId), true)
+                .withPage(IndividualDateOfBirthPage(accountHolderId)(reportId), IndividualDateOfBirth(LocalDate.of(1990, 1, 2)))
+
+              val expectedRows = AccountsSummary.row(ua) ++
+                IndividualOrOrganisationSummary.row(ua) ++
+                IndividualHaveDateOfBirthSummary.row(ua) ++
+                IndividualDateOfBirthSummary.row(ua) ++
+                AddressForAccountHolderSummary.row(ua)
+
+              util.getAccountHolderRows(ua) mustBe expected(ua, expectedRows)
+            }
+          }
+
+          "when the IndividualHavePlaceOfBirthPage is no" - {
+            "must show the place of birth boolean row" in {
+              val ua = getIndividualAnswers
+                .withPage(IndividualHavePlaceOfBirthPage(accountHolderId)(reportId), false)
+                .withPage(IndividualPlaceOfBirthPage(accountHolderId, reportId), IndividualPlaceOfBirth(Some("City"), None, "GB"))
+
+              val expectedRows = AccountsSummary.row(ua) ++
+                IndividualOrOrganisationSummary.row(ua) ++
+                IndividualHavePlaceOfBirthSummary.row(ua) ++
+                AddressForAccountHolderSummary.row(ua)
+
+              util.getAccountHolderRows(ua) mustBe expected(ua, expectedRows)
+            }
+          }
+
+          "when the IndividualHavePlaceOfBirthPage is yes" - {
+            "must show the place of birth rows" in {
+              val ua = getIndividualAnswers
+                .withPage(IndividualHavePlaceOfBirthPage(accountHolderId)(reportId), true)
+                .withPage(IndividualPlaceOfBirthPage(accountHolderId, reportId), IndividualPlaceOfBirth(Some("City"), None, "GB"))
+
+              val expectedRows = AccountsSummary.row(ua) ++
+                IndividualOrOrganisationSummary.row(ua) ++
+                IndividualHavePlaceOfBirthSummary.row(ua) ++
+                IndividualPlaceOfBirthSummary.row(ua) ++
+                AddressForAccountHolderSummary.row(ua)
+
+              util.getAccountHolderRows(ua) mustBe expected(ua, expectedRows)
+            }
+          }
+
+          "must not render any organisation summaries" in {
+            val ua = getIndividualAnswers
+              .withPage(AccountHolderOrganisationNamePage(accountHolderId)(reportId), "Organisation")
+              .withPage(OrganisationCrsPage(accountHolderId)(reportId), OrganisationCrs.CrsReportable)
+              .withPage(OrganisationFatcaPage(accountHolderId)(reportId), OrganisationFatca.SpecifiedPerson)
+              .withPage(ProvideEquityInterestTypePage(accountHolderId, reportId), true)
+              .withPage(EquityInterestTypePage(accountHolderId, reportId), EquityInterestTypes(Seq(EquityInterestType.TrusteeOfTrust)))
+
+            val expectedRows = AccountsSummary.row(ua) ++
+              IndividualOrOrganisationSummary.row(ua) ++
+              AddressForAccountHolderSummary.row(ua)
+
+            util.getAccountHolderRows(ua) mustBe expected(ua, expectedRows)
+          }
+        }
+
+        "when the holder is an organisation" - {
+
+          "must return the organisation summaries with the CRS row" in {
+            val ua = getOrganisationAnswers
+              .withPage(AccountHolderOrganisationNamePage(accountHolderId)(reportId), "Organisation")
+              .withPage(OrganisationCrsPage(accountHolderId)(reportId), OrganisationCrs.CrsReportable)
+              .withPage(OrganisationFatcaPage(accountHolderId)(reportId), OrganisationFatca.SpecifiedPerson)
+              .withPage(ProvideEquityInterestTypePage(accountHolderId, reportId), true)
+              .withPage(EquityInterestTypePage(accountHolderId, reportId), EquityInterestTypes(Seq(EquityInterestType.TrusteeOfTrust)))
+
+            val expectedRows = AccountsSummary.row(ua) ++
+              IndividualOrOrganisationSummary.row(ua) ++
+              OrganisationNameSummary.row(ua) ++
+              OrganisationCrsSummary.row(ua) ++
+              ProvideEquityInterestTypeSummary.row(ua) ++
+              EquityInterestTypeSummary.row(ua) ++
+              AddressForAccountHolderSummary.row(ua)
+
+            util.getAccountHolderRows(ua) mustBe expected(ua, expectedRows)
+          }
+
+          "must render the name row even when the regime specific row is unanswered" in {
+            val ua = getOrganisationAnswers
+              .withPage(AccountHolderOrganisationNamePage(accountHolderId)(reportId), "Organisation")
+
+            val expectedRows = AccountsSummary.row(ua) ++
+              IndividualOrOrganisationSummary.row(ua) ++
+              OrganisationNameSummary.row(ua) ++
+              AddressForAccountHolderSummary.row(ua)
+
+            util.getAccountHolderRows(ua) mustBe expected(ua, expectedRows)
+          }
+
+          "when the ProvideEquityInterestTypePage is no" - {
+
+            val ua = getOrganisationAnswers
+              .withPage(ProvideEquityInterestTypePage(accountHolderId, reportId), false)
+              .withPage(EquityInterestTypePage(accountHolderId, reportId), EquityInterestTypes(Seq(EquityInterestType.TrusteeOfTrust)))
+
+            val expectedRows = AccountsSummary.row(ua) ++
+              IndividualOrOrganisationSummary.row(ua) ++
+              ProvideEquityInterestTypeSummary.row(ua) ++
+              AddressForAccountHolderSummary.row(ua)
+
+            util.getAccountHolderRows(ua) mustBe expected(ua, expectedRows)
+
+          }
+
+          "must not render any individual summaries" in {
+            val ua = getOrganisationAnswers
+              .withPage(AccountHolderIndividualNamePage(accountHolderId)(reportId), IndividualName("First", "Last"))
+              .withPage(IndividualHaveDateOfBirthPage(accountHolderId)(reportId), true)
+              .withPage(IndividualDateOfBirthPage(accountHolderId)(reportId), IndividualDateOfBirth(LocalDate.of(1990, 1, 2)))
+              .withPage(IndividualHavePlaceOfBirthPage(accountHolderId)(reportId), true)
+              .withPage(IndividualPlaceOfBirthPage(accountHolderId, reportId), IndividualPlaceOfBirth(Some("City"), None, "GB"))
+
+            val expectedRows = AccountsSummary.row(ua) ++
+              IndividualOrOrganisationSummary.row(ua) ++
+              AddressForAccountHolderSummary.row(ua)
+
+            util.getAccountHolderRows(ua) mustBe expected(ua, expectedRows)
+          }
+        }
+      }
+
+      "when the regime is FATCA" - {
+
+        implicit val reportId: ReportId = ReportId(FATCA, 2025, None, "TestfiID")
+
+        "when the holder is an organisation" - {
+
+          "must use the FATCA row instead of the CRS row" in {
+            val ua = getOrganisationAnswers
+              .withPage(AccountHolderOrganisationNamePage(accountHolderId)(reportId), "Organisation")
+              .withPage(OrganisationCrsPage(accountHolderId)(reportId), OrganisationCrs.CrsReportable)
+              .withPage(OrganisationFatcaPage(accountHolderId)(reportId), OrganisationFatca.SpecifiedPerson)
+              .withPage(ProvideEquityInterestTypePage(accountHolderId, reportId), true)
+              .withPage(EquityInterestTypePage(accountHolderId, reportId), EquityInterestTypes(Seq(EquityInterestType.TrusteeOfTrust)))
+
+            val expectedRows = AccountsSummary.row(ua) ++
+              IndividualOrOrganisationSummary.row(ua) ++
+              OrganisationNameSummary.row(ua) ++
+              OrganisationFatcaSummary.row(ua) ++
+              ProvideEquityInterestTypeSummary.row(ua) ++
+              EquityInterestTypeSummary.row(ua) ++
+              AddressForAccountHolderSummary.row(ua)
+
+            util.getAccountHolderRows(ua) mustBe expected(ua, expectedRows)
+          }
+        }
+
+        "when the holder is an individual" - {
+
+          "must return the individual summaries" in {
+            val ua = getIndividualAnswers
+              .withPage(AccountHolderIndividualNamePage(accountHolderId)(reportId), IndividualName("First", "Last"))
+              .withPage(IndividualHaveDateOfBirthPage(accountHolderId)(reportId), true)
+              .withPage(IndividualDateOfBirthPage(accountHolderId)(reportId), IndividualDateOfBirth(LocalDate.of(1990, 1, 2)))
+              .withPage(IndividualHavePlaceOfBirthPage(accountHolderId)(reportId), true)
+              .withPage(IndividualPlaceOfBirthPage(accountHolderId, reportId), IndividualPlaceOfBirth(Some("City"), None, "GB"))
+
+            val expectedRows = AccountsSummary.row(ua) ++
+              IndividualOrOrganisationSummary.row(ua) ++
+              IndividualNameSummary.row(ua) ++
+              IndividualHaveDateOfBirthSummary.row(ua) ++
+              IndividualDateOfBirthSummary.row(ua) ++
+              IndividualHavePlaceOfBirthSummary.row(ua) ++
+              IndividualPlaceOfBirthSummary.row(ua) ++
+              AddressForAccountHolderSummary.row(ua)
+
+            util.getAccountHolderRows(ua) mustBe expected(ua, expectedRows)
+          }
+        }
+      }
+    }
   }
 }

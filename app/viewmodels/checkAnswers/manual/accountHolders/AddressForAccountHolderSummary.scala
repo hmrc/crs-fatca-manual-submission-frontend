@@ -27,7 +27,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist.*
 import viewmodels.implicits.*
 
-object WhatIsAddressForAccountHolderSummary {
+object AddressForAccountHolderSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
     for {
@@ -43,9 +43,7 @@ object WhatIsAddressForAccountHolderSummary {
         HtmlContent(addressHtml)
       ),
       actions = Seq(
-        ActionItemViewModel("site.change",
-                            controllers.manual.accountHolders.routes.WhereAreTheyBasedController.onPageLoad(CheckMode).url
-        ) // go to start of address block?
+        ActionItemViewModel("site.change", controllers.manual.accountHolders.routes.WhereAreTheyBasedController.onPageLoad(CheckMode).url)
           .withVisuallyHiddenText(messages("whatIsAddressForAccountHolder.change.hidden"))
       )
     )
