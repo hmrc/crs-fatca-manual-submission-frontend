@@ -88,7 +88,7 @@ class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar 
 
   private lazy val defaultAnswers = userAnswersFor()
 
-  private def savesTheAnswers(answers: UserAnswers, repository: DatabaseConnector): UserAnswers = {
+  private def savesTheAnswers(repository: DatabaseConnector): UserAnswers = {
     val captor = ArgumentCaptor.forClass(classOf[UserAnswers])
     verify(repository).set(captor.capture())(any())
     captor.getValue
