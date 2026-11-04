@@ -22,7 +22,7 @@ case class AccountHolderRow(accountHolderName: String, changeUrl: String, remove
 
 object AccountHolderRow {
 
-  def rows(accountInfoList: Seq[(AccountHolderId, AccountHolder)]) =
+  def rows(accountInfoList: Seq[(AccountHolderId, AccountHolder)]): Seq[AccountHolderRow] =
     accountInfoList.map {
       case (accountHolderId, acountHolder) =>
         AccountHolderRow(
