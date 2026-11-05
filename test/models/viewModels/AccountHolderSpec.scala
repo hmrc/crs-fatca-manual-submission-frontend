@@ -16,11 +16,14 @@
 
 package models.viewModels
 
+import models.{AddressNonUk, UkAddress}
 import models.SubmissionsConstants.{CRFA, CRS, FATCA, RegimeType}
+import models.manual.TaxResidentInformation
 import models.manual.accountHolders.AccountHolderTypes
 import models.manual.accountHolders.AccountHolderTypes.*
 import models.manual.accountHolders.IndividualOrOrganisation.Individual
 import models.manual.accountHolders.IndividualOrOrganisation.Organisation
+import models.response.{Address, Country}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 
@@ -129,5 +132,233 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
       }
     }
 
+  }
+
+  "IsComplete" - {
+    "For an organization" - {
+      val ukAddressSelect        = Address(None, "addressLine1", None, None, None, "town", None, Country.GB)
+      val ukAddressManual        = UkAddress("Some Address", Some("Some Address"), "City", Some("Some Address"), "postcode: ", "coutry")
+      val addressNonUk           = AddressNonUk(addressLine1 = "some address", None, "", None, None, "GB")
+      val taxResidentInformation = TaxResidentInformation(Country.GB, hasTaxIdentificationNumber = None, taxIdentifierNumbers = Some("12333"))
+
+      "is incomplete if missing individualOrOrganisation" in {
+        val accountHolder = AccountHolder(
+          individualOrOrganisation = None,
+          organisationName = Some("Test Company"),
+          accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
+          areTheyBasedInTheUk = Some(false),
+          taxResidentCountries = Some(Seq(taxResidentInformation)),
+          addressNonUk = Some(addressNonUk)
+        )
+
+        accountHolder.isComplete(CRS) mustBe false
+        accountHolder.isComplete(FATCA) mustBe false
+      }
+
+      "fatca" - {
+        "returns isCompleted for a non-uk account holder that has all the required properties populated" in {
+          val accountHolder = AccountHolder(
+            individualOrOrganisation = Some(Organisation),
+            organisationName = Some("Test Company"),
+            accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
+            areTheyBasedInTheUk = Some(false),
+            taxResidentCountries = Some(Seq(taxResidentInformation)),
+            addressNonUk = Some(addressNonUk)
+          )
+
+          accountHolder.isComplete(FATCA) mustBe true
+        }
+
+        "returns false for non-uk account holder if any of expected fields are missing" in {
+          Seq(
+            AccountHolder(
+              individualOrOrganisation = Some(Organisation),
+              organisationName = Some("Test Company"),
+              accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
+              areTheyBasedInTheUk = Some(false),
+              taxResidentCountries = Some(Seq(taxResidentInformation)),
+              addressNonUk = None
+            ),
+            AccountHolder(
+              individualOrOrganisation = Some(Organisation),
+              organisationName = Some("Test Company"),
+              accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
+              areTheyBasedInTheUk = Some(false),
+              taxResidentCountries = None,
+              addressNonUk = Some(addressNonUk)
+            ),
+            AccountHolder(
+              individualOrOrganisation = Some(Organisation),
+              organisationName = Some("Test Company"),
+              accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
+              areTheyBasedInTheUk = None,
+              taxResidentCountries = Some(Seq(taxResidentInformation)),
+              addressNonUk = Some(addressNonUk)
+            ),
+            AccountHolder(
+              individualOrOrganisation = Some(Organisation),
+              organisationName = Some("Test Company"),
+              accountHolderType = None,
+              areTheyBasedInTheUk = Some(false),
+              taxResidentCountries = Some(Seq(taxResidentInformation)),
+              addressNonUk = Some(addressNonUk)
+            ),
+            AccountHolder(
+              individualOrOrganisation = Some(Organisation),
+              organisationName = None,
+              accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
+              areTheyBasedInTheUk = Some(false),
+              taxResidentCountries = Some(Seq(taxResidentInformation)),
+              addressNonUk = Some(addressNonUk)
+            ),
+            AccountHolder(
+              individualOrOrganisation = None,
+              organisationName = Some("Test Company"),
+              accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
+              areTheyBasedInTheUk = Some(false),
+              taxResidentCountries = Some(Seq(taxResidentInformation)),
+              addressNonUk = Some(addressNonUk)
+            )
+          )
+            .foreach(
+              accountHolder => accountHolder.isComplete(FATCA) mustBe false
+            )
+        }
+
+        "returns isCompleted for a uk account holder that has all the required properties populated" in {
+          val accountHolder = AccountHolder(
+            individualOrOrganisation = Some(Organisation),
+            organisationName = Some("Test Company"),
+            accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
+            areTheyBasedInTheUk = Some(true),
+            taxResidentCountries = Some(Seq(taxResidentInformation)),
+            ukAddressManual = Some(ukAddressManual)
+          )
+
+          accountHolder.isComplete(FATCA) mustBe true
+
+          AccountHolder(
+            individualOrOrganisation = Some(Organisation),
+            organisationName = Some("Test Company"),
+            accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
+            areTheyBasedInTheUk = Some(true),
+            taxResidentCountries = Some(Seq(taxResidentInformation)),
+            ukAddressFromSelect = Some(ukAddressSelect)
+          ).isComplete(FATCA) mustBe true
+        }
+
+        "returns false for uk account holder if any of expected fields are missing" in {
+          Seq(
+            AccountHolder(
+              individualOrOrganisation = Some(Organisation),
+              organisationName = Some("Test Company"),
+              accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
+              areTheyBasedInTheUk = Some(true),
+              taxResidentCountries = Some(Seq(taxResidentInformation)),
+              ukAddressManual = None
+            ),
+            AccountHolder(
+              individualOrOrganisation = Some(Organisation),
+              organisationName = Some("Test Company"),
+              accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
+              areTheyBasedInTheUk = Some(true),
+              taxResidentCountries = None,
+              ukAddressManual = Some(ukAddressManual)
+            ),
+            AccountHolder(
+              individualOrOrganisation = Some(Organisation),
+              organisationName = Some("Test Company"),
+              accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
+              areTheyBasedInTheUk = None,
+              taxResidentCountries = Some(Seq(taxResidentInformation)),
+              ukAddressManual = Some(ukAddressManual)
+            ),
+            AccountHolder(
+              individualOrOrganisation = Some(Organisation),
+              organisationName = Some("Test Company"),
+              accountHolderType = None,
+              areTheyBasedInTheUk = Some(true),
+              taxResidentCountries = Some(Seq(taxResidentInformation)),
+              addressNonUk = Some(addressNonUk)
+            ),
+            AccountHolder(
+              individualOrOrganisation = Some(Organisation),
+              organisationName = None,
+              accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
+              areTheyBasedInTheUk = Some(true),
+              taxResidentCountries = Some(Seq(taxResidentInformation)),
+              ukAddressManual = Some(ukAddressManual)
+            ),
+            AccountHolder(
+              individualOrOrganisation = None,
+              organisationName = Some("Test Company"),
+              accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
+              areTheyBasedInTheUk = Some(true),
+              taxResidentCountries = Some(Seq(taxResidentInformation)),
+              ukAddressManual = Some(ukAddressManual)
+            )
+          )
+            .foreach(
+              accountHolder => accountHolder.isComplete(FATCA) mustBe false
+            )
+
+          Seq(
+            AccountHolder(
+              individualOrOrganisation = Some(Organisation),
+              organisationName = Some("Test Company"),
+              accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
+              areTheyBasedInTheUk = Some(true),
+              taxResidentCountries = Some(Seq(taxResidentInformation)),
+              ukAddressFromSelect = None
+            ),
+            AccountHolder(
+              individualOrOrganisation = Some(Organisation),
+              organisationName = Some("Test Company"),
+              accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
+              areTheyBasedInTheUk = Some(true),
+              taxResidentCountries = None,
+              ukAddressFromSelect = Some(ukAddressSelect)
+            ),
+            AccountHolder(
+              individualOrOrganisation = Some(Organisation),
+              organisationName = Some("Test Company"),
+              accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
+              areTheyBasedInTheUk = None,
+              taxResidentCountries = Some(Seq(taxResidentInformation)),
+              ukAddressFromSelect = Some(ukAddressSelect)
+            ),
+            AccountHolder(
+              individualOrOrganisation = Some(Organisation),
+              organisationName = Some("Test Company"),
+              accountHolderType = None,
+              areTheyBasedInTheUk = Some(true),
+              taxResidentCountries = Some(Seq(taxResidentInformation)),
+              ukAddressFromSelect = Some(ukAddressSelect)
+            ),
+            AccountHolder(
+              individualOrOrganisation = Some(Organisation),
+              organisationName = None,
+              accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
+              areTheyBasedInTheUk = Some(true),
+              taxResidentCountries = Some(Seq(taxResidentInformation)),
+              ukAddressFromSelect = Some(ukAddressSelect)
+            ),
+            AccountHolder(
+              individualOrOrganisation = None,
+              organisationName = Some("Test Company"),
+              accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
+              areTheyBasedInTheUk = Some(true),
+              taxResidentCountries = Some(Seq(taxResidentInformation)),
+              ukAddressFromSelect = Some(ukAddressSelect)
+            )
+          )
+            .foreach(
+              accountHolder => accountHolder.isComplete(FATCA) mustBe false
+            )
+        }
+      }
+    }
+
+    "For an individual" - {}
   }
 }

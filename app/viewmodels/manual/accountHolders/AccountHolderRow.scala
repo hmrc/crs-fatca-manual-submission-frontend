@@ -25,11 +25,13 @@ object AccountHolderRow {
 
   def rows(accountInfoList: Seq[(AccountHolderId, AccountHolder)], regimeType: RegimeType): Seq[AccountHolderRow] =
     accountInfoList.map {
-      case (accountHolderId, acountHolder) =>
+      case (accountHolderId, accountHolder) =>
+        println(accountHolder.isComplete(regimeType))
         AccountHolderRow(
-          acountHolder.organisationName.getOrElse(acountHolder.getName()),
+          accountHolder.organisationName.getOrElse(accountHolder.getName()),
           controllers.manual.accountHolders.routes.CurrentAccountHolderIdController.onChangeRedirect(accountHolderId.value).url,
-          controllers.manual.accountHolders.routes.CurrentAccountHolderIdController.onRemoveRedirect(accountHolderId.value).url
+          controllers.manual.accountHolders.routes.CurrentAccountHolderIdController.onRemoveRedirect(accountHolderId.value).url,
+          isIncomplete = !accountHolder.isComplete(regimeType)
         )
     }
 }
