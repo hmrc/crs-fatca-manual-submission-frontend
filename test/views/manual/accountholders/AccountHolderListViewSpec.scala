@@ -18,6 +18,7 @@ package views.manual.accountholders
 
 import base.SpecBase
 import forms.manual.accountHolders.AccountHolderListFormProvider
+import models.SubmissionsConstants.{CRS, RegimeType}
 import models.manual.accountHolders.AccountHolderTypes.{PassiveNFFEWithSubstantial, PassiveNonFinancialWithOneOrMoreControllingPerson}
 import models.manual.accountHolders.IndividualOrOrganisation.Organisation
 import models.viewModels.{AccountHolder, AccountHolderId}
@@ -65,12 +66,12 @@ class AccountHolderListViewSpec extends SpecBase {
   private val twoAccounts = Seq("GB11AAAA11111111111111", "GB22BBBB22222222222222")
 
   private def render(
-    boundForm: Form[_] = form,
-    mode: Mode = NormalMode,
-    holders: Seq[(AccountHolderId, AccountHolder)] = Seq(alpha),
-    accountsWithoutHolders: Seq[String] = oneAccount,
-    regime: String = "CRS",
-    flash: Flash = Flash.emptyCookie
+                      boundForm: Form[_] = form,
+                      mode: Mode = NormalMode,
+                      holders: Seq[(AccountHolderId, AccountHolder)] = Seq(alpha),
+                      accountsWithoutHolders: Seq[String] = oneAccount,
+                      regime: RegimeType = CRS,
+                      flash: Flash = Flash.emptyCookie
   ): Document =
     Jsoup.parse(view(boundForm, mode, fiName, holders, accountsWithoutHolders, regime)(request, messages, flash).body)
 

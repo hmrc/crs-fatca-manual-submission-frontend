@@ -17,13 +17,14 @@
 @import viewmodels.manual.accountHolders.AccountHolderRow
 @import models.viewModels.AccountHolderId
 @import models.viewModels.AccountHolder
+@import models.SubmissionsConstants.{CRS, RegimeType}
 @this()
 
-@(accountHolders: Seq[(AccountHolderId, AccountHolder)])
+@(accountHolders: Seq[(AccountHolderId, AccountHolder)], regimeType: RegimeType)
 
 @if(accountHolders.nonEmpty) {
     <dl class="govuk-summary-list hmrc-list-with-actions hmrc-list-with-actions--short">
-        @for(row <- AccountHolderRow.rows(accountHolders)) {
+        @for(row <- AccountHolderRow.rows(accountHolders, regimeType)) {
          <div class="govuk-summary-list__row">
                         <dt class="govuk-summary-list__key govuk-!-font-weight-regular hmrc-summary-list__key" style="line-height:1.4;width:75%">
                             <span class="govuk-!-margin-right-2"> @row.accountHolderName</span>

@@ -20,6 +20,7 @@
 @import views.html.manual.accountHolders.partials.contentForOneAccountWithoutAnAccountHolder
 @import views.html.manual.accountHolders.partials.AccountHolderTable
 @import views.html.manual.accountHolders.partials.ContentForManyAccountsWithoutAccountHolder
+@import models.SubmissionsConstants.{CRS, RegimeType}
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
@@ -31,7 +32,7 @@
     notificationBanner: views.html.components.SuccessNotificationBanner
 )
 
-@(form: Form[_], mode: Mode, fiName: String, accountHolders: Seq[(AccountHolderId, AccountHolder)], accountsWithOutAccountHolders: Seq[String], regime: String)(implicit request: Request[_], messages: Messages, flash: Flash)
+@(form: Form[_], mode: Mode, fiName: String, accountHolders: Seq[(AccountHolderId, AccountHolder)], accountsWithOutAccountHolders: Seq[String], regime: RegimeType)(implicit request: Request[_], messages: Messages, flash: Flash)
 
 @layout(pageTitle = title(form, accountHolderCountHeaderOrTitleText(accountHolders.size)), mainContentLayout = Some(ThreeQuartersMainContent.apply _)) {
 
@@ -50,19 +51,19 @@
 
             @if(accountsWithOutAccountHolders.nonEmpty) {
               @if(accountsWithOutAccountHolders.size == 1) {
-                  @contentForOneAccountWithoutAnAccountHolder(link, govukRadios, govukButton, heading)(accountsWithOutAccountHolders.headOption.getOrElse(""), fiName, regime, mode)
+                  @contentForOneAccountWithoutAnAccountHolder(link, govukRadios, govukButton, heading)(accountsWithOutAccountHolders.headOption.getOrElse(""), fiName, regime.value, mode)
               }else {
-                  @ContentForManyAccountsWithoutAccountHolder(link, govukRadios, govukButton, heading)(accountsWithOutAccountHolders, fiName, regime, mode)
+                  @ContentForManyAccountsWithoutAccountHolder(link, govukRadios, govukButton, heading)(accountsWithOutAccountHolders, fiName, regime.value, mode)
               }
             }
         }else {
-            @AccountHolderTable()(accountHolders)
+            @AccountHolderTable()(accountHolders, regime)
 
             @if(accountsWithOutAccountHolders.size == 1) {
-                @contentForOneAccountWithoutAnAccountHolder(link, govukRadios, govukButton, heading)(accountsWithOutAccountHolders.headOption.getOrElse(""), fiName, regime, mode)
+                @contentForOneAccountWithoutAnAccountHolder(link, govukRadios, govukButton, heading)(accountsWithOutAccountHolders.headOption.getOrElse(""), fiName, regime.value, mode)
             } else {
                 @if(accountsWithOutAccountHolders.size > 1) {
-                    @ContentForManyAccountsWithoutAccountHolder(link, govukRadios, govukButton, heading)(accountsWithOutAccountHolders, fiName, regime, mode)
+                    @ContentForManyAccountsWithoutAccountHolder(link, govukRadios, govukButton, heading)(accountsWithOutAccountHolders, fiName, regime.value, mode)
 
                 } else {
                     @govukRadios(

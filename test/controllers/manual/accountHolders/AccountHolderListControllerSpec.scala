@@ -126,7 +126,7 @@ class AccountHolderListControllerSpec extends SpecBase with MockitoSugar {
         fiDetail.FIName,
         holders,
         Seq("GB11AAAA11111111111111"),
-        reportId.regime.value
+        reportId.regime
       )(req, messages(app), req.flash)
       .toString
 

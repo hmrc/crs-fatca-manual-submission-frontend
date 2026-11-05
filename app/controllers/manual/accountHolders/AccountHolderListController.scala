@@ -65,7 +65,7 @@ class AccountHolderListController @Inject() (
         .map {
           fiDetail =>
             Ok(
-              view(form, mode, fiDetail.FIName, accountHolders(request.userAnswers), accountsWithoutAnAccountHolder(request.userAnswers), reportId.regime.value)
+              view(form, mode, fiDetail.FIName, accountHolders(request.userAnswers), accountsWithoutAnAccountHolder(request.userAnswers), reportId.regime)
             )
         }
         .recover {
@@ -97,7 +97,7 @@ class AccountHolderListController @Inject() (
                         fiDetail.FIName,
                         accountHolders(request.userAnswers),
                         accountsWithoutAnAccountHolder(request.userAnswers),
-                        reportId.regime.value
+                        reportId.regime
                       )
                     )
                   ),

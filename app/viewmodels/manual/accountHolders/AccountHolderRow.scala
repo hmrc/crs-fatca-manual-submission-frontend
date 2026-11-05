@@ -16,13 +16,14 @@
 
 package viewmodels.manual.accountHolders
 
+import models.SubmissionsConstants.RegimeType
 import models.viewModels.{AccountHolder, AccountHolderId}
 
 case class AccountHolderRow(accountHolderName: String, changeUrl: String, removeUrl: String, isIncomplete: Boolean = false)
 
 object AccountHolderRow {
 
-  def rows(accountInfoList: Seq[(AccountHolderId, AccountHolder)]): Seq[AccountHolderRow] =
+  def rows(accountInfoList: Seq[(AccountHolderId, AccountHolder)], regimeType: RegimeType): Seq[AccountHolderRow] =
     accountInfoList.map {
       case (accountHolderId, acountHolder) =>
         AccountHolderRow(
