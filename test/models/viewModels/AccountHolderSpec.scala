@@ -135,12 +135,12 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
   }
 
   "IsComplete" - {
-    "For an organization" - {
-      val ukAddressSelect        = Address(None, "addressLine1", None, None, None, "town", None, Country.GB)
-      val ukAddressManual        = UkAddress("Some Address", Some("Some Address"), "City", Some("Some Address"), "postcode: ", "coutry")
-      val addressNonUk           = AddressNonUk(addressLine1 = "some address", None, "", None, None, "GB")
-      val taxResidentInformation = TaxResidentInformation(Country.GB, hasTaxIdentificationNumber = None, taxIdentifierNumbers = Some("12333"))
+    val ukAddressSelect = Address(None, "addressLine1", None, None, None, "town", None, Country.GB)
+    val ukAddressManual = UkAddress("Some Address", Some("Some Address"), "City", Some("Some Address"), "postcode: ", "coutry")
+    val addressNonUk = AddressNonUk(addressLine1 = "some address", None, "", None, None, "GB")
+    val taxResidentInformation = TaxResidentInformation(Country.GB, hasTaxIdentificationNumber = None, taxIdentifierNumbers = Some("12333"))
 
+    "For an organization" - {
       "is incomplete if missing individualOrOrganisation" in {
         val accountHolder = AccountHolder(
           individualOrOrganisation = None,
@@ -359,6 +359,14 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
       }
     }
 
-    "For an individual" - {}
+    "For an Individual" - {
+      "returns isCompleted for a non-uk account holder that has all the required properties populated" in {}
+
+      "returns false for non-uk account holder if any of expected fields are missing" in {}
+
+      "returns isCompleted for a uk account holder that has all the required properties populated" in {}
+
+      "returns false for uk account holder if any of expected fields are missing" in {}
+    }
   }
 }
