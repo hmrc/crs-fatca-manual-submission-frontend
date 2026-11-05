@@ -20,6 +20,8 @@ import controllers.manual.accountHolders.routes
 import models.{CheckMode, ReportId, UserAnswers}
 import pages.manual.accountHolders.{CurrentAccountHolderIdPage, EquityInterestTypePage}
 import play.api.i18n.Messages
+import play.twirl.api.HtmlFormat
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist.*
 import viewmodels.implicits.*
@@ -33,13 +35,13 @@ object EquityInterestTypeSummary {
     } yield
       val value = answer.types
         .map(
-          equityInterestType => messages(s"accountHolders.equityInterestType.${equityInterestType.toString}")
+          t => HtmlFormat.escape(messages(s"accountHolders.equityInterestType.$t")).toString
         )
-        .mkString(", ")
+        .mkString("<br>")
 
       SummaryListRowViewModel(
         key = "accountHolders.equityInterestType.checkYourAnswersLabel",
-        value = ValueViewModel(value),
+        value = ValueViewModel(HtmlContent(value)),
         actions = Seq(
           ActionItemViewModel("site.change", routes.EquityInterestTypeController.onPageLoad(CheckMode).url)
             .withVisuallyHiddenText(messages("accountHolders.equityInterestType.change.hidden"))

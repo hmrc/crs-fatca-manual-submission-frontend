@@ -18,6 +18,7 @@ package viewmodels.checkAnswers.manual.accountHolders
 
 import controllers.manual.accountHolders.routes
 import models.manual.accountHolders.OrganisationCrs
+import models.manual.accountHolders.OrganisationCrs._
 import models.{CheckMode, ReportId, UserAnswers}
 import pages.manual.accountHolders.{AccountHolderOrganisationNamePage, CurrentAccountHolderIdPage, OrganisationCrsPage}
 import play.api.i18n.Messages
@@ -32,24 +33,12 @@ object OrganisationCrsSummary {
       currentAccountHolderId <- answers.get(CurrentAccountHolderIdPage()(reportId))
       accountHolderName      <- answers.get(AccountHolderOrganisationNamePage(currentAccountHolderId)(reportId))
       answer                 <- answers.get(OrganisationCrsPage(currentAccountHolderId)(reportId))
-    } yield
-      val value = answer match {
-        case OrganisationCrs.PassiveWithMultiplePersons =>
-          messages("organisationCrs.passiveWithMultiplePersons")
-
-        case OrganisationCrs.CrsReportable =>
-          messages("organisationCrs.crsReportable")
-
-        case OrganisationCrs.PassiveCrsPerson =>
-          messages("organisationCrs.passiveCrsPerson")
-      }
-
-      SummaryListRowViewModel(
-        key = messages("organisationCrs.checkYourAnswersLabel", accountHolderName),
-        value = ValueViewModel(value),
-        actions = Seq(
-          ActionItemViewModel("site.change", routes.OrganisationCrsController.onPageLoad(CheckMode).url)
-            .withVisuallyHiddenText(messages("organisationCrs.change.hidden"))
-        )
+    } yield SummaryListRowViewModel(
+      key = messages("organisationCrs.checkYourAnswersLabel", accountHolderName),
+      value = ValueViewModel(messages(s"organisationCrs.$answer")),
+      actions = Seq(
+        ActionItemViewModel("site.change", routes.OrganisationCrsController.onPageLoad(CheckMode).url)
+          .withVisuallyHiddenText(messages("organisationCrs.change.hidden"))
       )
+    )
 }
