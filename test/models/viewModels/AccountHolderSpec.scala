@@ -23,9 +23,12 @@ import models.manual.accountHolders.AccountHolderTypes
 import models.manual.accountHolders.AccountHolderTypes.*
 import models.manual.accountHolders.IndividualOrOrganisation.Individual
 import models.manual.accountHolders.IndividualOrOrganisation.Organisation
+import models.manual.accountHolders.{IndividualDateOfBirth, IndividualName, IndividualPlaceOfBirth}
 import models.response.{Address, Country}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
+
+import java.time.LocalDate
 
 class AccountHolderSpec extends AnyFreeSpec with Matchers {
 
@@ -135,9 +138,9 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
   }
 
   "IsComplete" - {
-    val ukAddressSelect = Address(None, "addressLine1", None, None, None, "town", None, Country.GB)
-    val ukAddressManual = UkAddress("Some Address", Some("Some Address"), "City", Some("Some Address"), "postcode: ", "coutry")
-    val addressNonUk = AddressNonUk(addressLine1 = "some address", None, "", None, None, "GB")
+    val ukAddressSelect        = Address(None, "addressLine1", None, None, None, "town", None, Country.GB)
+    val ukAddressManual        = UkAddress("Some Address", Some("Some Address"), "City", Some("Some Address"), "postcode: ", "coutry")
+    val addressNonUk           = AddressNonUk(addressLine1 = "some address", None, "", None, None, "GB")
     val taxResidentInformation = TaxResidentInformation(Country.GB, hasTaxIdentificationNumber = None, taxIdentifierNumbers = Some("12333"))
 
     "For an organization" - {
@@ -360,13 +363,132 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
     }
 
     "For an Individual" - {
-      "returns isCompleted for a non-uk account holder that has all the required properties populated" in {}
+      val individualName         = IndividualName("John", "Smith")
+      val individualDateOfBirth  = IndividualDateOfBirth(LocalDate.of(1990, 1, 1))
+      val individualPlaceOfBirth = IndividualPlaceOfBirth(Some("London"), None, "GB")
 
-      "returns false for non-uk account holder if any of expected fields are missing" in {}
+      val nonUkAccountHolder = AccountHolder(
+        individualOrOrganisation = Some(Individual),
+        individualName = Some(individualName),
+        individualHavePlaceOfBirth = Some(true),
+        individualHaveDateOfBirth = Some(true),
+        individualDateOfBirth = Some(individualDateOfBirth),
+        individualPlaceOfBirth = Some(individualPlaceOfBirth),
+        areTheyBasedInTheUk = Some(false),
+        taxResidentCountries = Some(Seq(taxResidentInformation)),
+        addressNonUk = Some(addressNonUk)
+      )
 
-      "returns isCompleted for a uk account holder that has all the required properties populated" in {}
+      val ukAccountHolder = AccountHolder(
+        individualOrOrganisation = Some(Individual),
+        individualName = Some(individualName),
+        individualHavePlaceOfBirth = Some(true),
+        individualHaveDateOfBirth = Some(true),
+        individualDateOfBirth = Some(individualDateOfBirth),
+        individualPlaceOfBirth = Some(individualPlaceOfBirth),
+        areTheyBasedInTheUk = Some(true),
+        taxResidentCountries = Some(Seq(taxResidentInformation)),
+        ukAddressManual = Some(ukAddressManual)
+      )
 
-      "returns false for uk account holder if any of expected fields are missing" in {}
+      "returns isCompleted for a non-uk account holder that has all the required properties populated" in {
+        nonUkAccountHolder.isComplete(FATCA) mustBe true
+
+        Seq(
+          "a place of birth and a date of birth" -> nonUkAccountHolder,
+          "a place of birth only" -> nonUkAccountHolder.copy(
+            individualHaveDateOfBirth = Some(false),
+            individualDateOfBirth = None
+          ),
+          "a date of birth only" -> nonUkAccountHolder.copy(
+            individualHavePlaceOfBirth = Some(false),
+            individualPlaceOfBirth = None
+          ),
+          "neither a place of birth nor a date of birth" -> nonUkAccountHolder.copy(
+            individualHavePlaceOfBirth = Some(false),
+            individualHaveDateOfBirth = Some(false),
+            individualPlaceOfBirth = None,
+            individualDateOfBirth = None
+          )
+        ).foreach {
+          case (scenario, accountHolder) =>
+            withClue(s"with $scenario: ") {
+              accountHolder.isComplete(FATCA) mustBe true
+            }
+        }
+      }
+
+      "returns false for non-uk account holder if any of expected fields are missing" in {
+        Seq(
+          "the individual or organisation question is unanswered"         -> nonUkAccountHolder.copy(individualOrOrganisation = None),
+          "the individual name is missing"                                -> nonUkAccountHolder.copy(individualName = None),
+          "the place of birth question is unanswered"                     -> nonUkAccountHolder.copy(individualHavePlaceOfBirth = None),
+          "the date of birth question is unanswered"                      -> nonUkAccountHolder.copy(individualHaveDateOfBirth = None),
+          "the place of birth is missing when the account holder has one" -> nonUkAccountHolder.copy(individualPlaceOfBirth = None),
+          "the date of birth is missing when the account holder has one"  -> nonUkAccountHolder.copy(individualDateOfBirth = None),
+          "the uk residency question is unanswered"                       -> nonUkAccountHolder.copy(areTheyBasedInTheUk = None),
+          "the tax resident countries are missing"                        -> nonUkAccountHolder.copy(taxResidentCountries = None),
+          "the non-uk address is missing"                                 -> nonUkAccountHolder.copy(addressNonUk = None),
+          "a uk address is provided instead of a non-uk address" -> nonUkAccountHolder.copy(
+            addressNonUk = None,
+            ukAddressManual = Some(ukAddressManual)
+          )
+        ).foreach {
+          case (scenario, accountHolder) =>
+            withClue(s"with $scenario: ") {
+              accountHolder.isComplete(FATCA) mustBe false
+            }
+        }
+      }
+
+      "returns isCompleted for a uk account holder that has all the required properties populated" in {
+        ukAccountHolder.isComplete(FATCA) mustBe true
+
+        Seq(
+          "a manually entered uk address" -> ukAccountHolder,
+          "a uk address chosen from the address lookup" -> ukAccountHolder.copy(
+            ukAddressManual = None,
+            ukAddressFromSelect = Some(ukAddressSelect)
+          ),
+          "neither a place of birth nor a date of birth" -> ukAccountHolder.copy(
+            individualHavePlaceOfBirth = Some(false),
+            individualHaveDateOfBirth = Some(false),
+            individualPlaceOfBirth = None,
+            individualDateOfBirth = None
+          )
+        ).foreach {
+          case (scenario, accountHolder) =>
+            withClue(s"with $scenario: ") {
+              accountHolder.isComplete(FATCA) mustBe true
+            }
+        }
+      }
+
+      "returns false for uk account holder if any of expected fields are missing" in {
+        Seq(
+          "the individual or organisation question is unanswered"         -> ukAccountHolder.copy(individualOrOrganisation = None),
+          "the individual name is missing"                                -> ukAccountHolder.copy(individualName = None),
+          "the place of birth question is unanswered"                     -> ukAccountHolder.copy(individualHavePlaceOfBirth = None),
+          "the date of birth question is unanswered"                      -> ukAccountHolder.copy(individualHaveDateOfBirth = None),
+          "the place of birth is missing when the account holder has one" -> ukAccountHolder.copy(individualPlaceOfBirth = None),
+          "the date of birth is missing when the account holder has one"  -> ukAccountHolder.copy(individualDateOfBirth = None),
+          "the uk residency question is unanswered"                       -> ukAccountHolder.copy(areTheyBasedInTheUk = None),
+          "the tax resident countries are missing"                        -> ukAccountHolder.copy(taxResidentCountries = None),
+          "the uk address is missing"                                     -> ukAccountHolder.copy(ukAddressManual = None),
+          "a non-uk address is provided instead of a uk address" -> ukAccountHolder.copy(
+            ukAddressManual = None,
+            addressNonUk = Some(addressNonUk)
+          ),
+          "a uk address is provided for an account holder based outside the uk" -> ukAccountHolder.copy(
+            areTheyBasedInTheUk = Some(false)
+          )
+        ).foreach {
+          case (scenario, accountHolder) =>
+            withClue(s"with $scenario: ") {
+              accountHolder.isComplete(FATCA) mustBe false
+            }
+        }
+      }
     }
   }
 }
