@@ -40,9 +40,11 @@ case class AccountHolder(individualOrOrganisation: Option[IndividualOrOrganisati
                          individualHavePlaceOfBirth: Option[Boolean] = None,
                          individualHaveDateOfBirth: Option[Boolean] = None,
                          individualDateOfBirth: Option[IndividualDateOfBirth] = None,
-                         individualPlaceOfBirth: Option[IndividualPlaceOfBirth] = None
-//                         provideEquityInterestType: Option[Boolean] = None,
-//                         equityInterestType: Option[EquityInterestTypes] = None, //crs only
+                         individualPlaceOfBirth: Option[IndividualPlaceOfBirth] = None,
+                         account: Option[Seq[String]] = None,
+                         provideEquityInterestType: Option[Boolean] = None,
+                         equityInterestType: Option[EquityInterestTypes] = None,
+                         checkEquityInterestTypeRequired: Option[Boolean] = None //crs only
 ) {
 
   def canHaveCPSO() =

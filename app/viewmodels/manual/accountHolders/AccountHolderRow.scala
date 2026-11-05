@@ -26,7 +26,6 @@ object AccountHolderRow {
   def rows(accountInfoList: Seq[(AccountHolderId, AccountHolder)], regimeType: RegimeType): Seq[AccountHolderRow] =
     accountInfoList.map {
       case (accountHolderId, accountHolder) =>
-        println(accountHolder.isComplete(regimeType))
         AccountHolderRow(
           accountHolder.organisationName.getOrElse(accountHolder.getName()),
           controllers.manual.accountHolders.routes.CurrentAccountHolderIdController.onChangeRedirect(accountHolderId.value).url,
