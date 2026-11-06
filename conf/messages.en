@@ -539,9 +539,9 @@ individualOrOrganisation.title = Is the account holder an individual or organisa
 individualOrOrganisation.heading = Is the account holder an individual or organisation?
 individualOrOrganisation.individual = Individual
 individualOrOrganisation.organisation = Organisation
-individualOrOrganisation.checkYourAnswersLabel = Change if the account holder an individual or organisation
+individualOrOrganisation.checkYourAnswersLabel = Is the account holder an individual or organisation?
 individualOrOrganisation.error.required = Select whether the account holder is an individual or organisation
-individualOrOrganisation.change.hidden = Change the account holder an individual or organisation?
+individualOrOrganisation.change.hidden = Change if the account holder is an individual or organisation
 
 cpso.individualOrOrganisation.title = Is the substantial owner an individual or organisation?
 cpso.individualOrOrganisation.heading = Is the substantial owner an individual or organisation?
