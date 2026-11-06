@@ -19,9 +19,11 @@ package views.manual.accountholders
 import base.SpecBase
 import forms.manual.accountHolders.AccountHolderListFormProvider
 import models.SubmissionsConstants.{CRS, RegimeType}
+import models.manual.TaxResidentInformation
 import models.manual.accountHolders.AccountHolderTypes.{PassiveNFFEWithSubstantial, PassiveNonFinancialWithOneOrMoreControllingPerson}
 import models.manual.accountHolders.IndividualOrOrganisation.Organisation
 import models.manual.accountHolders.SelfCertification
+import models.response.Country
 import models.viewModels.{AccountHolder, AccountHolderId}
 import models.{CheckMode, Mode, NormalMode, UkAddress}
 import org.jsoup.Jsoup
@@ -59,7 +61,7 @@ class AccountHolderListViewSpec extends SpecBase {
     accountHolderType = Some(PassiveNonFinancialWithOneOrMoreControllingPerson),
     selfCertification = Some(SelfCertification.Yes),
     areTheyBasedInTheUk = Some(true),
-    taxResidentCountries = Some(Seq.empty),
+    taxResidentCountries = Some(Seq(TaxResidentInformation(Country.GB, Some(true), Some("1234")))),
     ukAddressManual = Some(ukAddress)
   )
 
@@ -69,7 +71,7 @@ class AccountHolderListViewSpec extends SpecBase {
     accountHolderType = Some(PassiveNFFEWithSubstantial),
     selfCertification = Some(SelfCertification.Yes),
     areTheyBasedInTheUk = Some(true),
-    taxResidentCountries = Some(Seq.empty),
+    taxResidentCountries = Some(Seq(TaxResidentInformation(Country.GB, Some(true), Some("1234")))),
     ukAddressManual = Some(ukAddress)
   )
 

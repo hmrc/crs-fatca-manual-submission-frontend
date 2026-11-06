@@ -103,22 +103,22 @@ case class AccountHolder(individualOrOrganisation: Option[IndividualOrOrganisati
       case (Some(_), false) =>
         (bareMinimum :* addressNonUk)
           .mapN {
-            (_, _, _, _, _, _) =>
-              true
+            (_, _, _, _, taxResCountries, _) =>
+              taxResidentCountriesCompleteForFatca(taxResCountries)
           }
           .getOrElse(false)
       case (Some(_), true) =>
         val isManualAddressEntryValid = (bareMinimum :* ukAddressManual)
           .mapN {
-            (_, _, _, _, _, _) =>
-              true
+            (_, _, _, _, taxResCountries, _) =>
+              taxResidentCountriesCompleteForFatca(taxResCountries)
           }
           .getOrElse(false)
 
         val isSelectAddressEntryValid = (bareMinimum :* ukAddressFromSelect)
           .mapN {
-            (_, _, _, _, _, _) =>
-              true
+            (_, _, _, _, taxResCountries, _) =>
+              taxResidentCountriesCompleteForFatca(taxResCountries)
           }
           .getOrElse(false)
 
@@ -136,8 +136,8 @@ case class AccountHolder(individualOrOrganisation: Option[IndividualOrOrganisati
       case (Some(_), false) =>
         val isAddressEntryValid = (bareMinimum :* addressNonUk)
           .mapN {
-            (_, _, _, _, _, _, _) =>
-              true
+            (_, _, _, _, txResList, _, _) =>
+              taxResidentCountriesCompleteForCRS(txResList)
           }
           .getOrElse(false)
 
@@ -146,15 +146,15 @@ case class AccountHolder(individualOrOrganisation: Option[IndividualOrOrganisati
       case (Some(_), true) =>
         val isManualAddressEntryValid = (bareMinimum :* ukAddressManual)
           .mapN {
-            (_, _, _, _, _, _, _) =>
-              true
+            (_, _, _, _, txResList, _, _) =>
+              taxResidentCountriesCompleteForCRS(txResList)
           }
           .getOrElse(false)
 
         val isSelectAddressEntryValid = (bareMinimum :* ukAddressFromSelect)
           .mapN {
-            (_, _, _, _, _, _, _) =>
-              true
+            (_, _, _, _, txResList, _, _) =>
+              taxResidentCountriesCompleteForCRS(txResList)
           }
           .getOrElse(false)
 
@@ -191,31 +191,42 @@ case class AccountHolder(individualOrOrganisation: Option[IndividualOrOrganisati
       case (Some(_), false) =>
         val isAccountHolderDetailsValid = bareMinimumNonUk
           .mapN {
-            (_, _, _, _, _, _, _, _) =>
-              true
+            (_, _, _, _, _, txResList, _, _) =>
+              taxResidentCountriesCompleteForCRS(txResList)
           }
           .getOrElse(false)
-
         isAccountHolderDetailsValid && isIndividualBirthDetailsComplete() && isEquityInterestTypeInformationComplete()
 
       case (Some(_), true) =>
         val isManualAddressEntryValid = (bareMinimum :* ukAddressManual)
           .mapN {
-            (_, _, _, _, _, _, _, _) =>
-              true
+            (_, _, _, _, _, txResList, _, _) =>
+              taxResidentCountriesCompleteForCRS(txResList)
           }
           .getOrElse(false)
 
         val isSelectAddressEntryValid = (bareMinimum :* ukAddressFromSelect)
           .mapN {
-            (_, _, _, _, _, _, _, _) =>
-              true
+            (_, _, _, _, _, txResList, _, _) =>
+              taxResidentCountriesCompleteForCRS(txResList)
           }
           .getOrElse(false)
 
         (isManualAddressEntryValid || isSelectAddressEntryValid) && isIndividualBirthDetailsComplete() && isEquityInterestTypeInformationComplete()
     }
   }
+
+  private def taxResidentCountriesCompleteForFatca(taxResCountries: Seq[TaxResidentInformation]): Boolean =
+    taxResCountries.nonEmpty && taxResCountries.forall(
+      tx => tx.taxIdentifierNumber.isDefined
+    )
+
+  private def taxResidentCountriesCompleteForCRS(taxResCountries: Seq[TaxResidentInformation]): Boolean =
+    taxResCountries.nonEmpty && taxResCountries.forall {
+      case TaxResidentInformation(_, Some(true), taxIdentifiers) => taxIdentifiers.isDefined
+      case TaxResidentInformation(_, Some(false), _)             => true
+      case _                                                     => false
+    }
 
   private def validateFatcaIndividualIsComplete(): Boolean = {
     val bareMinimumNonUk =
@@ -231,8 +242,8 @@ case class AccountHolder(individualOrOrganisation: Option[IndividualOrOrganisati
       case (Some(_), false) =>
         val isAccountHolderDetailsValid = bareMinimumNonUk
           .mapN {
-            (_, _, _, _, _, _, _) =>
-              true
+            (_, _, _, _, _, taxResCountries, _) =>
+              taxResidentCountriesCompleteForFatca(taxResCountries)
           }
           .getOrElse(false)
 
@@ -241,15 +252,15 @@ case class AccountHolder(individualOrOrganisation: Option[IndividualOrOrganisati
       case (Some(_), true) =>
         val isManualAddressEntryValid = (bareMinimum :* ukAddressManual)
           .mapN {
-            (_, _, _, _, _, _, _) =>
-              true
+            (_, _, _, _, _, taxResCountries, _) =>
+              taxResidentCountriesCompleteForFatca(taxResCountries)
           }
           .getOrElse(false)
 
         val isSelectAddressEntryValid = (bareMinimum :* ukAddressFromSelect)
           .mapN {
-            (_, _, _, _, _, _, _) =>
-              true
+            (_, _, _, _, _, taxResCountries, _) =>
+              taxResidentCountriesCompleteForFatca(taxResCountries)
           }
           .getOrElse(false)
 

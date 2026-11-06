@@ -142,7 +142,8 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
     val ukAddressSelect        = Address(None, "addressLine1", None, None, None, "town", None, Country.GB)
     val ukAddressManual        = UkAddress("Some Address", Some("Some Address"), "City", Some("Some Address"), "postcode: ", "coutry")
     val addressNonUk           = AddressNonUk(addressLine1 = "some address", None, "", None, None, "GB")
-    val taxResidentInformation = TaxResidentInformation(Country.GB, hasTaxIdentificationNumber = None, taxIdentifierNumbers = Some("12333"))
+    val taxResidentInformation = TaxResidentInformation(Country.GB, hasTaxIdentificationNumber = Some(true), taxIdentifierNumber = Some("12333"))
+    val taxResidentInformationMissingtaxIdentifierNumbers = TaxResidentInformation(Country.GB, hasTaxIdentificationNumber = None, taxIdentifierNumber = None)
 
     "fatca regime" - {
       "For an organization" - {
@@ -168,8 +169,11 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
 
         "returns false for non-uk account holder if any of expected fields are missing" - {
           mustBeIncomplete(FATCA)(
-            "the non-uk address is missing"                         -> baseAccountHolder.copy(addressNonUk = None),
-            "the tax resident countries are missing"                -> baseAccountHolder.copy(taxResidentCountries = None),
+            "the non-uk address is missing"          -> baseAccountHolder.copy(addressNonUk = None),
+            "the tax resident countries are missing" -> baseAccountHolder.copy(taxResidentCountries = None),
+            "the tax resident countries that does not have taxIdentifierNumbers" -> baseAccountHolder.copy(taxResidentCountries =
+              Some(Seq(taxResidentInformationMissingtaxIdentifierNumbers))
+            ),
             "the uk residency question is unanswered"               -> baseAccountHolder.copy(areTheyBasedInTheUk = None),
             "the account holder type is missing"                    -> baseAccountHolder.copy(accountHolderType = None),
             "the organisation name is missing"                      -> baseAccountHolder.copy(organisationName = None),
@@ -196,8 +200,12 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
 
           "when the uk address is entered manually" - {
             mustBeIncomplete(FATCA)(
-              "the uk address is missing"                             -> manualAccountHolder.copy(ukAddressManual = None),
-              "the tax resident countries are missing"                -> manualAccountHolder.copy(taxResidentCountries = None),
+              "the uk address is missing"              -> manualAccountHolder.copy(ukAddressManual = None),
+              "the tax resident countries are missing" -> manualAccountHolder.copy(taxResidentCountries = None),
+              "the tax resident countries that does not have taxIdentifierNumbers" -> manualAccountHolder.copy(taxResidentCountries =
+                Some(Seq(taxResidentInformationMissingtaxIdentifierNumbers))
+              ),
+              "the tax resident countries is empty"                   -> manualAccountHolder.copy(taxResidentCountries = Some(Seq())),
               "the uk residency question is unanswered"               -> manualAccountHolder.copy(areTheyBasedInTheUk = None),
               "the account holder type is missing"                    -> manualAccountHolder.copy(accountHolderType = None),
               "the organisation name is missing"                      -> manualAccountHolder.copy(organisationName = None),
@@ -207,8 +215,12 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
 
           "when the uk address is chosen from the lookup" - {
             mustBeIncomplete(FATCA)(
-              "the uk address is missing"                             -> selectAccountHolder.copy(ukAddressFromSelect = None),
-              "the tax resident countries are missing"                -> selectAccountHolder.copy(taxResidentCountries = None),
+              "the uk address is missing"              -> selectAccountHolder.copy(ukAddressFromSelect = None),
+              "the tax resident countries are missing" -> selectAccountHolder.copy(taxResidentCountries = None),
+              "the tax resident countries that does not have taxIdentifierNumbers" -> selectAccountHolder.copy(taxResidentCountries =
+                Some(Seq(taxResidentInformationMissingtaxIdentifierNumbers))
+              ),
+              "the tax resident countries is empty"                   -> selectAccountHolder.copy(taxResidentCountries = Some(Seq())),
               "the uk residency question is unanswered"               -> selectAccountHolder.copy(areTheyBasedInTheUk = None),
               "the account holder type is missing"                    -> selectAccountHolder.copy(accountHolderType = None),
               "the organisation name is missing"                      -> selectAccountHolder.copy(organisationName = None),
