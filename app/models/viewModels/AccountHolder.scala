@@ -220,156 +220,41 @@ case class AccountHolder(individualOrOrganisation: Option[IndividualOrOrganisati
   private def validateFatcaIndividualIsComplete(): Boolean = {
     val bareMinimumNonUk =
       (individualOrOrganisation, individualName, individualHavePlaceOfBirth, individualHaveDateOfBirth, areTheyBasedInTheUk, taxResidentCountries, addressNonUk)
+
     val bareMinimum =
       (individualOrOrganisation, individualName, individualHavePlaceOfBirth, individualHaveDateOfBirth, areTheyBasedInTheUk, taxResidentCountries)
 
-    if (areTheyBasedInTheUk.contains(false)) {
-      (individualHavePlaceOfBirth, individualHaveDateOfBirth, individualHavePlaceOfBirth.contains(true), individualHaveDateOfBirth.contains(true)) match {
-        case (None, None, _, _) => false
-        case (Some(_), None, true, _) =>
-          (bareMinimumNonUk :* individualPlaceOfBirth)
-            .mapN {
-              (_, _, _, _, _, _, _, _) =>
-                true
-            }
-            .getOrElse(false)
-        case (None, Some(_), _, true) =>
-          (bareMinimumNonUk :* individualDateOfBirth)
-            .mapN {
-              (_, _, _, _, _, _, _, _) =>
-                true
-            }
-            .getOrElse(false)
-        case (Some(_), Some(_), true, true) =>
-          ((bareMinimumNonUk :* individualDateOfBirth) :* individualPlaceOfBirth)
-            .mapN {
-              (_, _, _, _, _, _, _, _, _) =>
-                true
-            }
-            .getOrElse(false)
-        case (Some(_), Some(_), false, false) =>
-          bareMinimumNonUk
-            .mapN {
-              (_, _, _, _, _, _, _) =>
-                true
-            }
-            .getOrElse(false)
-        case (Some(_), Some(_), true, false) =>
-          (bareMinimumNonUk :* individualPlaceOfBirth)
-            .mapN {
-              (_, _, _, _, _, _, _, _) =>
-                true
-            }
-            .getOrElse(false)
-        case (Some(_), Some(_), false, true) =>
-          (bareMinimumNonUk :* individualDateOfBirth)
-            .mapN {
-              (_, _, _, _, _, _, _, _) =>
-                true
-            }
-            .getOrElse(false)
-        case _ =>
-          false
-      }
-    } else if (areTheyBasedInTheUk.contains(true)) {
-      (individualHavePlaceOfBirth, individualHaveDateOfBirth, individualHavePlaceOfBirth.contains(true), individualHaveDateOfBirth.contains(true)) match {
-        case (None, None, _, _) => false
-        case (Some(_), None, true, _) =>
-          val manualAddressValid = ((bareMinimum :* individualPlaceOfBirth) :* ukAddressManual)
-            .mapN {
-              (_, _, _, _, _, _, _, _) =>
-                true
-            }
-            .getOrElse(false)
+    (areTheyBasedInTheUk, areTheyBasedInTheUk.contains(true)) match {
+      case (None, _) =>
+        false
 
-          val selectAddressValid = ((bareMinimum :* individualPlaceOfBirth) :* ukAddressFromSelect)
-            .mapN {
-              (_, _, _, _, _, _, _, _) =>
-                true
-            }
-            .getOrElse(false)
-          manualAddressValid || selectAddressValid
-        case (None, Some(_), _, true) =>
-          val manualAddressValid = ((bareMinimum :* individualDateOfBirth) :* ukAddressManual)
-            .mapN {
-              (_, _, _, _, _, _, _, _) =>
-                true
-            }
-            .getOrElse(false)
+      case (Some(_), false) =>
+        val isAccountHolderDetailsValid = bareMinimumNonUk
+          .mapN {
+            (_, _, _, _, _, _, _) =>
+              true
+          }
+          .getOrElse(false)
 
-          val selectAddressValid = ((bareMinimum :* individualDateOfBirth) :* ukAddressFromSelect)
-            .mapN {
-              (_, _, _, _, _, _, _, _) =>
-                true
-            }
-            .getOrElse(false)
-          manualAddressValid || selectAddressValid
-        case (Some(_), Some(_), true, true) => // individualDateOfBirth) :* individualPlaceOfBirth
-          val manualAddressValid = (((bareMinimum :* individualDateOfBirth) :* ukAddressManual) :* individualPlaceOfBirth)
-            .mapN {
-              (_, _, _, _, _, _, _, _, _) =>
-                true
-            }
-            .getOrElse(false)
+        isAccountHolderDetailsValid && isIndividualBirthDetailsComplete()
 
-          val selectAddressValid = (((bareMinimum :* individualDateOfBirth) :* ukAddressFromSelect) :* individualPlaceOfBirth)
-            .mapN {
-              (_, _, _, _, _, _, _, _, _) =>
-                true
-            }
-            .getOrElse(false)
-          manualAddressValid || selectAddressValid
-        case (Some(_), Some(_), false, false) =>
-          val manualAddressValid = (bareMinimum :* ukAddressManual)
-            .mapN {
-              (_, _, _, _, _, _, _) =>
-                true
-            }
-            .getOrElse(false)
+      case (Some(_), true) =>
+        val isManualAddressEntryValid = (bareMinimum :* ukAddressManual)
+          .mapN {
+            (_, _, _, _, _, _, _) =>
+              true
+          }
+          .getOrElse(false)
 
-          val selectAddressValid = (bareMinimum :* ukAddressFromSelect)
-            .mapN {
-              (_, _, _, _, _, _, _) =>
-                true
-            }
-            .getOrElse(false)
-          manualAddressValid || selectAddressValid
-        case (Some(_), Some(_), true, false) => // bareMinimumNonUk :* individualPlaceOfBirth)
-          val manualAddressValid = ((bareMinimum :* ukAddressManual) :* individualPlaceOfBirth)
-            .mapN {
-              (_, _, _, _, _, _, _, _) =>
-                true
-            }
-            .getOrElse(false)
+        val isSelectAddressEntryValid = (bareMinimum :* ukAddressFromSelect)
+          .mapN {
+            (_, _, _, _, _, _, _) =>
+              true
+          }
+          .getOrElse(false)
 
-          val selectAddressValid = ((bareMinimum :* ukAddressFromSelect) :* individualPlaceOfBirth)
-            .mapN {
-              (_, _, _, _, _, _, _, _) =>
-                true
-            }
-            .getOrElse(false)
-          manualAddressValid || selectAddressValid
-        case (Some(_), Some(_), false, true) =>
-          val manualAddressValid = ((bareMinimum :* ukAddressManual) :* individualDateOfBirth)
-            .mapN {
-              (_, _, _, _, _, _, _, _) =>
-                true
-            }
-            .getOrElse(false)
-
-          val selectAddressValid = ((bareMinimum :* ukAddressFromSelect) :* individualDateOfBirth)
-            .mapN {
-              (_, _, _, _, _, _, _, _) =>
-                true
-            }
-            .getOrElse(false)
-          manualAddressValid || selectAddressValid
-        case _ => false
-      }
-    } else {
-      false
+        (isManualAddressEntryValid || isSelectAddressEntryValid) && isIndividualBirthDetailsComplete()
     }
-
   }
 
   private def isEquityInterestTypeInformationComplete(): Boolean = {
@@ -388,5 +273,3 @@ case class AccountHolder(individualOrOrganisation: Option[IndividualOrOrganisati
 object AccountHolder {
   implicit val format: OFormat[AccountHolder] = Json.format[AccountHolder]
 }
-//ukAddressFromSelect - Address
-//ukAddressManual - UkAddress
