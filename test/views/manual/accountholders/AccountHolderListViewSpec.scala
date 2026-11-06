@@ -245,7 +245,7 @@ class AccountHolderListViewSpec extends SpecBase {
       "must ask whether another account holder is needed" in {
         val doc = render(holders = Seq(alpha), accountsWithoutHolders = Seq.empty)
 
-        doc.select(".govuk-fieldset__legend--l h1").text() mustBe "Do you need to add another account holder?"
+        doc.select(".govuk-fieldset__legend--m").text() mustBe "Do you need to add another account holder?"
       }
 
       "must render a yes and a no option bound to the value field" in {
