@@ -49,7 +49,11 @@ object IndividualPlaceOfBirthSummary {
       answer                 <- answers.get(IndividualPlaceOfBirthPage(currentAccountHolderId, reportId))
     } yield {
 
-      val value = HtmlFormat.escape(answer.city.getOrElse("")).toString + "<br/>" + HtmlFormat.escape(answer.region.getOrElse("")).toString
+      val value = (Seq(answer.city, answer.region).flatten :+ answer.country)
+        .map(
+          part => HtmlFormat.escape(part).toString
+        )
+        .mkString("<br/>")
 
       SummaryListRowViewModel(
         key = "accountHolder.individualPlaceOfBirth.checkYourAnswersLabel",

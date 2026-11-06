@@ -870,7 +870,7 @@ accountHolders.selfCertification.heading = Has {0} provided a valid self-certifi
 accountHolders.selfCertification.CRS900 = Not reported
 accountHolders.selfCertification.CRS901 = Yes
 accountHolders.selfCertification.CRS902 = No
-accountHolders.selfCertification.checkYourAnswersLabel = Have they provided a valid self certification?
+accountHolders.selfCertification.checkYourAnswersLabel = Has the account holder provided a valid self-certification?
 accountHolders.selfCertification.error.required = Select whether the account holder has provided a valid self-certification
 accountHolders.selfCertification.change.hidden = Change if the account holder has provided a valid self-certification
 

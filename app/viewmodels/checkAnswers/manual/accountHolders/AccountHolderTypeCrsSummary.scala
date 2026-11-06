@@ -17,30 +17,28 @@
 package viewmodels.checkAnswers.manual.accountHolders
 
 import controllers.manual.accountHolders.routes
-import models.viewModels.AccountHolderId
+import models.manual.accountHolders.OrganisationCrs
+import models.manual.accountHolders.OrganisationCrs._
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.accountHolders.{AccountHolderOrganisationNamePage, OrganisationFatcaPage}
+import pages.manual.accountHolders.{AccountHolderOrganisationNamePage, CurrentAccountHolderIdPage, OrganisationCrsPage}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist.*
 import viewmodels.implicits.*
 
-object OrganisationFatcaSummary {
+object AccountHolderTypeCrsSummary {
 
-  def row(answers: UserAnswers)(implicit
-    messages: Messages,
-    reportId: ReportId,
-    accountHolderId: AccountHolderId
-  ): Option[SummaryListRow] =
+  def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
     for {
-      accountHolderName <- answers.get(AccountHolderOrganisationNamePage(accountHolderId)(reportId))
-      answer            <- answers.get(OrganisationFatcaPage(accountHolderId)(reportId))
+      currentAccountHolderId <- answers.get(CurrentAccountHolderIdPage()(reportId))
+      accountHolderName      <- answers.get(AccountHolderOrganisationNamePage(currentAccountHolderId)(reportId))
+      answer                 <- answers.get(OrganisationCrsPage(currentAccountHolderId)(reportId))
     } yield SummaryListRowViewModel(
-      key = messages("organisationFatca.checkYourAnswersLabel", accountHolderName),
-      value = ValueViewModel(messages(s"organisationFatca.$answer")),
+      key = messages("organisationCrs.checkYourAnswersLabel", accountHolderName),
+      value = ValueViewModel(messages(s"organisationCrs.$answer")),
       actions = Seq(
-        ActionItemViewModel("site.change", routes.OrganisationFatcaController.onPageLoad(CheckMode).url)
-          .withVisuallyHiddenText(messages("organisationFatca.change.hidden"))
+        ActionItemViewModel("site.change", routes.OrganisationCrsController.onPageLoad(CheckMode).url)
+          .withVisuallyHiddenText(messages("organisationCrs.change.hidden"))
       )
     )
 }
