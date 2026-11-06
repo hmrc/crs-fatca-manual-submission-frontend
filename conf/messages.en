@@ -539,7 +539,7 @@ individualOrOrganisation.title = Is the account holder an individual or organisa
 individualOrOrganisation.heading = Is the account holder an individual or organisation?
 individualOrOrganisation.individual = Individual
 individualOrOrganisation.organisation = Organisation
-individualOrOrganisation.checkYourAnswersLabel = Is the account holder an individual or organisation?
+individualOrOrganisation.checkYourAnswersLabel = Change if the account holder an individual or organisation
 individualOrOrganisation.error.required = Select whether the account holder is an individual or organisation
 individualOrOrganisation.change.hidden = Change the account holder an individual or organisation?
 
@@ -990,7 +990,7 @@ organisationName.empty =
 
 organisationFatca.title = What type of account holder is this?
 organisationFatca.heading = What type of account holder is {0}?
-organisationFatca.checkYourAnswersLabel = What type of account holder is {0}?
+organisationFatca.checkYourAnswersLabel = What type of account holder are they?
 organisationFatca.error.required = Select what type of account holder this is
 organisationFatca.change.hidden = Change what type of account holder they are
 organisationFatca.FATCA101 = Owner-documented foreign financial institution with specified US owners
@@ -1000,7 +1000,7 @@ organisationFatca.FATCA104 = Specified US person
 
 organisationCrs.title = What type of account holder is this?
 organisationCrs.heading = What type of account holder is {0}?
-organisationCrs.checkYourAnswersLabel = What type of account holder is {0}?
+organisationCrs.checkYourAnswersLabel = What type of account holder are they?
 organisationCrs.error.required = Select what type of account holder this is
 organisationCrs.change.hidden = Change what type of account holder they are
 organisationCrs.CRS101 = Passive non-financial entity with one or more controlling reportable persons

@@ -45,17 +45,18 @@ class ProvideEquityInterestTypeController @Inject() (
   val form = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
-    actions.withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired() {
-      implicit request =>
+    actions
+      .withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired() { // TODO prevent nav to this page if selected accounts types don't contain Debt or Equity?
+        implicit request =>
 
-        val preparedForm =
-          request.userAnswers.get(ProvideEquityInterestTypePage(request.accountHolderId, request.reportId)) match {
-            case None        => form
-            case Some(value) => form.fill(value)
-          }
+          val preparedForm =
+            request.userAnswers.get(ProvideEquityInterestTypePage(request.accountHolderId, request.reportId)) match {
+              case None        => form
+              case Some(value) => form.fill(value)
+            }
 
-        Ok(view(preparedForm, mode, request.accountHolderName))
-    }
+          Ok(view(preparedForm, mode, request.accountHolderName))
+      }
 
   def onSubmit(mode: Mode): Action[AnyContent] =
     actions.withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired().async {

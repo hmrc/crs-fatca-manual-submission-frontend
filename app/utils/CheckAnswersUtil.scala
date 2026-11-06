@@ -22,13 +22,7 @@ import models.manual.accountHolders.IndividualOrOrganisation
 import models.viewModels.AccountHolderId
 import models.{ReportId, UserAnswers}
 import pages.manual.account.*
-import pages.manual.accountHolders.{
-  CurrentAccountHolderIdPage,
-  IndividualHaveDateOfBirthPage,
-  IndividualHavePlaceOfBirthPage,
-  IndividualOrOrganisationPage,
-  ProvideEquityInterestTypePage
-}
+import pages.manual.accountHolders.*
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 import viewmodels.checkAnswers.manual.account.*
@@ -142,14 +136,18 @@ class CheckAnswersUtil @Inject() {
                Seq(EquityInterestTypeSummary.row(ua)).flatten
              else Seq.empty)
 
-        val organisationSummaries =
-          Seq(OrganisationNameSummary.row(ua)).flatten ++
-            (if (reportId.regime == CRS) Seq(OrganisationCrsSummary.row(ua)).flatten
-             else Seq(OrganisationFatcaSummary.row(ua)).flatten) ++ equityInterestTypeSummaries
+        val fatcaOrganisationSummaries =
+          Seq(OrganisationNameSummary.row(ua), OrganisationFatcaSummary.row(ua)).flatten
 
-        val accountHolderTypeSummaries = individualOrOrganisation match {
-          case IndividualOrOrganisation.Individual   => individualSummaries
-          case IndividualOrOrganisation.Organisation => organisationSummaries
+        val crsOrganisationSummaries =
+          Seq(OrganisationNameSummary.row(ua), OrganisationCrsSummary.row(ua)).flatten
+            ++ equityInterestTypeSummaries ++ Seq(SelfCertificationSummary.row(ua)).flatten
+
+        val accountHolderTypeSummaries = (reportId.regime, individualOrOrganisation) match {
+          case (FATCA, IndividualOrOrganisation.Individual)   => individualSummaries
+          case (CRS, IndividualOrOrganisation.Individual)     => individualSummaries
+          case (FATCA, IndividualOrOrganisation.Organisation) => fatcaOrganisationSummaries
+          case (_, _)                                         => crsOrganisationSummaries
         }
 
         Seq(

@@ -47,7 +47,7 @@ object AccountHolderTaxResidentCountriesSummary {
           SummaryListViewModel(
             rows = Seq(
               SummaryListRowViewModel(
-                key = "taxResidentCountries.checkYourAnswersLabel",
+                key = "accountHolders.taxResidentCountries.checkYourAnswersLabel",
                 value = ValueViewModel(
                   HtmlContent(countries.map(_.country.description).mkString("<br>"))
                 )
@@ -55,12 +55,12 @@ object AccountHolderTaxResidentCountriesSummary {
             ) ++ identRows,
             card = CardViewModel(
               title = CardTitle(
-                content = "taxResidentCountries.checkYourAnswersSummaryHeading"
+                content = "accountHolders.taxResidentCountries.checkYourAnswersSummaryHeading"
               ),
               actions = Seq(
                 ActionItemViewModel(
                   href = controllers.manual.accountHolders.routes.TaxResidentCountriesController.onPageLoad(CheckMode).url,
-                  content = "taxResidentCountries.checkYourAnswersLink"
+                  content = "accountHolders.taxResidentCountries.checkYourAnswersLink"
                 )
               )
             ).withCssClass("govuk-!-margin-bottom-6")

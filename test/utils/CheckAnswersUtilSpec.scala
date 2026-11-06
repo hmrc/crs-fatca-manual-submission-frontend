@@ -22,6 +22,7 @@ import models.SubmissionsConstants.{CRS, FATCA}
 import models.TypeOfReport.Information
 import models.manual.account.WasAccountOpen
 import models.manual.account.WhatAccountType.Custodial
+import models.manual.accountHolders.SelfCertification.Yes
 import models.manual.accountHolders.{
   EquityInterestType,
   EquityInterestTypes,
@@ -49,7 +50,8 @@ import pages.manual.accountHolders.{
   IndividualPlaceOfBirthPage,
   OrganisationCrsPage,
   OrganisationFatcaPage,
-  ProvideEquityInterestTypePage
+  ProvideEquityInterestTypePage,
+  SelfCertificationPage
 }
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
@@ -491,6 +493,7 @@ class CheckAnswersUtilSpec extends SpecBase {
               .withPage(OrganisationFatcaPage(accountHolderId)(reportId), OrganisationFatca.SpecifiedPerson)
               .withPage(ProvideEquityInterestTypePage(accountHolderId, reportId), true)
               .withPage(EquityInterestTypePage(accountHolderId, reportId), EquityInterestTypes(Seq(EquityInterestType.TrusteeOfTrust)))
+              .withPage(SelfCertificationPage(accountHolderId, reportId), Yes)
 
             val expectedRows = AccountsSummary.row(ua) ++
               IndividualOrOrganisationSummary.row(ua) ++
@@ -498,7 +501,8 @@ class CheckAnswersUtilSpec extends SpecBase {
               OrganisationCrsSummary.row(ua) ++
               ProvideEquityInterestTypeSummary.row(ua) ++
               EquityInterestTypeSummary.row(ua) ++
-              AddressForAccountHolderSummary.row(ua)
+              AddressForAccountHolderSummary.row(ua) ++
+              SelfCertificationSummary.row(ua)
 
             util.getAccountHolderRows(ua) mustBe expected(ua, expectedRows)
           }
@@ -558,15 +562,11 @@ class CheckAnswersUtilSpec extends SpecBase {
               .withPage(AccountHolderOrganisationNamePage(accountHolderId)(reportId), "Organisation")
               .withPage(OrganisationCrsPage(accountHolderId)(reportId), OrganisationCrs.CrsReportable)
               .withPage(OrganisationFatcaPage(accountHolderId)(reportId), OrganisationFatca.SpecifiedPerson)
-              .withPage(ProvideEquityInterestTypePage(accountHolderId, reportId), true)
-              .withPage(EquityInterestTypePage(accountHolderId, reportId), EquityInterestTypes(Seq(EquityInterestType.TrusteeOfTrust)))
 
             val expectedRows = AccountsSummary.row(ua) ++
               IndividualOrOrganisationSummary.row(ua) ++
               OrganisationNameSummary.row(ua) ++
               OrganisationFatcaSummary.row(ua) ++
-              ProvideEquityInterestTypeSummary.row(ua) ++
-              EquityInterestTypeSummary.row(ua) ++
               AddressForAccountHolderSummary.row(ua)
 
             util.getAccountHolderRows(ua) mustBe expected(ua, expectedRows)
