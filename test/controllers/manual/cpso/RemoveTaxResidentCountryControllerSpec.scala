@@ -88,7 +88,7 @@ class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar 
 
   private lazy val defaultAnswers = userAnswersFor()
 
-  private def savesTheAnswers(answers: UserAnswers, repository: DatabaseConnector): UserAnswers = {
+  private def savesTheAnswers(repository: DatabaseConnector): UserAnswers = {
     val captor = ArgumentCaptor.forClass(classOf[UserAnswers])
     verify(repository).set(captor.capture())(any())
     captor.getValue
@@ -168,7 +168,7 @@ class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar 
         redirectLocation(result).value mustEqual onwardRoute.url
         flash(result).get("country-removed") mustBe Some(country.description)
 
-        savesTheAnswers(defaultAnswers, mockRepository).get(taxResidentCountriesPage) mustBe
+        savesTheAnswers(mockRepository).get(taxResidentCountriesPage) mustBe
           Some(taxResidentCountries.patch(currentIndex, Nil, 1))
       }
     }
@@ -198,7 +198,7 @@ class RemoveTaxResidentCountryControllerSpec extends SpecBase with MockitoSugar 
         redirectLocation(result).value mustEqual onwardRoute.url
         flash(result).get("country-removed") mustBe None
 
-        savesTheAnswers(defaultAnswers, mockRepository).get(taxResidentCountriesPage) mustBe Some(taxResidentCountries)
+        savesTheAnswers(mockRepository).get(taxResidentCountriesPage) mustBe Some(taxResidentCountries)
       }
     }
 

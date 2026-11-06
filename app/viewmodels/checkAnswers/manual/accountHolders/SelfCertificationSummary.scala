@@ -50,7 +50,7 @@ object SelfCertificationSummary {
     } yield {
       val value = ValueViewModel(
         HtmlContent(
-          HtmlFormat.escape(messages(s"selfCertification.$answer"))
+          HtmlFormat.escape(messages(s"accountHolders.selfCertification.$answer"))
         )
       )
 

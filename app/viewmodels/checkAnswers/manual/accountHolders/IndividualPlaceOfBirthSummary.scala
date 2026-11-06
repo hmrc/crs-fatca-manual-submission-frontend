@@ -49,14 +49,18 @@ object IndividualPlaceOfBirthSummary {
       answer                 <- answers.get(IndividualPlaceOfBirthPage(currentAccountHolderId, reportId))
     } yield {
 
-      val value = HtmlFormat.escape(answer.city.getOrElse("")).toString + "<br/>" + HtmlFormat.escape(answer.region.getOrElse("")).toString
+      val value = (Seq(answer.city, answer.region).flatten :+ answer.country)
+        .map(
+          part => HtmlFormat.escape(part).toString
+        )
+        .mkString("<br/>")
 
       SummaryListRowViewModel(
-        key = "accountholder.individualPlaceOfBirth.checkYourAnswersLabel",
+        key = "accountHolder.individualPlaceOfBirth.checkYourAnswersLabel",
         value = ValueViewModel(HtmlContent(value)),
         actions = Seq(
           ActionItemViewModel("site.change", controllers.manual.accountHolders.routes.IndividualPlaceOfBirthController.onPageLoad(CheckMode).url)
-            .withVisuallyHiddenText(messages("individualPlaceOfBirth.change.hidden"))
+            .withVisuallyHiddenText(messages("accountHolder.individualPlaceOfBirth.change.hidden"))
         )
       )
     }
