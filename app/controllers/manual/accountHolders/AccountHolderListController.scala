@@ -40,19 +40,19 @@ import views.html.manual.accountHolders.AccountHolderListView
 import scala.concurrent.{ExecutionContext, Future}
 
 class AccountHolderListController @Inject() (
-                                              override val messagesApi: MessagesApi,
-                                              repository: DatabaseConnector,
-                                              navigator: ManualSubmissionNavigator,
-                                              identify: IdentifierAction,
-                                              getData: DataRetrievalAction,
-                                              requireData: DataRequiredAction,
-                                              reportIdAction: ReportIdRequiredAction,
-                                              formProvider: AccountHolderListFormProvider,
-                                              val controllerComponents: MessagesControllerComponents,
-                                              view: AccountHolderListView,
-                                              viewFIService: ViewFIService
-                                            )(implicit ec: ExecutionContext)
-  extends FrontendBaseController
+  override val messagesApi: MessagesApi,
+  repository: DatabaseConnector,
+  navigator: ManualSubmissionNavigator,
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
+  reportIdAction: ReportIdRequiredAction,
+  formProvider: AccountHolderListFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: AccountHolderListView,
+  viewFIService: ViewFIService
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport
     with Logging {
 
@@ -139,9 +139,9 @@ class AccountHolderListController @Inject() (
   }
 
   private def withEquityInterestTypeRequirement(
-                                                 accountHolder: AccountHolder,
-                                                 accountTypes: Map[String, Option[WhatAccountType]]
-                                               )(implicit reportId: ReportId): AccountHolder =
+    accountHolder: AccountHolder,
+    accountTypes: Map[String, Option[WhatAccountType]]
+  )(implicit reportId: ReportId): AccountHolder =
     accountHolder.account.filter(_.nonEmpty) match {
       case Some(linkedAccountIds) if reportId.regime == CRS =>
         val equityInterestTypeRequired =

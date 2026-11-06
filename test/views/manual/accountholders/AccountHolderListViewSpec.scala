@@ -77,13 +77,13 @@ class AccountHolderListViewSpec extends SpecBase {
   private val twoAccounts = Seq("GB11AAAA11111111111111", "GB22BBBB22222222222222")
 
   private def render(
-                      boundForm: Form[_] = form,
-                      mode: Mode = NormalMode,
-                      holders: Seq[(AccountHolderId, AccountHolder)] = Seq(alpha),
-                      accountsWithoutHolders: Seq[String] = oneAccount,
-                      regime: RegimeType = CRS,
-                      flash: Flash = Flash.emptyCookie
-                    ): Document =
+    boundForm: Form[_] = form,
+    mode: Mode = NormalMode,
+    holders: Seq[(AccountHolderId, AccountHolder)] = Seq(alpha),
+    accountsWithoutHolders: Seq[String] = oneAccount,
+    regime: RegimeType = CRS,
+    flash: Flash = Flash.emptyCookie
+  ): Document =
     Jsoup.parse(view(boundForm, mode, fiName, holders, accountsWithoutHolders, regime)(request, messages, flash).body)
 
   private def pageHeading(doc: Document): String =
