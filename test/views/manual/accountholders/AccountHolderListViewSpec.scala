@@ -21,8 +21,9 @@ import forms.manual.accountHolders.AccountHolderListFormProvider
 import models.SubmissionsConstants.{CRS, RegimeType}
 import models.manual.accountHolders.AccountHolderTypes.{PassiveNFFEWithSubstantial, PassiveNonFinancialWithOneOrMoreControllingPerson}
 import models.manual.accountHolders.IndividualOrOrganisation.Organisation
+import models.manual.accountHolders.SelfCertification
 import models.viewModels.{AccountHolder, AccountHolderId}
-import models.{CheckMode, Mode, NormalMode}
+import models.{CheckMode, Mode, NormalMode, UkAddress}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.data.Form
@@ -50,29 +51,39 @@ class AccountHolderListViewSpec extends SpecBase {
 
   private val fiName = "First FI"
 
+  private val ukAddress = UkAddress("Some Address", None, "City", None, "AA1 1AA", "GB")
+
   private val alpha = AccountHolderId("21") -> AccountHolder(
     individualOrOrganisation = Some(Organisation),
     organisationName = Some("Alpha Holdings"),
-    accountHolderType = Some(PassiveNonFinancialWithOneOrMoreControllingPerson)
+    accountHolderType = Some(PassiveNonFinancialWithOneOrMoreControllingPerson),
+    selfCertification = Some(SelfCertification.Yes),
+    areTheyBasedInTheUk = Some(true),
+    taxResidentCountries = Some(Seq.empty),
+    ukAddressManual = Some(ukAddress)
   )
 
   private val beta = AccountHolderId("22") -> AccountHolder(
     individualOrOrganisation = Some(Organisation),
     organisationName = Some("Beta Holdings"),
-    accountHolderType = Some(PassiveNFFEWithSubstantial)
+    accountHolderType = Some(PassiveNFFEWithSubstantial),
+    selfCertification = Some(SelfCertification.Yes),
+    areTheyBasedInTheUk = Some(true),
+    taxResidentCountries = Some(Seq.empty),
+    ukAddressManual = Some(ukAddress)
   )
 
   private val oneAccount  = Seq("GB11AAAA11111111111111")
   private val twoAccounts = Seq("GB11AAAA11111111111111", "GB22BBBB22222222222222")
 
   private def render(
-    boundForm: Form[_] = form,
-    mode: Mode = NormalMode,
-    holders: Seq[(AccountHolderId, AccountHolder)] = Seq(alpha),
-    accountsWithoutHolders: Seq[String] = oneAccount,
-    regime: RegimeType = CRS,
-    flash: Flash = Flash.emptyCookie
-  ): Document =
+                      boundForm: Form[_] = form,
+                      mode: Mode = NormalMode,
+                      holders: Seq[(AccountHolderId, AccountHolder)] = Seq(alpha),
+                      accountsWithoutHolders: Seq[String] = oneAccount,
+                      regime: RegimeType = CRS,
+                      flash: Flash = Flash.emptyCookie
+                    ): Document =
     Jsoup.parse(view(boundForm, mode, fiName, holders, accountsWithoutHolders, regime)(request, messages, flash).body)
 
   private def pageHeading(doc: Document): String =

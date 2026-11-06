@@ -118,7 +118,7 @@ class AccountHolderListController @Inject() (
         }
   }
 
-  private[accountHolders] def accountHolders(userAnswers: UserAnswers)(implicit reportId: ReportId): Seq[(AccountHolderId, AccountHolder)] = {
+  private def accountHolders(userAnswers: UserAnswers)(implicit reportId: ReportId): Seq[(AccountHolderId, AccountHolder)] = {
     val accountTypes: Map[String, Option[WhatAccountType]] =
       userAnswers
         .get(AccountsPage(reportId))
