@@ -19,7 +19,7 @@ package navigation
 import controllers.manual.reportdetails.routes.*
 import controllers.routes
 import models.*
-import models.SubmissionsConstants.CRS
+import models.SubmissionsConstants.{CRS, FATCA}
 import models.viewModels.manual.cpso.CPSOId
 import pages.*
 import pages.manual.cpso.{
@@ -133,7 +133,8 @@ class ManualSubmissionNavigator @Inject() () {
       handleDoYouWantToAddTaxResidentCountryPageNavigationForCPSO(ua, mode, cpsoId)
     case (pages.manual.cpso.RemoveTaxResidentCountryPage(cpsoId, reportId), mode, ua) =>
       controllers.manual.cpso.routes.TaxResidentCountriesController.onPageLoad(mode)
-
+    case (pages.manual.cpso.AccountHolderIdsPage(cpsoId, reportId), mode, ua) =>
+      handleAccountHolderPageNavigationForCPSO(ua, mode, cpsoId)
   }
 
   private def sponsorNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
@@ -266,6 +267,18 @@ class ManualSubmissionNavigator @Inject() () {
       case Some(true)  => controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(mode)
       case Some(false) => routes.UnderConstructionController.onPageLoad()
       case None        => routes.JourneyRecoveryController.onPageLoad()
+    }
+
+  private def handleAccountHolderPageNavigationForCPSO(userAnswers: UserAnswers, mode: Mode, cpsoId: CPSOId)(implicit reportId: ReportId) =
+    userAnswers.get(AccountHolderIdsPage(cpsoId, reportId)) match {
+      case Some(accountHolderIds) =>
+        reportId.regime match {
+          case CRS   => controllers.manual.cpso.routes.IndividualNameController.onPageLoad(mode)
+          case FATCA => controllers.manual.cpso.routes.IndividualOrOrganisationController.onPageLoad(mode)
+          case _     => routes.JourneyRecoveryController.onPageLoad()
+        }
+      case None => routes.JourneyRecoveryController.onPageLoad()
+
     }
 
 }

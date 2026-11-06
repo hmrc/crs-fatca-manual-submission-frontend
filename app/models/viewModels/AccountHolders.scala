@@ -16,11 +16,16 @@
 
 package models.viewModels
 
+import models.{ReportId, UserAnswers}
+import pages.manual.accountHolders.AccountHoldersPage
 import play.api.libs.json.*
+import uk.gov.hmrc.govukfrontend.views.Aliases.Text
+import uk.gov.hmrc.govukfrontend.views.viewmodels.checkboxes.CheckboxItem
+import viewmodels.govuk.all.CheckboxItemViewModel
 
 case class AccountHolders(currentAccountHolderId: Option[AccountHolderId], accountHolders: Map[String, AccountHolder])
 
-object AccountHolders:
+object AccountHolders {
   private val CurrentAccountHolderId = "currentAccountHolderId"
 
   implicit val format: OFormat[AccountHolders] = new OFormat[AccountHolders] {
@@ -61,3 +66,28 @@ object AccountHolders:
       }
     }
   }
+
+  def existingAccountHolders(userAnswers: UserAnswers)(implicit reportId: ReportId): Seq[(AccountHolderId, AccountHolder)] =
+    userAnswers
+      .get(AccountHoldersPage())
+      .map(
+        _.accountHolders
+          .map(
+            (accountHolderID, accountHolder) => (AccountHolderId(accountHolderID), accountHolder)
+          )
+          .toSeq
+      )
+      .getOrElse(Seq.empty)
+
+  def checkboxOptions(accountHolders: Seq[(AccountHolderId, AccountHolder)]): Seq[CheckboxItem] =
+    accountHolders.zipWithIndex.map {
+      case ((accountHolderId, accountHolder), index) =>
+        CheckboxItemViewModel(
+          content = Text(accountHolder.organisationName.getOrElse("")),
+          fieldId = "value",
+          index = index,
+          value = accountHolderId.value
+        ).copy(name = Some(s"value[$index]"))
+    }
+
+}
