@@ -1,0 +1,89 @@
+@*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import models.viewModels.AccountHolder
+@import models.viewModels.AccountHolderId
+@import viewmodels.govuk.ThreeQuartersMainContent
+@import views.html.manual.accountHolders.partials.contentForOneAccountWithoutAnAccountHolder
+@import views.html.manual.accountHolders.partials.AccountHolderTable
+@import views.html.manual.accountHolders.partials.ContentForManyAccountsWithoutAccountHolder
+@import models.SubmissionsConstants.{CRS, RegimeType}
+@this(
+    layout: templates.Layout,
+    formHelper: FormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    govukRadios: GovukRadios,
+    govukButton: GovukButton,
+    heading: components.Heading,
+    link: components.Link,
+    notificationBanner: views.html.components.SuccessNotificationBanner
+)
+
+@(form: Form[_], mode: Mode, fiName: String, accountHolders: Seq[(AccountHolderId, AccountHolder)], accountsWithOutAccountHolders: Seq[String], regime: RegimeType)(implicit request: Request[_], messages: Messages, flash: Flash)
+
+@layout(pageTitle = title(form, accountHolderCountHeaderOrTitleText(accountHolders.size)), mainContentLayout = Some(ThreeQuartersMainContent.apply _)) {
+
+    @formHelper(action = controllers.manual.accountHolders.routes.AccountHolderListController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+
+        @flash.get("account-holder-removed").map { ah =>
+            @notificationBanner(messages("accountHolderList.accountHolder.removed", ah))
+        }
+
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummaryViewModel(form))
+        }
+
+        @heading(accountHolderCountHeaderOrTitleText(accountHolders.size))
+        @if(accountHolders.isEmpty) {
+
+            @if(accountsWithOutAccountHolders.nonEmpty) {
+              @if(accountsWithOutAccountHolders.size == 1) {
+                  @contentForOneAccountWithoutAnAccountHolder(link, govukRadios, govukButton, heading)(accountsWithOutAccountHolders.headOption.getOrElse(""), fiName, regime.value, mode)
+              }else {
+                  @ContentForManyAccountsWithoutAccountHolder(link, govukRadios, govukButton, heading)(accountsWithOutAccountHolders, fiName, regime.value, mode)
+              }
+            }
+        }else {
+            @AccountHolderTable()(accountHolders, regime)
+
+            @if(accountsWithOutAccountHolders.size == 1) {
+                @contentForOneAccountWithoutAnAccountHolder(link, govukRadios, govukButton, heading)(accountsWithOutAccountHolders.headOption.getOrElse(""), fiName, regime.value, mode)
+            } else {
+                @if(accountsWithOutAccountHolders.size > 1) {
+                    @ContentForManyAccountsWithoutAccountHolder(link, govukRadios, govukButton, heading)(accountsWithOutAccountHolders, fiName, regime.value, mode)
+
+                } else {
+                    @govukRadios(
+                       RadiosViewModel.yesNo(
+                           field = form("value"),
+                            legend = LegendViewModel(messages("accountHolderList.radio.heading")).withCssClass("govuk-fieldset__legend--m")
+                       ))
+                    @govukButton(ButtonViewModel(messages("site.saveContinue")))
+                }
+            }
+
+
+        }
+
+    }
+}
+@accountHolderCountHeaderOrTitleText(count: Int)(implicit messages: Messages) = @{
+    count match {
+        case 0 => messages("accountHolderList.empty.heading")
+        case 1 => messages("accountHolderList.one.heading")
+        case n =>messages("accountHolderList.many.heading", n)
+    }
+}

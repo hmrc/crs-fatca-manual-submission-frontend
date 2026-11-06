@@ -16,22 +16,42 @@
 
 package models.viewModels
 
-import models.SubmissionsConstants.{CRS, RegimeType}
-import models.manual.accountHolders.{AccountHolderTypes, IndividualOrOrganisation}
+import cats.syntax.apply.*
+import models.SubmissionsConstants.{CRS, FATCA, RegimeType}
+import models.manual.TaxResidentInformation
+import models.manual.accountHolders.IndividualOrOrganisation.*
 import models.manual.accountHolders.OrganisationCrs.PassiveWithMultiplePersons
 import models.manual.accountHolders.OrganisationFatca.{OwnerDocumented, Passive}
+import models.manual.accountHolders.*
+import models.response.Address
+import models.{AddressNonUk, UkAddress}
 import play.api.libs.json.{Json, OFormat}
 
 case class AccountHolder(individualOrOrganisation: Option[IndividualOrOrganisation] = None,
                          organisationName: Option[String] = None,
-                         accountHolderType: Option[AccountHolderTypes] = None
+                         accountHolderType: Option[AccountHolderTypes] = None,
+                         individualName: Option[IndividualName] = None,
+                         areTheyBasedInTheUk: Option[Boolean] = None,
+                         addressNonUk: Option[AddressNonUk] = None,
+                         selfCertification: Option[SelfCertification] = None,
+                         taxResidentCountries: Option[Seq[TaxResidentInformation]] = None,
+                         ukAddressFromSelect: Option[Address] = None,
+                         ukAddressManual: Option[UkAddress] = None,
+                         individualHavePlaceOfBirth: Option[Boolean] = None,
+                         individualHaveDateOfBirth: Option[Boolean] = None,
+                         individualDateOfBirth: Option[IndividualDateOfBirth] = None,
+                         individualPlaceOfBirth: Option[IndividualPlaceOfBirth] = None,
+                         account: Option[Seq[String]] = None,
+                         provideEquityInterestType: Option[Boolean] = None,
+                         equityInterestType: Option[EquityInterestTypes] = None,
+                         checkEquityInterestTypeRequired: Option[Boolean] = None // crs only
 ) {
 
   def canHaveCPSO() =
     individualOrOrganisation match {
-      case None                                      => false
-      case Some(IndividualOrOrganisation.Individual) => false
-      case Some(IndividualOrOrganisation.Organisation) =>
+      case None             => false
+      case Some(Individual) => false
+      case Some(Organisation) =>
         accountHolderType
           .map(_.toString)
           .exists(
@@ -39,13 +59,226 @@ case class AccountHolder(individualOrOrganisation: Option[IndividualOrOrganisati
           )
     }
 
+  def getName(): String =
+    organisationName
+      .getOrElse(individualName.map(_.fullName).getOrElse(""))
+
   def cpsoIsMandatory(regimeType: RegimeType): Boolean =
     individualOrOrganisation match {
-      case None                                      => false
-      case Some(IndividualOrOrganisation.Individual) => false
-      case Some(IndividualOrOrganisation.Organisation) =>
+      case None             => false
+      case Some(Individual) => false
+      case Some(Organisation) =>
         regimeType == CRS && accountHolderType.map(_.toString).contains(PassiveWithMultiplePersons.toString)
     }
+
+  def isComplete(regimeType: RegimeType): Boolean =
+    individualOrOrganisation match {
+      case Some(Individual) =>
+        regimeType match {
+          case FATCA =>
+            validateFatcaIndividualIsComplete()
+          case CRS =>
+            validateCRSIndividualIsComplete()
+          case _ => false
+        }
+      case Some(Organisation) =>
+        regimeType match {
+          case FATCA =>
+            validateFatcaOrgIsComplete()
+          case CRS =>
+            validateCRSOrgIsComplete()
+          case _ => false
+        }
+      case None => false
+    }
+
+  private def getCheckEquityInterestTypeRequired(): Boolean =
+    checkEquityInterestTypeRequired.getOrElse(false)
+
+  private def validateFatcaOrgIsComplete() = {
+
+    val bareMinimum = (individualOrOrganisation, organisationName, accountHolderType, areTheyBasedInTheUk, taxResidentCountries)
+    (areTheyBasedInTheUk, areTheyBasedInTheUk.contains(true)) match {
+      case (None, _) => false
+      case (Some(_), false) =>
+        (bareMinimum :* addressNonUk)
+          .mapN {
+            (_, _, _, _, taxResCountries, _) =>
+              taxResidentCountriesCompleteForFatca(taxResCountries)
+          }
+          .getOrElse(false)
+      case (Some(_), true) =>
+        val isManualAddressEntryValid = (bareMinimum :* ukAddressManual)
+          .mapN {
+            (_, _, _, _, taxResCountries, _) =>
+              taxResidentCountriesCompleteForFatca(taxResCountries)
+          }
+          .getOrElse(false)
+
+        val isSelectAddressEntryValid = (bareMinimum :* ukAddressFromSelect)
+          .mapN {
+            (_, _, _, _, taxResCountries, _) =>
+              taxResidentCountriesCompleteForFatca(taxResCountries)
+          }
+          .getOrElse(false)
+
+        isManualAddressEntryValid || isSelectAddressEntryValid
+    }
+  }
+
+  private def validateCRSOrgIsComplete(): Boolean = {
+    val bareMinimum = (individualOrOrganisation, organisationName, accountHolderType, areTheyBasedInTheUk, taxResidentCountries, selfCertification)
+
+    (areTheyBasedInTheUk, areTheyBasedInTheUk.contains(true)) match {
+      case (None, _) =>
+        false
+
+      case (Some(_), false) =>
+        val isAddressEntryValid = (bareMinimum :* addressNonUk)
+          .mapN {
+            (_, _, _, _, txResList, _, _) =>
+              taxResidentCountriesCompleteForCRS(txResList)
+          }
+          .getOrElse(false)
+
+        isAddressEntryValid && isEquityInterestTypeInformationComplete()
+
+      case (Some(_), true) =>
+        val isManualAddressEntryValid = (bareMinimum :* ukAddressManual)
+          .mapN {
+            (_, _, _, _, txResList, _, _) =>
+              taxResidentCountriesCompleteForCRS(txResList)
+          }
+          .getOrElse(false)
+
+        val isSelectAddressEntryValid = (bareMinimum :* ukAddressFromSelect)
+          .mapN {
+            (_, _, _, _, txResList, _, _) =>
+              taxResidentCountriesCompleteForCRS(txResList)
+          }
+          .getOrElse(false)
+
+        (isManualAddressEntryValid || isSelectAddressEntryValid) && isEquityInterestTypeInformationComplete()
+    }
+  }
+
+  private def validateCRSIndividualIsComplete(): Boolean = {
+    val bareMinimumNonUk =
+      (individualOrOrganisation,
+       individualName,
+       individualHavePlaceOfBirth,
+       individualHaveDateOfBirth,
+       areTheyBasedInTheUk,
+       taxResidentCountries,
+       addressNonUk,
+       selfCertification
+      )
+
+    val bareMinimum =
+      (individualOrOrganisation,
+       individualName,
+       individualHavePlaceOfBirth,
+       individualHaveDateOfBirth,
+       areTheyBasedInTheUk,
+       taxResidentCountries,
+       selfCertification
+      )
+
+    (areTheyBasedInTheUk, areTheyBasedInTheUk.contains(true)) match {
+      case (None, _) =>
+        false
+
+      case (Some(_), false) =>
+        val isAccountHolderDetailsValid = bareMinimumNonUk
+          .mapN {
+            (_, _, _, _, _, txResList, _, _) =>
+              taxResidentCountriesCompleteForCRS(txResList)
+          }
+          .getOrElse(false)
+        isAccountHolderDetailsValid && isIndividualBirthDetailsComplete() && isEquityInterestTypeInformationComplete()
+
+      case (Some(_), true) =>
+        val isManualAddressEntryValid = (bareMinimum :* ukAddressManual)
+          .mapN {
+            (_, _, _, _, _, txResList, _, _) =>
+              taxResidentCountriesCompleteForCRS(txResList)
+          }
+          .getOrElse(false)
+
+        val isSelectAddressEntryValid = (bareMinimum :* ukAddressFromSelect)
+          .mapN {
+            (_, _, _, _, _, txResList, _, _) =>
+              taxResidentCountriesCompleteForCRS(txResList)
+          }
+          .getOrElse(false)
+
+        (isManualAddressEntryValid || isSelectAddressEntryValid) && isIndividualBirthDetailsComplete() && isEquityInterestTypeInformationComplete()
+    }
+  }
+
+  private def taxResidentCountriesCompleteForFatca(taxResCountries: Seq[TaxResidentInformation]): Boolean =
+    taxResCountries.nonEmpty && taxResCountries.forall(
+      tx => tx.taxIdentifierNumber.isDefined
+    )
+
+  private def taxResidentCountriesCompleteForCRS(taxResCountries: Seq[TaxResidentInformation]): Boolean =
+    taxResCountries.nonEmpty && taxResCountries.forall {
+      case TaxResidentInformation(_, Some(true), taxIdentifiers) => taxIdentifiers.isDefined
+      case TaxResidentInformation(_, Some(false), _)             => true
+      case _                                                     => false
+    }
+
+  private def validateFatcaIndividualIsComplete(): Boolean = {
+    val bareMinimumNonUk =
+      (individualOrOrganisation, individualName, individualHavePlaceOfBirth, individualHaveDateOfBirth, areTheyBasedInTheUk, taxResidentCountries, addressNonUk)
+
+    val bareMinimum =
+      (individualOrOrganisation, individualName, individualHavePlaceOfBirth, individualHaveDateOfBirth, areTheyBasedInTheUk, taxResidentCountries)
+
+    (areTheyBasedInTheUk, areTheyBasedInTheUk.contains(true)) match {
+      case (None, _) =>
+        false
+
+      case (Some(_), false) =>
+        val isAccountHolderDetailsValid = bareMinimumNonUk
+          .mapN {
+            (_, _, _, _, _, taxResCountries, _) =>
+              taxResidentCountriesCompleteForFatca(taxResCountries)
+          }
+          .getOrElse(false)
+
+        isAccountHolderDetailsValid && isIndividualBirthDetailsComplete()
+
+      case (Some(_), true) =>
+        val isManualAddressEntryValid = (bareMinimum :* ukAddressManual)
+          .mapN {
+            (_, _, _, _, _, taxResCountries, _) =>
+              taxResidentCountriesCompleteForFatca(taxResCountries)
+          }
+          .getOrElse(false)
+
+        val isSelectAddressEntryValid = (bareMinimum :* ukAddressFromSelect)
+          .mapN {
+            (_, _, _, _, _, taxResCountries, _) =>
+              taxResidentCountriesCompleteForFatca(taxResCountries)
+          }
+          .getOrElse(false)
+
+        (isManualAddressEntryValid || isSelectAddressEntryValid) && isIndividualBirthDetailsComplete()
+    }
+  }
+
+  private def isEquityInterestTypeInformationComplete(): Boolean = {
+    val isProvideEquityInterestTypeAnswered = !getCheckEquityInterestTypeRequired() || provideEquityInterestType.isDefined
+    val isEquityInterestTypeProvided        = !provideEquityInterestType.contains(true) || equityInterestType.isDefined
+
+    isProvideEquityInterestTypeAnswered && isEquityInterestTypeProvided
+  }
+
+  private def isIndividualBirthDetailsComplete(): Boolean =
+    (!individualHavePlaceOfBirth.contains(true) || individualPlaceOfBirth.isDefined) &&
+      (!individualHaveDateOfBirth.contains(true) || individualDateOfBirth.isDefined)
+
 }
 
 object AccountHolder {
