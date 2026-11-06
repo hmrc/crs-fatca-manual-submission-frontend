@@ -146,221 +146,76 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
 
     "fatca regime" - {
       "For an organization" - {
+        val baseAccountHolder = AccountHolder(
+          individualOrOrganisation = Some(Organisation),
+          organisationName = Some("Test Company"),
+          accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
+          areTheyBasedInTheUk = Some(false),
+          taxResidentCountries = Some(Seq(taxResidentInformation)),
+          addressNonUk = Some(addressNonUk)
+        )
+
         "is incomplete if missing individualOrOrganisation" in {
-          val accountHolder = AccountHolder(
-            individualOrOrganisation = None,
-            organisationName = Some("Test Company"),
-            accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
-            areTheyBasedInTheUk = Some(false),
-            taxResidentCountries = Some(Seq(taxResidentInformation)),
-            addressNonUk = Some(addressNonUk)
-          )
+          val accountHolder = baseAccountHolder.copy(individualOrOrganisation = None)
 
           accountHolder.isComplete(CRS) mustBe false
           accountHolder.isComplete(FATCA) mustBe false
         }
 
         "returns isCompleted for a non-uk account holder that has all the required properties populated" in {
-          val accountHolder = AccountHolder(
-            individualOrOrganisation = Some(Organisation),
-            organisationName = Some("Test Company"),
-            accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
-            areTheyBasedInTheUk = Some(false),
-            taxResidentCountries = Some(Seq(taxResidentInformation)),
-            addressNonUk = Some(addressNonUk)
-          )
-
-          accountHolder.isComplete(FATCA) mustBe true
+          baseAccountHolder.isComplete(FATCA) mustBe true
         }
 
-        "returns false for non-uk account holder if any of expected fields are missing" in {
-          Seq(
-            AccountHolder(
-              individualOrOrganisation = Some(Organisation),
-              organisationName = Some("Test Company"),
-              accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
-              areTheyBasedInTheUk = Some(false),
-              taxResidentCountries = Some(Seq(taxResidentInformation)),
-              addressNonUk = None
-            ),
-            AccountHolder(
-              individualOrOrganisation = Some(Organisation),
-              organisationName = Some("Test Company"),
-              accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
-              areTheyBasedInTheUk = Some(false),
-              taxResidentCountries = None,
-              addressNonUk = Some(addressNonUk)
-            ),
-            AccountHolder(
-              individualOrOrganisation = Some(Organisation),
-              organisationName = Some("Test Company"),
-              accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
-              areTheyBasedInTheUk = None,
-              taxResidentCountries = Some(Seq(taxResidentInformation)),
-              addressNonUk = Some(addressNonUk)
-            ),
-            AccountHolder(
-              individualOrOrganisation = Some(Organisation),
-              organisationName = Some("Test Company"),
-              accountHolderType = None,
-              areTheyBasedInTheUk = Some(false),
-              taxResidentCountries = Some(Seq(taxResidentInformation)),
-              addressNonUk = Some(addressNonUk)
-            ),
-            AccountHolder(
-              individualOrOrganisation = Some(Organisation),
-              organisationName = None,
-              accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
-              areTheyBasedInTheUk = Some(false),
-              taxResidentCountries = Some(Seq(taxResidentInformation)),
-              addressNonUk = Some(addressNonUk)
-            ),
-            AccountHolder(
-              individualOrOrganisation = None,
-              organisationName = Some("Test Company"),
-              accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
-              areTheyBasedInTheUk = Some(false),
-              taxResidentCountries = Some(Seq(taxResidentInformation)),
-              addressNonUk = Some(addressNonUk)
-            )
+        "returns false for non-uk account holder if any of expected fields are missing" - {
+          mustBeIncomplete(FATCA)(
+            "the non-uk address is missing"                         -> baseAccountHolder.copy(addressNonUk = None),
+            "the tax resident countries are missing"                -> baseAccountHolder.copy(taxResidentCountries = None),
+            "the uk residency question is unanswered"               -> baseAccountHolder.copy(areTheyBasedInTheUk = None),
+            "the account holder type is missing"                    -> baseAccountHolder.copy(accountHolderType = None),
+            "the organisation name is missing"                      -> baseAccountHolder.copy(organisationName = None),
+            "the individual or organisation question is unanswered" -> baseAccountHolder.copy(individualOrOrganisation = None)
           )
-            .foreach(
-              accountHolder => accountHolder.isComplete(FATCA) mustBe false
-            )
         }
 
         "returns isCompleted for a uk account holder that has all the required properties populated" in {
-          val accountHolder = AccountHolder(
-            individualOrOrganisation = Some(Organisation),
-            organisationName = Some("Test Company"),
-            accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
-            areTheyBasedInTheUk = Some(true),
-            taxResidentCountries = Some(Seq(taxResidentInformation)),
-            ukAddressManual = Some(ukAddressManual)
-          )
+          baseAccountHolder
+            .copy(areTheyBasedInTheUk = Some(true), addressNonUk = None, ukAddressManual = Some(ukAddressManual))
+            .isComplete(FATCA) mustBe true
 
-          accountHolder.isComplete(FATCA) mustBe true
-
-          AccountHolder(
-            individualOrOrganisation = Some(Organisation),
-            organisationName = Some("Test Company"),
-            accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
-            areTheyBasedInTheUk = Some(true),
-            taxResidentCountries = Some(Seq(taxResidentInformation)),
-            ukAddressFromSelect = Some(ukAddressSelect)
-          ).isComplete(FATCA) mustBe true
+          baseAccountHolder
+            .copy(areTheyBasedInTheUk = Some(true), addressNonUk = None, ukAddressFromSelect = Some(ukAddressSelect))
+            .isComplete(FATCA) mustBe true
         }
 
-        "returns false for uk account holder if any of expected fields are missing" in {
-          Seq(
-            AccountHolder(
-              individualOrOrganisation = Some(Organisation),
-              organisationName = Some("Test Company"),
-              accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
-              areTheyBasedInTheUk = Some(true),
-              taxResidentCountries = Some(Seq(taxResidentInformation)),
-              ukAddressManual = None
-            ),
-            AccountHolder(
-              individualOrOrganisation = Some(Organisation),
-              organisationName = Some("Test Company"),
-              accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
-              areTheyBasedInTheUk = Some(true),
-              taxResidentCountries = None,
-              ukAddressManual = Some(ukAddressManual)
-            ),
-            AccountHolder(
-              individualOrOrganisation = Some(Organisation),
-              organisationName = Some("Test Company"),
-              accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
-              areTheyBasedInTheUk = None,
-              taxResidentCountries = Some(Seq(taxResidentInformation)),
-              ukAddressManual = Some(ukAddressManual)
-            ),
-            AccountHolder(
-              individualOrOrganisation = Some(Organisation),
-              organisationName = Some("Test Company"),
-              accountHolderType = None,
-              areTheyBasedInTheUk = Some(true),
-              taxResidentCountries = Some(Seq(taxResidentInformation)),
-              addressNonUk = Some(addressNonUk)
-            ),
-            AccountHolder(
-              individualOrOrganisation = Some(Organisation),
-              organisationName = None,
-              accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
-              areTheyBasedInTheUk = Some(true),
-              taxResidentCountries = Some(Seq(taxResidentInformation)),
-              ukAddressManual = Some(ukAddressManual)
-            ),
-            AccountHolder(
-              individualOrOrganisation = None,
-              organisationName = Some("Test Company"),
-              accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
-              areTheyBasedInTheUk = Some(true),
-              taxResidentCountries = Some(Seq(taxResidentInformation)),
-              ukAddressManual = Some(ukAddressManual)
-            )
-          )
-            .foreach(
-              accountHolder => accountHolder.isComplete(FATCA) mustBe false
-            )
+        "returns false for uk account holder if any of expected fields are missing" - {
+          val manualAccountHolder =
+            baseAccountHolder.copy(areTheyBasedInTheUk = Some(true), addressNonUk = None, ukAddressManual = Some(ukAddressManual))
 
-          Seq(
-            AccountHolder(
-              individualOrOrganisation = Some(Organisation),
-              organisationName = Some("Test Company"),
-              accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
-              areTheyBasedInTheUk = Some(true),
-              taxResidentCountries = Some(Seq(taxResidentInformation)),
-              ukAddressFromSelect = None
-            ),
-            AccountHolder(
-              individualOrOrganisation = Some(Organisation),
-              organisationName = Some("Test Company"),
-              accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
-              areTheyBasedInTheUk = Some(true),
-              taxResidentCountries = None,
-              ukAddressFromSelect = Some(ukAddressSelect)
-            ),
-            AccountHolder(
-              individualOrOrganisation = Some(Organisation),
-              organisationName = Some("Test Company"),
-              accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
-              areTheyBasedInTheUk = None,
-              taxResidentCountries = Some(Seq(taxResidentInformation)),
-              ukAddressFromSelect = Some(ukAddressSelect)
-            ),
-            AccountHolder(
-              individualOrOrganisation = Some(Organisation),
-              organisationName = Some("Test Company"),
-              accountHolderType = None,
-              areTheyBasedInTheUk = Some(true),
-              taxResidentCountries = Some(Seq(taxResidentInformation)),
-              ukAddressFromSelect = Some(ukAddressSelect)
-            ),
-            AccountHolder(
-              individualOrOrganisation = Some(Organisation),
-              organisationName = None,
-              accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
-              areTheyBasedInTheUk = Some(true),
-              taxResidentCountries = Some(Seq(taxResidentInformation)),
-              ukAddressFromSelect = Some(ukAddressSelect)
-            ),
-            AccountHolder(
-              individualOrOrganisation = None,
-              organisationName = Some("Test Company"),
-              accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
-              areTheyBasedInTheUk = Some(true),
-              taxResidentCountries = Some(Seq(taxResidentInformation)),
-              ukAddressFromSelect = Some(ukAddressSelect)
+          val selectAccountHolder =
+            baseAccountHolder.copy(areTheyBasedInTheUk = Some(true), addressNonUk = None, ukAddressFromSelect = Some(ukAddressSelect))
+
+          "when the uk address is entered manually" - {
+            mustBeIncomplete(FATCA)(
+              "the uk address is missing"                             -> manualAccountHolder.copy(ukAddressManual = None),
+              "the tax resident countries are missing"                -> manualAccountHolder.copy(taxResidentCountries = None),
+              "the uk residency question is unanswered"               -> manualAccountHolder.copy(areTheyBasedInTheUk = None),
+              "the account holder type is missing"                    -> manualAccountHolder.copy(accountHolderType = None),
+              "the organisation name is missing"                      -> manualAccountHolder.copy(organisationName = None),
+              "the individual or organisation question is unanswered" -> manualAccountHolder.copy(individualOrOrganisation = None)
             )
-          )
-            .foreach(
-              accountHolder => accountHolder.isComplete(FATCA) mustBe false
+          }
+
+          "when the uk address is chosen from the lookup" - {
+            mustBeIncomplete(FATCA)(
+              "the uk address is missing"                             -> selectAccountHolder.copy(ukAddressFromSelect = None),
+              "the tax resident countries are missing"                -> selectAccountHolder.copy(taxResidentCountries = None),
+              "the uk residency question is unanswered"               -> selectAccountHolder.copy(areTheyBasedInTheUk = None),
+              "the account holder type is missing"                    -> selectAccountHolder.copy(accountHolderType = None),
+              "the organisation name is missing"                      -> selectAccountHolder.copy(organisationName = None),
+              "the individual or organisation question is unanswered" -> selectAccountHolder.copy(individualOrOrganisation = None)
             )
+          }
         }
-
       }
 
       "For an Individual" - {
@@ -419,27 +274,22 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
           }
         }
 
-        "returns false for non-uk account holder if any of expected fields are missing" in {
-          Seq(
-            "the individual or organisation question is unanswered"         -> nonUkAccountHolder.copy(individualOrOrganisation = None),
-            "the individual name is missing"                                -> nonUkAccountHolder.copy(individualName = None),
-            "the place of birth question is unanswered"                     -> nonUkAccountHolder.copy(individualHavePlaceOfBirth = None),
-            "the date of birth question is unanswered"                      -> nonUkAccountHolder.copy(individualHaveDateOfBirth = None),
-            "the place of birth is missing when the account holder has one" -> nonUkAccountHolder.copy(individualPlaceOfBirth = None),
-            "the date of birth is missing when the account holder has one"  -> nonUkAccountHolder.copy(individualDateOfBirth = None),
-            "the uk residency question is unanswered"                       -> nonUkAccountHolder.copy(areTheyBasedInTheUk = None),
-            "the tax resident countries are missing"                        -> nonUkAccountHolder.copy(taxResidentCountries = None),
-            "the non-uk address is missing"                                 -> nonUkAccountHolder.copy(addressNonUk = None),
+        "returns false for non-uk account holder if any of expected fields are missing" - {
+          mustBeIncomplete(FATCA)(
+            "the individual or organisation question is unanswered" -> nonUkAccountHolder.copy(individualOrOrganisation = None),
+            "the individual name is missing"                        -> nonUkAccountHolder.copy(individualName = None),
+            "the place of birth question is unanswered"             -> nonUkAccountHolder.copy(individualHavePlaceOfBirth = None),
+            "the date of birth question is unanswered"              -> nonUkAccountHolder.copy(individualHaveDateOfBirth = None),
+            "a place of birth is declared but missing"              -> nonUkAccountHolder.copy(individualPlaceOfBirth = None),
+            "a date of birth is declared but missing"               -> nonUkAccountHolder.copy(individualDateOfBirth = None),
+            "the uk residency question is unanswered"               -> nonUkAccountHolder.copy(areTheyBasedInTheUk = None),
+            "the tax resident countries are missing"                -> nonUkAccountHolder.copy(taxResidentCountries = None),
+            "the non-uk address is missing"                         -> nonUkAccountHolder.copy(addressNonUk = None),
             "a uk address is provided instead of a non-uk address" -> nonUkAccountHolder.copy(
               addressNonUk = None,
               ukAddressManual = Some(ukAddressManual)
             )
-          ).foreach {
-            case (scenario, accountHolder) =>
-              withClue(s"with $scenario: ") {
-                accountHolder.isComplete(FATCA) mustBe false
-              }
-          }
+          )
         }
 
         "returns isCompleted for a uk account holder that has all the required properties populated" in {
@@ -465,17 +315,17 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
           }
         }
 
-        "returns false for uk account holder if any of expected fields are missing" in {
-          Seq(
-            "the individual or organisation question is unanswered"         -> ukAccountHolder.copy(individualOrOrganisation = None),
-            "the individual name is missing"                                -> ukAccountHolder.copy(individualName = None),
-            "the place of birth question is unanswered"                     -> ukAccountHolder.copy(individualHavePlaceOfBirth = None),
-            "the date of birth question is unanswered"                      -> ukAccountHolder.copy(individualHaveDateOfBirth = None),
-            "the place of birth is missing when the account holder has one" -> ukAccountHolder.copy(individualPlaceOfBirth = None),
-            "the date of birth is missing when the account holder has one"  -> ukAccountHolder.copy(individualDateOfBirth = None),
-            "the uk residency question is unanswered"                       -> ukAccountHolder.copy(areTheyBasedInTheUk = None),
-            "the tax resident countries are missing"                        -> ukAccountHolder.copy(taxResidentCountries = None),
-            "the uk address is missing"                                     -> ukAccountHolder.copy(ukAddressManual = None),
+        "returns false for uk account holder if any of expected fields are missing" - {
+          mustBeIncomplete(FATCA)(
+            "the individual or organisation question is unanswered" -> ukAccountHolder.copy(individualOrOrganisation = None),
+            "the individual name is missing"                        -> ukAccountHolder.copy(individualName = None),
+            "the place of birth question is unanswered"             -> ukAccountHolder.copy(individualHavePlaceOfBirth = None),
+            "the date of birth question is unanswered"              -> ukAccountHolder.copy(individualHaveDateOfBirth = None),
+            "a place of birth is declared but missing"              -> ukAccountHolder.copy(individualPlaceOfBirth = None),
+            "a date of birth is declared but missing"               -> ukAccountHolder.copy(individualDateOfBirth = None),
+            "the uk residency question is unanswered"               -> ukAccountHolder.copy(areTheyBasedInTheUk = None),
+            "the tax resident countries are missing"                -> ukAccountHolder.copy(taxResidentCountries = None),
+            "the uk address is missing"                             -> ukAccountHolder.copy(ukAddressManual = None),
             "a non-uk address is provided instead of a uk address" -> ukAccountHolder.copy(
               ukAddressManual = None,
               addressNonUk = Some(addressNonUk)
@@ -483,12 +333,7 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
             "a uk address is provided for an account holder based outside the uk" -> ukAccountHolder.copy(
               areTheyBasedInTheUk = Some(false)
             )
-          ).foreach {
-            case (scenario, accountHolder) =>
-              withClue(s"with $scenario: ") {
-                accountHolder.isComplete(FATCA) mustBe false
-              }
-          }
+          )
         }
       }
     }
@@ -540,8 +385,8 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
           }
         }
 
-        "returns false for non-uk account holder if any of expected fields are missing" in {
-          Seq(
+        "returns false for non-uk account holder if any of expected fields are missing" - {
+          mustBeIncomplete(CRS)(
             "the individual or organisation question is unanswered" -> nonUkAccountHolder.copy(individualOrOrganisation = None),
             "the organisation name is missing"                      -> nonUkAccountHolder.copy(organisationName = None),
             "the account holder type is missing"                    -> nonUkAccountHolder.copy(accountHolderType = None),
@@ -553,12 +398,7 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
               addressNonUk = None,
               ukAddressManual = Some(ukAddressManual)
             )
-          ).foreach {
-            case (scenario, accountHolder) =>
-              withClue(s"with $scenario: ") {
-                accountHolder.isComplete(CRS) mustBe false
-              }
-          }
+          )
         }
 
         "returns isCompleted for a uk account holder that has all the required properties populated" in {
@@ -590,8 +430,8 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
           }
         }
 
-        "returns false for uk account holder if any of expected fields are missing" in {
-          Seq(
+        "returns false for uk account holder if any of expected fields are missing" - {
+          mustBeIncomplete(CRS)(
             "the individual or organisation question is unanswered" -> ukAccountHolder.copy(individualOrOrganisation = None),
             "the organisation name is missing"                      -> ukAccountHolder.copy(organisationName = None),
             "the account holder type is missing"                    -> ukAccountHolder.copy(accountHolderType = None),
@@ -606,12 +446,7 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
             "a uk address is provided for an account holder based outside the uk" -> ukAccountHolder.copy(
               areTheyBasedInTheUk = Some(false)
             )
-          ).foreach {
-            case (scenario, accountHolder) =>
-              withClue(s"with $scenario: ") {
-                accountHolder.isComplete(CRS) mustBe false
-              }
-          }
+          )
         }
 
         "returns false when the equity interest type is required but the account holder has not said whether they provide one" in {
@@ -706,28 +541,23 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
           }
         }
 
-        "returns false for non-uk account holder if any of expected fields are missing" in {
-          Seq(
-            "the individual or organisation question is unanswered"         -> nonUkAccountHolder.copy(individualOrOrganisation = None),
-            "the individual name is missing"                                -> nonUkAccountHolder.copy(individualName = None),
-            "the place of birth question is unanswered"                     -> nonUkAccountHolder.copy(individualHavePlaceOfBirth = None),
-            "the date of birth question is unanswered"                      -> nonUkAccountHolder.copy(individualHaveDateOfBirth = None),
-            "the place of birth is missing when the account holder has one" -> nonUkAccountHolder.copy(individualPlaceOfBirth = None),
-            "the date of birth is missing when the account holder has one"  -> nonUkAccountHolder.copy(individualDateOfBirth = None),
-            "the self certification is missing"                             -> nonUkAccountHolder.copy(selfCertification = None),
-            "the tax resident countries are missing"                        -> nonUkAccountHolder.copy(taxResidentCountries = None),
-            "the uk residency question is unanswered"                       -> nonUkAccountHolder.copy(areTheyBasedInTheUk = None),
-            "the non-uk address is missing"                                 -> nonUkAccountHolder.copy(addressNonUk = None),
+        "returns false for non-uk account holder if any of expected fields are missing" - {
+          mustBeIncomplete(CRS)(
+            "the individual or organisation question is unanswered" -> nonUkAccountHolder.copy(individualOrOrganisation = None),
+            "the individual name is missing"                        -> nonUkAccountHolder.copy(individualName = None),
+            "the place of birth question is unanswered"             -> nonUkAccountHolder.copy(individualHavePlaceOfBirth = None),
+            "the date of birth question is unanswered"              -> nonUkAccountHolder.copy(individualHaveDateOfBirth = None),
+            "a place of birth is declared but missing"              -> nonUkAccountHolder.copy(individualPlaceOfBirth = None),
+            "a date of birth is declared but missing"               -> nonUkAccountHolder.copy(individualDateOfBirth = None),
+            "the self certification is missing"                     -> nonUkAccountHolder.copy(selfCertification = None),
+            "the tax resident countries are missing"                -> nonUkAccountHolder.copy(taxResidentCountries = None),
+            "the uk residency question is unanswered"               -> nonUkAccountHolder.copy(areTheyBasedInTheUk = None),
+            "the non-uk address is missing"                         -> nonUkAccountHolder.copy(addressNonUk = None),
             "a uk address is provided instead of a non-uk address" -> nonUkAccountHolder.copy(
               addressNonUk = None,
               ukAddressManual = Some(ukAddressManual)
             )
-          ).foreach {
-            case (scenario, accountHolder) =>
-              withClue(s"with $scenario: ") {
-                accountHolder.isComplete(CRS) mustBe false
-              }
-          }
+          )
         }
 
         "returns isCompleted for a uk account holder that has all the required properties populated" in {
@@ -765,18 +595,18 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
           }
         }
 
-        "returns false for uk account holder if any of expected fields are missing" in {
-          Seq(
-            "the individual or organisation question is unanswered"         -> ukAccountHolder.copy(individualOrOrganisation = None),
-            "the individual name is missing"                                -> ukAccountHolder.copy(individualName = None),
-            "the place of birth question is unanswered"                     -> ukAccountHolder.copy(individualHavePlaceOfBirth = None),
-            "the date of birth question is unanswered"                      -> ukAccountHolder.copy(individualHaveDateOfBirth = None),
-            "the place of birth is missing when the account holder has one" -> ukAccountHolder.copy(individualPlaceOfBirth = None),
-            "the date of birth is missing when the account holder has one"  -> ukAccountHolder.copy(individualDateOfBirth = None),
-            "the self certification is missing"                             -> ukAccountHolder.copy(selfCertification = None),
-            "the tax resident countries are missing"                        -> ukAccountHolder.copy(taxResidentCountries = None),
-            "the uk residency question is unanswered"                       -> ukAccountHolder.copy(areTheyBasedInTheUk = None),
-            "the uk address is missing"                                     -> ukAccountHolder.copy(ukAddressManual = None),
+        "returns false for uk account holder if any of expected fields are missing" - {
+          mustBeIncomplete(CRS)(
+            "the individual or organisation question is unanswered" -> ukAccountHolder.copy(individualOrOrganisation = None),
+            "the individual name is missing"                        -> ukAccountHolder.copy(individualName = None),
+            "the place of birth question is unanswered"             -> ukAccountHolder.copy(individualHavePlaceOfBirth = None),
+            "the date of birth question is unanswered"              -> ukAccountHolder.copy(individualHaveDateOfBirth = None),
+            "a place of birth is declared but missing"              -> ukAccountHolder.copy(individualPlaceOfBirth = None),
+            "a date of birth is declared but missing"               -> ukAccountHolder.copy(individualDateOfBirth = None),
+            "the self certification is missing"                     -> ukAccountHolder.copy(selfCertification = None),
+            "the tax resident countries are missing"                -> ukAccountHolder.copy(taxResidentCountries = None),
+            "the uk residency question is unanswered"               -> ukAccountHolder.copy(areTheyBasedInTheUk = None),
+            "the uk address is missing"                             -> ukAccountHolder.copy(ukAddressManual = None),
             "a non-uk address is provided instead of a uk address" -> ukAccountHolder.copy(
               ukAddressManual = None,
               addressNonUk = Some(addressNonUk)
@@ -784,12 +614,7 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
             "a uk address is provided for an account holder based outside the uk" -> ukAccountHolder.copy(
               areTheyBasedInTheUk = Some(false)
             )
-          ).foreach {
-            case (scenario, accountHolder) =>
-              withClue(s"with $scenario: ") {
-                accountHolder.isComplete(CRS) mustBe false
-              }
-          }
+          )
         }
 
         "returns false when the equity interest type is required but the account holder has not said whether they provide one" in {
@@ -818,4 +643,13 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
       }
     }
   }
+
+  private def mustBeIncomplete(regime: RegimeType)(scenarios: (String, AccountHolder)*): Unit =
+    scenarios.foreach {
+      case (scenario, accountHolder) =>
+        s"when $scenario" in {
+          accountHolder.isComplete(regime) mustBe false
+        }
+    }
+
 }
