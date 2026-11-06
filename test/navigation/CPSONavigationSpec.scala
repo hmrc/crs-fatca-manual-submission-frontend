@@ -18,16 +18,18 @@ package navigation
 
 import base.SpecBase
 import models.*
-import models.SubmissionsConstants.{CRS, FATCA}
+import models.SubmissionsConstants.{CRFA, CRS, FATCA}
 import models.manual.account.PaymentType
 import models.manual.account.PaymentType.*
 import models.manual.accountHolders.*
 import models.manual.cpso.CpsoSelfCertification.Yes
 import models.manual.cpso.IndividualOrOrganisation
 import models.response.{Address, AddressLookup, Country}
+import models.viewModels.AccountHolderId
 import models.viewModels.manual.cpso.CPSOId
 import pages.*
 import pages.manual.cpso.{
+  AccountHolderIdsPage,
   AddressLookupPage as AddressLookupPageForCpso,
   AddressUkPage,
   CPSOAddressNonUkPage,
@@ -559,6 +561,47 @@ class CPSONavigationSpec extends SpecBase {
           NormalMode,
           ua
         ) mustBe
+          controllers.routes.JourneyRecoveryController.onPageLoad()
+      }
+    }
+
+    "AccountHolderPage" - {
+      val accountHolderIds = Set(
+        AccountHolderId("1"),
+        AccountHolderId("2"),
+        AccountHolderId("3")
+      )
+
+      "must go to individual Name page when regime is crs and accountHolderIds are present" in {
+        val ua = UserAnswers("id")
+          .withPage(AccountHolderIdsPage(currentCPSOId, reportId), accountHolderIds)
+
+        navigator.nextPage(AccountHolderIdsPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+          controllers.manual.cpso.routes.IndividualNameController.onPageLoad(NormalMode)
+      }
+
+      "must go to individual Or organisation page when regime is fatca and accountHolderIds are present" in {
+        val fatcaReportId = reportId.copy(regime = FATCA)
+        val ua = UserAnswers("id")
+          .withPage(AccountHolderIdsPage(currentCPSOId, fatcaReportId), accountHolderIds)
+
+        navigator.nextPage(AccountHolderIdsPage(currentCPSOId, fatcaReportId), NormalMode, ua)(fatcaReportId) mustBe
+          controllers.manual.cpso.routes.IndividualOrOrganisationController.onPageLoad(NormalMode)
+      }
+
+      "must go to journey recovery for non crs or fatca regime" in {
+        val carfReportId = reportId.copy(regime = CRFA)
+        val ua = UserAnswers("id")
+          .withPage(AccountHolderIdsPage(currentCPSOId, carfReportId), accountHolderIds)
+
+        navigator.nextPage(AccountHolderIdsPage(currentCPSOId, carfReportId), NormalMode, ua)(carfReportId) mustBe
+          controllers.routes.JourneyRecoveryController.onPageLoad()
+      }
+
+      "must go to journey recovery when accountHolderIds are not present" in {
+        val ua = UserAnswers("id")
+
+        navigator.nextPage(AccountHolderIdsPage(currentCPSOId, reportId), NormalMode, ua) mustBe
           controllers.routes.JourneyRecoveryController.onPageLoad()
       }
     }
