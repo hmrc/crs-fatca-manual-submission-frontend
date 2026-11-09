@@ -236,6 +236,8 @@ typeOfReport.change.hidden =  Change what type of report you would like to send
 
 reportDetailsCheckAnswers.title = Check your report details for the financial institution
 reportDetailsCheckAnswers.heading = Check your report details for {0}
+reportDetailsCheckAnswers.warning = You will not be able to change these details after creating the draft. To use different details later, you must create a new draft.
+reportDetailsCheckAnswers.btn = Create draft
 
 haveSponsor.title = Does the financial institution have a sponsor?
 haveSponsor.heading = Does {0} have a sponsor?
