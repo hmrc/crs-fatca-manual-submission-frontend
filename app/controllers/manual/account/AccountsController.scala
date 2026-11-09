@@ -24,7 +24,7 @@ import models.SubmissionsConstants.CRS
 import models.requests.ReportIdRequest
 import models.viewModels.AccountId
 import models.{NormalMode, ReportId}
-import pages.manual.account.{AccountsPage, AddAnotherAccountPage}
+import pages.manual.account.{AccountsPage, AddAnotherAccountPage, CurrentAccountIdPage}
 import play.api.Logging
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -76,6 +76,10 @@ class AccountsController @Inject() (
           .getOrElse(Seq.empty)
 
         if (accountIds.isEmpty) {
+          logger.warn(
+            "No accounts found; redirecting to the accounts overview"
+          )
+
           Future.successful(
             Redirect(routes.AccountsController.onPageLoad())
           )
@@ -112,7 +116,13 @@ class AccountsController @Inject() (
                     }
 
                   _ <- repository.set(updatedAnswers)
-                } yield Redirect(destination)
+                } yield {
+                  logger.info(
+                    s"Saved add-another-account answer ($addAnother); redirecting to ${destination.url}"
+                  )
+
+                  Redirect(destination)
+                }
             )
         }
     }
@@ -133,9 +143,15 @@ class AccountsController @Inject() (
             )
           )
           _ <- repository.set(updatedAnswers)
-        } yield Redirect(
-          routes.HaveNumberController.onPageLoad(NormalMode)
-        )
+        } yield {
+          logger.info(
+            "Cleared the previous account selection; redirecting to Have Number"
+          )
+
+          Redirect(
+            routes.HaveNumberController.onPageLoad(NormalMode)
+          )
+        }
     }
 
   def onChange(accountId: String): Action[AnyContent] =
@@ -156,11 +172,17 @@ class AccountsController @Inject() (
   ): Action[AnyContent] =
     actions.withReportIdRequired().async {
       implicit request =>
+        given reportId: ReportId = request.reportId
+
         val accountExists = request.userAnswers
-          .get(AccountsPage(request.reportId))
+          .get(AccountsPage(reportId))
           .exists(_.accounts.contains(accountId))
 
         if (!accountExists) {
+          logger.warn(
+            "Requested account was not found in the current report; redirecting to journey recovery"
+          )
+
           Future.successful(
             Redirect(
               controllers.routes.JourneyRecoveryController.onPageLoad()
@@ -169,14 +191,19 @@ class AccountsController @Inject() (
         } else {
           for {
             updatedAnswers <- Future.fromTry(
-              accountsService.selectCurrentAccount(
-                request.userAnswers,
-                request.reportId,
+              request.userAnswers.setWithReportId(
+                CurrentAccountIdPage(),
                 AccountId(accountId)
               )
             )
             _ <- repository.set(updatedAnswers)
-          } yield Redirect(destination)
+          } yield {
+            logger.info(
+              s"Saved the current account selection; redirecting to ${destination.url}"
+            )
+
+            Redirect(destination)
+          }
         }
     }
 
@@ -221,8 +248,9 @@ class AccountsController @Inject() (
       .recover {
         case NoFiDetailFound =>
           logger.error(
-            s"Failed to retrieve FIDetail for FiID ${request.reportId.fiId}"
+            "Financial institution details were not found; redirecting to journey recovery"
           )
+
           Redirect(
             controllers.routes.JourneyRecoveryController.onPageLoad()
           )

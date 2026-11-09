@@ -27,13 +27,14 @@ import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.manual.account.{AccountIdPage, AccountOrderPage, CurrentAccountIdPage, HaveNumberPage}
+import pages.manual.account.{AccountCreationPage, AccountIdPage, CurrentAccountIdPage, HaveNumberPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import views.html.manual.account.HaveNumberView
 
+import java.time.{Clock, Instant, ZoneOffset}
 import scala.concurrent.Future
 
 class HaveNumberControllerSpec extends SpecBase with MockitoSugar {
@@ -42,6 +43,12 @@ class HaveNumberControllerSpec extends SpecBase with MockitoSugar {
 
   val formProvider = new HaveNumberFormProvider()
   val form         = formProvider()
+
+  private val submissionTime =
+    Instant.parse("2026-11-09T12:00:00Z")
+
+  private val fixedClock =
+    Clock.fixed(submissionTime, ZoneOffset.UTC)
 
   lazy val haveNumberRoute =
     controllers.manual.account.routes.HaveNumberController
@@ -111,7 +118,8 @@ class HaveNumberControllerSpec extends SpecBase with MockitoSugar {
           .overrides(
             bind[ManualSubmissionNavigator]
               .toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockDBConnector)
+            bind[DatabaseConnector].toInstance(mockDBConnector),
+            bind[Clock].toInstance(fixedClock)
           )
           .build()
 
@@ -127,20 +135,11 @@ class HaveNumberControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must append a new account to the recorded order when its first answer is saved" in {
+    "must save the creation timestamp when a new account's first answer is submitted" in {
 
-      val existingAccountId = AccountId("80")
-      val newAccountId      = AccountId("12")
+      val newAccountId = AccountId("12")
 
       val userAnswers = emptyUserAnswers
-        .withPage(
-          AccountIdPage(existingAccountId)(reportId),
-          existingAccountId
-        )
-        .withPage(
-          AccountOrderPage(reportId),
-          Seq(existingAccountId)
-        )
         .withPage(
           CurrentAccountIdPage()(reportId),
           newAccountId
@@ -156,7 +155,8 @@ class HaveNumberControllerSpec extends SpecBase with MockitoSugar {
           .overrides(
             bind[ManualSubmissionNavigator]
               .toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockDBConnector)
+            bind[DatabaseConnector].toInstance(mockDBConnector),
+            bind[Clock].toInstance(fixedClock)
           )
           .build()
 
@@ -170,7 +170,8 @@ class HaveNumberControllerSpec extends SpecBase with MockitoSugar {
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
 
-        val savedAnswers = ArgumentCaptor.forClass(classOf[UserAnswers])
+        val savedAnswers =
+          ArgumentCaptor.forClass(classOf[UserAnswers])
 
         verify(mockDBConnector).set(savedAnswers.capture())(any())
 
@@ -181,37 +182,33 @@ class HaveNumberControllerSpec extends SpecBase with MockitoSugar {
           .get(AccountIdPage(newAccountId)(reportId)) mustBe Some(newAccountId)
 
         savedAnswers.getValue
-          .get(AccountOrderPage(reportId)) mustBe
-          Some(Seq(existingAccountId, newAccountId))
+          .get(AccountCreationPage(newAccountId)(reportId)) mustBe
+          Some(submissionTime)
       }
     }
 
-    "must preserve the recorded order without duplicating an account when its answer is submitted again" in {
+    "must preserve an existing account's creation timestamp when its answer is submitted again" in {
 
-      val firstAccountId  = AccountId("80")
-      val secondAccountId = AccountId("12")
-      val originalOrder   = Seq(firstAccountId, secondAccountId)
+      val existingAccountId = AccountId("80")
+      val originalCreationTime =
+        Instant.parse("2026-11-08T09:00:00Z")
 
       val userAnswers = emptyUserAnswers
         .withPage(
-          AccountIdPage(firstAccountId)(reportId),
-          firstAccountId
+          AccountIdPage(existingAccountId)(reportId),
+          existingAccountId
         )
         .withPage(
-          AccountIdPage(secondAccountId)(reportId),
-          secondAccountId
-        )
-        .withPage(
-          HaveNumberPage(firstAccountId)(reportId),
+          HaveNumberPage(existingAccountId)(reportId),
           false
         )
         .withPage(
-          AccountOrderPage(reportId),
-          originalOrder
+          AccountCreationPage(existingAccountId)(reportId),
+          originalCreationTime
         )
         .withPage(
           CurrentAccountIdPage()(reportId),
-          firstAccountId
+          existingAccountId
         )
 
       val mockDBConnector = mock[DatabaseConnector]
@@ -224,7 +221,8 @@ class HaveNumberControllerSpec extends SpecBase with MockitoSugar {
           .overrides(
             bind[ManualSubmissionNavigator]
               .toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockDBConnector)
+            bind[DatabaseConnector].toInstance(mockDBConnector),
+            bind[Clock].toInstance(fixedClock)
           )
           .build()
 
@@ -238,15 +236,17 @@ class HaveNumberControllerSpec extends SpecBase with MockitoSugar {
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
 
-        val savedAnswers = ArgumentCaptor.forClass(classOf[UserAnswers])
+        val savedAnswers =
+          ArgumentCaptor.forClass(classOf[UserAnswers])
 
         verify(mockDBConnector).set(savedAnswers.capture())(any())
 
         savedAnswers.getValue
-          .get(HaveNumberPage(firstAccountId)(reportId)) mustBe Some(true)
+          .get(HaveNumberPage(existingAccountId)(reportId)) mustBe Some(true)
 
         savedAnswers.getValue
-          .get(AccountOrderPage(reportId)) mustBe Some(originalOrder)
+          .get(AccountCreationPage(existingAccountId)(reportId)) mustBe
+          Some(originalCreationTime)
       }
     }
 

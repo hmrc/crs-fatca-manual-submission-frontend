@@ -32,6 +32,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import views.html.manual.account.RemoveAccountView
 
+import java.time.Instant
 import scala.concurrent.Future
 
 class RemoveAccountControllerSpec extends SpecBase {
@@ -60,7 +61,8 @@ class RemoveAccountControllerSpec extends SpecBase {
       case (regimeName, report, isCrs) =>
         s"must display the selected identifier and the $regimeName confirmation view on GET" in {
           val answers = selectedAccount(report)
-          when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(answers)))
+          when(mockSessionRepository.get(any()))
+            .thenReturn(Future.successful(Some(answers)))
 
           val application = applicationBuilder(Some(answers)).build()
 
@@ -71,62 +73,85 @@ class RemoveAccountControllerSpec extends SpecBase {
 
             status(result) mustBe OK
             contentAsString(result) mustBe
-              view(form, identifier, isCrs)(request, messages(application)).toString
+              view(form, identifier, isCrs)(
+                request,
+                messages(application)
+              ).toString
           }
         }
     }
 
     "must show the required error and skip saving when no answer is submitted" in {
       val connector = mock[DatabaseConnector]
+
       val application = applicationBuilder(Some(selectedAccount(reportId)))
         .overrides(bind[DatabaseConnector].toInstance(connector))
         .build()
 
       running(application) {
-        val request        = FakeRequest(POST, removeUrl).withFormUrlEncodedBody()
+        val request = FakeRequest(POST, removeUrl)
+          .withFormUrlEncodedBody()
+
         val result         = route(application, request).value
         val view           = application.injector.instanceOf[RemoveAccountView]
         val formWithErrors = form.bind(Map.empty[String, String])
 
         status(result) mustBe BAD_REQUEST
         contentAsString(result) mustBe
-          view(formWithErrors, identifier, true)(request, messages(application)).toString
-        contentAsString(result) must include(messages(application)("account.remove.account.error.required"))
+          view(formWithErrors, identifier, true)(
+            request,
+            messages(application)
+          ).toString
+
+        contentAsString(result) must include(
+          messages(application)("account.remove.account.error.required")
+        )
+
         verify(connector, never()).set(any())(any())
       }
     }
 
     "must return to Accounts without saving or flashing a removal message when No is selected" in {
       val connector = mock[DatabaseConnector]
+
       val application = applicationBuilder(Some(selectedAccount(reportId)))
         .overrides(bind[DatabaseConnector].toInstance(connector))
         .build()
 
       running(application) {
-        val request = FakeRequest(POST, removeUrl).withFormUrlEncodedBody("value" -> "false")
-        val result  = route(application, request).value
+        val request = FakeRequest(POST, removeUrl)
+          .withFormUrlEncodedBody("value" -> "false")
+
+        val result = route(application, request).value
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe accountsUrl
         flash(result).get("account-removed") mustBe None
+
         verify(connector, never()).set(any())(any())
       }
     }
 
     "must save the removal of the last account and flash its identifier when Yes is selected" in {
       val connector = mock[DatabaseConnector]
-      when(connector.set(any())(any())).thenReturn(Future.successful(()))
+      when(connector.set(any())(any()))
+        .thenReturn(Future.successful(()))
 
       val answers = selectedAccount(reportId)
-        .withPage(AccountOrderPage(reportId), Seq(selectedId))
+        .withPage(
+          AccountCreationPage(selectedId)(reportId),
+          Instant.parse("2026-11-09T10:00:00Z")
+        )
 
       val application = applicationBuilder(Some(answers))
         .overrides(bind[DatabaseConnector].toInstance(connector))
         .build()
 
       running(application) {
-        val request = FakeRequest(POST, removeUrl).withFormUrlEncodedBody("value" -> "true")
-        val result  = route(application, request).value
+        val request = FakeRequest(POST, removeUrl)
+          .withFormUrlEncodedBody("value" -> "true")
+
+        val result = route(application, request).value
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe accountsUrl
@@ -137,6 +162,7 @@ class RemoveAccountControllerSpec extends SpecBase {
 
         saved.getValue.get(ReportIdPage) mustBe Some(reportId)
         saved.getValue.get(AccountDataPage(selectedId)) mustBe None
+        saved.getValue.get(AccountCreationPage(selectedId)) mustBe None
         saved.getValue.get(CurrentAccountIdPage()) mustBe None
       }
     }

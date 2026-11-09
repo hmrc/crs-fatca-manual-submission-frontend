@@ -25,12 +25,20 @@ import pages.manual.accountHolders.AccountPage as HolderAccountsPage
 import play.api.libs.json.Json
 import services.manual.account.AccountsService
 
+import java.time.Instant
+
 class AccountsServiceSpec extends SpecBase {
 
   private val service = new AccountsService()
 
   private val firstId  = AccountId("80")
   private val secondId = AccountId("12")
+
+  private val firstCreated =
+    Instant.parse("2026-11-09T10:00:00.000000001Z")
+
+  private val secondCreated =
+    Instant.parse("2026-11-09T10:00:00.000000002Z")
 
   private def addAccount(
     answers: UserAnswers,
@@ -47,15 +55,17 @@ class AccountsServiceSpec extends SpecBase {
 
     "removeAccount" - {
 
-      "must remove the last account and its selection when no account order was recorded" in {
+      "must remove the last account, its creation timestamp and its selection" in {
         val answers = addAccount(emptyUserAnswers, firstId, "FIRST")
+          .withPage(AccountCreationPage(firstId), firstCreated)
           .withPage(CurrentAccountIdPage(), firstId)
 
-        val result = service.removeAccount(answers, reportId, firstId).success.value
+        val result =
+          service.removeAccount(answers, reportId, firstId).success.value
 
         result.get(AccountDataPage(firstId)) mustBe None
+        result.get(AccountCreationPage(firstId)) mustBe None
         result.get(CurrentAccountIdPage()) mustBe None
-        result.get(AccountOrderPage(reportId)) mustBe None
         service.orderedAccounts(result, reportId) mustBe empty
       }
 
@@ -74,69 +84,147 @@ class AccountsServiceSpec extends SpecBase {
           otherReport
         )
           .withPage(AccountClosedPage(secondId), false)
+          .withPage(
+            WhatWasTheAccountBalancePage(secondId),
+            AccountBalance(Currency.GBP, "123")
+          )
+          .withPage(AccountCreationPage(secondId), secondCreated)
           .withPage(CurrentAccountIdPage(), secondId)
-          .withPage(AccountOrderPage(reportId), Seq(secondId))
           .withPage(sharedLinks, Set(secondId))
 
         val holderRecord = Json.obj("name" -> "Holder Two")
         val holderPath   = Json.obj(soleHolder.value -> holderRecord)
-        val reportData   = (survivingAnswers.data \ reportId.mongoKey).as[play.api.libs.json.JsObject]
-        val holders      = (reportData \ "accountHolder").as[play.api.libs.json.JsObject]
+
+        val reportData =
+          (survivingAnswers.data \ reportId.mongoKey)
+            .as[play.api.libs.json.JsObject]
+
+        val holders =
+          (reportData \ "accountHolder")
+            .as[play.api.libs.json.JsObject]
+
         val expected = survivingAnswers.copy(
           data = survivingAnswers.data + (
-            reportId.mongoKey -> (reportData + ("accountHolder" -> (holders ++ holderPath)))
+            reportId.mongoKey -> (
+              reportData + ("accountHolder" -> (holders ++ holderPath))
+            )
           )
         )
 
         val before = addAccount(expected, firstId, "REMOVE")
-          .withPage(AccountOrderPage(reportId), Seq(firstId, secondId))
+          .withPage(AccountCreationPage(firstId), firstCreated)
           .withPage(sharedLinks, Set(firstId, secondId))
           .withPage(soleLinks, Set(firstId))
 
-        val result = service.removeAccount(before, reportId, firstId).success.value
+        val result =
+          service.removeAccount(before, reportId, firstId).success.value
 
         result.data mustBe expected.data
       }
 
       "must reject removal when the account exists only in a different report" in {
         val otherReport = reportId.copy(fiId = "another-fi")
-        val answers     = addAccount(emptyUserAnswers, firstId, "OTHER-REPORT", otherReport)
+        val answers =
+          addAccount(emptyUserAnswers, firstId, "OTHER-REPORT", otherReport)
 
         service.removeAccount(answers, reportId, firstId).failure.exception mustBe
           a[IllegalArgumentException]
       }
     }
 
-    "recordAccount and orderedAccounts" - {
+    "orderedAccounts" - {
 
-      "must keep accounts in creation order when an earlier account is revisited" in {
-        val first         = addAccount(emptyUserAnswers, firstId, "FIRST")
-        val recordedFirst = service.recordAccount(first, reportId, firstId).success.value
+      "must list accounts by creation timestamp rather than account ID" in {
+        val answers = addAccount(
+          addAccount(emptyUserAnswers, secondId, "SECOND"),
+          firstId,
+          "FIRST"
+        )
+          .withPage(AccountCreationPage(firstId), firstCreated)
+          .withPage(AccountCreationPage(secondId), secondCreated)
 
-        val both         = addAccount(recordedFirst, secondId, "SECOND")
-        val recordedBoth = service.recordAccount(both, reportId, secondId).success.value
-        val revisited    = service.recordAccount(recordedBoth, reportId, firstId).success.value
-
-        service.orderedAccounts(revisited, reportId) mustBe Seq(
+        service.orderedAccounts(answers, reportId) mustBe Seq(
           firstId  -> "FIRST",
           secondId -> "SECOND"
         )
       }
+
+      "must preserve the order when an account's identifying answer is edited" in {
+        val answers = addAccount(
+          addAccount(emptyUserAnswers, firstId, "FIRST"),
+          secondId,
+          "SECOND"
+        )
+          .withPage(AccountCreationPage(firstId), firstCreated)
+          .withPage(AccountCreationPage(secondId), secondCreated)
+
+        val edited =
+          answers.withPage(IdentifierPage(firstId), "UPDATED-FIRST")
+
+        service.orderedAccounts(edited, reportId) mustBe Seq(
+          firstId  -> "UPDATED-FIRST",
+          secondId -> "SECOND"
+        )
+      }
+
+      "must display accounts without a timestamp before timestamped accounts" in {
+        val answers = addAccount(
+          addAccount(emptyUserAnswers, firstId, "NO-TIMESTAMP"),
+          secondId,
+          "TIMESTAMPED"
+        )
+          .withPage(AccountCreationPage(secondId), secondCreated)
+
+        service.orderedAccounts(answers, reportId) mustBe Seq(
+          firstId  -> "NO-TIMESTAMP",
+          secondId -> "TIMESTAMPED"
+        )
+      }
+
+      "must use account ID as a tie-breaker when creation timestamps match" in {
+        val answers = addAccount(
+          addAccount(emptyUserAnswers, firstId, "FIRST"),
+          secondId,
+          "SECOND"
+        )
+          .withPage(AccountCreationPage(firstId), firstCreated)
+          .withPage(AccountCreationPage(secondId), firstCreated)
+
+        service.orderedAccounts(answers, reportId) mustBe Seq(
+          secondId -> "SECOND",
+          firstId  -> "FIRST"
+        )
+      }
+
+      "must exclude accounts without a saved number or identifier" in {
+        val answers = addAccount(emptyUserAnswers, firstId, "FIRST")
+          .withPage(AccountCreationPage(firstId), firstCreated)
+          .withPage(AccountIdPage(secondId), secondId)
+          .withPage(HaveNumberPage(secondId), false)
+          .withPage(AccountCreationPage(secondId), secondCreated)
+
+        service.orderedAccounts(answers, reportId) mustBe Seq(
+          firstId -> "FIRST"
+        )
+      }
     }
 
-    "selectCurrentAccount and clearCurrentAccount" - {
+    "clearCurrentAccount" - {
 
-      "must change the selection and then clear it while keeping both accounts" in {
+      "must clear the current selection while preserving both accounts" in {
         val answers = addAccount(
           addAccount(emptyUserAnswers, firstId, "FIRST"),
           secondId,
           "SECOND"
         )
 
-        val selected = service.selectCurrentAccount(answers, reportId, secondId).success.value
-        selected.get(CurrentAccountIdPage()) mustBe Some(secondId)
+        val selected =
+          answers.withPage(CurrentAccountIdPage(), secondId)
 
-        val cleared = service.clearCurrentAccount(selected, reportId).success.value
+        val cleared =
+          service.clearCurrentAccount(selected, reportId).success.value
+
+        cleared.get(CurrentAccountIdPage()) mustBe None
         cleared.data mustBe answers.data
       }
     }
@@ -145,7 +233,13 @@ class AccountsServiceSpec extends SpecBase {
 
       "must mark a FATCA account incomplete when payments are declared but none have been entered" in {
         val fatcaReport = reportId.copy(regime = FATCA)
-        val complete = addAccount(emptyUserAnswers, firstId, "FIRST", fatcaReport)
+
+        val complete = addAccount(
+          emptyUserAnswers,
+          firstId,
+          "FIRST",
+          fatcaReport
+        )
           .withPage(AccountClosedPage(firstId)(fatcaReport), false)
           .withPage(
             WhatWasTheAccountBalancePage(firstId)(fatcaReport),
@@ -155,14 +249,20 @@ class AccountsServiceSpec extends SpecBase {
 
         service.isComplete(complete, fatcaReport, firstId) mustBe true
 
-        val awaitingPayment = complete.withPage(HavePaymentsPage(firstId)(fatcaReport), true)
+        val awaitingPayment =
+          complete.withPage(HavePaymentsPage(firstId)(fatcaReport), true)
+
         service.isComplete(awaitingPayment, fatcaReport, firstId) mustBe false
       }
 
       "for a CRS account" - {
         import models.manual.account.{WasAccountOpen, WhatAccountType}
 
-        val baseAnswers = addAccount(emptyUserAnswers, firstId, "CRS-ACCOUNT")
+        val baseAnswers = addAccount(
+          emptyUserAnswers,
+          firstId,
+          "CRS-ACCOUNT"
+        )
           .withPage(IsUndocumentedAccountPage(firstId), false)
           .withPage(IsDormantAccountPage(firstId), false)
           .withPage(WasAccountOpenPage(firstId), WasAccountOpen.Yes)
@@ -179,7 +279,9 @@ class AccountsServiceSpec extends SpecBase {
 
           service.isComplete(open, reportId, firstId) mustBe false
 
-          val withBalance = open.withPage(WhatWasTheAccountBalancePage(firstId), balance)
+          val withBalance =
+            open.withPage(WhatWasTheAccountBalancePage(firstId), balance)
+
           service.isComplete(withBalance, reportId, firstId) mustBe true
         }
 
@@ -190,7 +292,9 @@ class AccountsServiceSpec extends SpecBase {
 
           service.isComplete(closed, reportId, firstId) mustBe false
 
-          val withCurrency = closed.withPage(WhatWasTheAccountCurrencyPage(firstId), Currency.GBP)
+          val withCurrency =
+            closed.withPage(WhatWasTheAccountCurrencyPage(firstId), Currency.GBP)
+
           service.isComplete(withCurrency, reportId, firstId) mustBe true
         }
 
@@ -201,10 +305,14 @@ class AccountsServiceSpec extends SpecBase {
 
           service.isComplete(sole, reportId, firstId) mustBe true
 
-          val joint = sole.withPage(IsJointAccountPage(firstId), true)
+          val joint =
+            sole.withPage(IsJointAccountPage(firstId), true)
+
           service.isComplete(joint, reportId, firstId) mustBe false
 
-          val withHolderCount = joint.withPage(HowManyJointAccountHoldersPage(firstId), 2)
+          val withHolderCount =
+            joint.withPage(HowManyJointAccountHoldersPage(firstId), 2)
+
           service.isComplete(withHolderCount, reportId, firstId) mustBe true
         }
       }

@@ -19,11 +19,15 @@ package models.viewModels
 import models.NumberType
 import play.api.libs.json.{Json, OFormat}
 
-case class Account(haveNumber: Option[Boolean] = None,
-                   identifier: Option[String] = None,
-                   numberType: Option[NumberType] = None,
-                   whatIsAccountNumber: Option[String] = None,
-                   accountId: AccountId
+import java.time.Instant
+
+case class Account(
+  haveNumber: Option[Boolean] = None,
+  identifier: Option[String] = None,
+  numberType: Option[NumberType] = None,
+  whatIsAccountNumber: Option[String] = None,
+  accountId: AccountId,
+  creationDateTime: Option[Instant] = None
 ) {
 
   def accountNumber: Option[String] =

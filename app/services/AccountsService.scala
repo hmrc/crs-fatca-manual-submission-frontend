@@ -16,13 +16,13 @@
 
 package services.manual.account
 
-import models.NumberType.{Iban, Semp}
 import models.SubmissionsConstants.{CRS, FATCA}
 import models.viewModels.{Account, AccountHolderId, AccountId}
 import models.{ReportId, UserAnswers}
 import pages.manual.account.*
 import pages.manual.accountHolders.{AccountHoldersPage, AccountPage as AccountHolderAccountsPage}
 
+import java.time.Instant
 import javax.inject.{Inject, Singleton}
 import scala.util.{Failure, Success, Try}
 
@@ -32,30 +32,26 @@ class AccountsService @Inject() () {
   def orderedAccounts(
     userAnswers: UserAnswers,
     reportId: ReportId
-  ): Seq[(AccountId, String)] = {
-    val accountsById = userAnswers
+  ): Seq[(AccountId, String)] =
+    userAnswers
       .get(AccountsPage(reportId))
       .toSeq
       .flatMap(_.accounts.values)
-      .flatMap(
-        account => displayNumber(account).map(account.accountId -> _)
-      )
-      .toMap
+      .sortBy {
+        account =>
+          val creationTime =
+            account.creationDateTime.getOrElse(Instant.EPOCH)
 
-    val recordedOrder = userAnswers
-      .get(AccountOrderPage(reportId))
-      .getOrElse(Seq.empty)
-      .distinct
-
-    val unrecordedIds = accountsById.keySet
-      .diff(recordedOrder.toSet)
-      .toSeq
-      .sortBy(_.value)
-
-    (recordedOrder ++ unrecordedIds).flatMap {
-      accountId => accountsById.get(accountId).map(accountId -> _)
-    }
-  }
+          (
+            creationTime.getEpochSecond,
+            creationTime.getNano,
+            account.accountId.value
+          )
+      }
+      .flatMap {
+        account =>
+          displayNumber(account).map(account.accountId -> _)
+      }
 
   def removeAccount(
     userAnswers: UserAnswers,
@@ -86,18 +82,7 @@ class AccountsService @Inject() () {
           } else {
             Success(removed)
           }
-
-        updated <-
-          selectionCleared.get(AccountOrderPage(reportId)) match {
-            case Some(order) =>
-              selectionCleared.set(
-                AccountOrderPage(reportId),
-                order.filterNot(_ == accountId)
-              )
-            case None =>
-              Success(selectionCleared)
-          }
-      } yield updated
+      } yield selectionCleared
     }
   }
 
@@ -139,69 +124,6 @@ class AccountsService @Inject() () {
     }
   }
 
-  def recordAccount(
-    userAnswers: UserAnswers,
-    reportId: ReportId,
-    accountId: AccountId
-  ): Try[UserAnswers] = {
-    given ReportId = reportId
-
-    val existingIds = userAnswers
-      .get(AccountsPage(reportId))
-      .map(_.accounts.keySet.map(AccountId.apply))
-      .getOrElse(Set.empty)
-
-    if (!existingIds.contains(accountId)) {
-      Failure(
-        new IllegalArgumentException(
-          "Cannot record an account outside the current report"
-        )
-      )
-    } else {
-      val recordedOrder = userAnswers
-        .get(AccountOrderPage(reportId))
-        .getOrElse(Seq.empty)
-        .filter(existingIds.contains)
-        .distinct
-
-      val otherUnrecordedIds = existingIds
-        .diff(recordedOrder.toSet)
-        .filterNot(_ == accountId)
-        .toSeq
-        .sortBy(_.value)
-
-      val updatedOrder =
-        if (recordedOrder.contains(accountId)) {
-          recordedOrder ++ otherUnrecordedIds
-        } else {
-          (recordedOrder ++ otherUnrecordedIds) :+ accountId
-        }
-
-      userAnswers.setWithReportId(
-        AccountOrderPage(reportId),
-        updatedOrder
-      )
-    }
-  }
-
-  def selectCurrentAccount(
-    userAnswers: UserAnswers,
-    reportId: ReportId,
-    accountId: AccountId
-  ): Try[UserAnswers] = {
-    given ReportId = reportId
-
-    if (userAnswers.get(AccountIdPage(accountId)).contains(accountId)) {
-      userAnswers.setWithReportId(CurrentAccountIdPage(), accountId)
-    } else {
-      Failure(
-        new IllegalArgumentException(
-          "Cannot select an account outside the current report"
-        )
-      )
-    }
-  }
-
   def clearCurrentAccount(
     userAnswers: UserAnswers,
     reportId: ReportId
@@ -235,12 +157,6 @@ class AccountsService @Inject() () {
           case None => false
         })
 
-    val requiresAccountType =
-      !(haveNumber.contains(true) &&
-        numberType.exists(
-          value => value == Iban || value == Semp
-        ))
-
     val accountDetailsComplete =
       userAnswers.get(AccountClosedPage(accountId)).exists {
         isClosed =>
@@ -262,8 +178,7 @@ class AccountsService @Inject() () {
               userAnswers.get(IsDormantAccountPage(accountId)).isDefined &&
               userAnswers.get(WasAccountOpenPage(accountId)).isDefined &&
               jointAccountAnswersComplete(userAnswers, accountId) &&
-              (!requiresAccountType ||
-                userAnswers.get(WhatAccountTypePage(accountId)).isDefined)
+              userAnswers.get(WhatAccountTypePage(accountId)).isDefined
 
             case FATCA =>
               userAnswers

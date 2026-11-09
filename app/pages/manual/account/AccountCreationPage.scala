@@ -21,9 +21,12 @@ import models.viewModels.AccountId
 import pages.QuestionPage
 import play.api.libs.json.JsPath
 
-final case class AccountOrderPage(
+import java.time.Instant
+
+final case class AccountCreationPage(accountId: AccountId)(implicit
   reportId: ReportId
-) extends QuestionPage[Seq[AccountId]]:
+) extends QuestionPage[Instant] {
 
   override def path: JsPath =
-    JsPath \ reportId.mongoKey \ "accountOrder"
+    JsPath \ reportId.mongoKey \ "accounts" \ accountId.value \ "creationDateTime"
+}

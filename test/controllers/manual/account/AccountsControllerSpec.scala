@@ -32,6 +32,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.ViewFIService
 
+import java.time.Instant
 import scala.concurrent.Future
 
 class AccountsControllerSpec extends SpecBase {
@@ -48,6 +49,10 @@ class AccountsControllerSpec extends SpecBase {
 
   private val oneComplete = reportAnswers
     .withPage(AccountIdPage(firstId)(report), firstId)
+    .withPage(
+      AccountCreationPage(firstId)(report),
+      Instant.parse("2026-11-09T10:00:00Z")
+    )
     .withPage(HaveNumberPage(firstId)(report), false)
     .withPage(IdentifierPage(firstId)(report), "FIRST-ACCOUNT")
     .withPage(AccountClosedPage(firstId)(report), false)
@@ -56,8 +61,11 @@ class AccountsControllerSpec extends SpecBase {
 
   private val withUnlabelledAccount = oneComplete
     .withPage(AccountIdPage(secondId)(report), secondId)
+    .withPage(
+      AccountCreationPage(secondId)(report),
+      Instant.parse("2026-11-09T11:00:00Z")
+    )
     .withPage(HaveNumberPage(secondId)(report), false)
-    .withPage(AccountOrderPage(report), Seq(firstId, secondId))
 
   private val mixedAccounts = withUnlabelledAccount
     .withPage(IdentifierPage(secondId)(report), "SECOND-ACCOUNT")
@@ -114,7 +122,7 @@ class AccountsControllerSpec extends SpecBase {
       }
     }
 
-    "must list accounts in recorded order and tag only the incomplete account" in {
+    "must list accounts in creation-time order and tag only the incomplete account" in {
       withApp(mixedAccounts) {
         (app, _) =>
           val result = route(app, FakeRequest(GET, accountsUrl)).value
