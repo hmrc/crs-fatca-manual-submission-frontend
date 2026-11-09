@@ -32,7 +32,8 @@
 
 package viewmodels.checkAnswers.manual.accountHolders
 
-import models.{CheckMode, ReportId, UserAnswers}
+import models.ServiceErrors.CountryLookup_Error
+import models.{CheckMode, Countries, ReportId, UserAnswers}
 import pages.manual.accountHolders.{CurrentAccountHolderIdPage, IndividualPlaceOfBirthPage}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
@@ -49,14 +50,24 @@ object IndividualPlaceOfBirthSummary {
       answer                 <- answers.get(IndividualPlaceOfBirthPage(currentAccountHolderId, reportId))
     } yield {
 
-      val value = HtmlFormat.escape(answer.city.getOrElse("")).toString + "<br/>" + HtmlFormat.escape(answer.region.getOrElse("")).toString
+      def getCountryDescription(code: String): String = Countries
+        .allCountries(reportId.regime)
+        .find(_.code == code)
+        .map(_.description)
+        .getOrElse(throw CountryLookup_Error)
+
+      val value = (Seq(answer.city, answer.region).flatten :+ getCountryDescription(answer.country))
+        .map(
+          part => HtmlFormat.escape(part).toString
+        )
+        .mkString("<br/>")
 
       SummaryListRowViewModel(
-        key = "accountholder.individualPlaceOfBirth.checkYourAnswersLabel",
+        key = "accountHolder.individualPlaceOfBirth.checkYourAnswersLabel",
         value = ValueViewModel(HtmlContent(value)),
         actions = Seq(
           ActionItemViewModel("site.change", controllers.manual.accountHolders.routes.IndividualPlaceOfBirthController.onPageLoad(CheckMode).url)
-            .withVisuallyHiddenText(messages("individualPlaceOfBirth.change.hidden"))
+            .withVisuallyHiddenText(messages("accountHolder.individualPlaceOfBirth.change.hidden"))
         )
       )
     }
