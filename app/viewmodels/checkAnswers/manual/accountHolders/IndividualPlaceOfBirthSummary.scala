@@ -32,7 +32,8 @@
 
 package viewmodels.checkAnswers.manual.accountHolders
 
-import models.{CheckMode, ReportId, UserAnswers}
+import models.ServiceErrors.CountryLookup_Error
+import models.{CheckMode, Countries, ReportId, UserAnswers}
 import pages.manual.accountHolders.{CurrentAccountHolderIdPage, IndividualPlaceOfBirthPage}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
@@ -49,7 +50,13 @@ object IndividualPlaceOfBirthSummary {
       answer                 <- answers.get(IndividualPlaceOfBirthPage(currentAccountHolderId, reportId))
     } yield {
 
-      val value = (Seq(answer.city, answer.region).flatten :+ answer.country)
+      def getCountryDescription(code: String): String = Countries
+        .allCountries(reportId.regime)
+        .find(_.code == code)
+        .map(_.description)
+        .getOrElse(throw CountryLookup_Error)
+
+      val value = (Seq(answer.city, answer.region).flatten :+ getCountryDescription(answer.country))
         .map(
           part => HtmlFormat.escape(part).toString
         )
