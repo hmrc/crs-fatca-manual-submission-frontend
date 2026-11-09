@@ -17,3 +17,26 @@
 .nobreak {
   display: inline-block;
 }
+
+.accounts-summary-list .govuk-summary-list__value {
+  display: none;
+}
+
+.accounts-summary-list .govuk-summary-list__key {
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 40.0625em) {
+  .accounts-summary-list {
+    table-layout: auto;
+  }
+
+  .accounts-summary-list .govuk-summary-list__key {
+    width: auto;
+  }
+
+  .accounts-summary-list .govuk-summary-list__actions {
+    width: 1%;
+    white-space: nowrap;
+  }
+}

@@ -34,17 +34,17 @@ class AccountIdCreationActionImpl @Inject() (repository: DatabaseConnector)(impl
     given reportId: ReportId = request.reportId
     request.userAnswers.get(CurrentAccountIdPage()) match {
       case None =>
-        val accountId: AccountId = createAndSetAccountId(request)
-        Future.successful(
-          AccountIdRequest(
-            request = request.request,
-            userId = request.userId,
-            userAnswers = request.userAnswers,
-            fatcaId = request.fatcaId,
-            reportId = request.reportId,
-            accountId = accountId
-          )
-        )
+        createAndSetAccountId(request).map {
+          case (accountId, updatedAnswers) =>
+            AccountIdRequest(
+              request = request.request,
+              userId = request.userId,
+              userAnswers = updatedAnswers,
+              fatcaId = request.fatcaId,
+              reportId = request.reportId,
+              accountId = accountId
+            )
+        }
       case Some(accId) =>
         Future.successful(
           AccountIdRequest(
@@ -59,26 +59,26 @@ class AccountIdCreationActionImpl @Inject() (repository: DatabaseConnector)(impl
     }
   }
 
-  private def createAndSetAccountId[A](request: ReportIdRequest[A])(implicit reportId: ReportId) = {
-    given hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
+  private def createAndSetAccountId[A](
+    request: ReportIdRequest[A]
+  )(implicit reportId: ReportId): Future[(AccountId, UserAnswers)] = {
+
+    given hc: HeaderCarrier =
+      HeaderCarrierConverter.fromRequestAndSession(request, request.session)
+
     val existingIds = request.userAnswers
       .get(AccountsPage(reportId))
-      .map(
-        acc => acc.accounts.keySet
-      )
+      .map(_.accounts.keySet)
       .getOrElse(Set.empty)
+
     val accountId = AccountId.generate(existingIds)
 
-    request.userAnswers
-      .get(CurrentAccountIdPage())
-      .fold {
-        request.userAnswers
-          .set(CurrentAccountIdPage(), accountId)
-          .foreach(repository.set)
-      }(
-        _ => ()
+    for {
+      updatedAnswers <- Future.fromTry(
+        request.userAnswers.set(CurrentAccountIdPage(), accountId)
       )
-    accountId
+      _ <- repository.set(updatedAnswers)
+    } yield (accountId, updatedAnswers)
   }
 }
 

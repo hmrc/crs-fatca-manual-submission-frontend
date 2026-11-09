@@ -27,7 +27,8 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.account.HaveNumberView
-
+import services.manual.account.AccountsService
+import scala.util.Success
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -36,6 +37,7 @@ class HaveNumberController @Inject() (
   actions: Actions,
   repository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
+  accountsService: AccountsService,
   formProvider: HaveNumberFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: HaveNumberView
@@ -72,11 +74,26 @@ class HaveNumberController @Inject() (
         )
   }
 
-  private def checkAndSetAccountId(request: AccountIdRequest[AnyContent], updatedAnswers: UserAnswers)(implicit reportId: ReportId) =
+  private def checkAndSetAccountId(
+    request: AccountIdRequest[AnyContent],
+    updatedAnswers: UserAnswers
+  )(implicit reportId: ReportId): Future[UserAnswers] =
     Future.fromTry {
       updatedAnswers.get(AccountIdPage(request.accountId)) match {
-        case Some(_) => scala.util.Success(updatedAnswers)
-        case None    => updatedAnswers.setWithReportId(AccountIdPage(request.accountId), request.accountId)
+        case Some(_) => Success(updatedAnswers)
+
+        case None =>
+          for {
+            answersWithAccountId <- updatedAnswers.setWithReportId(
+              AccountIdPage(request.accountId),
+              request.accountId
+            )
+            answersWithAccountOrder <- accountsService.recordAccount(
+              answersWithAccountId,
+              reportId,
+              request.accountId
+            )
+          } yield answersWithAccountOrder
       }
     }
 }

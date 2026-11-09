@@ -497,3 +497,13 @@ GET        /manual/cp-so/remove-tax-resident-country                      contro
 POST       /manual/cp-so/remove-tax-resident-country                        controllers.manual.cpso.RemoveTaxResidentCountryController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/cp-so/change-remove-tax-resident-country                 controllers.manual.cpso.RemoveTaxResidentCountryController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/cp-so/change-remove-tax-resident-country                 controllers.manual.cpso.RemoveTaxResidentCountryController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/accounts                            controllers.manual.account.AccountsController.onPageLoad()
+POST       /manual/accounts                            controllers.manual.account.AccountsController.onSubmit()
+
+GET        /manual/accounts/add-account                controllers.manual.account.AccountsController.onAddAccount()
+GET        /manual/accounts/:accountId/change           controllers.manual.account.AccountsController.onChange(accountId: String)
+GET        /manual/accounts/:accountId/remove           controllers.manual.account.AccountsController.onRemove(accountId: String)
+
+GET        /manual/account/remove-account   controllers.manual.account.RemoveAccountController.onPageLoad()
+POST       /manual/account/remove-account   controllers.manual.account.RemoveAccountController.onSubmit()

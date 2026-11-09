@@ -28,11 +28,11 @@
 @(form: Form[_], mode: Mode, fiName: String, options: Seq[CheckboxItem], isCRS: Boolean)(implicit request: Request[_], messages: Messages)
 
 @changeLink = {
-    @link(
-        href = routes.UnderConstructionController.onPageLoad().url,
-        message= messages("accountHolder.account.para.link"),
-        asPara = false
-    )
+@link(
+    href = controllers.manual.account.routes.AccountsController.onAddAccount().url,
+    message = messages("accountHolder.account.para.link"),
+    asPara = false
+)
 }
 
 @term(isCRS: Boolean) = @{if (isCRS) "CRS" else "FATCA"}
