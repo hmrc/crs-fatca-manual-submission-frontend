@@ -25,9 +25,9 @@ sealed trait OrganisationCrs
 
 object OrganisationCrs extends Enumerable.Implicits {
 
-  case object PassiveWithMultiplePersons extends WithName("passiveWithMultiplePersons") with OrganisationCrs
-  case object CrsReportable extends WithName("crsReportable") with OrganisationCrs
-  case object PassiveCrsPerson extends WithName("passiveCrsPerson") with OrganisationCrs
+  case object PassiveWithMultiplePersons extends WithName("CRS101") with OrganisationCrs
+  case object CrsReportable extends WithName("CRS102") with OrganisationCrs
+  case object PassiveCrsPerson extends WithName("CRS103") with OrganisationCrs
 
   val values: Seq[OrganisationCrs] = Seq(
     PassiveWithMultiplePersons,

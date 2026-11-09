@@ -507,3 +507,12 @@ GET        /manual/accounts/:accountId/remove           controllers.manual.accou
 
 GET        /manual/account/remove-account   controllers.manual.account.RemoveAccountController.onPageLoad()
 POST       /manual/account/remove-account   controllers.manual.account.RemoveAccountController.onSubmit()
+
+GET         /manual/cp-so/account-holder                       controllers.manual.cpso.AccountHolderController.onPageLoad(mode: Mode = NormalMode)
+POST        /manual/cp-so/account-holder                       controllers.manual.cpso.AccountHolderController.onSubmit(mode: Mode = NormalMode)
+GET         /manual/cp-so/change-account-holder                 controllers.manual.cpso.AccountHolderController.onPageLoad(mode: Mode = CheckMode)
+POST        /manual/cp-so/change-account-holder                 controllers.manual.cpso.AccountHolderController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/cp-so/check-cpso-add-or-allowed      controllers.manual.cpso.CheckCPSOAddedOrAllowedController.onChangeRedirect(mode: Mode = NormalMode)
+
+
