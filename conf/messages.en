@@ -1121,6 +1121,8 @@ accountHolders.taxResidentCountries.change.hidden = TaxResidentCountries
 accountHolders.taxResidentCountries.checkYourAnswersSummaryHeading = Tax resident countries
 accountHolders.taxResidentCountries.checkYourAnswersLink = Add, change or remove
 accountHolders.taxResidentCountries.checkYourAnswersLabel = Where is the account holder resident for tax?
+accountHolders.taxResidentCountries.taxIdentifier = Identification number for {0}
+accountHolders.taxResidentCountries.taxIdentifiers = Identification numbers for {0}
 
 accountHolders.removeTaxResidentCountry.definite.articles.countries.title = Are you sure you want to remove the {0} as a tax resident country for the account holder?
 accountHolders.removeTaxResidentCountry.other.countries.title = Are you sure you want to remove ‘Other country’ as a tax resident country for the account holder?
