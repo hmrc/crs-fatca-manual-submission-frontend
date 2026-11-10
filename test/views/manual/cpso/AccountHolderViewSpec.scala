@@ -166,7 +166,7 @@ class AccountHolderViewSpec extends SpecBase {
         val doc = render()
 
         doc.select("form button.govuk-button").size() mustBe 1
-        doc.select(".govuk-button").text() mustBe "Save and continue"
+        doc.select(".govuk-button").text() mustBe "Continue"
         doc.select(".govuk-button").attr("type") mustBe "submit"
       }
     }

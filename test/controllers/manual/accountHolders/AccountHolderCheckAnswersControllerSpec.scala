@@ -17,6 +17,7 @@
 package controllers.manual.accountHolders
 
 import base.SpecBase
+import models.NormalMode
 import models.manual.accountHolders.{IndividualName, IndividualOrOrganisation}
 import models.viewModels.AccountHolderId
 import pages.ReportIdPage
@@ -60,7 +61,7 @@ class AccountHolderCheckAnswersControllerSpec extends SpecBase {
         val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual controllers.routes.UnderConstructionController.onPageLoad().url
+        redirectLocation(result).value mustEqual controllers.manual.accountHolders.routes.AccountHolderListController.onPageLoad(NormalMode).url
       }
     }
   }

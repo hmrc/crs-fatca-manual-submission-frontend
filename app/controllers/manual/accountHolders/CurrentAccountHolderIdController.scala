@@ -43,8 +43,7 @@ class CurrentAccountHolderIdController @Inject() (
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
-      // todo need accountHolder check your answers
-      redirectWithValidAccountHolderId(accountHolderId, controllers.routes.UnderConstructionController.onPageLoad())
+      redirectWithValidAccountHolderId(accountHolderId, controllers.manual.accountHolders.routes.AccountHolderCheckAnswersController.onPageLoad())
   }
 
   def onRemoveRedirect(accountHolderId: String): Action[AnyContent] = actions.withReportIdRequired().async {
