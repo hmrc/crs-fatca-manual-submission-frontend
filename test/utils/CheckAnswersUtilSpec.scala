@@ -61,7 +61,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, Summ
 import viewmodels.checkAnswers.manual.account.*
 import viewmodels.checkAnswers.manual.accountHolders.*
 import viewmodels.govuk.all.{FluentSummaryList, SummaryListViewModel}
-
+import viewmodels.checkAnswers.manual.accountHolders
 import java.time.LocalDate
 
 class CheckAnswersUtilSpec extends SpecBase {
@@ -395,7 +395,7 @@ class CheckAnswersUtilSpec extends SpecBase {
               .withPage(EquityInterestTypePage(accountHolderId, reportId), EquityInterestTypes(Seq(EquityInterestType.TrusteeOfTrust)))
               .withPage(SelfCertificationPage(accountHolderId, reportId), Yes)
 
-            val expectedRows = AccountsSummary.row(ua) ++
+            val expectedRows = accountHolders.AccountsSummary.row(ua) ++
               IndividualOrOrganisationSummary.row(ua) ++
               IndividualNameSummary.row(ua) ++
               IndividualHaveDateOfBirthSummary.row(ua) ++
@@ -476,7 +476,7 @@ class CheckAnswersUtilSpec extends SpecBase {
               .withPage(EquityInterestTypePage(accountHolderId, reportId), EquityInterestTypes(Seq(EquityInterestType.TrusteeOfTrust)))
               .withPage(SelfCertificationPage(accountHolderId, reportId), Yes)
 
-            val expectedRows = AccountsSummary.row(ua) ++
+            val expectedRows = accountHolders.AccountsSummary.row(ua) ++
               IndividualOrOrganisationSummary.row(ua) ++
               OrganisationNameSummary.row(ua) ++
               AccountHolderTypeCrsSummary.row(ua) ++
@@ -533,7 +533,7 @@ class CheckAnswersUtilSpec extends SpecBase {
               .withPage(EquityInterestTypePage(accountHolderId, reportId), EquityInterestTypes(Seq(EquityInterestType.TrusteeOfTrust)))
               .withPage(SelfCertificationPage(accountHolderId, reportId), Yes)
 
-            val expectedRows = AccountsSummary.row(ua) ++
+            val expectedRows = accountHolders.AccountsSummary.row(ua) ++
               IndividualOrOrganisationSummary.row(ua) ++
               IndividualNameSummary.row(ua) ++
               IndividualHaveDateOfBirthSummary.row(ua) ++
@@ -573,7 +573,7 @@ class CheckAnswersUtilSpec extends SpecBase {
               .withPage(EquityInterestTypePage(accountHolderId, reportId), EquityInterestTypes(Seq(EquityInterestType.TrusteeOfTrust)))
               .withPage(SelfCertificationPage(accountHolderId, reportId), Yes)
 
-            val expectedRows = AccountsSummary.row(ua) ++
+            val expectedRows = accountHolders.AccountsSummary.row(ua) ++
               IndividualOrOrganisationSummary.row(ua) ++
               OrganisationNameSummary.row(ua) ++
               AccountHolderTypeFatcaSummary.row(ua) ++

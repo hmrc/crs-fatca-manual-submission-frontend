@@ -20,6 +20,7 @@ import connectors.DatabaseConnector
 import controllers.actions.Actions
 import forms.manual.account.RemoveAccountFormProvider
 import models.SubmissionsConstants.CRS
+import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.manual.account.AccountsService
@@ -39,7 +40,8 @@ class RemoveAccountController @Inject() (
   view: RemoveAccountView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with Logging {
 
   private val form = formProvider()
 
@@ -62,6 +64,10 @@ class RemoveAccountController @Inject() (
             )
 
           case None =>
+            logger.warn(
+              "Selected account was not found in the displayable accounts; redirecting to journey recovery"
+            )
+
             Redirect(
               controllers.routes.JourneyRecoveryController.onPageLoad()
             )
@@ -102,21 +108,25 @@ class RemoveAccountController @Inject() (
                         )
                       )
                       _ <- repository.set(updatedAnswers)
-                    } yield Redirect(
-                      controllers.manual.account.routes.AccountsController
-                        .onPageLoad()
-                    ).flashing("account-removed" -> accountNumber)
-                  } else {
-                    Future.successful(
+                    } yield {
+                      logger.info(
+                        "Account removal saved successfully; redirecting to the accounts overview"
+                      )
+
                       Redirect(
                         controllers.manual.account.routes.AccountsController
                           .onPageLoad()
-                      )
-                    )
+                      ).flashing("account-removed" -> accountNumber)
+                    }
+                  } else {
+                    logger.info("Account removal declined; redirecting to the accounts overview")
+                    Future.successful(Redirect(controllers.manual.account.routes.AccountsController.onPageLoad()))
                   }
               )
-
           case None =>
+            logger.warn(
+              "Selected account was not found in the displayable accounts; redirecting to journey recovery"
+            )
             Future.successful(
               Redirect(
                 controllers.routes.JourneyRecoveryController.onPageLoad()
