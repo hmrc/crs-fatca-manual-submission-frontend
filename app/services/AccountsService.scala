@@ -17,14 +17,13 @@
 package services.manual.account
 
 import models.SubmissionsConstants.{CRS, FATCA}
-import models.viewModels.{Account, AccountHolderId, AccountId}
+import models.viewModels.{AccountHolderId, AccountId}
 import models.{ReportId, UserAnswers}
 import pages.manual.account.*
 import pages.manual.accountHolders.{AccountHoldersPage, AccountPage as AccountHolderAccountsPage}
-
 import java.time.Instant
 import javax.inject.{Inject, Singleton}
-import scala.util.{Failure, Success, Try}
+import scala.util.{Success, Try}
 
 @Singleton
 class AccountsService @Inject() () {
@@ -41,7 +40,6 @@ class AccountsService @Inject() () {
         account =>
           val creationTime =
             account.creationDateTime.getOrElse(Instant.EPOCH)
-
           (
             creationTime.getEpochSecond,
             creationTime.getNano,
@@ -50,7 +48,15 @@ class AccountsService @Inject() () {
       }
       .flatMap {
         account =>
-          displayNumber(account).map(account.accountId -> _)
+          val candidates =
+            if (account.haveNumber.contains(true)) {
+              Seq(account.whatIsAccountNumber, account.identifier)
+            } else {
+              Seq(account.identifier, account.whatIsAccountNumber)
+            }
+          candidates.flatten
+            .find(_.trim.nonEmpty)
+            .map(account.accountId -> _)
       }
 
   def removeAccount(
@@ -59,69 +65,47 @@ class AccountsService @Inject() () {
     accountId: AccountId
   ): Try[UserAnswers] = {
     given ReportId = reportId
-
-    if (userAnswers.get(AccountDataPage(accountId)).isEmpty) {
-      Failure(
-        new IllegalArgumentException(
-          "Cannot remove an account outside the current report"
-        )
-      )
-    } else {
-      for {
-        unlinked <- unlinkAccountFromHolders(
-          userAnswers,
-          reportId,
-          accountId
-        )
-
-        removed <- unlinked.remove(AccountDataPage(accountId))
-
-        selectionCleared <-
-          if (removed.get(CurrentAccountIdPage()).contains(accountId)) {
-            removed.remove(CurrentAccountIdPage())
-          } else {
-            Success(removed)
-          }
-      } yield selectionCleared
-    }
-  }
-
-  private def unlinkAccountFromHolders(
-    userAnswers: UserAnswers,
-    reportId: ReportId,
-    accountId: AccountId
-  ): Try[UserAnswers] = {
-    given ReportId = reportId
-
     val accountHolderIds = userAnswers
       .get(AccountHoldersPage())
-      .map(_.accountHolders.keys.toSeq.map(AccountHolderId.apply))
-      .getOrElse(Seq.empty)
+      .toSeq
+      .flatMap(_.accountHolders.keys)
+      .map(AccountHolderId.apply)
 
-    accountHolderIds.foldLeft[Try[UserAnswers]](Success(userAnswers)) {
-      (result, accountHolderId) =>
-        result.flatMap {
-          answers =>
-            val page = AccountHolderAccountsPage(
-              reportId,
-              accountHolderId
-            )
-
-            answers.get(page) match {
-              case Some(linkedAccounts) if linkedAccounts.contains(accountId) =>
-                val remainingAccounts = linkedAccounts - accountId
-
-                if (remainingAccounts.isEmpty) {
+    for {
+      _ <- userAnswers
+        .get(AccountDataPage(accountId))
+        .toRight(
+          new IllegalArgumentException(
+            "Cannot remove an account outside the current report"
+          )
+        )
+        .toTry
+      unlinked <- accountHolderIds.foldLeft(Try(userAnswers)) {
+        (result, accountHolderId) =>
+          result.flatMap {
+            answers =>
+              val page = AccountHolderAccountsPage(reportId, accountHolderId)
+              answers
+                .get(page)
+                .filter(_.contains(accountId))
+                .map(_ - accountId) match {
+                case Some(remaining) if remaining.isEmpty =>
                   answers.remove(page)
-                } else {
-                  answers.setWithReportId(page, remainingAccounts)
-                }
-
-              case _ =>
-                Success(answers)
-            }
+                case Some(remaining) =>
+                  answers.setWithReportId(page, remaining)
+                case None =>
+                  Success(answers)
+              }
+          }
+      }
+      removed <- unlinked.remove(AccountDataPage(accountId))
+      selectionCleared <-
+        if (removed.get(CurrentAccountIdPage()).contains(accountId)) {
+          removed.remove(CurrentAccountIdPage())
+        } else {
+          Success(removed)
         }
-    }
+    } yield selectionCleared
   }
 
   def clearCurrentAccount(
@@ -137,105 +121,56 @@ class AccountsService @Inject() () {
   ): Boolean = {
     given ReportId = reportId
 
-    val haveNumber = userAnswers.get(HaveNumberPage(accountId))
-    val numberType = userAnswers.get(NumberTypePage(accountId))
+    val complete = for {
+      _ <- userAnswers.get(AccountIdPage(accountId)).filter(_ == accountId)
 
-    val identifyingAnswersComplete =
-      userAnswers.get(AccountIdPage(accountId)).contains(accountId) &&
-        (haveNumber match {
-          case Some(true) =>
-            numberType.isDefined &&
-            userAnswers
-              .get(WhatIsAccountNumberPage(accountId, reportId))
-              .exists(_.trim.nonEmpty)
+      number <- userAnswers.get(HaveNumberPage(accountId)).flatMap {
+        case true =>
+          for {
+            _ <- userAnswers.get(NumberTypePage(accountId))
+            accountNumber <- userAnswers.get(
+              WhatIsAccountNumberPage(accountId, reportId)
+            )
+          } yield accountNumber
+        case false =>
+          userAnswers.get(IdentifierPage(accountId))
+      }
+      if number.trim.nonEmpty
+      isClosed <- userAnswers.get(AccountClosedPage(accountId))
+      _ <- reportId.regime match {
+        case CRS =>
+          for {
+            _ <-
+              if (isClosed) {
+                userAnswers.get(WhatWasTheAccountCurrencyPage(accountId))
+              } else {
+                userAnswers.get(WhatWasTheAccountBalancePage(accountId))
+              }
+            _       <- userAnswers.get(IsUndocumentedAccountPage(accountId))
+            _       <- userAnswers.get(IsDormantAccountPage(accountId))
+            _       <- userAnswers.get(WasAccountOpenPage(accountId))
+            isJoint <- userAnswers.get(IsJointAccountPage(accountId))
+            if !isJoint ||
+              userAnswers.get(HowManyJointAccountHoldersPage(accountId)).isDefined
+            _ <- userAnswers.get(WhatAccountTypePage(accountId))
+          } yield ()
 
-          case Some(false) =>
-            userAnswers
-              .get(IdentifierPage(accountId))
-              .exists(_.trim.nonEmpty)
-
-          case None => false
-        })
-
-    val accountDetailsComplete =
-      userAnswers.get(AccountClosedPage(accountId)).exists {
-        isClosed =>
-          reportId.regime match {
-            case CRS =>
-              val balanceOrCurrencyComplete =
-                if (isClosed) {
-                  userAnswers
-                    .get(WhatWasTheAccountCurrencyPage(accountId))
-                    .isDefined
-                } else {
-                  userAnswers
-                    .get(WhatWasTheAccountBalancePage(accountId))
-                    .isDefined
-                }
-
-              balanceOrCurrencyComplete &&
-              userAnswers.get(IsUndocumentedAccountPage(accountId)).isDefined &&
-              userAnswers.get(IsDormantAccountPage(accountId)).isDefined &&
-              userAnswers.get(WasAccountOpenPage(accountId)).isDefined &&
-              jointAccountAnswersComplete(userAnswers, accountId) &&
-              userAnswers.get(WhatAccountTypePage(accountId)).isDefined
-
-            case FATCA =>
-              userAnswers
-                .get(WhatWasTheAccountBalancePage(accountId))
-                .isDefined
-
-            case _ => false
-          }
+        case FATCA =>
+          userAnswers.get(WhatWasTheAccountBalancePage(accountId))
       }
 
-    identifyingAnswersComplete &&
-    accountDetailsComplete &&
-    paymentAnswersComplete(userAnswers, accountId)
-  }
-
-  private def jointAccountAnswersComplete(
-    userAnswers: UserAnswers,
-    accountId: AccountId
-  )(implicit reportId: ReportId): Boolean =
-    userAnswers.get(IsJointAccountPage(accountId)) match {
-      case Some(true) =>
-        userAnswers.get(HowManyJointAccountHoldersPage(accountId)).isDefined
-      case Some(false) => true
-      case None        => false
-    }
-
-  private def paymentAnswersComplete(
-    userAnswers: UserAnswers,
-    accountId: AccountId
-  )(implicit reportId: ReportId): Boolean =
-    userAnswers.get(HavePaymentsPage(accountId)) match {
-      case Some(false) => true
-
-      case Some(true) =>
-        userAnswers.get(AccountPaymentListPage(accountId)).exists {
-          payments =>
-            payments.nonEmpty && payments.forall {
-              payment =>
-                payment.accountPaymentsAmount.exists {
-                  amount =>
-                    amount.amount.trim.nonEmpty &&
-                    amount.currency.code.trim.nonEmpty
-                }
-            }
-        }
-
-      case None => false
-    }
-
-  private def displayNumber(account: Account): Option[String] = {
-    val candidates =
-      if (account.haveNumber.contains(true)) {
-        Seq(account.whatIsAccountNumber, account.identifier)
-      } else {
-        Seq(account.identifier, account.whatIsAccountNumber)
+      havePayments <- userAnswers.get(HavePaymentsPage(accountId))
+      paymentsComplete = userAnswers.get(AccountPaymentListPage(accountId)).exists {
+        payments =>
+          payments.nonEmpty && payments.forall(_.accountPaymentsAmount.exists {
+            amount =>
+              amount.amount.trim.nonEmpty &&
+              amount.currency.code.trim.nonEmpty
+          })
       }
+      if !havePayments || paymentsComplete
+    } yield ()
 
-    candidates.flatten.find(_.trim.nonEmpty)
+    complete.isDefined
   }
 }
