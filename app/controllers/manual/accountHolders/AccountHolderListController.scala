@@ -37,6 +37,7 @@ import services.ViewFIService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.accountHolders.AccountHolderListView
 
+import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}
 
 class AccountHolderListController @Inject() (
@@ -136,6 +137,8 @@ class AccountHolderListController @Inject() (
         case (accountHolderId, accountHolder) =>
           accountHolderId -> withEquityInterestTypeRequirement(accountHolder, accountTypes)
       }
+      .sortBy(_._2.creationDateTime)(Ordering.Option[Instant].reverse)
+      .reverse
   }
 
   private def withEquityInterestTypeRequirement(

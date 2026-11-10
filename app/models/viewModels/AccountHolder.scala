@@ -27,6 +27,8 @@ import models.response.Address
 import models.{AddressNonUk, UkAddress}
 import play.api.libs.json.{Json, OFormat}
 
+import java.time.Instant
+
 case class AccountHolder(individualOrOrganisation: Option[IndividualOrOrganisation] = None,
                          organisationName: Option[String] = None,
                          accountHolderType: Option[AccountHolderTypes] = None,
@@ -44,7 +46,8 @@ case class AccountHolder(individualOrOrganisation: Option[IndividualOrOrganisati
                          account: Option[Seq[String]] = None,
                          provideEquityInterestType: Option[Boolean] = None,
                          equityInterestType: Option[EquityInterestTypes] = None,
-                         checkEquityInterestTypeRequired: Option[Boolean] = None // crs only
+                         checkEquityInterestTypeRequired: Option[Boolean] = None, // crs only
+                         creationDateTime: Option[Instant] = None // crs only
 ) {
 
   def canHaveCPSO() =
