@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-package controllers.manual
+package controllers.manual.reportingFI
 
+import connectors.DatabaseConnector
 import controllers.actions.Actions
 import forms.manual.HasFinishedCheckingFormProvider
+import models.ReportId
 import models.ServiceErrors.NoFiDetailFound
 import models.SubmissionsConstants.RegimeType
 import models.response.FIDetail
 import models.response.TINType.UTR
+import pages.manual.reportingFI.HaveYouFinishedCheckingFIDetailsPage
 import play.api.Logging
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, Messages}
@@ -41,6 +44,7 @@ class CheckDetailsForFinancialInstitutionController @Inject() (
   view: CheckDetailsForFinancialInstitutionView,
   service: ViewFIService,
   util: CheckDetailsForFinancialInstitutionUtil,
+  repository: DatabaseConnector,
   formProvider: HasFinishedCheckingFormProvider
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -55,7 +59,9 @@ class CheckDetailsForFinancialInstitutionController @Inject() (
         service
           .getFIDetail(request.fatcaId, request.reportId.fiId)
           .map(
-            fiDetail => Ok(renderPage(form, fiDetail, request.reportId.regime))
+            fiDetail =>
+              val updatedForm = request.userAnswers.get(HaveYouFinishedCheckingFIDetailsPage(request.reportId)).fold(form)(form.fill)
+              Ok(renderPage(updatedForm, fiDetail, request.reportId.regime))
           ),
         request.reportId.fiId
       )
@@ -63,19 +69,24 @@ class CheckDetailsForFinancialInstitutionController @Inject() (
 
   def onSubmit(): Action[AnyContent] = actions.withReportIdRequired().async {
     implicit request =>
+      given reportId: ReportId = request.reportId
       form
         .bindFromRequest()
         .fold(
           formWithErrors =>
             handleFiDetailErrors(
               service
-                .getFIDetail(request.fatcaId, request.reportId.fiId)
+                .getFIDetail(request.fatcaId, reportId.fiId)
                 .map(
-                  fiDetail => BadRequest(renderPage(formWithErrors, fiDetail, request.reportId.regime))
+                  fiDetail => BadRequest(renderPage(formWithErrors, fiDetail, reportId.regime))
                 ),
-              request.reportId.fiId
+              reportId.fiId
             ),
-          _ => Future.successful(Redirect(controllers.manual.routes.SendAReportController.onPageLoad()))
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(HaveYouFinishedCheckingFIDetailsPage(reportId), value))
+              _              <- repository.set(updatedAnswers)
+            } yield Redirect(controllers.manual.routes.SendAReportController.onPageLoad())
         )
   }
 
