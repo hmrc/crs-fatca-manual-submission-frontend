@@ -16,35 +16,29 @@
 
 package viewmodels.checkAnswers.manual.accountHolders
 
+import controllers.manual.accountHolders.routes
+import models.manual.accountHolders.OrganisationCrs
+import models.manual.accountHolders.OrganisationCrs._
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.accountHolders.{CurrentAccountHolderIdPage, IndividualOrOrganisationPage}
+import pages.manual.accountHolders.{AccountHolderOrganisationNamePage, CurrentAccountHolderIdPage, OrganisationCrsPage}
 import play.api.i18n.Messages
-import play.twirl.api.HtmlFormat
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist.*
 import viewmodels.implicits.*
 
-object individualOrOrganisationSummary {
+object AccountHolderTypeCrsSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
     for {
       currentAccountHolderId <- answers.get(CurrentAccountHolderIdPage()(reportId))
-      answer                 <- answers.get(IndividualOrOrganisationPage(currentAccountHolderId)(reportId))
-    } yield
-
-      val value = ValueViewModel(
-        HtmlContent(
-          HtmlFormat.escape(messages(s"individualOrOrganisation.$answer"))
-        )
+      accountHolderName      <- answers.get(AccountHolderOrganisationNamePage(currentAccountHolderId)(reportId))
+      answer                 <- answers.get(OrganisationCrsPage(currentAccountHolderId)(reportId))
+    } yield SummaryListRowViewModel(
+      key = messages("organisationCrs.checkYourAnswersLabel", accountHolderName),
+      value = ValueViewModel(messages(s"organisationCrs.$answer")),
+      actions = Seq(
+        ActionItemViewModel("site.change", routes.OrganisationCrsController.onPageLoad(CheckMode).url)
+          .withVisuallyHiddenText(messages("organisationCrs.change.hidden"))
       )
-
-      SummaryListRowViewModel(
-        key = "individualOrOrganisation.checkYourAnswersLabel",
-        value = value,
-        actions = Seq(
-          ActionItemViewModel("site.change", controllers.manual.accountHolders.routes.IndividualOrOrganisationController.onPageLoad(CheckMode).url)
-            .withVisuallyHiddenText(messages("individualOrOrganisation.change.hidden"))
-        )
-      )
+    )
 }
