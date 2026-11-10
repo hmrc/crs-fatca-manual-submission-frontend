@@ -706,7 +706,7 @@ class AccountHolderNavigatorSpec extends SpecBase {
               controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(NormalMode)
           }
 
-          "must go to resident tax country when  countries are empty" in {
+          "must go to /resident-for-tax when  countries are empty" in {
             val ua = UserAnswers("id")
               .withPage(SelfCertificationPage(accountHolderId, reportId), SelfCertification.allValidValues.head)
               .withPage(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId), Seq.empty)
@@ -715,13 +715,13 @@ class AccountHolderNavigatorSpec extends SpecBase {
               controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(NormalMode)
           }
 
-          "must go to under construction when countries are present" in {
+          "must go to /tax-resident-countries when countries are present" in {
             val ua = UserAnswers("id")
               .withPage(SelfCertificationPage(accountHolderId, reportId), SelfCertification.allValidValues.head)
               .withPage(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId), Seq(taxResidentInformation))
 
             navigator.nextPage(SelfCertificationPage(accountHolderId, reportId), NormalMode, ua) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.accountHolders.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
           }
 
         }
@@ -889,12 +889,12 @@ class AccountHolderNavigatorSpec extends SpecBase {
             navigator.nextPage(DoYouWantToAddTaxResidentCountryPage(accountHolderId, reportId), NormalMode, ua) mustBe
               controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(NormalMode)
           }
-          "must go to TaxResidentCountries page when answer is false" in {
+          "must go to check-answers page when answer is false" in {
 
             val ua = UserAnswers("id")
               .withPage(DoYouWantToAddTaxResidentCountryPage(accountHolderId, reportId), false)
             navigator.nextPage(DoYouWantToAddTaxResidentCountryPage(accountHolderId, reportId), NormalMode, ua) mustBe
-              controllers.routes.UnderConstructionController.onPageLoad()
+              controllers.manual.accountHolders.routes.AccountHolderCheckAnswersController.onPageLoad()
           }
 
           "must go to JourneyRecovery Page when AddressLookupPage is missing" in {

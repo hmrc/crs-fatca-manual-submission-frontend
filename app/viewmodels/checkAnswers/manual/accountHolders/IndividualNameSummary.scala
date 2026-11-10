@@ -32,7 +32,7 @@ object IndividualNameSummary {
       currentAccountHolderId <- answers.get(CurrentAccountHolderIdPage()(reportId))
       answer                 <- answers.get(AccountHolderIndividualNamePage(currentAccountHolderId)(reportId))
     } yield
-      val value = HtmlFormat.escape(answer.firstName).toString + "<br/>" + HtmlFormat.escape(answer.lastName).toString
+      val value = HtmlFormat.escape(s"${answer.firstName} ${answer.lastName}").toString
 
       SummaryListRowViewModel(
         key = "individualName.checkYourAnswersLabel",

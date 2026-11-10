@@ -492,11 +492,14 @@ POST       /manual/cp-so/change-tax-resident-countries                 controlle
 GET         /manual/cp-so/tax-resident-countries/:id/change        controllers.manual.cpso.CurrentTaxResidentIdController.onChangeRedirect(id: Int)
 GET         /manual/cp-so/tax-resident-countries/:id/remove        controllers.manual.cpso.CurrentTaxResidentIdController.onRemoveRedirect(id: Int)
 
-
 GET        /manual/cp-so/remove-tax-resident-country                      controllers.manual.cpso.RemoveTaxResidentCountryController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/cp-so/remove-tax-resident-country                        controllers.manual.cpso.RemoveTaxResidentCountryController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/cp-so/change-remove-tax-resident-country                 controllers.manual.cpso.RemoveTaxResidentCountryController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/cp-so/change-remove-tax-resident-country                 controllers.manual.cpso.RemoveTaxResidentCountryController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/account-holder/check-answers                                      controllers.manual.accountHolders.AccountHolderCheckAnswersController.onPageLoad()
+POST       /manual/account-holder/check-answers                                      controllers.manual.accountHolders.AccountHolderCheckAnswersController.onSubmit()
+
 
 GET         /manual/cp-so/account-holder                       controllers.manual.cpso.AccountHolderController.onPageLoad(mode: Mode = NormalMode)
 POST        /manual/cp-so/account-holder                       controllers.manual.cpso.AccountHolderController.onSubmit(mode: Mode = NormalMode)

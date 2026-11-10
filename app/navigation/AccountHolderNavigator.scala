@@ -73,7 +73,6 @@ object AccountHolderNavigator {
         case None =>
           controllers.routes.JourneyRecoveryController.onPageLoad()
       }
-
     case (IndividualOrOrganisationPage(id), mode, ua) =>
       ua.get(IndividualOrOrganisationPage(id))
         .fold(controllers.routes.JourneyRecoveryController.onPageLoad()) {
@@ -89,7 +88,6 @@ object AccountHolderNavigator {
         case None =>
           controllers.routes.JourneyRecoveryController.onPageLoad()
       }
-
     case (AccountHolderOrganisationNamePage(id), mode, ua) =>
       ua.get(AccountHolderOrganisationNamePage(id)) match {
         case Some(_) =>
@@ -118,7 +116,6 @@ object AccountHolderNavigator {
         case None =>
           controllers.routes.JourneyRecoveryController.onPageLoad()
       }
-
     case (pages.manual.accountHolders.IndividualHavePlaceOfBirthPage(id), mode, ua) => handleIndividualHavePlaceOfBirthNavigation(id, mode, ua)
     case (pages.manual.accountHolders.WhereAreTheyBasedPage(id), mode, ua) =>
       ua.get(WhereAreTheyBasedPage(id)) match {
@@ -159,7 +156,7 @@ object AccountHolderNavigator {
     case (AccHolderDoYouWantToAddTaxResidentCountryPage(accountHolderId, reportId), mode, ua) =>
       ua.get(AccHolderDoYouWantToAddTaxResidentCountryPage(accountHolderId, reportId)) match {
         case Some(true)  => controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(mode)
-        case Some(false) => controllers.routes.UnderConstructionController.onPageLoad()
+        case Some(false) => controllers.manual.accountHolders.routes.AccountHolderCheckAnswersController.onPageLoad()
         case None        => controllers.routes.JourneyRecoveryController.onPageLoad()
       }
     case (AccRemoveTaxResidentCountryPage(_, _), mode, _) => controllers.manual.accountHolders.routes.TaxResidentCountriesController.onPageLoad(mode)
@@ -277,7 +274,7 @@ object AccountHolderNavigator {
   ) =
     userAnswers.get(pages.manual.accountHolders.TaxResidentCountriesListPage(accountHolderId, reportId)) match {
       case Some(countries) if countries.isEmpty => controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(mode)
-      case Some(_)                              => controllers.routes.UnderConstructionController.onPageLoad()
+      case Some(_)                              => controllers.manual.accountHolders.routes.TaxResidentCountriesController.onPageLoad(mode)
       case None                                 => controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(mode)
     }
 
