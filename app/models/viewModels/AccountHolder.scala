@@ -19,12 +19,15 @@ package models.viewModels
 import cats.syntax.apply.*
 import models.SubmissionsConstants.{CRS, FATCA, RegimeType}
 import models.manual.TaxResidentInformation
+import models.manual.account.WhatAccountType
 import models.manual.accountHolders.IndividualOrOrganisation.*
 import models.manual.accountHolders.OrganisationCrs.PassiveWithMultiplePersons
 import models.manual.accountHolders.OrganisationFatca.{OwnerDocumented, Passive}
 import models.manual.accountHolders.*
 import models.response.Address
-import models.{AddressNonUk, UkAddress}
+import models.{AddressNonUk, ReportId, UkAddress, UserAnswers}
+import pages.manual.account.WhatAccountTypePage
+import pages.manual.accountHolders.{AccountHolderAddressNonUkPage, AccountHolderIndividualNamePage, AccountHolderOrganisationNamePage, AccountHolderPage, IndividualDateOfBirthPage, IndividualHaveDateOfBirthPage, IndividualHavePlaceOfBirthPage, IndividualOrOrganisationPage, IndividualPlaceOfBirthPage, IsThisTheAddressForAccountHoldersPage, OrganisationCrsPage, OrganisationFatcaPage, SelectAddressPage, WhatIsAddressForAccountHolderPage, WhereAreTheyBasedPage}
 import play.api.libs.json.{Json, OFormat}
 
 case class AccountHolder(individualOrOrganisation: Option[IndividualOrOrganisation] = None,
@@ -70,6 +73,40 @@ case class AccountHolder(individualOrOrganisation: Option[IndividualOrOrganisati
       case Some(Organisation) =>
         regimeType == CRS && accountHolderType.map(_.toString).contains(PassiveWithMultiplePersons.toString)
     }
+
+
+
+  def isAccountHolderComplete(userAnswers: UserAnswers, accountHolderId: AccountHolderId)(implicit reportId: ReportId) = {
+    for {
+      indOrg <- userAnswers.get(IndividualOrOrganisationPage(accountHolderId))
+      _ <- userAnswers.get(AccountHolderIndividualNamePage(accountHolderId)).orElse(userAnswers.get(AccountHolderOrganisationNamePage(accountHolderId)))
+      accountHolderDetail <- isIndividualAccountHolderComplete(userAnswers, accountHolderId, indOrg)
+      isAhBasedInUk <- userAnswers.get(WhereAreTheyBasedPage(accountHolderId))
+      _ <- if isAhBasedInUk then userAnswers.get(IsThisTheAddressForAccountHoldersPage(accountHolderId, reportId)).map(_ =>true).orElse(userAnswers.get(SelectAddressPage(accountHolderId, reportId))).map(_=>true)
+        .orElse(userAnswers.get(WhatIsAddressForAccountHolderPage(accountHolderId, reportId)).map(_=>true)) else userAnswers.get(AccountHolderAddressNonUkPage(accountHolderId, reportId)).map(_ =>true)
+      accountType <- userAnswers.get(WhatAccountTypePage()())
+    }
+  }
+
+
+//  def remove(userAnswers: UserAnswers, accountHolderId: AccountHolderId)(implicit reportId: ReportId)=
+//   val s = userAnswers.get(AccountHolderPage(accountHolderId,reportId)).get
+
+  def isIndividualAccountHolderComplete(userAnswers: UserAnswers, accountHolderId: AccountHolderId, individualOrOrganisation: IndividualOrOrganisation)(implicit reportId: ReportId): Option[Boolean] =
+    individualOrOrganisation match{
+      case Individual=>
+      for{
+        _ <-  userAnswers.get(AccountHolderIndividualNamePage(accountHolderId))
+        hasDob <- userAnswers.get(IndividualHaveDateOfBirthPage(accountHolderId))
+        _ <- if hasDob then userAnswers.get(IndividualDateOfBirthPage(accountHolderId)) else Option("not required")
+        hasPob <- userAnswers.get(IndividualHavePlaceOfBirthPage(accountHolderId))
+        - <- if hasDob then userAnswers.get(IndividualPlaceOfBirthPage(accountHolderId, reportId)) else Option("not required")
+      } yield true
+      case Organisation => userAnswers.get(AccountHolderOrganisationNamePage(accountHolderId)).flatMap(
+        _ => userAnswers.get(OrganisationCrsPage(accountHolderId)).orElse(userAnswers.get(OrganisationFatcaPage(accountHolderId)))
+      ).map(_ => true)
+    }
+
 
   def isComplete(regimeType: RegimeType): Boolean =
     individualOrOrganisation match {
