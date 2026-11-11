@@ -16,28 +16,23 @@
 
 package controllers.manual.accountHolders
 
+import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.manual.accountHolders.AccountHolderListFormProvider
-
-import javax.inject.Inject
-import models.{Mode, ReportId, UserAnswers}
-import models.SubmissionsConstants.CRS
-import models.manual.account.WhatAccountType
+import models.ServiceErrors.NoFiDetailFound
+import models.viewModels.UnlinkedAccounts
+import models.viewModels.UnlinkedAccounts.*
+import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.account.AccountsPage
 import pages.manual.accountHolders.DoYouWantToAddAnotherAccountHolder
+import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import connectors.DatabaseConnector
-import models.ServiceErrors.NoFiDetailFound
-import models.viewModels.UnlinkedAccounts.*
-import models.viewModels.{AccountHolder, AccountHolderId, AccountHolders, UnlinkedAccounts}
-import play.api.Logging
-import services.ViewFIService
+import services.{AccountHolderService, ViewFIService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.accountHolders.AccountHolderListView
 
-import java.time.Instant
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class AccountHolderListController @Inject() (
@@ -51,7 +46,8 @@ class AccountHolderListController @Inject() (
   formProvider: AccountHolderListFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: AccountHolderListView,
-  viewFIService: ViewFIService
+  viewFIService: ViewFIService,
+  accountHolderService: AccountHolderService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -69,7 +65,14 @@ class AccountHolderListController @Inject() (
         .map {
           fiDetail =>
             Ok(
-              view(form, mode, fiDetail.FIName, accountHolders(request.userAnswers), accountsWithoutAnAccountHolder(request.userAnswers), reportId.regime)
+              view(
+                form,
+                mode,
+                fiDetail.FIName,
+                accountHolderService.accountHolders(request.userAnswers),
+                accountsWithoutAnAccountHolder(request.userAnswers),
+                reportId.regime
+              )
             )
         }
         .recover {
@@ -99,7 +102,7 @@ class AccountHolderListController @Inject() (
                         formWithErrors,
                         mode,
                         fiDetail.FIName,
-                        accountHolders(request.userAnswers),
+                        accountHolderService.accountHolders(request.userAnswers),
                         accountsWithoutAnAccountHolder(request.userAnswers),
                         reportId.regime
                       )
@@ -118,43 +121,4 @@ class AccountHolderListController @Inject() (
             Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
         }
   }
-
-  private def accountHolders(userAnswers: UserAnswers)(implicit reportId: ReportId): Seq[(AccountHolderId, AccountHolder)] = {
-    val accountTypes: Map[String, Option[WhatAccountType]] =
-      userAnswers
-        .get(AccountsPage(reportId))
-        .map(
-          _.accounts.view.mapValues(_.whatAccountType).toMap
-        )
-        .getOrElse(Map.empty)
-
-    AccountHolders
-      .existingAccountHolders(userAnswers)
-      .filter(
-        (_, accountHolder) => accountHolder.getName().nonEmpty
-      )
-      .map {
-        case (accountHolderId, accountHolder) =>
-          accountHolderId -> withEquityInterestTypeRequirement(accountHolder, accountTypes)
-      }
-      .sortBy(_._2.creationDateTime)(Ordering.Option[Instant].reverse)
-      .reverse
-  }
-
-  private def withEquityInterestTypeRequirement(
-    accountHolder: AccountHolder,
-    accountTypes: Map[String, Option[WhatAccountType]]
-  )(implicit reportId: ReportId): AccountHolder =
-    accountHolder.account.filter(_.nonEmpty) match {
-      case Some(linkedAccountIds) if reportId.regime == CRS =>
-        val equityInterestTypeRequired =
-          linkedAccountIds.exists(
-            accountId => accountTypes.get(accountId).flatten.contains(WhatAccountType.InvestmentEntity)
-          )
-
-        accountHolder.copy(checkEquityInterestTypeRequired = Some(equityInterestTypeRequired))
-
-      case _ =>
-        accountHolder
-    }
 }
