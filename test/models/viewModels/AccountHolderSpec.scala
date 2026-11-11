@@ -153,7 +153,8 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
           accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution),
           areTheyBasedInTheUk = Some(false),
           taxResidentCountries = Some(Seq(taxResidentInformation)),
-          addressNonUk = Some(addressNonUk)
+          addressNonUk = Some(addressNonUk),
+          account = Some(Seq("12"))
         )
 
         "is incomplete if missing individualOrOrganisation" in {
@@ -177,7 +178,8 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
             "the uk residency question is unanswered"               -> baseAccountHolder.copy(areTheyBasedInTheUk = None),
             "the account holder type is missing"                    -> baseAccountHolder.copy(accountHolderType = None),
             "the organisation name is missing"                      -> baseAccountHolder.copy(organisationName = None),
-            "the individual or organisation question is unanswered" -> baseAccountHolder.copy(individualOrOrganisation = None)
+            "the individual or organisation question is unanswered" -> baseAccountHolder.copy(individualOrOrganisation = None),
+            "the account field is missing"                          -> baseAccountHolder.copy(account = None)
           )
         }
 
@@ -209,7 +211,9 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
               "the uk residency question is unanswered"               -> manualAccountHolder.copy(areTheyBasedInTheUk = None),
               "the account holder type is missing"                    -> manualAccountHolder.copy(accountHolderType = None),
               "the organisation name is missing"                      -> manualAccountHolder.copy(organisationName = None),
-              "the individual or organisation question is unanswered" -> manualAccountHolder.copy(individualOrOrganisation = None)
+              "the individual or organisation question is unanswered" -> manualAccountHolder.copy(individualOrOrganisation = None),
+              "the account field is missing"                          -> manualAccountHolder.copy(account = None),
+              "the account field is empty"                            -> manualAccountHolder.copy(account = Some(Seq()))
             )
           }
 
@@ -224,7 +228,9 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
               "the uk residency question is unanswered"               -> selectAccountHolder.copy(areTheyBasedInTheUk = None),
               "the account holder type is missing"                    -> selectAccountHolder.copy(accountHolderType = None),
               "the organisation name is missing"                      -> selectAccountHolder.copy(organisationName = None),
-              "the individual or organisation question is unanswered" -> selectAccountHolder.copy(individualOrOrganisation = None)
+              "the individual or organisation question is unanswered" -> selectAccountHolder.copy(individualOrOrganisation = None),
+              "the account field is missing"                          -> selectAccountHolder.copy(account = None),
+              "the account field is empty"                            -> selectAccountHolder.copy(account = Some(Seq()))
             )
           }
         }
@@ -244,7 +250,8 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
           individualPlaceOfBirth = Some(individualPlaceOfBirth),
           areTheyBasedInTheUk = Some(false),
           taxResidentCountries = Some(Seq(taxResidentInformation)),
-          addressNonUk = Some(addressNonUk)
+          addressNonUk = Some(addressNonUk),
+          account = Some(Seq("12"))
         )
 
         val ukAccountHolder = AccountHolder(
@@ -256,7 +263,8 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
           individualPlaceOfBirth = Some(individualPlaceOfBirth),
           areTheyBasedInTheUk = Some(true),
           taxResidentCountries = Some(Seq(taxResidentInformation)),
-          ukAddressManual = Some(ukAddressManual)
+          ukAddressManual = Some(ukAddressManual),
+          account = Some(Seq("12"))
         )
 
         "returns isCompleted for a non-uk account holder that has all the required properties populated" in {
@@ -297,6 +305,8 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
             "the uk residency question is unanswered"               -> nonUkAccountHolder.copy(areTheyBasedInTheUk = None),
             "the tax resident countries are missing"                -> nonUkAccountHolder.copy(taxResidentCountries = None),
             "the non-uk address is missing"                         -> nonUkAccountHolder.copy(addressNonUk = None),
+            "the account field is missing"                          -> nonUkAccountHolder.copy(account = None),
+            "the account field is empty"                            -> nonUkAccountHolder.copy(account = Some(Seq())),
             "a uk address is provided instead of a non-uk address" -> nonUkAccountHolder.copy(
               addressNonUk = None,
               ukAddressManual = Some(ukAddressManual)
@@ -357,7 +367,8 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
           organisationName = Some("Test Company"),
           accountHolderType = Some(PassiveNonFinancialEntityThatIsCRSReportable),
           selfCertification = Some(SelfCertification.Yes),
-          taxResidentCountries = Some(Seq(taxResidentInformation))
+          taxResidentCountries = Some(Seq(taxResidentInformation)),
+          account = Some(Seq("12"))
         )
 
         val nonUkAccountHolder = baseAccountHolder.copy(
@@ -499,7 +510,8 @@ class AccountHolderSpec extends AnyFreeSpec with Matchers {
           individualDateOfBirth = Some(individualDateOfBirth),
           individualPlaceOfBirth = Some(individualPlaceOfBirth),
           selfCertification = Some(SelfCertification.Yes),
-          taxResidentCountries = Some(Seq(taxResidentInformation))
+          taxResidentCountries = Some(Seq(taxResidentInformation)),
+          account = Some(Seq("12"))
         )
 
         val nonUkAccountHolder = baseAccountHolder.copy(

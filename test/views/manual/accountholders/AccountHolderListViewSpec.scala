@@ -62,7 +62,8 @@ class AccountHolderListViewSpec extends SpecBase {
     selfCertification = Some(SelfCertification.Yes),
     areTheyBasedInTheUk = Some(true),
     taxResidentCountries = Some(Seq(TaxResidentInformation(Country.GB, Some(true), Some("1234")))),
-    ukAddressManual = Some(ukAddress)
+    ukAddressManual = Some(ukAddress),
+    account = Some(Seq("12"))
   )
 
   private val beta = AccountHolderId("22") -> AccountHolder(
@@ -72,7 +73,8 @@ class AccountHolderListViewSpec extends SpecBase {
     selfCertification = Some(SelfCertification.Yes),
     areTheyBasedInTheUk = Some(true),
     taxResidentCountries = Some(Seq(TaxResidentInformation(Country.GB, Some(true), Some("1234")))),
-    ukAddressManual = Some(ukAddress)
+    ukAddressManual = Some(ukAddress),
+    account = Some(Seq("12"))
   )
 
   private val oneAccount  = Seq("GB11AAAA11111111111111")
