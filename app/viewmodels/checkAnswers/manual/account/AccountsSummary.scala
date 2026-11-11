@@ -26,79 +26,85 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{ActionItem, Actio
 object AccountsSummary {
 
   def apply(
-    accounts: Seq[(AccountId, String)],
-    isComplete: AccountId => Boolean,
-    changeAction: AccountId => Call,
-    removeAction: AccountId => Call
-  )(implicit messages: Messages): SummaryList =
+             accounts: Seq[(AccountId, String)],
+             isComplete: AccountId => Boolean,
+             changeAction: AccountId => Call,
+             removeAction: AccountId => Call
+           )(implicit messages: Messages): SummaryList =
     SummaryList(
-      classes = "accounts-summary-list",
       rows = accounts.map {
         case (accountId, accountNumber) =>
           row(
+            accountId,
             accountNumber,
             isComplete(accountId),
             changeAction(accountId),
             removeAction(accountId)
           )
-      }
+      },
+      classes = "accounts-summary-list accounts-summary-list--overview"
     )
 
   private def row(
-    accountNumber: String,
-    isComplete: Boolean,
-    changeAction: Call,
-    removeAction: Call
-  )(implicit messages: Messages): SummaryListRow = {
-
+                   accountId: AccountId,
+                   accountNumber: String,
+                   isComplete: Boolean,
+                   changeAction: Call,
+                   removeAction: Call
+                 )(implicit messages: Messages): SummaryListRow = {
     val incompleteTag =
       if (isComplete) ""
-      else
-        s"""<strong class="govuk-tag govuk-tag--blue">${escape(messages("accounts.incomplete"))}</strong>"""
+      else s"""<strong class="govuk-tag govuk-tag--blue">${escape(messages("accounts.incomplete"))}</strong>"""
 
     SummaryListRow(
       key = Key(
         content = HtmlContent(
           s"""<span class="govuk-!-margin-right-2">${escape(accountNumber)}</span> $incompleteTag"""
         ),
-        classes = "govuk-!-font-weight-regular"
+        classes = "accounts-summary-list__key govuk-!-font-weight-regular"
       ),
-      value = Value(content = Text("")),
+      value = Value(
+        content = Text(""),
+        classes = "accounts-summary-list__value"
+      ),
       actions = Some(
         Actions(
           items = Seq(
             action(
+              s"change-account-${accountId.value}",
               changeAction,
               "site.change",
               "accounts.change.hidden",
               accountNumber
             ),
             action(
+              s"remove-account-${accountId.value}",
               removeAction,
               "site.remove",
               "accounts.remove.hidden",
               accountNumber
             )
-          )
+          ),
+          classes = "accounts-summary-list__actions"
         )
       )
     )
   }
 
   private def action(
-    destination: Call,
-    visibleMessageKey: String,
-    hiddenMessageKey: String,
-    accountNumber: String
-  )(implicit messages: Messages): ActionItem =
+                      id: String,
+                      destination: Call,
+                      visibleMessageKey: String,
+                      hiddenMessageKey: String,
+                      accountNumber: String
+                    )(implicit messages: Messages): ActionItem =
     ActionItem(
       href = destination.url,
       content = HtmlContent(
-        s"""<span aria-hidden="true">${escape(messages(visibleMessageKey))}</span><span class="govuk-visually-hidden">${escape(
-            messages(hiddenMessageKey, accountNumber)
-          )}</span>"""
+        s"""<span aria-hidden="true">${escape(messages(visibleMessageKey))}</span><span class="govuk-visually-hidden">${escape(messages(hiddenMessageKey, accountNumber))}</span>"""
       ),
-      visuallyHiddenText = None
+      visuallyHiddenText = None,
+      attributes = Map("id" -> id)
     )
 
   private def escape(value: String): String =

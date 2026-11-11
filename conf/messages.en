@@ -1247,8 +1247,8 @@ accountHolders.checkAnswers.heading = Check your answers for the account holder
 
 account.remove.account.title = Remove this account
 account.remove.account.heading = Remove this account
-account.remove.account.paragraph.crs = If you remove this account, we'll keep its account holders and controlling persons. You'll need to link them to another account or remove them.
-account.remove.account.paragraph.fatca = If you remove this account, we'll keep its account holders and substantial owners. You'll need to link them to another account or remove them.
+account.remove.account.paragraph.crs = If you remove this account, we’ll keep its account holders and controlling persons. You’ll need to link them to another account or remove them.
+account.remove.account.paragraph.fatca = If you remove this account, we’ll keep its account holders and substantial owners. You’ll need to link them to another account or remove them.
 account.remove.account.question = Are you sure you want to remove the account {0}?
 account.remove.account.error.required = Select yes if you are sure you want to remove the account
 
