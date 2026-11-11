@@ -23,7 +23,7 @@
   heading: views.html.components.Heading
 )
 
-@(form: Form[_], mode: Mode, regime: String = "CRS", fiName: String = "Alpha Holding Plc")(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, regime: String, fiName: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages(s"cpso.${regime.toLowerCase}.isCpsoSectionComplete.title"))) {
 

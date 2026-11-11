@@ -27,7 +27,7 @@ import viewmodels.implicits._
 object IsCpsoSectionCompleteSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
-    answers.get(IsCpsoSectionCompletePage()).map {
+    answers.get(IsCpsoSectionCompletePage(reportId)).map {
       answer =>
 
         val value = if (answer) "site.yes" else "site.no"

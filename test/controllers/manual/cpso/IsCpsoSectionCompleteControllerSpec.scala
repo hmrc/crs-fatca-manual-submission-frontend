@@ -20,6 +20,7 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.cpso.IsCpsoSectionCompleteFormProvider
+import models.ServiceErrors.NoFiDetailFound
 import models.SubmissionsConstants.CRS
 import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
@@ -31,7 +32,8 @@ import pages.manual.cpso.IsCpsoSectionCompletePage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
+import services.ViewFIService
 import views.html.manual.cpso.IsCpsoSectionCompleteView
 
 import scala.concurrent.Future
@@ -40,8 +42,10 @@ class IsCpsoSectionCompleteControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new IsCpsoSectionCompleteFormProvider()
-  val form         = formProvider(CRS)
+  val mockFiService: ViewFIService = mock[ViewFIService]
+  val formProvider                 = new IsCpsoSectionCompleteFormProvider()
+
+  val form = formProvider(CRS)
 
   lazy val isCpsoSectionCompleteRoute = controllers.manual.cpso.routes.IsCpsoSectionCompleteController.onPageLoad(NormalMode).url
 
@@ -51,7 +55,11 @@ class IsCpsoSectionCompleteControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(ua))
+        .overrides(bind[ViewFIService].toInstance(mockFiService))
+        .build()
+
+      when(mockFiService.getFIDetail(any(), any())(using any())).thenReturn(Future.successful(fiDetail))
 
       running(application) {
         val request = FakeRequest(GET, isCpsoSectionCompleteRoute)
@@ -61,17 +69,36 @@ class IsCpsoSectionCompleteControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[IsCpsoSectionCompleteView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, reportId.regime.value, "fiName")(request, messages(application)).toString
+      }
+    }
+
+    "must redirect when FIDetail fails to retrieve" in {
+
+      val application = applicationBuilder(maybeUserAnswers = Some(ua))
+        .overrides(bind[ViewFIService].toInstance(mockFiService))
+        .build()
+      when(mockFiService.getFIDetail(any(), any())(using any())).thenReturn(Future.failed(NoFiDetailFound))
+
+      running(application) {
+        val request = FakeRequest(GET, isCpsoSectionCompleteRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
+      val userAnswers = ua.set(IsCpsoSectionCompletePage(reportId), true).success.value
 
-      val userAnswers = ua.set(IsCpsoSectionCompletePage(), true).success.value
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
+        .overrides(bind[ViewFIService].toInstance(mockFiService))
+        .build()
 
-      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
+      when(mockFiService.getFIDetail(any(), any())(using any())).thenReturn(Future.successful(fiDetail))
 
       running(application) {
         val request = FakeRequest(GET, isCpsoSectionCompleteRoute)
@@ -81,7 +108,7 @@ class IsCpsoSectionCompleteControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode, reportId.regime.value, "fiName")(request, messages(application)).toString
       }
     }
 
@@ -95,9 +122,12 @@ class IsCpsoSectionCompleteControllerSpec extends SpecBase with MockitoSugar {
         applicationBuilder(maybeUserAnswers = Some(ua))
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockSessionRepository)
+            bind[DatabaseConnector].toInstance(mockSessionRepository),
+            bind[ViewFIService].toInstance(mockFiService)
           )
           .build()
+
+      when(mockFiService.getFIDetail(any(), any())(using any())).thenReturn(Future.successful(fiDetail))
 
       running(application) {
         val request =
@@ -113,7 +143,11 @@ class IsCpsoSectionCompleteControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(ua))
+        .overrides(bind[ViewFIService].toInstance(mockFiService))
+        .build()
+
+      when(mockFiService.getFIDetail(any(), any())(using any())).thenReturn(Future.successful(fiDetail))
 
       running(application) {
         val request =
@@ -127,7 +161,7 @@ class IsCpsoSectionCompleteControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, reportId.regime.value, "fiName")(request, messages(application)).toString
       }
     }
 

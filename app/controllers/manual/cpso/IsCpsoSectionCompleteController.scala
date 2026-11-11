@@ -84,17 +84,18 @@ class IsCpsoSectionCompleteController @Inject() (
 
       viewFIService
         .getFIDetail(request.fatcaId, reportId.fiId)
-        .flatMap { fiDetail =>
-          form
-            .bindFromRequest()
-            .fold(
-              formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, reportId.regime.value, fiDetail.FIName))),
-              value =>
-                for {
-                  updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(IsCpsoSectionCompletePage(reportId), value))
-                  _              <- repository.set(updatedAnswers)
-                } yield Redirect(navigator.nextPage(IsCpsoSectionCompletePage(reportId), mode, updatedAnswers))
-            )
+        .flatMap {
+          fiDetail =>
+            form
+              .bindFromRequest()
+              .fold(
+                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, reportId.regime.value, fiDetail.FIName))),
+                value =>
+                  for {
+                    updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(IsCpsoSectionCompletePage(reportId), value))
+                    _              <- repository.set(updatedAnswers)
+                  } yield Redirect(navigator.nextPage(IsCpsoSectionCompletePage(reportId), mode, updatedAnswers))
+              )
         }
         .recover {
           case NoFiDetailFound =>

@@ -510,7 +510,7 @@ GET        /manual/cp-so/check-cpso-add-or-allowed      controllers.manual.cpso.
 
 
 
-GET        /isCpsoSectionComplete                        controllers.manual.cpso.IsCpsoSectionCompleteController.onPageLoad(mode: Mode = NormalMode)
-POST       /isCpsoSectionComplete                        controllers.manual.cpso.IsCpsoSectionCompleteController.onSubmit(mode: Mode = NormalMode)
-GET        /changeIsCpsoSectionComplete                  controllers.manual.cpso.IsCpsoSectionCompleteController.onPageLoad(mode: Mode = CheckMode)
-POST       /changeIsCpsoSectionComplete                  controllers.manual.cpso.IsCpsoSectionCompleteController.onSubmit(mode: Mode = CheckMode)
+GET         /manual/is-cp-so-section-completed                        controllers.manual.cpso.IsCpsoSectionCompleteController.onPageLoad(mode: Mode = NormalMode)
+POST        /manual/is-cp-so-section-completed                         controllers.manual.cpso.IsCpsoSectionCompleteController.onSubmit(mode: Mode = NormalMode)
+GET         /manual/change-is-cp-so-section-completed                   controllers.manual.cpso.IsCpsoSectionCompleteController.onPageLoad(mode: Mode = CheckMode)
+POST        /manual/change-is-cp-so-section-completed                  controllers.manual.cpso.IsCpsoSectionCompleteController.onSubmit(mode: Mode = CheckMode)

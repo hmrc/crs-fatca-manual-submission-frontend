@@ -135,6 +135,8 @@ class ManualSubmissionNavigator @Inject() () {
       controllers.manual.cpso.routes.TaxResidentCountriesController.onPageLoad(mode)
     case (pages.manual.cpso.AccountHolderIdsPage(cpsoId, reportId), mode, ua) =>
       handleAccountHolderPageNavigationForCPSO(ua, mode, cpsoId)
+    case (IsCpsoSectionCompletePage(reportId), mode, ua) =>
+      controllers.manual.routes.SendAReportController.onPageLoad()
   }
 
   private def sponsorNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
