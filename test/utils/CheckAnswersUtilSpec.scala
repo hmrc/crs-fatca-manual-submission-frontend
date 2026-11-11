@@ -57,7 +57,9 @@ class CheckAnswersUtilSpec extends SpecBase {
 
         val result = util.getReportDetailsRows(ua)
 
-        result.rows.size mustBe 3
+        val rows = result.rows
+        rows.size mustBe 3
+        result.classes must include("govuk-!-margin-bottom-5")
       }
     }
 

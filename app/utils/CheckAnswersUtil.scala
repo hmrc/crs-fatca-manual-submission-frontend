@@ -36,7 +36,7 @@ class CheckAnswersUtil @Inject() {
   def getReportDetailsRows(ua: UserAnswers)(implicit messages: Messages): SummaryList =
     SummaryListViewModel(
       rows = Seq(CrsOrFatcaSummary.row(ua), ReportingYearSummary.row(ua), TypeOfReportSummary.row(ua)).flatten
-    ).withCssClass("govuk-!-margin-bottom-9")
+    ).withCssClass("govuk-!-margin-bottom-5")
 
   def getFilerCategoryRows(ua: UserAnswers)(implicit messages: Messages, reportId: ReportId): SummaryList =
     SummaryListViewModel(
