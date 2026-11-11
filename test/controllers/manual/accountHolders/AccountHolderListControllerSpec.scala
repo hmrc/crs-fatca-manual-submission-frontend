@@ -20,6 +20,7 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.accountHolders.AccountHolderListFormProvider
+import java.time.Instant
 import models.ServiceErrors.NoFiDetailFound
 import models.manual.accountHolders.AccountHolderTypes
 import models.manual.accountHolders.AccountHolderTypes.*
@@ -31,6 +32,7 @@ import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{verify, when}
+import org.jsoup.Jsoup
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
 import pages.manual.account.AccountsPage
@@ -45,6 +47,7 @@ import services.ViewFIService
 import views.html.manual.accountHolders.AccountHolderListView
 
 import scala.concurrent.Future
+import scala.jdk.CollectionConverters.*
 
 class AccountHolderListControllerSpec extends SpecBase with MockitoSugar {
 
@@ -71,6 +74,23 @@ class AccountHolderListControllerSpec extends SpecBase with MockitoSugar {
   private val unnamedHolder = AccountHolder(
     individualOrOrganisation = Some(Individual)
   )
+
+  private val oldestCreated = Instant.parse("2025-03-01T09:00:00Z")
+  private val middleCreated = Instant.parse("2025-08-15T12:30:00Z")
+  private val newestCreated = Instant.parse("2026-01-20T16:45:00Z")
+
+  private def organisationHolder(name: String, creationDateTime: Option[Instant]): AccountHolder =
+    AccountHolder(
+      individualOrOrganisation = Some(Organisation),
+      organisationName = Some(name),
+      accountHolderType = Some(PassiveNonFinancialWithOneOrMoreControllingPerson),
+      creationDateTime = creationDateTime
+    )
+
+  private val oldestHolder  = organisationHolder("Oldest Holdings", Some(oldestCreated))
+  private val middleHolder  = organisationHolder("Middle Holdings", Some(middleCreated))
+  private val newestHolder  = organisationHolder("Newest Holdings", Some(newestCreated))
+  private val undatedHolder = organisationHolder("Undated Holdings", None)
 
   private val formProvider = new AccountHolderListFormProvider()
   private val form         = formProvider()
@@ -130,6 +150,15 @@ class AccountHolderListControllerSpec extends SpecBase with MockitoSugar {
       )(req, messages(app), req.flash)
       .toString
 
+  private def renderedAccountHolderNames(result: Future[play.api.mvc.Result]): List[String] =
+    Jsoup
+      .parse(contentAsString(result))
+      .select(".govuk-summary-list__row dt span")
+      .eachText()
+      .asScala
+      .map(_.trim)
+      .toList
+
   "AccountHolderList Controller" - {
 
     "must return OK and the correct view for a GET" in {
@@ -146,6 +175,60 @@ class AccountHolderListControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual expectedView(application, request)
+      }
+    }
+
+    "must order account holders by creationDateTime, oldest first" in {
+
+      val holders = Map(
+        "21" -> newestHolder,
+        "22" -> oldestHolder,
+        "23" -> middleHolder
+      )
+
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(userAnswersFor(holders = holders, links = Map.empty)))
+          .overrides(bind[ViewFIService].toInstance(mockFiService()))
+          .build()
+
+      running(application) {
+        val request = FakeRequest(GET, accountHolderListRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual OK
+        renderedAccountHolderNames(result) mustBe List(
+          "Oldest Holdings",
+          "Middle Holdings",
+          "Newest Holdings"
+        )
+      }
+    }
+
+    "must list account holders without a creationDateTime before those that have one" in {
+
+      val holders = Map(
+        "21" -> newestHolder,
+        "22" -> undatedHolder,
+        "23" -> oldestHolder
+      )
+
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(userAnswersFor(holders = holders, links = Map.empty)))
+          .overrides(bind[ViewFIService].toInstance(mockFiService()))
+          .build()
+
+      running(application) {
+        val request = FakeRequest(GET, accountHolderListRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual OK
+        renderedAccountHolderNames(result) mustBe List(
+          "Undated Holdings",
+          "Oldest Holdings",
+          "Newest Holdings"
+        )
       }
     }
 
