@@ -90,7 +90,6 @@ class AccountHolderListControllerSpec extends SpecBase with MockitoSugar {
   private val oldestHolder  = organisationHolder("Oldest Holdings", Some(oldestCreated))
   private val middleHolder  = organisationHolder("Middle Holdings", Some(middleCreated))
   private val newestHolder  = organisationHolder("Newest Holdings", Some(newestCreated))
-  private val undatedHolder = organisationHolder("Undated Holdings", None)
 
   private val formProvider = new AccountHolderListFormProvider()
   private val form         = formProvider()

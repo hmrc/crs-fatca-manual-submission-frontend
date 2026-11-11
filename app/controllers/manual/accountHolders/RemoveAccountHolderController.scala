@@ -25,7 +25,7 @@ import models.viewModels.manual.cpso.{CPSOId, ControllingOrSubstantialOwners}
 import models.{Mode, ReportId, UserAnswers}
 import navigation.ManualSubmissionNavigator
 import pages.manual.accountHolders.{AccountHolderPage, RemoveAccountHolderPage}
-import pages.manual.cpso.{AccountHolderIdsPage, CPSOPage, CurrentCPSOIdPage}
+import pages.manual.cpso.AccountHolderIdsPage
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
@@ -108,15 +108,7 @@ class RemoveAccountHolderController @Inject() (
         answers.flatMap {
           current =>
             val remaining = current.get(AccountHolderIdsPage(cpsoId, reportId)).getOrElse(Set.empty) - accountHolderId
-
-            if remaining.isEmpty then
-              for {
-                withoutCpso <- current.remove(CPSOPage(cpsoId))
-                withoutCurrent <-
-                  if withoutCpso.get(CurrentCPSOIdPage()).contains(cpsoId) then withoutCpso.remove(CurrentCPSOIdPage())
-                  else Success(withoutCpso)
-              } yield withoutCurrent
-            else current.setWithReportId(AccountHolderIdsPage(cpsoId, reportId), remaining)
+            current.setWithReportId(AccountHolderIdsPage(cpsoId, reportId), remaining)
         }
     }
 

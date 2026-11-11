@@ -204,7 +204,7 @@ class RemoveAccountHolderControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must also remove the CP-SO linked to the account holder and clear the current CP-SO id" in {
+    "must not remove the CP-SO linked to the account holder" in {
 
       val mockRepository = mock[DatabaseConnector]
       when(mockRepository.set(any())(any())) thenReturn Future.successful(())
@@ -229,9 +229,9 @@ class RemoveAccountHolderControllerSpec extends SpecBase with MockitoSugar {
         val captor = ArgumentCaptor.forClass(classOf[UserAnswers])
         verify(mockRepository).set(captor.capture())(any())
 
-        captor.getValue.get(CPSOPage(linkedCpsoId)) mustBe None
+        captor.getValue.get(CPSOPage(linkedCpsoId)) mustBe Some(ControllingOrSubstantialOwner(Some(List()), Some(IndividualName("Thando", "Mafela")), None))
         captor.getValue.get(CPSOPage(unlinkedCpsoId)) must not be empty
-        captor.getValue.get(CurrentCPSOIdPage()) mustBe None
+        captor.getValue.get(CurrentCPSOIdPage()) mustBe Some(CPSOId("80"))
       }
     }
 
