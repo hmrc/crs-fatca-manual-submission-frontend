@@ -18,7 +18,7 @@ package services
 
 import models.{ReportId, UserAnswers}
 import models.viewModels.TaskStatus
-import models.viewModels.TaskStatus.{Incomplete, Completed}
+import models.viewModels.TaskStatus.{Completed, Incomplete}
 import pages.manual.cpso.IsCpsoSectionCompletePage
 
 import javax.inject.Inject
