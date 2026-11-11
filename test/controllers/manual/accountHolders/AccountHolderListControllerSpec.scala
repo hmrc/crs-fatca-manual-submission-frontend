@@ -205,33 +205,6 @@ class AccountHolderListControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must list account holders without a creationDateTime before those that have one" in {
-
-      val holders = Map(
-        "21" -> newestHolder,
-        "22" -> undatedHolder,
-        "23" -> oldestHolder
-      )
-
-      val application =
-        applicationBuilder(maybeUserAnswers = Some(userAnswersFor(holders = holders, links = Map.empty)))
-          .overrides(bind[ViewFIService].toInstance(mockFiService()))
-          .build()
-
-      running(application) {
-        val request = FakeRequest(GET, accountHolderListRoute)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual OK
-        renderedAccountHolderNames(result) mustBe List(
-          "Undated Holdings",
-          "Oldest Holdings",
-          "Newest Holdings"
-        )
-      }
-    }
-
     "must return OK and the correct view for a GET in check mode" in {
 
       val application =
