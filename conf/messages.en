@@ -236,6 +236,8 @@ typeOfReport.change.hidden =  Change what type of report you would like to send
 
 reportDetailsCheckAnswers.title = Check your report details for the financial institution
 reportDetailsCheckAnswers.heading = Check your report details for {0}
+reportDetailsCheckAnswers.warning = You will not be able to change these details after creating the draft. To use different details later, you must create a new draft.
+reportDetailsCheckAnswers.btn = Create draft
 
 haveSponsor.title = Does the financial institution have a sponsor?
 haveSponsor.heading = Does {0} have a sponsor?
@@ -1211,6 +1213,21 @@ cpso.fatca.removeTaxResidentCountry.error.required = 	Select yes if you are sure
 cpso.taxResidentCountries.country.removed  = {0} removed.
 cpso.removeTaxResidentCountry.change.hidden = RemoveTaxResidentCountry
 
+accounts.title.noAccounts = You have not added any accounts
+accounts.title.oneAccount = You have added 1 account
+accounts.title.multipleAccounts = You have added {0} accounts
+
+accounts.noAccountsRequired = You must add at least one account.
+accounts.addAccount = Add an account
+accounts.backToReport = Back to send a {0} report for {1}
+
+accounts.addAnotherAccount = Do you need to add another account?
+accounts.error.required = Select yes if you need to add another account
+
+accounts.incomplete = Incomplete
+accounts.change.hidden = Change account {0}
+accounts.remove.hidden = Remove account {0}
+
 cpso.crs.accountHolder.title = Account holders linked to this controlling person
 cpso.fatca.accountHolder.title = Account holders linked to this substantial owner
 cpso.crs.accountHolder.heading= Account holders linked to this controlling person
@@ -1237,3 +1254,12 @@ cpso.crs.isCpsoSectionComplete.paragraph = You can still change the information 
 cpso.fatca.isCpsoSectionComplete.paragraph = You can still change the information for the substantial owners later.
 cpso.crs.isCpsoSectionComplete.error.required = Select yes if you have finished adding the controlling persons for the financial institution
 cpso.fatca.isCpsoSectionComplete.error.required = Select yes if you have finished adding the subtstantial owners for the financial institution
+
+account.remove.account.title = Remove this account
+account.remove.account.heading = Remove this account
+account.remove.account.paragraph.crs = If you remove this account, we’ll keep its account holders and controlling persons. You’ll need to link them to another account or remove them.
+account.remove.account.paragraph.fatca = If you remove this account, we’ll keep its account holders and substantial owners. You’ll need to link them to another account or remove them.
+account.remove.account.question = Are you sure you want to remove the account {0}?
+account.remove.account.error.required = Select yes if you are sure you want to remove the account
+
+accounts.removed = Account {0} removed.

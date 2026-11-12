@@ -54,10 +54,14 @@ class AccountCheckAnswersController @Inject() (override val messagesApi: Message
 
   }
 
-  def onSubmit: Action[AnyContent] = actions.withReportIdRequiredAndAccountIdRequired().async {
-    implicit request =>
-      Future.successful(Redirect(controllers.manual.routes.SendAReportController.onPageLoad().url))
-
-  }
+  def onSubmit: Action[AnyContent] =
+    actions.withReportIdRequiredAndAccountIdRequired().async {
+      _ =>
+        Future.successful(
+          Redirect(
+            controllers.manual.account.routes.AccountsController.onPageLoad()
+          )
+        )
+    }
 
 }
