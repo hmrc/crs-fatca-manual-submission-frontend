@@ -18,7 +18,10 @@
         govukRadios: GovukRadios,
         govukButton: GovukButton,
         heading: components.Heading)
-@(accountId: String, fiName: String, regime: String, mode: Mode)(implicit request: Request[_], messages: Messages)
+@(accountId: String, fiName: String, regime: String, mode: Mode, isAccountHolderEmpty: Boolean)(implicit request: Request[_], messages: Messages)
+@if(isAccountHolderEmpty) {
+  <p class="govuk-body">@messages("accountHolderList.empty.paragraph")</p>
+}
 
 <p class="govuk-body">@messages("accountHolderList.one.account.missing.accountHolder.p1", accountId)</p>
 

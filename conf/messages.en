@@ -1295,6 +1295,6 @@ accountHolder.removeAccountHolder.p1 = Before you can send your report, you must
 accountHolder.removeAccountHolder.bullet1 = account has at least one account holder
 accountHolder.crs.removeAccountHolder.bullet2 = controlling person links to at least one account holder
 accountHolder.fatca.removeAccountHolder.bullet2 = substantial owner links to at least one account holder
-accountHolder.removeAccountHolder.radio.heading = Are you sure you want to remove the account holder {0} plc?
+accountHolder.removeAccountHolder.radio.heading = Are you sure you want to remove the account holder {0}?
 accountHolder.removeAccountHolder.error.required = 	Select yes if you are sure you want to remove the account holder
 accountHolder.removeAccountHolder.change.hidden = RemoveAccountHolder

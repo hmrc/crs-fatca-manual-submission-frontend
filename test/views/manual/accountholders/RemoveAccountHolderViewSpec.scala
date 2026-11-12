@@ -103,12 +103,12 @@ class RemoveAccountHolderViewSpec extends SpecBase {
 
       "must ask for confirmation naming the account holder" in {
         render().select(".govuk-fieldset__legend--m").text() mustBe
-          "Are you sure you want to remove the account holder Alpha Holdings plc?"
+          "Are you sure you want to remove the account holder Alpha Holdings?"
       }
 
       "must use the supplied account holder name" in {
         render(name = "Beta Ltd").select(".govuk-fieldset__legend--m").text() mustBe
-          "Are you sure you want to remove the account holder Beta Ltd plc?"
+          "Are you sure you want to remove the account holder Beta Ltd?"
       }
 
       "must style the legend as a medium heading" in {

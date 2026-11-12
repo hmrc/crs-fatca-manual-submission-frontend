@@ -262,7 +262,7 @@ class AccountHolderListViewSpec extends SpecBase {
         val button = render(holders = Seq(alpha), accountsWithoutHolders = Seq.empty).select("button.govuk-button")
 
         button.size() mustBe 1
-        button.text() mustBe "Save and continue"
+        button.text() mustBe "Continue"
         button.attr("type") mustBe "submit"
       }
     }

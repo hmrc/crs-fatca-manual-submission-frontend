@@ -51,19 +51,19 @@
 
             @if(accountsWithOutAccountHolders.nonEmpty) {
               @if(accountsWithOutAccountHolders.size == 1) {
-                  @contentForOneAccountWithoutAnAccountHolder(link, govukRadios, govukButton, heading)(accountsWithOutAccountHolders.headOption.getOrElse(""), fiName, regime.value, mode)
+                  @contentForOneAccountWithoutAnAccountHolder(link, govukRadios, govukButton, heading)(accountsWithOutAccountHolders.headOption.getOrElse(""), fiName, regime.value, mode, accountHolders.isEmpty)
               }else {
-                  @ContentForManyAccountsWithoutAccountHolder(link, govukRadios, govukButton, heading)(accountsWithOutAccountHolders, fiName, regime.value, mode)
+                  @ContentForManyAccountsWithoutAccountHolder(link, govukRadios, govukButton, heading)(accountsWithOutAccountHolders, fiName, regime.value, mode, accountHolders.isEmpty)
               }
             }
         }else {
             @AccountHolderTable()(accountHolders, regime)
 
             @if(accountsWithOutAccountHolders.size == 1) {
-                @contentForOneAccountWithoutAnAccountHolder(link, govukRadios, govukButton, heading)(accountsWithOutAccountHolders.headOption.getOrElse(""), fiName, regime.value, mode)
+                @contentForOneAccountWithoutAnAccountHolder(link, govukRadios, govukButton, heading)(accountsWithOutAccountHolders.headOption.getOrElse(""), fiName, regime.value, mode, accountHolders.isEmpty)
             } else {
                 @if(accountsWithOutAccountHolders.size > 1) {
-                    @ContentForManyAccountsWithoutAccountHolder(link, govukRadios, govukButton, heading)(accountsWithOutAccountHolders, fiName, regime.value, mode)
+                    @ContentForManyAccountsWithoutAccountHolder(link, govukRadios, govukButton, heading)(accountsWithOutAccountHolders, fiName, regime.value, mode, accountHolders.isEmpty)
 
                 } else {
                     @govukRadios(
@@ -71,7 +71,7 @@
                            field = form("value"),
                             legend = LegendViewModel(messages("accountHolderList.radio.heading")).withCssClass("govuk-fieldset__legend--m")
                        ))
-                    @govukButton(ButtonViewModel(messages("site.saveContinue")))
+                    @govukButton(ButtonViewModel(messages("site.continue")))
                 }
             }
 
