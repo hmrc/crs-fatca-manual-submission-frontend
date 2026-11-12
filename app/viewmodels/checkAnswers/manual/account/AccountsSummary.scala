@@ -35,7 +35,6 @@ object AccountsSummary {
       rows = accounts.map {
         case (accountId, accountNumber) =>
           row(
-            accountId,
             accountNumber,
             isComplete(accountId),
             changeAction(accountId),
@@ -46,7 +45,6 @@ object AccountsSummary {
     )
 
   private def row(
-    accountId: AccountId,
     accountNumber: String,
     isComplete: Boolean,
     changeAction: Call,
@@ -55,6 +53,8 @@ object AccountsSummary {
     val incompleteTag =
       if (isComplete) ""
       else s"""<strong class="govuk-tag govuk-tag--blue">${escape(messages("accounts.incomplete"))}</strong>"""
+
+    val accountLinkId = accountNumber.trim.replaceAll("\\s+", "-")
 
     SummaryListRow(
       key = Key(
@@ -71,14 +71,14 @@ object AccountsSummary {
         Actions(
           items = Seq(
             action(
-              s"change-account-${accountId.value}",
+              s"change-account-$accountLinkId",
               changeAction,
               "site.change",
               "accounts.change.hidden",
               accountNumber
             ),
             action(
-              s"remove-account-${accountId.value}",
+              s"remove-account-$accountLinkId",
               removeAction,
               "site.remove",
               "accounts.remove.hidden",
