@@ -508,9 +508,5 @@ POST        /manual/cp-so/change-account-holder                 controllers.manu
 
 GET        /manual/cp-so/check-cpso-add-or-allowed      controllers.manual.cpso.CheckCPSOAddedOrAllowedController.onChangeRedirect(mode: Mode = NormalMode)
 
-
-
 GET         /manual/is-cp-so-section-completed                        controllers.manual.cpso.IsCpsoSectionCompleteController.onPageLoad(mode: Mode = NormalMode)
 POST        /manual/is-cp-so-section-completed                         controllers.manual.cpso.IsCpsoSectionCompleteController.onSubmit(mode: Mode = NormalMode)
-GET         /manual/change-is-cp-so-section-completed                   controllers.manual.cpso.IsCpsoSectionCompleteController.onPageLoad(mode: Mode = CheckMode)
-POST        /manual/change-is-cp-so-section-completed                  controllers.manual.cpso.IsCpsoSectionCompleteController.onSubmit(mode: Mode = CheckMode)

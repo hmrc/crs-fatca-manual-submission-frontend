@@ -27,7 +27,7 @@
 
 @layout(pageTitle = title(form, messages(s"cpso.${regime.toLowerCase}.isCpsoSectionComplete.title"))) {
 
-  @formHelper(action = controllers.manual.cpso.routes.IsCpsoSectionCompleteController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+  @formHelper(action = controllers.manual.cpso.routes.IsCpsoSectionCompleteController.onSubmit(), Symbol("autoComplete") -> "off") {
 
     @if(form.errors.nonEmpty) {
       @govukErrorSummary(ErrorSummaryViewModel(form))

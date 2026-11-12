@@ -20,7 +20,7 @@ import controllers.actions.*
 import forms.manual.cpso.IsCpsoSectionCompleteFormProvider
 
 import javax.inject.Inject
-import models.{Mode, ReportId}
+import models.{Mode, NormalMode, ReportId}
 import navigation.ManualSubmissionNavigator
 import pages.manual.cpso.IsCpsoSectionCompletePage
 import play.api.i18n.{I18nSupport, MessagesApi}

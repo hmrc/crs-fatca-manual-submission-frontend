@@ -47,7 +47,7 @@ class IsCpsoSectionCompleteControllerSpec extends SpecBase with MockitoSugar {
 
   val form = formProvider(CRS)
 
-  lazy val isCpsoSectionCompleteRoute = controllers.manual.cpso.routes.IsCpsoSectionCompleteController.onPageLoad(NormalMode).url
+  lazy val isCpsoSectionCompleteRoute = controllers.manual.cpso.routes.IsCpsoSectionCompleteController.onPageLoad().url
 
   "IsCpsoSectionComplete Controller" - {
 

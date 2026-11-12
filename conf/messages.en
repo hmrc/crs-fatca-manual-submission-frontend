@@ -1238,4 +1238,3 @@ cpso.fatca.isCpsoSectionComplete.paragraph = You can still change the informatio
 cpso.isCpsoSectionComplete.checkYourAnswersLabel = isCpsoSectionComplete
 cpso.crs.isCpsoSectionComplete.error.required = Select yes if you have finished adding the controlling persons for the financial institution
 cpso.fatca.isCpsoSectionComplete.error.required = Select yes if you have finished adding the subtstantial owners for the financial institution
-cpso.isCpsoSectionComplete.change.hidden = IsCpsoSectionCompletee
