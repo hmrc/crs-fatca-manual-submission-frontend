@@ -160,7 +160,7 @@ class CheckAnswersUtil @Inject() {
         }
 
         Seq(
-          AccountsSummary.row(ua),
+          accountHolders.AccountsSummary.row(ua),
           IndividualOrOrganisationSummary.row(ua)
         ).flatten ++
           accountHolderTypeSummaries
