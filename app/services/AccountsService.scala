@@ -17,13 +17,13 @@
 package services.manual.account
 
 import models.SubmissionsConstants.{CRS, FATCA}
-import models.viewModels.{AccountHolderId, AccountId}
+import models.viewModels.AccountId
 import models.{ReportId, UserAnswers}
 import pages.manual.account.*
-import pages.manual.accountHolders.{AccountHoldersPage, AccountPage as AccountHolderAccountsPage}
+
 import java.time.Instant
 import javax.inject.{Inject, Singleton}
-import scala.util.{Success, Try}
+import scala.util.Try
 
 @Singleton
 class AccountsService @Inject() () {
@@ -38,8 +38,8 @@ class AccountsService @Inject() () {
       .flatMap(_.accounts.values)
       .sortBy {
         account =>
-          val creationTime =
-            account.creationDateTime.getOrElse(Instant.EPOCH)
+          val creationTime = account.creationDateTime.getOrElse(Instant.EPOCH)
+
           (
             creationTime.getEpochSecond,
             creationTime.getNano,
@@ -54,59 +54,11 @@ class AccountsService @Inject() () {
             } else {
               Seq(account.identifier, account.whatIsAccountNumber)
             }
+
           candidates.flatten
             .find(_.trim.nonEmpty)
             .map(account.accountId -> _)
       }
-
-  def removeAccount(
-    userAnswers: UserAnswers,
-    reportId: ReportId,
-    accountId: AccountId
-  ): Try[UserAnswers] = {
-    given ReportId = reportId
-    val accountHolderIds = userAnswers
-      .get(AccountHoldersPage())
-      .toSeq
-      .flatMap(_.accountHolders.keys)
-      .map(AccountHolderId.apply)
-
-    for {
-      _ <- userAnswers
-        .get(AccountDataPage(accountId))
-        .toRight(
-          new IllegalArgumentException(
-            "Cannot remove an account outside the current report"
-          )
-        )
-        .toTry
-      unlinked <- accountHolderIds.foldLeft(Try(userAnswers)) {
-        (result, accountHolderId) =>
-          result.flatMap {
-            answers =>
-              val page = AccountHolderAccountsPage(reportId, accountHolderId)
-              answers
-                .get(page)
-                .filter(_.contains(accountId))
-                .map(_ - accountId) match {
-                case Some(remaining) if remaining.isEmpty =>
-                  answers.remove(page)
-                case Some(remaining) =>
-                  answers.setWithReportId(page, remaining)
-                case None =>
-                  Success(answers)
-              }
-          }
-      }
-      removed <- unlinked.remove(AccountDataPage(accountId))
-      selectionCleared <-
-        if (removed.get(CurrentAccountIdPage()).contains(accountId)) {
-          removed.remove(CurrentAccountIdPage())
-        } else {
-          Success(removed)
-        }
-    } yield selectionCleared
-  }
 
   def clearCurrentAccount(
     userAnswers: UserAnswers,
@@ -127,15 +79,14 @@ class AccountsService @Inject() () {
       number <- userAnswers.get(HaveNumberPage(accountId)).flatMap {
         case true =>
           for {
-            _ <- userAnswers.get(NumberTypePage(accountId))
-            accountNumber <- userAnswers.get(
-              WhatIsAccountNumberPage(accountId, reportId)
-            )
+            _             <- userAnswers.get(NumberTypePage(accountId))
+            accountNumber <- userAnswers.get(WhatIsAccountNumberPage(accountId, reportId))
           } yield accountNumber
         case false =>
           userAnswers.get(IdentifierPage(accountId))
       }
       if number.trim.nonEmpty
+
       isClosed <- userAnswers.get(AccountClosedPage(accountId))
       _ <- reportId.regime match {
         case CRS =>
@@ -164,8 +115,7 @@ class AccountsService @Inject() () {
         payments =>
           payments.nonEmpty && payments.forall(_.accountPaymentsAmount.exists {
             amount =>
-              amount.amount.trim.nonEmpty &&
-              amount.currency.code.trim.nonEmpty
+              amount.amount.trim.nonEmpty && amount.currency.code.trim.nonEmpty
           })
       }
       if !havePayments || paymentsComplete

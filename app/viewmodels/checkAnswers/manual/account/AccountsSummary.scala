@@ -26,11 +26,11 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{ActionItem, Actio
 object AccountsSummary {
 
   def apply(
-             accounts: Seq[(AccountId, String)],
-             isComplete: AccountId => Boolean,
-             changeAction: AccountId => Call,
-             removeAction: AccountId => Call
-           )(implicit messages: Messages): SummaryList =
+    accounts: Seq[(AccountId, String)],
+    isComplete: AccountId => Boolean,
+    changeAction: AccountId => Call,
+    removeAction: AccountId => Call
+  )(implicit messages: Messages): SummaryList =
     SummaryList(
       rows = accounts.map {
         case (accountId, accountNumber) =>
@@ -46,12 +46,12 @@ object AccountsSummary {
     )
 
   private def row(
-                   accountId: AccountId,
-                   accountNumber: String,
-                   isComplete: Boolean,
-                   changeAction: Call,
-                   removeAction: Call
-                 )(implicit messages: Messages): SummaryListRow = {
+    accountId: AccountId,
+    accountNumber: String,
+    isComplete: Boolean,
+    changeAction: Call,
+    removeAction: Call
+  )(implicit messages: Messages): SummaryListRow = {
     val incompleteTag =
       if (isComplete) ""
       else s"""<strong class="govuk-tag govuk-tag--blue">${escape(messages("accounts.incomplete"))}</strong>"""
@@ -92,16 +92,18 @@ object AccountsSummary {
   }
 
   private def action(
-                      id: String,
-                      destination: Call,
-                      visibleMessageKey: String,
-                      hiddenMessageKey: String,
-                      accountNumber: String
-                    )(implicit messages: Messages): ActionItem =
+    id: String,
+    destination: Call,
+    visibleMessageKey: String,
+    hiddenMessageKey: String,
+    accountNumber: String
+  )(implicit messages: Messages): ActionItem =
     ActionItem(
       href = destination.url,
       content = HtmlContent(
-        s"""<span aria-hidden="true">${escape(messages(visibleMessageKey))}</span><span class="govuk-visually-hidden">${escape(messages(hiddenMessageKey, accountNumber))}</span>"""
+        s"""<span aria-hidden="true">${escape(messages(visibleMessageKey))}</span><span class="govuk-visually-hidden">${escape(
+            messages(hiddenMessageKey, accountNumber)
+          )}</span>"""
       ),
       visuallyHiddenText = None,
       attributes = Map("id" -> id)

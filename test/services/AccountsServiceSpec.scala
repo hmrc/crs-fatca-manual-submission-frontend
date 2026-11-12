@@ -19,10 +19,8 @@ package services
 import base.SpecBase
 import models.{AccountBalance, Currency, ReportId, UserAnswers}
 import models.SubmissionsConstants.FATCA
-import models.viewModels.{AccountHolderId, AccountId}
+import models.viewModels.AccountId
 import pages.manual.account.*
-import pages.manual.accountHolders.AccountPage as HolderAccountsPage
-import play.api.libs.json.Json
 import services.manual.account.AccountsService
 
 import java.time.Instant
@@ -52,85 +50,6 @@ class AccountsServiceSpec extends SpecBase {
       .withPage(IdentifierPage(id)(report), identifier)
 
   "AccountsService" - {
-
-    "removeAccount" - {
-
-      "must remove the last account, its creation timestamp and its selection" in {
-        val answers = addAccount(emptyUserAnswers, firstId, "FIRST")
-          .withPage(AccountCreationPage(firstId), firstCreated)
-          .withPage(CurrentAccountIdPage(), firstId)
-
-        val result =
-          service.removeAccount(answers, reportId, firstId).success.value
-
-        result.get(AccountDataPage(firstId)) mustBe None
-        result.get(AccountCreationPage(firstId)) mustBe None
-        result.get(CurrentAccountIdPage()) mustBe None
-        service.orderedAccounts(result, reportId) mustBe empty
-      }
-
-      "must unlink the removed account and preserve the holders, other accounts and other reports" in {
-        val sharedHolder = AccountHolderId("1")
-        val soleHolder   = AccountHolderId("2")
-        val otherReport  = reportId.copy(fiId = "another-fi")
-
-        val sharedLinks = HolderAccountsPage(reportId, sharedHolder)
-        val soleLinks   = HolderAccountsPage(reportId, soleHolder)
-
-        val survivingAnswers = addAccount(
-          addAccount(emptyUserAnswers, secondId, "KEEP"),
-          firstId,
-          "OTHER-REPORT",
-          otherReport
-        )
-          .withPage(AccountClosedPage(secondId), false)
-          .withPage(
-            WhatWasTheAccountBalancePage(secondId),
-            AccountBalance(Currency.GBP, "123")
-          )
-          .withPage(AccountCreationPage(secondId), secondCreated)
-          .withPage(CurrentAccountIdPage(), secondId)
-          .withPage(sharedLinks, Set(secondId))
-
-        val holderRecord = Json.obj("name" -> "Holder Two")
-        val holderPath   = Json.obj(soleHolder.value -> holderRecord)
-
-        val reportData =
-          (survivingAnswers.data \ reportId.mongoKey)
-            .as[play.api.libs.json.JsObject]
-
-        val holders =
-          (reportData \ "accountHolder")
-            .as[play.api.libs.json.JsObject]
-
-        val expected = survivingAnswers.copy(
-          data = survivingAnswers.data + (
-            reportId.mongoKey -> (
-              reportData + ("accountHolder" -> (holders ++ holderPath))
-            )
-          )
-        )
-
-        val before = addAccount(expected, firstId, "REMOVE")
-          .withPage(AccountCreationPage(firstId), firstCreated)
-          .withPage(sharedLinks, Set(firstId, secondId))
-          .withPage(soleLinks, Set(firstId))
-
-        val result =
-          service.removeAccount(before, reportId, firstId).success.value
-
-        result.data mustBe expected.data
-      }
-
-      "must reject removal when the account exists only in a different report" in {
-        val otherReport = reportId.copy(fiId = "another-fi")
-        val answers =
-          addAccount(emptyUserAnswers, firstId, "OTHER-REPORT", otherReport)
-
-        service.removeAccount(answers, reportId, firstId).failure.exception mustBe
-          a[IllegalArgumentException]
-      }
-    }
 
     "orderedAccounts" - {
 
