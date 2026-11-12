@@ -18,28 +18,24 @@ package controllers
 
 import base.SpecBase
 import controllers.manual.routes.SendAReportController
-import models.ReportId
-import models.SubmissionsConstants.CRS
-import models.viewModels.{SendAReportSections, TaskStatus}
+import models.SubmissionsConstants.{CRS, FATCA}
 import models.viewModels.TaskStatus.*
+import models.viewModels.{AccountId, SendAReportSections, TaskStatus}
+import models.{AccountBalance, Currency, NormalMode, ReportId}
+import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import pages.ReportIdPage
+import pages.manual.account.*
 import play.api.inject
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.SendAReportService
 import views.html.SendAReportView
-import models.{AccountBalance, Currency, NormalMode}
-import models.SubmissionsConstants.FATCA
-import models.viewModels.AccountId
-import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
-import pages.manual.account.*
-import scala.jdk.CollectionConverters.*
+
 import scala.concurrent.Future
+import scala.jdk.CollectionConverters.*
 
 class SendAReportControllerSpec extends SpecBase {
   "SendAReport Controller" - {

@@ -16,22 +16,21 @@
 
 package controllers.manual.cpso
 
+import connectors.DatabaseConnector
 import controllers.actions.*
 import forms.manual.cpso.IsCpsoSectionCompleteFormProvider
-
-import javax.inject.Inject
-import models.{Mode, NormalMode, ReportId}
+import models.ServiceErrors.NoFiDetailFound
+import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
 import pages.manual.cpso.IsCpsoSectionCompletePage
+import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import connectors.DatabaseConnector
-import models.ServiceErrors.NoFiDetailFound
-import play.api.Logging
 import services.ViewFIService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.cpso.IsCpsoSectionCompleteView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class IsCpsoSectionCompleteController @Inject() (
