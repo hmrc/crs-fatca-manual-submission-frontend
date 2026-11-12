@@ -17,15 +17,15 @@
 package controllers.manual
 
 import controllers.actions.*
-import models.viewModels.SendAReportSections
 import models.viewModels.TaskStatus.*
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.SendAReportView
 import models.viewModels.{AccountId, SendAReportSections}
 import pages.manual.account.AccountsPage
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.manual.account.AccountsService
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import views.html.SendAReportView
+
 import javax.inject.Inject
 
 class SendAReportController @Inject() (

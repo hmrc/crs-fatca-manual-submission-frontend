@@ -16,13 +16,12 @@
 
 package models.viewModels
 
-import cats.syntax.apply.*
 import models.SubmissionsConstants.{CRS, FATCA, RegimeType}
 import models.manual.TaxResidentInformation
+import models.manual.accountHolders.*
 import models.manual.accountHolders.IndividualOrOrganisation.*
 import models.manual.accountHolders.OrganisationCrs.PassiveWithMultiplePersons
 import models.manual.accountHolders.OrganisationFatca.{OwnerDocumented, Passive}
-import models.manual.accountHolders.*
 import models.response.Address
 import models.{AddressNonUk, UkAddress}
 import play.api.libs.json.{Json, OFormat}
