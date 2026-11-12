@@ -501,6 +501,16 @@ GET        /manual/account-holder/check-answers                                 
 POST       /manual/account-holder/check-answers                                      controllers.manual.accountHolders.AccountHolderCheckAnswersController.onSubmit()
 
 
+GET        /manual/accounts                            controllers.manual.account.AccountsController.onPageLoad()
+POST       /manual/accounts                            controllers.manual.account.AccountsController.onSubmit()
+
+GET        /manual/accounts/add-account                controllers.manual.account.AccountsController.onAddAccount()
+GET        /manual/accounts/:accountId/change           controllers.manual.account.AccountsController.onChange(accountId: String)
+GET        /manual/accounts/:accountId/remove           controllers.manual.account.AccountsController.onRemove(accountId: String)
+
+GET        /manual/account/remove-account   controllers.manual.account.RemoveAccountController.onPageLoad()
+POST       /manual/account/remove-account   controllers.manual.account.RemoveAccountController.onSubmit()
+
 GET         /manual/cp-so/account-holder                       controllers.manual.cpso.AccountHolderController.onPageLoad(mode: Mode = NormalMode)
 POST        /manual/cp-so/account-holder                       controllers.manual.cpso.AccountHolderController.onSubmit(mode: Mode = NormalMode)
 GET         /manual/cp-so/change-account-holder                 controllers.manual.cpso.AccountHolderController.onPageLoad(mode: Mode = CheckMode)
