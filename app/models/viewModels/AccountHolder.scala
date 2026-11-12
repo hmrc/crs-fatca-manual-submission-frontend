@@ -110,7 +110,6 @@ case class AccountHolder(individualOrOrganisation: Option[IndividualOrOrganisati
 
   private def isAccountHolderLinkedToAccount(accountIds: Seq[String]): Boolean = accountIds.nonEmpty
 
-  /** Self-certification and the equity interest type are only required for CRS reports. */
   private def crsRequirements(regimeType: RegimeType): Boolean =
     regimeType != CRS || (selfCertification.isDefined && isEquityInterestTypeInformationComplete())
 
