@@ -144,12 +144,12 @@ class AccountHolderListViewSpec extends SpecBase {
         render(holders = Seq.empty, accountsWithoutHolders = Seq.empty).select(".govuk-summary-list").size() mustBe 0
       }
 
-      "must not render any radios or buttons" in {
-        val doc    = render(holders = Seq.empty, accountsWithoutHolders = Seq.empty)
-        val radios = doc.select("input[type=radio]")
-        radios.size() mustBe 2
-        radios.eachAttr("name").asScala.toSet mustBe Set("value")
-        radios.eachAttr("value").asScala.toList mustBe List("true", "false")
+      "must render Add an account holder" in {
+        val doc   = render(holders = Seq.empty, accountsWithoutHolders = Seq.empty)
+        val links = doc.select("a.govuk-button")
+        links.size() mustBe 1
+        links.text() mustBe "Add an account holder"
+        links.attr("href") mustBe addAccountHolderPath(NormalMode)
       }
     }
 
