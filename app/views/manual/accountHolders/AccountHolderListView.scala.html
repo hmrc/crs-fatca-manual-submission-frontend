@@ -55,6 +55,13 @@
               }else {
                   @ContentForManyAccountsWithoutAccountHolder(link, govukRadios, govukButton, heading)(accountsWithOutAccountHolders, fiName, regime.value, mode, accountHolders.isEmpty)
               }
+            }else{
+                @govukRadios(
+                  RadiosViewModel.yesNo(
+                    field = form("value"),
+                    legend = LegendViewModel(messages("accountHolderList.radio.heading")).withCssClass("govuk-fieldset__legend--m")
+                  ))
+                @govukButton(ButtonViewModel(messages("site.continue")))
             }
         }else {
             @AccountHolderTable()(accountHolders, regime)
