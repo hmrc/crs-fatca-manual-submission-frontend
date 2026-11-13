@@ -93,7 +93,7 @@ final case class SendAReportSections(
         tasks = task(
           "sendAReport.financialInstitution.subHeading",
           financialInstitutionDetails,
-          href = Some(controllers.manual.routes.CheckDetailsForFinancialInstitutionController.onPageLoad().url)
+          href = Some(controllers.manual.reportingFI.routes.CheckDetailsForFinancialInstitutionController.onPageLoad().url)
         )
       ),
       SendAReportSection(

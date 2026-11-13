@@ -22,6 +22,7 @@ import models.viewModels.{AccountId, SendAReportSections}
 import pages.manual.account.AccountsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.SendAReportService
 import services.manual.account.AccountsService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.SendAReportView
@@ -36,12 +37,14 @@ class SendAReportController @Inject() (
   reportIdAction: ReportIdRequiredAction,
   accountsService: AccountsService,
   val controllerComponents: MessagesControllerComponents,
+  service: SendAReportService,
   view: SendAReportView
 ) extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
     implicit request =>
+      val reportingFIStatus = service.reportingFIStatus(request.userAnswers, request.reportId)
       val accountIds = request.userAnswers
         .get(AccountsPage(request.reportId))
         .map(_.accounts.keys.toSeq.map(AccountId.apply))
@@ -66,7 +69,7 @@ class SendAReportController @Inject() (
         }
       val sections = SendAReportSections(
         reportDetails = Some(NotStarted),
-        financialInstitutionDetails = Some(NotStarted),
+        financialInstitutionDetails = Some(reportingFIStatus),
         sponsorDetails = Some(NotStarted),
         filerCategory = Some(NotStarted),
         accounts = Some(accountsStatus),

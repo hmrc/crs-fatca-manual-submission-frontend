@@ -18,23 +18,23 @@ package controllers
 
 import base.SpecBase
 import controllers.manual.routes.SendAReportController
-import models.ReportId
-import models.SubmissionsConstants.CRS
-import models.viewModels.SendAReportSections
+import models.SubmissionsConstants.{CRS, FATCA}
 import models.viewModels.TaskStatus.*
-import pages.ReportIdPage
-import play.api.test.FakeRequest
-import play.api.test.Helpers.*
-import views.html.SendAReportView
-import models.{AccountBalance, Currency, NormalMode}
-import models.SubmissionsConstants.FATCA
-import models.viewModels.AccountId
+import models.viewModels.{AccountId, SendAReportSections, TaskStatus}
+import models.{AccountBalance, Currency, NormalMode, ReportId}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
+import pages.ReportIdPage
 import pages.manual.account.*
-import scala.jdk.CollectionConverters.*
+import play.api.inject.bind
+import play.api.test.FakeRequest
+import play.api.test.Helpers.*
+import services.SendAReportService
+import views.html.SendAReportView
+
 import scala.concurrent.Future
+import scala.jdk.CollectionConverters.*
 
 class SendAReportControllerSpec extends SpecBase {
   "SendAReport Controller" - {
@@ -42,7 +42,7 @@ class SendAReportControllerSpec extends SpecBase {
     val ua       = emptyUserAnswers.withPage(ReportIdPage, reportId)
     val sections = SendAReportSections(
       reportDetails = Some(NotStarted),
-      financialInstitutionDetails = Some(NotStarted),
+      financialInstitutionDetails = Some(Incomplete),
       sponsorDetails = Some(NotStarted),
       filerCategory = Some(NotStarted),
       accounts = Some(NotStarted),
@@ -53,9 +53,17 @@ class SendAReportControllerSpec extends SpecBase {
       userAnswers = emptyUserAnswers,
       reportId = reportId
     )
+    val mockService: SendAReportService = mock[SendAReportService]
+
     "must return OK and the correct view for a GET" in {
-      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+
+      val application = applicationBuilder(maybeUserAnswers = Some(ua))
+        .overrides(
+          bind[SendAReportService].toInstance(mockService)
+        )
+        .build()
       running(application) {
+        when(mockService.reportingFIStatus(any(), any())).thenReturn(TaskStatus.Incomplete)
         val request = FakeRequest(GET, SendAReportController.onPageLoad().url)
         val result  = route(application, request).value
         val view    = application.injector.instanceOf[SendAReportView]
