@@ -24,7 +24,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
-object ControllingPersonsOrSubstantialOwnersSummary  {
+object ControllingPersonsOrSubstantialOwnersSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
     answers.get(ControllingPersonsOrSubstantialOwnersPage()).map {
@@ -33,8 +33,8 @@ object ControllingPersonsOrSubstantialOwnersSummary  {
         val value = if (answer) "site.yes" else "site.no"
 
         SummaryListRowViewModel(
-          key     = "controllingPersonsOrSubstantialOwners.checkYourAnswersLabel",
-          value   = ValueViewModel(value),
+          key = "controllingPersonsOrSubstantialOwners.checkYourAnswersLabel",
+          value = ValueViewModel(value),
           actions = Seq(
             ActionItemViewModel("site.change", routes.ControllingPersonsOrSubstantialOwnersController.onPageLoad(CheckMode).url)
               .withVisuallyHiddenText(messages("controllingPersonsOrSubstantialOwners.change.hidden"))

@@ -6,7 +6,7 @@ import play.api.data.FormError
 class ControllingPersonsOrSubstantialOwnersFormProviderSpec extends BooleanFieldBehaviours {
 
   val requiredKey = "controllingPersonsOrSubstantialOwners.error.required"
-  val invalidKey = "error.boolean"
+  val invalidKey  = "error.boolean"
 
   val form = new ControllingPersonsOrSubstantialOwnersFormProvider()()
 

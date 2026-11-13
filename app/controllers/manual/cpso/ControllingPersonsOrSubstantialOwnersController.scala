@@ -30,18 +30,20 @@ import views.html.manual.cpso.ControllingPersonsOrSubstantialOwnersView
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ControllingPersonsOrSubstantialOwnersController @Inject()(
-                                         override val messagesApi: MessagesApi,
-                                         repository: DatabaseConnector,
-                                         navigator: ManualSubmissionNavigator,
-                                         identify: IdentifierAction,
-                                         getData: DataRetrievalAction,
-                                         requireData: DataRequiredAction,
-                                         reportIdAction: ReportIdRequiredAction,
-                                         formProvider: ControllingPersonsOrSubstantialOwnersFormProvider,
-                                         val controllerComponents: MessagesControllerComponents,
-                                         view: ControllingPersonsOrSubstantialOwnersView
-                                 )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+class ControllingPersonsOrSubstantialOwnersController @Inject() (
+  override val messagesApi: MessagesApi,
+  repository: DatabaseConnector,
+  navigator: ManualSubmissionNavigator,
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
+  reportIdAction: ReportIdRequiredAction,
+  formProvider: ControllingPersonsOrSubstantialOwnersFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: ControllingPersonsOrSubstantialOwnersView
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
+    with I18nSupport {
 
   val form = formProvider()
 
@@ -51,7 +53,7 @@ class ControllingPersonsOrSubstantialOwnersController @Inject()(
       implicit val reportId: ReportId = request.reportId
 
       val preparedForm = request.userAnswers.get(ControllingPersonsOrSubstantialOwnersPage()) match {
-        case None => form
+        case None        => form
         case Some(value) => form.fill(value)
       }
 
@@ -63,15 +65,15 @@ class ControllingPersonsOrSubstantialOwnersController @Inject()(
 
       implicit val reportId: ReportId = request.reportId
 
-      form.bindFromRequest().fold(
-        formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors, mode))),
-
-        value =>
-          for {
-            updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(ControllingPersonsOrSubstantialOwnersPage(), value))
-            _              <- repository.set(updatedAnswers)
-          } yield Redirect(navigator.nextPage(ControllingPersonsOrSubstantialOwnersPage(), mode, updatedAnswers))
-      )
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(ControllingPersonsOrSubstantialOwnersPage(), value))
+              _              <- repository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(ControllingPersonsOrSubstantialOwnersPage(), mode, updatedAnswers))
+        )
   }
 }

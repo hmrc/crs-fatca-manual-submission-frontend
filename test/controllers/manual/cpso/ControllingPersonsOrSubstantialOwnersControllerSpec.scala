@@ -25,13 +25,14 @@ class ControllingPersonsOrSubstantialOwnersControllerSpec extends SpecBase with 
   def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new ControllingPersonsOrSubstantialOwnersFormProvider()
-  val form = formProvider()
+  val form         = formProvider()
 
-  lazy val controllingPersonsOrSubstantialOwnersRoute = controllers.manual.cpso.routes.ControllingPersonsOrSubstantialOwnersController.onPageLoad(NormalMode).url
+  lazy val controllingPersonsOrSubstantialOwnersRoute =
+    controllers.manual.cpso.routes.ControllingPersonsOrSubstantialOwnersController.onPageLoad(NormalMode).url
 
   "ControllingPersonsOrSubstantialOwners Controller" - {
 
-    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS,2025,None,"TestfiID"))
+    val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
 
     "must return OK and the correct view for a GET" in {
 
@@ -51,7 +52,7 @@ class ControllingPersonsOrSubstantialOwnersControllerSpec extends SpecBase with 
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      implicit val reportId = ReportId(CRS,2025,None,"TestfiID")
+      implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
 
       val userAnswers = ua.set(ControllingPersonsOrSubstantialOwnersPage(), true).success.value
 
