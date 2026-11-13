@@ -17,6 +17,7 @@
 package models.viewModels
 
 import models.NumberType
+import models.manual.account.WhatAccountType
 import play.api.libs.json.{Json, OFormat}
 
 import java.time.Instant
@@ -26,6 +27,7 @@ case class Account(
   identifier: Option[String] = None,
   numberType: Option[NumberType] = None,
   whatIsAccountNumber: Option[String] = None,
+  whatAccountType: Option[WhatAccountType] = None,
   accountId: AccountId,
   creationDateTime: Option[Instant] = None
 ) {
