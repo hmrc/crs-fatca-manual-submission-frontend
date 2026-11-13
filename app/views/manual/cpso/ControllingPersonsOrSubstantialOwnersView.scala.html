@@ -15,17 +15,26 @@
  *@
 
 @import models.SubmissionsConstants.{CRS, RegimeType}
+@import models.viewModels.manual.cpso.CPSOId
+@import models.viewModels.manual.cpso.ControllingOrSubstantialOwner
+@import views.html.manual.cpso.partials.ContentForOneAccountHolderWithoutACpso
+@import views.html.manual.cpso.partials.ContentForManyAccountHoldersWithoutACpso
+@import viewmodels.govuk.ThreeQuartersMainContent
+
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
     govukRadios: GovukRadios,
-    govukButton: GovukButton
+    govukButton: GovukButton,
+    heading: components.Heading,
+    link: components.Link,
+    notificationBanner: views.html.components.SuccessNotificationBanner
 )
+@*Seq((CPSOId("12"), ControllingOrSubstantialOwner(organisationName = Some("Google Messages"))))*@
+@(form: Form[_], mode: Mode, fiName: String = "Fi Name", regimeType: RegimeType = CRS, accountHoldersWithoutCPSO: Seq[String] = Seq("Alpha Publishing Plc"), cpsoList: Seq[(CPSOId, ControllingOrSubstantialOwner)] = Seq())(implicit request: Request[_], messages: Messages)
 
-@(form: Form[_], mode: Mode, fiName: String = "Fi Name", regimeType: RegimeType = CRS)(implicit request: Request[_], messages: Messages)
-
-@layout(pageTitle = title(form, messages("controllingPersonsOrSubstantialOwners.title"))) {
+@layout(pageTitle = title(form, cpsoCountHeaderOrTitleText(cpsoList.size)), mainContentLayout = Some(ThreeQuartersMainContent.apply _)) {
 
     @formHelper(action = controllers.manual.cpso.routes.ControllingPersonsOrSubstantialOwnersController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
@@ -33,15 +42,39 @@
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
-        @govukRadios(
-            RadiosViewModel.yesNo(
-                field = form("value"),
-                legend = LegendViewModel(messages("controllingPersonsOrSubstantialOwners.heading")).asPageHeading()
-            )
-        )
+        @heading(cpsoCountHeaderOrTitleText(cpsoList.size))
 
-        @govukButton(
-            ButtonViewModel(messages("site.saveContinue"))
-        )
+        @if(cpsoList.isEmpty) {
+            @if(accountHoldersWithoutCPSO.nonEmpty) {
+                 @if(accountHoldersWithoutCPSO.size == 1) {
+                    @ContentForOneAccountHolderWithoutACpso(link, govukRadios, govukButton, heading)(accountHoldersWithoutCPSO.headOption.getOrElse(""), fiName, regimeType.value.toLowerCase, mode, cpsoList.isEmpty)
+                 }else {
+                    @ContentForManyAccountHoldersWithoutACpso(link, govukRadios, govukButton, heading)(accountHoldersWithoutCPSO, fiName, regimeType.value, mode, cpsoList.isEmpty)
+
+                 }
+
+            }else {
+
+            }
+        }
+
+@*//        @govukRadios(*@
+@*//            RadiosViewModel.yesNo(*@
+@*//                field = form("value"),*@
+@*//                legend = LegendViewModel(messages(s"controllingPersonsOrSubstantialOwners.${regimeType.value.toLowerCase}.radio.heading")).withCssClass("govuk-fieldset__legend--m")*@
+@*//            )*@
+@*//        )*@
+@*//*@
+@*//        @govukButton(*@
+@*//            ButtonViewModel(messages("site.saveContinue"))*@
+@*//        )*@
     }
+}
+
+@cpsoCountHeaderOrTitleText(count: Int)(implicit messages: Messages) = @{
+  count match {
+    case 0 => messages(s"controllingPersonsOrSubstantialOwners.${regimeType.value.toLowerCase}.empty.heading")
+    case 1 => messages(s"controllingPersonsOrSubstantialOwners.${regimeType.value.toLowerCase}.one.heading")
+    case n =>messages(s"controllingPersonsOrSubstantialOwners.${regimeType.value.toLowerCase}.many.heading", n)
+  }
 }
