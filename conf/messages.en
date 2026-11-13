@@ -1255,3 +1255,8 @@ account.remove.account.question = Are you sure you want to remove the account {0
 account.remove.account.error.required = Select yes if you are sure you want to remove the account
 
 accounts.removed = Account {0} removed.
+controllingPersonsOrSubstantialOwners.title = controllingPersonsOrSubstantialOwners
+controllingPersonsOrSubstantialOwners.heading = controllingPersonsOrSubstantialOwners
+controllingPersonsOrSubstantialOwners.checkYourAnswersLabel = controllingPersonsOrSubstantialOwners
+controllingPersonsOrSubstantialOwners.error.required = Select yes if controllingPersonsOrSubstantialOwners
+controllingPersonsOrSubstantialOwners.change.hidden = ControllingPersonsOrSubstantialOwners
