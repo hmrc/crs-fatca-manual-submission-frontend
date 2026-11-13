@@ -17,8 +17,6 @@
 package views.manual.reportdetails
 
 import base.SpecBase
-import forms.manual.reportdetails.ReportingYearFormProvider
-import models.NormalMode
 import org.jsoup.Jsoup
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
@@ -26,7 +24,6 @@ import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import views.html.ReportDetailsCheckAnswersView
-import views.html.manual.reportdetails.ReportingYearView
 
 class ReportDetailsCheckAnswersViewSpec extends SpecBase {
 

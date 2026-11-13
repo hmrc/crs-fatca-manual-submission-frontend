@@ -481,8 +481,8 @@ POST       /manual/cp-so/identification-number                        controller
 GET        /manual/cp-so/change-identification-number                  controllers.manual.cpso.TaxIdentificationNumberController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/cp-so/change-identification-number                controllers.manual.cpso.TaxIdentificationNumberController.onSubmit(mode: Mode = CheckMode)
 
-GET        /manual/reporting-financial-institution                              controllers.manual.CheckDetailsForFinancialInstitutionController.onPageLoad()
-POST        /manual/reporting-financial-institution                             controllers.manual.CheckDetailsForFinancialInstitutionController.onSubmit()
+GET        /manual/reporting-financial-institution                              controllers.manual.reportingFI.CheckDetailsForFinancialInstitutionController.onPageLoad()
+POST        /manual/reporting-financial-institution                             controllers.manual.reportingFI.CheckDetailsForFinancialInstitutionController.onSubmit()
 
 GET        /manual/cp-so/tax-resident-countries                        controllers.manual.cpso.TaxResidentCountriesController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/cp-so/tax-resident-countries                     controllers.manual.cpso.TaxResidentCountriesController.onSubmit(mode: Mode = NormalMode)
