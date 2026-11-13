@@ -1255,6 +1255,7 @@ account.remove.account.question = Are you sure you want to remove the account {0
 account.remove.account.error.required = Select yes if you are sure you want to remove the account
 
 accounts.removed = Account {0} removed.
+
 cpso.crs.accountHolder.title = Account holders linked to this controlling person
 cpso.fatca.accountHolder.title = Account holders linked to this substantial owner
 cpso.crs.accountHolder.heading= Account holders linked to this controlling person
@@ -1298,3 +1299,38 @@ accountHolder.fatca.removeAccountHolder.bullet2 = substantial owner links to at 
 accountHolder.removeAccountHolder.radio.heading = Are you sure you want to remove the account holder {0}?
 accountHolder.removeAccountHolder.error.required = 	Select yes if you are sure you want to remove the account holder
 accountHolder.removeAccountHolder.change.hidden = RemoveAccountHolder
+
+
+controllingPersonsOrSubstantialOwners.title = controllingPersonsOrSubstantialOwners
+controllingPersonsOrSubstantialOwners.heading = controllingPersonsOrSubstantialOwners
+
+controllingPersonsOrSubstantialOwners.empty.paragraph = You must add at least one controlling person.
+controllingPersonsOrSubstantialOwners.crs.empty.heading =  You have not added any controlling persons
+controllingPersonsOrSubstantialOwners.fatca.empty.heading = You have not added any substantial owners
+controllingPersonsOrSubstantialOwners.crs.one.heading = You have added 1 controlling person
+controllingPersonsOrSubstantialOwners.fatca.one.heading = You have added 1 substantial owner
+controllingPersonsOrSubstantialOwners.crs.many.heading = You have added {0} controlling persons
+controllingPersonsOrSubstantialOwners.crs.many.heading = You have added {0} substantial owners
+
+controllingPersonsOrSubstantialOwners.crs.one.accountHolder.missing.cpso.p1 = The account holder {0} is missing a controlling person.
+controllingPersonsOrSubstantialOwners.fatca.one.accountHolder.missing.cpso.p1 = The account holder {0} is missing a substantial owner.
+controllingPersonsOrSubstantialOwners.one.accountHolder.missing.cpso.p2 = You must either:
+controllingPersonsOrSubstantialOwners.one.crs.accountHolder.missing.cpso.bullet1 = change or add at least one controlling person to link to the account holder
+controllingPersonsOrSubstantialOwners.one.fatca.accountHolder.missing.cpso.bullet1 = change or add at least one substantial owner to link to the account holder
+controllingPersonsOrSubstantialOwners.one.accountHolder.missing.cpso.bullet2 = remove the account holder
+controllingPersonsOrSubstantialOwners.crs.empty.button.txt = Add a controlling person
+controllingPersonsOrSubstantialOwners.fatca.empty.button.txt = substantial owner
+controllingPersonsOrSubstantialOwners.accountHolder.sendAReport.link = Back to send a {0} report for {1}
+
+controllingPersonsOrSubstantialOwners.crs.many.accountHolders.missing.accountHolder.paragraph = These account holders are missing a controlling person:
+controllingPersonsOrSubstantialOwners.fatca.many.accountHolders.missing.accountHolder.paragraph = These account holders are missing a substantial owner:
+controllingPersonsOrSubstantialOwners.many.account.missing.accountHolder.paragraph = You must either:
+controllingPersonsOrSubstantialOwners.crs.many.account.missing.accountHolder.bullet1 = change or add at least one controlling person to link to the account holders
+controllingPersonsOrSubstantialOwners.fatca.many.account.missing.accountHolder.bullet1 =  change or add at least one substantial owner to link to the account holders
+controllingPersonsOrSubstantialOwners.many.account.missing.accountHolder.bullet2 = remove the account holders
+
+controllingPersonsOrSubstantialOwners.crs.radio.heading = Do you need to add another controlling person?
+controllingPersonsOrSubstantialOwners.fatca.radio.heading = Do you need to add another substantial owner?
+controllingPersonsOrSubstantialOwners.checkYourAnswersLabel = controllingPersonsOrSubstantialOwners
+controllingPersonsOrSubstantialOwners.error.required = Select yes if controllingPersonsOrSubstantialOwners
+controllingPersonsOrSubstantialOwners.change.hidden = ControllingPersonsOrSubstantialOwners
