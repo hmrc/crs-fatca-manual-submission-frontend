@@ -56,6 +56,8 @@
                   @ContentForManyAccountsWithoutAccountHolder(link, govukRadios, govukButton, heading)(accountsWithOutAccountHolders, fiName, regime.value, mode, accountHolders.isEmpty)
               }
             }else{
+                <p class="govuk-body">@messages("accountHolderList.empty.paragraph")</p>
+        
                 @govukButton(
                   ButtonViewModel(messages("accountHolderList.empty.button.txt"))
                     .asLink(controllers.manual.accountHolders.routes.ClearAccountHolderIdAndRedirectToAccountHoldersController.onRedirect(mode).url)

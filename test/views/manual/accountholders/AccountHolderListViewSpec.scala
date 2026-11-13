@@ -145,7 +145,11 @@ class AccountHolderListViewSpec extends SpecBase {
       }
 
       "must render Add an account holder" in {
-        val doc   = render(holders = Seq.empty, accountsWithoutHolders = Seq.empty)
+        val doc = render(holders = Seq.empty, accountsWithoutHolders = Seq.empty)
+
+        val paragraph = doc.select("p.govuk-body")
+        paragraph.text().contains("You must add at least one account holder for each account.") mustBe true
+
         val links = doc.select("a.govuk-button")
         links.size() mustBe 1
         links.text() mustBe "Add an account holder"
