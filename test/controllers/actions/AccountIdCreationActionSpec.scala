@@ -22,7 +22,7 @@ import models.SubmissionsConstants.FATCA
 import models.requests.{AccountIdRequest, ReportIdRequest}
 import models.viewModels.AccountId
 import models.{ReportId, UserAnswers}
-import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.*
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
@@ -73,8 +73,9 @@ class AccountIdCreationActionSpec extends SpecBase with MockitoSugar {
 
         val result = action.callTransform(reportIdRequest(userAnswers)).futureValue
 
-        result.userId mustBe userId
-        result.userAnswers mustBe userAnswers
+        val expectedAnswers = userAnswers.withPage(CurrentAccountIdPage()(reportId), result.accountId)
+        result.userAnswers mustBe expectedAnswers
+        verify(connector).set(eqTo(expectedAnswers))(any())
         result.fatcaId mustBe fatcaId
         result.reportId mustBe reportId
         result.accountId.value.isEmpty mustBe false
