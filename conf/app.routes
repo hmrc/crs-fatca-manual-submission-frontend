@@ -481,8 +481,8 @@ POST       /manual/cp-so/identification-number                        controller
 GET        /manual/cp-so/change-identification-number                  controllers.manual.cpso.TaxIdentificationNumberController.onPageLoad(mode: Mode = CheckMode)
 POST       /manual/cp-so/change-identification-number                controllers.manual.cpso.TaxIdentificationNumberController.onSubmit(mode: Mode = CheckMode)
 
-GET        /manual/reporting-financial-institution                              controllers.manual.CheckDetailsForFinancialInstitutionController.onPageLoad()
-POST        /manual/reporting-financial-institution                             controllers.manual.CheckDetailsForFinancialInstitutionController.onSubmit()
+GET        /manual/reporting-financial-institution                              controllers.manual.reportingFI.CheckDetailsForFinancialInstitutionController.onPageLoad()
+POST        /manual/reporting-financial-institution                             controllers.manual.reportingFI.CheckDetailsForFinancialInstitutionController.onSubmit()
 
 GET        /manual/cp-so/tax-resident-countries                        controllers.manual.cpso.TaxResidentCountriesController.onPageLoad(mode: Mode = NormalMode)
 POST       /manual/cp-so/tax-resident-countries                     controllers.manual.cpso.TaxResidentCountriesController.onSubmit(mode: Mode = NormalMode)
@@ -517,6 +517,31 @@ GET         /manual/cp-so/change-account-holder                 controllers.manu
 POST        /manual/cp-so/change-account-holder                 controllers.manual.cpso.AccountHolderController.onSubmit(mode: Mode = CheckMode)
 
 GET        /manual/cp-so/check-cpso-add-or-allowed      controllers.manual.cpso.CheckCPSOAddedOrAllowedController.onChangeRedirect(mode: Mode = NormalMode)
+
+
+
+GET         /manual/cp-so/account-holder                       controllers.manual.cpso.AccountHolderController.onPageLoad(mode: Mode = NormalMode)
+POST        /manual/cp-so/account-holder                       controllers.manual.cpso.AccountHolderController.onSubmit(mode: Mode = NormalMode)
+GET         /manual/cp-so/change-account-holder                 controllers.manual.cpso.AccountHolderController.onPageLoad(mode: Mode = CheckMode)
+POST        /manual/cp-so/change-account-holder                 controllers.manual.cpso.AccountHolderController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/cp-so/check-cpso-add-or-allowed      controllers.manual.cpso.CheckCPSOAddedOrAllowedController.onChangeRedirect(mode: Mode = NormalMode)
+
+GET        /manual/account-holders                         controllers.manual.accountHolders.AccountHolderListController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account-holders                         controllers.manual.accountHolders.AccountHolderListController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/change-account-holders                  controllers.manual.accountHolders.AccountHolderListController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/change-account-holders                  controllers.manual.accountHolders.AccountHolderListController.onSubmit(mode: Mode = CheckMode)
+
+GET       /manual/change-account-holder                  controllers.manual.accountHolders.CurrentAccountHolderIdController.onChangeRedirect(accountHolderId: String)
+GET       /manual/remove-account-holder                  controllers.manual.accountHolders.CurrentAccountHolderIdController.onRemoveRedirect(accountHolderId: String)
+
+GET        /manual/account-holder/remove-account-holder                        controllers.manual.accountHolders.RemoveAccountHolderController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/account-holder/remove-account-holder                        controllers.manual.accountHolders.RemoveAccountHolderController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/account-holder/change-remove-account-holder                  controllers.manual.accountHolders.RemoveAccountHolderController.onPageLoad(mode: Mode = CheckMode)
+POST        /manual/account-holder/change-remove-account-holder                 controllers.manual.accountHolders.RemoveAccountHolderController.onSubmit(mode: Mode = CheckMode)
+
+GET        /manual/account-holder/clear-account-holder-id      controllers.manual.accountHolders.ClearAccountHolderIdAndRedirectToAccountHoldersController.onRedirect(mode: Mode = NormalMode)
+GET        /manual/account-holder/change-clear-account-holder-id      controllers.manual.accountHolders.ClearAccountHolderIdAndRedirectToAccountHoldersController.onRedirect(mode: Mode = CheckMode)
 
 GET         /manual/is-cp-so-section-completed                        controllers.manual.cpso.IsCpsoSectionCompleteController.onPageLoad(mode: Mode = NormalMode)
 POST        /manual/is-cp-so-section-completed                         controllers.manual.cpso.IsCpsoSectionCompleteController.onSubmit(mode: Mode = NormalMode)

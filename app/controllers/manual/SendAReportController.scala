@@ -37,13 +37,14 @@ class SendAReportController @Inject() (
   reportIdAction: ReportIdRequiredAction,
   accountsService: AccountsService,
   val controllerComponents: MessagesControllerComponents,
-  view: SendAReportView,
-  service: SendAReportService
+  service: SendAReportService,
+  view: SendAReportView
 ) extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
     implicit request =>
+      val reportingFIStatus = service.reportingFIStatus(request.userAnswers, request.reportId)
       val cpsoCompleteStatus = service.reportingCPSOCompleteStatus(request.userAnswers, request.reportId)
       val accountIds = request.userAnswers
         .get(AccountsPage(request.reportId))
@@ -69,7 +70,7 @@ class SendAReportController @Inject() (
         }
       val sections = SendAReportSections(
         reportDetails = Some(NotStarted),
-        financialInstitutionDetails = Some(NotStarted),
+        financialInstitutionDetails = Some(reportingFIStatus),
         sponsorDetails = Some(NotStarted),
         filerCategory = Some(NotStarted),
         accounts = Some(accountsStatus),

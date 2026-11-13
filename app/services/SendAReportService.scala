@@ -16,19 +16,28 @@
 
 package services
 
-import models.{ReportId, UserAnswers}
 import models.viewModels.TaskStatus
 import models.viewModels.TaskStatus.{Completed, Incomplete}
+import models.{viewModels, ReportId, UserAnswers}
+import pages.manual.reportingFI.HaveYouFinishedCheckingFIDetailsPage
 import pages.manual.cpso.IsCpsoSectionCompletePage
 
 import javax.inject.Inject
 
 class SendAReportService @Inject() {
 
-  def reportingCPSOCompleteStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
+  def reportingFIStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
     userAnswers
-      .get(IsCpsoSectionCompletePage(reportId))
+      .get(HaveYouFinishedCheckingFIDetailsPage(reportId))
       .fold(Incomplete) {
         value => if value then Completed else Incomplete
       }
+
+    def reportingCPSOCompleteStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
+      userAnswers
+        .get(IsCpsoSectionCompletePage(reportId))
+        .fold(Incomplete) {
+          value => if value then Completed else Incomplete
+        }
+
 }

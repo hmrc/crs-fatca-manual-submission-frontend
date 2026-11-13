@@ -1,0 +1,54 @@
+@*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import viewmodels.manual.accountHolders.AccountHolderRow
+@import models.viewModels.AccountHolderId
+@import models.viewModels.AccountHolder
+@import models.SubmissionsConstants.{CRS, RegimeType}
+@this()
+
+@(accountHolders: Seq[(AccountHolderId, AccountHolder)], regimeType: RegimeType)
+
+@if(accountHolders.nonEmpty) {
+    <dl class="govuk-summary-list hmrc-list-with-actions hmrc-list-with-actions--short">
+        @for(row <- AccountHolderRow.rows(accountHolders, regimeType)) {
+         <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key govuk-!-font-weight-regular hmrc-summary-list__key" style="line-height:1.4;width:75%">
+                            <span class="govuk-!-margin-right-2"> @row.accountHolderName</span>
+                            @if(row.isIncomplete) {
+                                <strong class="govuk-tag govuk-tag--blue">Incomplete</strong>
+                            }
+                        </dt>
+                        <dd class="govuk-summary-list__actions hmrc-summary-list__actions" style="width:25%">
+                            <ul class="govuk-summary-list__actions-list">
+                                <li class="govuk-summary-list__actions-list-item">
+                                    <a class="govuk-link" href="@row.changeUrl">
+                                        <span aria-hidden="true" id="Change-accountHolder-@{row.accountHolderName}">Change</span>
+                                        <span class="govuk-visually-hidden">Change  account holder @row.accountHolderName</span>
+                                    </a>
+                                </li>
+                                <li class="govuk-summary-list__actions-list-item">
+                                    <a class="govuk-link" href="@row.removeUrl">
+                                        <span aria-hidden="true" id="remove-accountHolder-@{row.accountHolderName}">Remove</span>
+                                        <span class="govuk-visually-hidden">Remove account holder @row.accountHolderName</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </dd>
+                    </div>
+        }
+    </dl>
+}

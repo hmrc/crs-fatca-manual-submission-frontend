@@ -27,7 +27,6 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import pages.ReportIdPage
 import pages.manual.account.*
-import play.api.inject
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
@@ -43,7 +42,7 @@ class SendAReportControllerSpec extends SpecBase {
     val ua       = emptyUserAnswers.withPage(ReportIdPage, reportId)
     val sections = SendAReportSections(
       reportDetails = Some(NotStarted),
-      financialInstitutionDetails = Some(NotStarted),
+      financialInstitutionDetails = Some(Incomplete),
       sponsorDetails = Some(NotStarted),
       filerCategory = Some(NotStarted),
       accounts = Some(NotStarted),
@@ -63,6 +62,7 @@ class SendAReportControllerSpec extends SpecBase {
         )
         .build()
       running(application) {
+        when(mockService.reportingFIStatus(any(), any())).thenReturn(TaskStatus.Incomplete)
         when(mockService.reportingCPSOCompleteStatus(any(), any())).thenReturn(Completed)
         val request = FakeRequest(GET, SendAReportController.onPageLoad().url)
         val result  = route(application, request).value

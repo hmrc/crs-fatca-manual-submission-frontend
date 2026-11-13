@@ -30,7 +30,8 @@ import pages.manual.accountHolders.{
   AccountHolderOrganisationNamePage,
   AccountPage,
   AddressLookupForAccountHolderPage,
-  DoYouWantToAddTaxResidentCountryPage,
+  DoYouWantToAddAnotherAccountHolder,
+  DoYouWantToAddTaxResidentCountryPage as AccHolderDoYouWantToAddTaxResidentCountryPage,
   EquityInterestTypePage,
   HaveTaxIdenticationNumberPage,
   IndividualHavePlaceOfBirthPage,
@@ -40,6 +41,7 @@ import pages.manual.accountHolders.{
   OrganisationCrsPage,
   OrganisationFatcaPage,
   ProvideEquityInterestTypePage,
+  RemoveAccountHolderPage,
   RemoveTaxResidentCountryPage as AccRemoveTaxResidentCountryPage,
   ResidentTaxPage,
   SelectAddressPage,
@@ -151,8 +153,8 @@ object AccountHolderNavigator {
     case (HaveTaxIdenticationNumberPage(index, accountHolderId, reportId), mode, ua) =>
       handleHaveTaxIdenticationNumberPageNavigationForAccountHolders(ua, mode, accountHolderId, index)
     case (TaxIdentificationNumberPage(_, _, _), mode, ua) => controllers.manual.accountHolders.routes.TaxResidentCountriesController.onPageLoad(mode)
-    case (DoYouWantToAddTaxResidentCountryPage(accountHolderId, reportId), mode, ua) =>
-      ua.get(DoYouWantToAddTaxResidentCountryPage(accountHolderId, reportId)) match {
+    case (AccHolderDoYouWantToAddTaxResidentCountryPage(accountHolderId, reportId), mode, ua) =>
+      ua.get(AccHolderDoYouWantToAddTaxResidentCountryPage(accountHolderId, reportId)) match {
         case Some(true)  => controllers.manual.accountHolders.routes.ResidentTaxController.onPageLoad(mode)
         case Some(false) => controllers.manual.accountHolders.routes.AccountHolderCheckAnswersController.onPageLoad()
         case None        => controllers.routes.JourneyRecoveryController.onPageLoad()
@@ -164,8 +166,17 @@ object AccountHolderNavigator {
         case Some(false) => controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
         case None        => routes.JourneyRecoveryController.onPageLoad()
       }
-    case (EquityInterestTypePage(_, _), mode, _) => controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
+    case (EquityInterestTypePage(_, _), mode, _)          => controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
+    case (DoYouWantToAddAnotherAccountHolder(), mode, ua) => handleDoYouWantToAddAnotherAccountHolderNavigation(mode, ua)
+    case (RemoveAccountHolderPage(), mode, ua)            => controllers.manual.accountHolders.routes.AccountHolderListController.onPageLoad(mode)
   }
+
+  private def handleDoYouWantToAddAnotherAccountHolderNavigation(mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
+    userAnswers.get(DoYouWantToAddAnotherAccountHolder()) match {
+      case Some(true)  => controllers.manual.accountHolders.routes.AccountController.onPageLoad(mode)
+      case Some(false) => routes.UnderConstructionController.onPageLoad()
+      case _           => routes.JourneyRecoveryController.onPageLoad()
+    }
 
   private def handleIndividualHavePlaceOfBirthNavigation(accountId: AccountHolderId, mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
     userAnswers.get(IndividualHavePlaceOfBirthPage(accountId)) match {

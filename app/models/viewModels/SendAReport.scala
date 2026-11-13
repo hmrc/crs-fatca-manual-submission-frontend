@@ -32,8 +32,16 @@ object TaskStatus {
 
 def handleAccountHolderNavigation(userAnswers: UserAnswers, reportId: ReportId) =
   userAnswers.get(AccountHoldersPage()(reportId)) match {
-    case Some(_) => Some(controllers.routes.UnderConstructionController.onPageLoad().url)
-    case None    => Some(controllers.manual.accountHolders.routes.AccountController.onPageLoad(NormalMode).url)
+    case Some(accountHolderList) =>
+      val accountHolderCount = accountHolderList.accountHolders
+        .map(
+          (_, value) => value
+        )
+        .count(_.getName().nonEmpty)
+      if accountHolderCount > 0 then Some(controllers.manual.accountHolders.routes.AccountHolderListController.onPageLoad(NormalMode).url)
+      else Some(controllers.manual.accountHolders.routes.AccountController.onPageLoad(NormalMode).url)
+
+    case None => Some(controllers.manual.accountHolders.routes.AccountController.onPageLoad(NormalMode).url)
   }
 
 def handleAccountNavigation(
@@ -85,7 +93,7 @@ final case class SendAReportSections(
         tasks = task(
           "sendAReport.financialInstitution.subHeading",
           financialInstitutionDetails,
-          href = Some(controllers.manual.routes.CheckDetailsForFinancialInstitutionController.onPageLoad().url)
+          href = Some(controllers.manual.reportingFI.routes.CheckDetailsForFinancialInstitutionController.onPageLoad().url)
         )
       ),
       SendAReportSection(
@@ -126,7 +134,7 @@ final case class SendAReportSections(
       )
     ).filter(_.tasks.nonEmpty)
 
-  def controllingPersonsOrSubstantialOwnerMessageKey =
+  private def controllingPersonsOrSubstantialOwnerMessageKey =
     if reportId.regime == CRS then "sendAReport.accountsInformation.controllingPersons" else "sendAReport.accountsInformation.substantialOwner"
 }
 
