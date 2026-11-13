@@ -67,11 +67,13 @@ class SendAReportController @Inject() (
         } else {
           Incomplete
         }
+      val fillerStatus  = service.fillerStatus(request.userAnswers, request.reportId)
+      val sponsorStatus = service.sponsorStatus(request.userAnswers, request.reportId)
       val sections = SendAReportSections(
         reportDetails = Some(NotStarted),
         financialInstitutionDetails = Some(reportingFIStatus),
-        sponsorDetails = Some(NotStarted),
-        filerCategory = Some(NotStarted),
+        sponsorDetails = Some(sponsorStatus),
+        filerCategory = Some(fillerStatus),
         accounts = Some(accountsStatus),
         accountHolders = Some(NoStatus),
         controllingPersons = Some(Completed),

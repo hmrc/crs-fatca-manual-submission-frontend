@@ -19,6 +19,7 @@ package controllers
 import base.SpecBase
 import controllers.manual.routes.SendAReportController
 import models.SubmissionsConstants.{CRS, FATCA}
+import models.ReportId
 import models.viewModels.TaskStatus.*
 import models.viewModels.{AccountId, SendAReportSections, TaskStatus}
 import models.{AccountBalance, Currency, NormalMode, ReportId}
@@ -27,6 +28,8 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import pages.ReportIdPage
 import pages.manual.account.*
+import pages.manual.sponsor.HaveSponsorPage
+import play.api.inject
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
@@ -38,25 +41,61 @@ import scala.jdk.CollectionConverters.*
 
 class SendAReportControllerSpec extends SpecBase {
   "SendAReport Controller" - {
-    val reportId = ReportId(CRS, 2025, None, "testFiID")
-    val ua       = emptyUserAnswers.withPage(ReportIdPage, reportId)
-    val sections = SendAReportSections(
-      reportDetails = Some(NotStarted),
-      financialInstitutionDetails = Some(Incomplete),
-      sponsorDetails = Some(NotStarted),
-      filerCategory = Some(NotStarted),
-      accounts = Some(NotStarted),
-      accountHolders = Some(NoStatus),
-      controllingPersons = Some(Completed),
-      tbc1 = Some(Incomplete),
-      tbc2 = Some(Incomplete),
-      userAnswers = emptyUserAnswers,
-      reportId = reportId
-    )
+
     val mockService: SendAReportService = mock[SendAReportService]
 
-    "must return OK and the correct view for a GET" in {
+    "must return OK and the correct view for a GET - FATCA" in {
 
+      val reportId = ReportId(FATCA, 2025, None, "testFiID")
+      val ua = emptyUserAnswers
+        .withPage(ReportIdPage, reportId)
+        .withPage(HaveSponsorPage()(reportId), true)
+      val sections = SendAReportSections(
+        reportDetails = Some(NotStarted),
+        financialInstitutionDetails = Some(Incomplete),
+        sponsorDetails = Some(NotStarted),
+        filerCategory = Some(Incomplete),
+        accounts = Some(NotStarted),
+        accountHolders = Some(NoStatus),
+        controllingPersons = Some(Completed),
+        tbc1 = Some(Incomplete),
+        tbc2 = Some(Incomplete),
+        userAnswers = ua,
+        reportId = reportId
+      )
+      val application = applicationBuilder(maybeUserAnswers = Some(ua))
+        .overrides(
+          bind[SendAReportService].toInstance(mockService)
+        )
+        .build()
+      running(application) {
+        when(mockService.reportingFIStatus(any(), any())).thenReturn(TaskStatus.Incomplete)
+        when(mockService.fillerStatus(any(), any())).thenReturn(TaskStatus.Incomplete)
+        val request = FakeRequest(GET, SendAReportController.onPageLoad().url)
+        val result  = route(application, request).value
+        val view    = application.injector.instanceOf[SendAReportView]
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(sections)(request, messages(application)).toString
+      }
+    }
+
+    "must return OK and the correct view for a GET - CRS" in {
+
+      val reportId = ReportId(CRS, 2025, None, "testFiID")
+      val ua       = emptyUserAnswers.withPage(ReportIdPage, reportId)
+      val sections = SendAReportSections(
+        reportDetails = Some(NotStarted),
+        financialInstitutionDetails = Some(Incomplete),
+        sponsorDetails = Some(NotStarted),
+        filerCategory = None,
+        accounts = Some(NotStarted),
+        accountHolders = Some(NoStatus),
+        controllingPersons = Some(Completed),
+        tbc1 = Some(Incomplete),
+        tbc2 = Some(Incomplete),
+        userAnswers = emptyUserAnswers,
+        reportId = reportId
+      )
       val application = applicationBuilder(maybeUserAnswers = Some(ua))
         .overrides(
           bind[SendAReportService].toInstance(mockService)

@@ -16,10 +16,14 @@
 
 package services
 
+import models.CrsOrFatca.reads
 import models.viewModels.TaskStatus
-import models.viewModels.TaskStatus.{Completed, Incomplete}
+import models.viewModels.TaskStatus.{CannotStartYet, Completed, Incomplete}
 import models.{viewModels, ReportId, UserAnswers}
+import pages.QuestionPage
+import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportingFI.HaveYouFinishedCheckingFIDetailsPage
+import pages.manual.sponsor.*
 
 import javax.inject.Inject
 
@@ -31,5 +35,62 @@ class SendAReportService @Inject() {
       .fold(Incomplete) {
         value => if value then Completed else Incomplete
       }
+
+  def fillerStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
+    userAnswers.get(HaveSponsorPage()(reportId)).fold[TaskStatus](CannotStartYet) {
+      hasSponsor =>
+        if hasSponsor then
+          userAnswers
+            .get(WhatTypeOfFilerIsSponsorPage()(reportId))
+            .fold(Incomplete)(
+              _ => Completed
+            )
+        else
+          userAnswers
+            .get(WhatTypeOfFilerPage()(reportId))
+            .fold(Incomplete)(
+              _ => Completed
+            )
+    }
+
+  def sponsorStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
+    userAnswers.get(HaveSponsorPage()(reportId)).fold[TaskStatus](Incomplete) {
+      case false => Completed
+      case true =>
+        Option
+          .when(allSponsorPagesAnswered(userAnswers)(using reportId))(Completed)
+          .getOrElse(Incomplete)
+    }
+
+  private def sponsorRequiredPages(using reportId: ReportId): Seq[QuestionPage[_]] =
+    List(
+      SponsorNamePage(),
+      WhatIsGIINForSponsorPage(),
+      TaxResidentCountriesListPage()
+    )
+
+  private def sponsorAddressPages(using reportId: ReportId): Seq[QuestionPage[?]] =
+    List(
+      WhatIsAddressForSponsorPage(),
+      UkAddressPage(),
+      AddressNonUkPage()
+    )
+
+  private def pageAnswered(
+    page: QuestionPage[?],
+    userAnswers: UserAnswers
+  ): Boolean =
+    page.path.asSingleJsResult(userAnswers.data).isSuccess
+
+  private def allSponsorPagesAnswered(
+    userAnswers: UserAnswers
+  )(using reportId: ReportId): Boolean = {
+
+    val requiredPagesPresent = sponsorRequiredPages.forall(pageAnswered(_, userAnswers))
+
+    val addressPresent = sponsorAddressPages.exists(pageAnswered(_, userAnswers))
+
+    requiredPagesPresent && addressPresent
+  }
 
 }

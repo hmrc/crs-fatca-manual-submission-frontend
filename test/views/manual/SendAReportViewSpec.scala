@@ -79,7 +79,6 @@ class SendAReportViewSpec extends SpecBase {
         headings must contain("Set up the report")
         headings must contain("Check the reporting financial institution details")
         headings must contain("Add the sponsor (optional)")
-        headings must contain("Provide the filer category")
         headings must contain("Add accounts information")
       }
 
@@ -89,7 +88,6 @@ class SendAReportViewSpec extends SpecBase {
         pageText must include("Report details")
         pageText must include("Reporting financial institution details")
         pageText must include("Sponsor details")
-        pageText must include("Filer-category")
         pageText must include("Accounts")
         pageText must include("Account holders")
         pageText must include("Controlling persons")
@@ -123,7 +121,7 @@ class SendAReportViewSpec extends SpecBase {
         reportDetails = Some(NotStarted),
         financialInstitutionDetails = Some(NotStarted),
         sponsorDetails = None,
-        filerCategory = Some(NotStarted),
+        filerCategory = None,
         accounts = None,
         accountHolders = None,
         controllingPersons = None,
@@ -138,9 +136,6 @@ class SendAReportViewSpec extends SpecBase {
 
       doc.text() must include("Set up the report")
       doc.text() must include("Check the reporting financial institution details")
-      doc.text() must include("Provide the filer category")
-
-      doc.text() must not include "Add the sponsor (optional)"
       doc.text() must not include "Sponsor details"
       doc.text() must not include "Add accounts information"
       doc.text() must not include "Accounts"

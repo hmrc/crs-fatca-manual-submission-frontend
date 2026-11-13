@@ -16,10 +16,11 @@
 
 package models.viewModels
 
-import models.SubmissionsConstants.CRS
+import models.SubmissionsConstants.{CRS, FATCA}
 import models.{NormalMode, ReportId, UserAnswers}
 import pages.manual.accountHolders.AccountHoldersPage
 import pages.manual.account.AccountsPage
+import pages.manual.sponsor.HaveSponsorPage
 
 sealed trait TaskStatus
 
@@ -28,6 +29,7 @@ object TaskStatus {
   case object Completed extends TaskStatus
   case object Incomplete extends TaskStatus
   case object NoStatus extends TaskStatus
+  case object CannotStartYet extends TaskStatus
 }
 
 def handleAccountHolderNavigation(userAnswers: UserAnswers, reportId: ReportId) =
@@ -80,6 +82,20 @@ final case class SendAReportSections(
   private def task(titleKey: String, status: Option[TaskStatus], href: Option[String]): Seq[SendAReportTask] =
     status.map(SendAReportTask(titleKey, _, href)).toSeq
 
+  private val fillerSection = SendAReportSection(
+    headingKey = "sendAReport.filerCategory.heading",
+    idPrefix = "filer-category",
+    tasks = task(
+      "sendAReport.filerCategory.subHeading",
+      filerCategory,
+      href = userAnswers
+        .get(HaveSponsorPage()(reportId))
+        .fold(None)(
+          _ => Some(controllers.manual.filercategory.routes.WhatTypeOfFilerIsSponsorController.onPageLoad(NormalMode).url)
+        )
+    )
+  )
+
   val sections: Seq[SendAReportSection] =
     Seq(
       SendAReportSection(
@@ -103,36 +119,31 @@ final case class SendAReportSections(
                      sponsorDetails,
                      href = Some(controllers.manual.sponsor.routes.HaveSponsorController.onPageLoad(NormalMode).url)
         )
-      ),
-      SendAReportSection(
-        headingKey = "sendAReport.filerCategory.heading",
-        idPrefix = "filer-category",
-        tasks = task(
-          "sendAReport.filerCategory.subHeading",
-          filerCategory,
-          href = Some(controllers.manual.filercategory.routes.WhatTypeOfFilerIsSponsorController.onPageLoad(NormalMode).url)
-        )
-      ),
-      SendAReportSection(
-        headingKey = "sendAReport.accountsInformation.heading",
-        idPrefix = "accounts-information",
-        tasks = Seq(
-          task(
-            "sendAReport.accountsInformation.accounts",
-            accounts,
-            href = handleAccountNavigation(userAnswers, reportId)
-          ),
-          task("sendAReport.accountsInformation.accountHolders", accountHolders, href = handleAccountHolderNavigation(userAnswers, reportId)),
-          task(
-            controllingPersonsOrSubstantialOwnerMessageKey,
-            controllingPersons,
-            href = Some(controllers.manual.cpso.routes.CheckCPSOAddedOrAllowedController.onChangeRedirect().url)
-          ),
-          task("sendAReport.accountsInformation.tbc1", tbc1, href = Some(controllers.routes.UnderConstructionController.onPageLoad().url)),
-          task("sendAReport.accountsInformation.tbc2", tbc2, href = Some(controllers.routes.UnderConstructionController.onPageLoad().url))
-        ).flatten
       )
-    ).filter(_.tasks.nonEmpty)
+    ) ++
+      (if (reportId.regime == FATCA) Seq(fillerSection) else Seq.empty)
+      ++
+      Seq(
+        SendAReportSection(
+          headingKey = "sendAReport.accountsInformation.heading",
+          idPrefix = "accounts-information",
+          tasks = Seq(
+            task(
+              "sendAReport.accountsInformation.accounts",
+              accounts,
+              href = handleAccountNavigation(userAnswers, reportId)
+            ),
+            task("sendAReport.accountsInformation.accountHolders", accountHolders, href = handleAccountHolderNavigation(userAnswers, reportId)),
+            task(
+              controllingPersonsOrSubstantialOwnerMessageKey,
+              controllingPersons,
+              href = Some(controllers.manual.cpso.routes.CheckCPSOAddedOrAllowedController.onChangeRedirect().url)
+            ),
+            task("sendAReport.accountsInformation.tbc1", tbc1, href = Some(controllers.routes.UnderConstructionController.onPageLoad().url)),
+            task("sendAReport.accountsInformation.tbc2", tbc2, href = Some(controllers.routes.UnderConstructionController.onPageLoad().url))
+          ).flatten
+        )
+      ).filter(_.tasks.nonEmpty)
 
   private def controllingPersonsOrSubstantialOwnerMessageKey =
     if reportId.regime == CRS then "sendAReport.accountsInformation.controllingPersons" else "sendAReport.accountsInformation.substantialOwner"

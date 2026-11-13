@@ -51,6 +51,12 @@
     ))
    )
 
+  case CannotStartYet =>
+    TaskListItemStatus(
+        content = Text(messages("sendAReport.status.cannotstartyet")),
+        classes = "govuk-task-list__status--cannot-start-yet"
+    )
+
   case NoStatus =>
    TaskListItemStatus(
     content = Empty
