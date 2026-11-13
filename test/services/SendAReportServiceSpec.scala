@@ -52,15 +52,15 @@ class SendAReportServiceSpec extends SpecBase {
 
       "should return incomplete when page is answered as false" in {
         service.reportingCPSOCompleteStatus(emptyUserAnswers
-          .withPage(IsCpsoSectionCompletePage(reportId), false),
-          reportId
+                                              .withPage(IsCpsoSectionCompletePage(reportId), false),
+                                            reportId
         ) mustBe Incomplete
       }
 
       "should return completed when page is answered as true" in {
         service.reportingCPSOCompleteStatus(emptyUserAnswers
-          .withPage(IsCpsoSectionCompletePage(reportId), true),
-          reportId
+                                              .withPage(IsCpsoSectionCompletePage(reportId), true),
+                                            reportId
         ) mustBe Completed
       }
     }

@@ -33,11 +33,11 @@ class SendAReportService @Inject() {
         value => if value then Completed else Incomplete
       }
 
-    def reportingCPSOCompleteStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
-      userAnswers
-        .get(IsCpsoSectionCompletePage(reportId))
-        .fold(Incomplete) {
-          value => if value then Completed else Incomplete
-        }
+  def reportingCPSOCompleteStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
+    userAnswers
+      .get(IsCpsoSectionCompletePage(reportId))
+      .fold(Incomplete) {
+        value => if value then Completed else Incomplete
+      }
 
 }
