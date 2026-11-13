@@ -14,6 +14,7 @@
  * limitations under the License.
  *@
 
+@import models.SubmissionsConstants.{CRS, RegimeType}
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
@@ -22,7 +23,7 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode, fiName: String = "Fi Name", regimeType: RegimeType)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, fiName: String = "Fi Name", regimeType: RegimeType = CRS)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("controllingPersonsOrSubstantialOwners.title"))) {
 
