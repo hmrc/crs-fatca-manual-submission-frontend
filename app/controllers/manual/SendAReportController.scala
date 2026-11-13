@@ -44,7 +44,8 @@ class SendAReportController @Inject() (
 
   def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
     implicit request =>
-      val reportingFIStatus = service.reportingFIStatus(request.userAnswers, request.reportId)
+      val reportingFIStatus  = service.reportingFIStatus(request.userAnswers, request.reportId)
+      val cpsoCompleteStatus = service.reportingCPSOCompleteStatus(request.userAnswers, request.reportId)
       val accountIds = request.userAnswers
         .get(AccountsPage(request.reportId))
         .map(_.accounts.keys.toSeq.map(AccountId.apply))
@@ -74,7 +75,7 @@ class SendAReportController @Inject() (
         filerCategory = Some(NotStarted),
         accounts = Some(accountsStatus),
         accountHolders = Some(NoStatus),
-        controllingPersons = Some(Completed),
+        controllingPersons = Some(cpsoCompleteStatus),
         tbc1 = Some(Incomplete),
         tbc2 = Some(Incomplete),
         userAnswers = request.userAnswers,
