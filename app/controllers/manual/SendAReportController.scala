@@ -17,13 +17,11 @@
 package controllers.manual
 
 import controllers.actions.*
+import models.viewModels.SendAReportSections
 import models.viewModels.TaskStatus.*
-import models.viewModels.{AccountId, SendAReportSections}
-import pages.manual.account.AccountsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SendAReportService
-import services.manual.account.AccountsService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.SendAReportView
 
@@ -35,7 +33,6 @@ class SendAReportController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   reportIdAction: ReportIdRequiredAction,
-  accountsService: AccountsService,
   val controllerComponents: MessagesControllerComponents,
   service: SendAReportService,
   view: SendAReportView
@@ -48,28 +45,7 @@ class SendAReportController @Inject() (
       val fillerStatus       = service.fillerStatus(request.userAnswers, request.reportId)
       val sponsorStatus      = service.sponsorStatus(request.userAnswers, request.reportId)
       val cpsoCompleteStatus = service.reportingCPSOCompleteStatus(request.userAnswers, request.reportId)
-      val accountIds = request.userAnswers
-        .get(AccountsPage(request.reportId))
-        .map(_.accounts.keys.toSeq.map(AccountId.apply))
-        .getOrElse(Seq.empty)
-
-      val accountsStatus =
-        if (accountIds.isEmpty) {
-          NotStarted
-        } else if (
-          accountIds.forall {
-            accountId =>
-              accountsService.isComplete(
-                request.userAnswers,
-                request.reportId,
-                accountId
-              )
-          }
-        ) {
-          Completed
-        } else {
-          Incomplete
-        }
+      val accountsStatus     = service.accountStatus(request.userAnswers, request.reportId)
       val sections = SendAReportSections(
         reportDetails = Some(NotStarted),
         financialInstitutionDetails = Some(reportingFIStatus),

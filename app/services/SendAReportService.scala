@@ -17,18 +17,20 @@
 package services
 
 import models.CrsOrFatca.reads
-import models.viewModels.TaskStatus
-import models.viewModels.TaskStatus.{CannotStartYet, Completed, Incomplete}
+import models.viewModels.{AccountId, TaskStatus}
+import models.viewModels.TaskStatus.{CannotStartYet, Completed, Incomplete, NotStarted}
 import models.{viewModels, ReportId, UserAnswers}
 import pages.QuestionPage
+import pages.manual.account.AccountsPage
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportingFI.HaveYouFinishedCheckingFIDetailsPage
 import pages.manual.cpso.IsCpsoSectionCompletePage
 import pages.manual.sponsor.*
+import services.manual.account.AccountsService
 
 import javax.inject.Inject
 
-class SendAReportService @Inject() {
+class SendAReportService @Inject() (accountsService: AccountsService) {
 
   def reportingFIStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
     userAnswers
@@ -70,6 +72,9 @@ class SendAReportService @Inject() {
           .getOrElse(Incomplete)
     }
 
+  def accountStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
+    getAccountStatus(userAnswers, reportId)
+
   private def sponsorRequiredPages(using reportId: ReportId): Seq[QuestionPage[_]] =
     List(
       SponsorNamePage(),
@@ -99,6 +104,25 @@ class SendAReportService @Inject() {
     val addressPresent = sponsorAddressPages.exists(pageAnswered(_, userAnswers))
 
     requiredPagesPresent && addressPresent
+  }
+
+  private def getAccountStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus = {
+    val accountIds = userAnswers
+      .get(AccountsPage(reportId))
+      .map(_.accounts.keys.toSeq.map(AccountId.apply))
+      .getOrElse(Seq.empty)
+
+    if accountIds.isEmpty then NotStarted
+    else if accountIds.forall {
+        accountId =>
+          accountsService.isComplete(
+            userAnswers,
+            reportId,
+            accountId
+          )
+      }
+    then Completed
+    else Incomplete
   }
 
 }

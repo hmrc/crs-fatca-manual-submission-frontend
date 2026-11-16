@@ -17,20 +17,28 @@
 package services
 
 import base.SpecBase
+import models.SubmissionsConstants.FATCA
 import models.manual.filercategory.WhatTypeOfFiler.Foreign
 import models.manual.filercategory.WhatTypeOfFilerIsSponsor
 import models.manual.filercategory.WhatTypeOfFilerIsSponsor.ForeignFI
 import models.response.{Address, Country}
-import models.viewModels.TaskStatus.{CannotStartYet, Completed, Incomplete}
-import models.{AddressNonUk, UkAddress}
+import models.viewModels.AccountId
+import models.viewModels.TaskStatus.{CannotStartYet, Completed, Incomplete, NotStarted}
+import models.{AccountBalance, AddressNonUk, Currency, ReportId, UkAddress}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
+import pages.ReportIdPage
 import pages.manual.FINamePage
+import pages.manual.account.*
 import pages.manual.cpso.IsCpsoSectionCompletePage
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportingFI.HaveYouFinishedCheckingFIDetailsPage
 import pages.manual.sponsor.*
+import services.manual.account.AccountsService
 
 class SendAReportServiceSpec extends SpecBase {
-  private val service = new SendAReportService()
+  val mockAccountService = mock[AccountsService]
+  private val service    = new SendAReportService(mockAccountService)
 
   "SendAReportService" - {
 
@@ -193,6 +201,34 @@ class SendAReportServiceSpec extends SpecBase {
       }
     }
 
+    "accountsStatus" - {
+      val report  = ReportId(FATCA, 2025, None, "testFiID")
+      val firstId = AccountId("80")
+
+      val noAccounts = emptyUserAnswers.withPage(ReportIdPage, report)
+
+      val oneCompleteAccount = noAccounts
+        .withPage(AccountIdPage(firstId)(report), firstId)
+        .withPage(HaveNumberPage(firstId)(report), false)
+        .withPage(IdentifierPage(firstId)(report), "FIRST-ACCOUNT")
+        .withPage(AccountClosedPage(firstId)(report), false)
+        .withPage(WhatWasTheAccountBalancePage(firstId)(report), AccountBalance(Currency.GBP, "100"))
+        .withPage(HavePaymentsPage(firstId)(report), false)
+
+      "should return NotStarted when page is not answered" in {
+        service.accountStatus(noAccounts, report) mustBe NotStarted
+      }
+
+      "should return Completed when page are answered" in {
+        when(mockAccountService.isComplete(any(), any(), any())).thenReturn(true)
+        service.accountStatus(oneCompleteAccount, report) mustBe Completed
+      }
+
+      "should return InComplete when page is incomplete" in {
+        when(mockAccountService.isComplete(any(), any(), any())).thenReturn(false)
+        service.accountStatus(oneCompleteAccount, report) mustBe Incomplete
+      }
+    }
   }
 
 }
