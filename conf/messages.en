@@ -1298,3 +1298,7 @@ accountHolder.fatca.removeAccountHolder.bullet2 = substantial owner links to at 
 accountHolder.removeAccountHolder.radio.heading = Are you sure you want to remove the account holder {0}?
 accountHolder.removeAccountHolder.error.required = 	Select yes if you are sure you want to remove the account holder
 accountHolder.removeAccountHolder.change.hidden = RemoveAccountHolder
+
+isAccountsSectionCompleted.heading = Have you finished adding the accounts for {0}?
+isAccountsSectionCompleted.hint = You can still change the accounts information later.
+isAccountsSectionCompleted.error.required = Select yes if you have finished adding the accounts for the financial institution

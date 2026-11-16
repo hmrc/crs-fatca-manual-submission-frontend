@@ -17,7 +17,7 @@
 package services.manual.account
 
 import models.SubmissionsConstants.{CRS, FATCA}
-import models.viewModels.AccountId
+import models.viewModels.{AccountId, TaskStatus}
 import models.{ReportId, UserAnswers}
 import pages.manual.account.*
 
@@ -27,6 +27,33 @@ import scala.util.Try
 
 @Singleton
 class AccountsService @Inject() () {
+
+  def hasAccounts(answers: UserAnswers, reportId: ReportId): Boolean =
+    answers
+      .get(AccountsPage(reportId))
+      .exists(_.accounts.nonEmpty)
+
+  def allAccountsComplete(answers: UserAnswers, reportId: ReportId): Boolean =
+    answers.get(AccountsPage(reportId)).exists {
+      data =>
+        data.accounts.nonEmpty &&
+        data.accounts.keys.forall {
+          id =>
+            isComplete(answers, reportId, AccountId(id))
+        }
+    }
+
+  def sectionStatus(answers: UserAnswers, reportId: ReportId): TaskStatus =
+    if (!hasAccounts(answers, reportId)) {
+      TaskStatus.NotStarted
+    } else if (
+      answers.get(IsAccountsSectionCompletedPage(reportId)).contains(true) &&
+      allAccountsComplete(answers, reportId)
+    ) {
+      TaskStatus.Completed
+    } else {
+      TaskStatus.Incomplete
+    }
 
   def orderedAccounts(
     userAnswers: UserAnswers,

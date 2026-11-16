@@ -185,17 +185,20 @@ class AccountsControllerSpec extends SpecBase {
 
     Seq(
       ("one account is incomplete", mixedAccounts, reportUrl),
-      ("all accounts are complete", oneComplete, controllers.routes.UnderConstructionController.onPageLoad().url)
+      ("all accounts are complete", oneComplete, routes.IsAccountsSectionCompletedController.onPageLoad().url)
     ).foreach {
       case (scenario, answers, destination) =>
         s"must save No and redirect correctly when $scenario" in {
           withApp(answers) {
             (app, connector) =>
-              val request = FakeRequest(POST, accountsUrl).withFormUrlEncodedBody("value" -> "false")
-              val result  = route(app, request).value
+              val request = FakeRequest(POST, accountsUrl)
+                .withFormUrlEncodedBody("value" -> "false")
+
+              val result = route(app, request).value
 
               status(result) mustBe SEE_OTHER
-              redirectLocation(result).value mustBe destination
+              redirectLocation(result) mustBe Some(destination)
+
               val expected = answers.withPage(AddAnotherAccountPage(report), false)
               verify(connector).set(eqTo(expected))(any())
           }

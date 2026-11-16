@@ -95,10 +95,45 @@ class SendAReportControllerSpec extends SpecBase {
       val startAccountUrl = controllers.manual.account.routes.HaveNumberController.onPageLoad(NormalMode).url
       val overviewUrl     = controllers.manual.account.routes.AccountsController.onPageLoad().url
 
+      val finishedPage = IsAccountsSectionCompletedPage(report)
+
       Seq(
-        ("there are no accounts", noAccounts, "sendAReport.status.notStarted", startAccountUrl),
-        ("the only account is complete", oneCompleteAccount, "sendAReport.status.completed", overviewUrl),
-        ("one of two accounts is incomplete", mixedAccounts, "sendAReport.status.incomplete", overviewUrl)
+        (
+          "there are no accounts",
+          noAccounts,
+          "sendAReport.status.notStarted",
+          startAccountUrl
+        ),
+        (
+          "all accounts are complete but the section is unanswered",
+          oneCompleteAccount,
+          "sendAReport.status.incomplete",
+          overviewUrl
+        ),
+        (
+          "all accounts are complete and the user answered No",
+          oneCompleteAccount.withPage(finishedPage, false),
+          "sendAReport.status.incomplete",
+          overviewUrl
+        ),
+        (
+          "all accounts are complete and the user answered Yes",
+          oneCompleteAccount.withPage(finishedPage, true),
+          "sendAReport.status.completed",
+          overviewUrl
+        ),
+        (
+          "Yes was saved before an account became incomplete",
+          mixedAccounts.withPage(finishedPage, true),
+          "sendAReport.status.incomplete",
+          overviewUrl
+        ),
+        (
+          "one of two accounts is incomplete",
+          mixedAccounts,
+          "sendAReport.status.incomplete",
+          overviewUrl
+        )
       ).foreach {
         case (scenario, answers, statusKey, expectedUrl) =>
           s"must show the correct status and link when $scenario" in {
