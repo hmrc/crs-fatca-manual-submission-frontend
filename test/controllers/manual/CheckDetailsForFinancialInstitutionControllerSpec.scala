@@ -17,6 +17,7 @@
 package controllers.manual
 
 import base.SpecBase
+import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.HasFinishedCheckingFormProvider
 import models.ServiceErrors.NoFiDetailFound
@@ -26,6 +27,7 @@ import models.{ReportId, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import pages.ReportIdPage
+import pages.manual.reportingFI.HaveYouFinishedCheckingFIDetailsPage
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
@@ -65,8 +67,8 @@ class CheckDetailsForFinancialInstitutionControllerSpec extends SpecBase {
       .build()
   }
 
-  private lazy val getRoute  = controllers.manual.routes.CheckDetailsForFinancialInstitutionController.onPageLoad().url
-  private lazy val postRoute = controllers.manual.routes.CheckDetailsForFinancialInstitutionController.onSubmit().url
+  private lazy val getRoute  = controllers.manual.reportingFI.routes.CheckDetailsForFinancialInstitutionController.onPageLoad().url
+  private lazy val postRoute = controllers.manual.reportingFI.routes.CheckDetailsForFinancialInstitutionController.onSubmit().url
 
   "CheckDetailsForFinancialInstitution Controller" - {
 
@@ -93,6 +95,31 @@ class CheckDetailsForFinancialInstitutionControllerSpec extends SpecBase {
         )(request, messages(application)).toString
       }
     }
+
+    "must populate the view correctly on a GET when the question has previously been answered (fi is user)" in {
+      val answers     = baseUa(reportId).withPage(HaveYouFinishedCheckingFIDetailsPage(reportId), true)
+      val application = applicationWithFiDetail(answers)
+
+      running(application) {
+        val request = FakeRequest(GET, getRoute)
+        val result  = route(application, request).value
+        val view    = application.injector.instanceOf[CheckDetailsForFinancialInstitutionView]
+        val util    = application.injector.instanceOf[CheckDetailsForFinancialInstitutionUtil]
+
+        status(result) mustBe OK
+        contentAsString(result) mustBe view(
+          form.fill(true),
+          util.getRows(fiDetailWithUtr, reportId.regime)(messages(application)),
+          fiDetailWithUtr.FIName,
+          reportId.regime,
+          hasGiin = true,
+          fiIsUser = fiDetailWithUtr.IsFIUser,
+          utr = Some("1234567890"),
+          linkUrl = util.changeFiUrl(fiDetailWithUtr.FIID, fiDetailWithUtr.IsFIUser)
+        )(request, messages(application)).toString
+      }
+    }
+
     "must return OK and the correct view for a GET (fi is not user)" in {
       val answers     = baseUa(reportId)
       val application = applicationWithFiDetail(answers, detail = fiDetailWithTURN)
@@ -118,7 +145,21 @@ class CheckDetailsForFinancialInstitutionControllerSpec extends SpecBase {
     }
 
     "must redirect to Send a report when valid yes data is submitted" in {
-      val application = applicationWithFiDetail()
+
+      val mockSessionRepository = mock[DatabaseConnector]
+      val mockService           = mock[ViewFIService]
+      val userAnswers           = baseUa(reportId)
+      val detail: FIDetail      = fiDetailWithUtr
+
+      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+      when(mockService.getFIDetail(any(), any())(using any())).thenReturn(Future.successful(detail))
+
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
+        .overrides(
+          bind[ViewFIService].toInstance(mockService),
+          bind[DatabaseConnector].toInstance(mockSessionRepository)
+        )
+        .build()
 
       running(application) {
         val request = FakeRequest(POST, postRoute).withFormUrlEncodedBody(("value", "true"))
@@ -130,7 +171,20 @@ class CheckDetailsForFinancialInstitutionControllerSpec extends SpecBase {
     }
 
     "must redirect to Send a report when valid no data is submitted" in {
-      val application = applicationWithFiDetail()
+      val mockSessionRepository = mock[DatabaseConnector]
+      val mockService           = mock[ViewFIService]
+      val userAnswers           = baseUa(reportId)
+      val detail: FIDetail      = fiDetailWithUtr
+
+      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+      when(mockService.getFIDetail(any(), any())(using any())).thenReturn(Future.successful(detail))
+
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
+        .overrides(
+          bind[ViewFIService].toInstance(mockService),
+          bind[DatabaseConnector].toInstance(mockSessionRepository)
+        )
+        .build()
 
       running(application) {
         val request = FakeRequest(POST, postRoute).withFormUrlEncodedBody(("value", "false"))

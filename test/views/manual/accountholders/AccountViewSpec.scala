@@ -158,6 +158,14 @@ class AccountViewSpec extends SpecBase {
         doc.select("#submit").text() mustBe "Save and continue"
       }
 
+      "must link 'add an account' to the accounts overview" in {
+        val accountsUrl = controllers.manual.account.routes.AccountsController.onPageLoad().url
+        val link        = doc.select(s"p a[href='$accountsUrl']")
+
+        link.size() mustBe 1
+        link.text() mustBe messages("accountHolder.account.para.link")
+      }
+
     }
 
   }

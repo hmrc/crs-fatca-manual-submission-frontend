@@ -17,3 +17,55 @@
 .nobreak {
   display: inline-block;
 }
+
+.accounts-summary-list .govuk-summary-list__value {
+  display: none;
+}
+
+.accounts-summary-list .govuk-summary-list__key {
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 40.0625em) {
+  .accounts-summary-list {
+    table-layout: auto;
+  }
+
+  .accounts-summary-list .govuk-summary-list__key {
+    width: auto;
+  }
+
+  .accounts-summary-list .govuk-summary-list__actions {
+    width: 1%;
+    white-space: nowrap;
+  }
+}
+
+@media (min-width: 40.0625em) {
+  .accounts-summary-list--overview {
+    table-layout: fixed;
+
+    .govuk-summary-list__key,
+    .govuk-summary-list__actions {
+      width: 50%;
+    }
+
+    .govuk-summary-list__actions {
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    .govuk-summary-list__actions-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      row-gap: 0.25rem;
+    }
+
+    .govuk-summary-list__actions-list-item {
+      box-sizing: border-box;
+      max-width: 100%;
+      white-space: normal;
+    }
+  }
+}

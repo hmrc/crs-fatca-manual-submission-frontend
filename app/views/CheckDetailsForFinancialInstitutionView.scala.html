@@ -42,7 +42,7 @@
 
 @layout(pageTitle = title(form, messages("CheckDetailsForFinancialInstitution.title"))) {
 
-        @formHelper(action = controllers.manual.routes.CheckDetailsForFinancialInstitutionController.onSubmit()) {
+        @formHelper(action = controllers.manual.reportingFI.routes.CheckDetailsForFinancialInstitutionController.onSubmit()) {
             @if(form.hasErrors) {
                 @govukErrorSummary(ErrorSummaryViewModel(form))
             }

@@ -20,19 +20,21 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.account.HaveNumberFormProvider
-import models.NormalMode
+import models.{NormalMode, UserAnswers}
 import models.viewModels.AccountId
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
+import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.manual.account.{CurrentAccountIdPage, HaveNumberPage}
+import pages.manual.account.{AccountCreationPage, AccountIdPage, CurrentAccountIdPage, HaveNumberPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import views.html.manual.account.HaveNumberView
 
+import java.time.{Clock, Instant, ZoneOffset}
 import scala.concurrent.Future
 
 class HaveNumberControllerSpec extends SpecBase with MockitoSugar {
@@ -42,17 +44,28 @@ class HaveNumberControllerSpec extends SpecBase with MockitoSugar {
   val formProvider = new HaveNumberFormProvider()
   val form         = formProvider()
 
-  lazy val haveNumberRoute = controllers.manual.account.routes.HaveNumberController.onPageLoad(NormalMode).url
+  private val submissionTime =
+    Instant.parse("2026-11-09T12:00:00Z")
+
+  private val fixedClock =
+    Clock.fixed(submissionTime, ZoneOffset.UTC)
+
+  lazy val haveNumberRoute =
+    controllers.manual.account.routes.HaveNumberController
+      .onPageLoad(NormalMode)
+      .url
 
   "HaveNumber Controller" - {
 
     val accountId: AccountId = AccountId("TestAccountId")
+
     val ua = emptyUserAnswers
       .withPage(CurrentAccountIdPage()(reportId), accountId)
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(ua)).build()
 
       running(application) {
         val request = FakeRequest(GET, haveNumberRoute)
@@ -62,15 +75,20 @@ class HaveNumberControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[HaveNumberView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual
+          view(form, NormalMode)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = ua.set(HaveNumberPage(accountId)(reportId), true).success.value
+      val userAnswers = ua
+        .set(HaveNumberPage(accountId)(reportId), true)
+        .success
+        .value
 
-      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, haveNumberRoute)
@@ -80,7 +98,11 @@ class HaveNumberControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual
+          view(form.fill(true), NormalMode)(
+            request,
+            messages(application)
+          ).toString
       }
     }
 
@@ -88,20 +110,23 @@ class HaveNumberControllerSpec extends SpecBase with MockitoSugar {
 
       val mockDBConnector = mock[DatabaseConnector]
 
-      when(mockDBConnector.set(any())(any())) thenReturn Future.successful(())
+      when(mockDBConnector.set(any())(any()))
+        .thenReturn(Future.successful(()))
 
       val application =
         applicationBuilder(maybeUserAnswers = Some(ua))
           .overrides(
-            bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockDBConnector)
+            bind[ManualSubmissionNavigator]
+              .toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
+            bind[DatabaseConnector].toInstance(mockDBConnector),
+            bind[Clock].toInstance(fixedClock)
           )
           .build()
 
       running(application) {
         val request =
           FakeRequest(POST, haveNumberRoute)
-            .withFormUrlEncodedBody(("value", "true"))
+            .withFormUrlEncodedBody("value" -> "true")
 
         val result = route(application, request).value
 
@@ -110,14 +135,130 @@ class HaveNumberControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must return a Bad Request and errors when invalid data is submitted" in {
+    "must save the creation timestamp when a new account's first answer is submitted" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+      val newAccountId = AccountId("12")
+
+      val userAnswers = emptyUserAnswers
+        .withPage(
+          CurrentAccountIdPage()(reportId),
+          newAccountId
+        )
+
+      val mockDBConnector = mock[DatabaseConnector]
+
+      when(mockDBConnector.set(any())(any()))
+        .thenReturn(Future.successful(()))
+
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(userAnswers))
+          .overrides(
+            bind[ManualSubmissionNavigator]
+              .toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
+            bind[DatabaseConnector].toInstance(mockDBConnector),
+            bind[Clock].toInstance(fixedClock)
+          )
+          .build()
 
       running(application) {
         val request =
           FakeRequest(POST, haveNumberRoute)
-            .withFormUrlEncodedBody(("value", ""))
+            .withFormUrlEncodedBody("value" -> "false")
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual onwardRoute.url
+
+        val savedAnswers =
+          ArgumentCaptor.forClass(classOf[UserAnswers])
+
+        verify(mockDBConnector).set(savedAnswers.capture())(any())
+
+        savedAnswers.getValue
+          .get(HaveNumberPage(newAccountId)(reportId)) mustBe Some(false)
+
+        savedAnswers.getValue
+          .get(AccountIdPage(newAccountId)(reportId)) mustBe Some(newAccountId)
+
+        savedAnswers.getValue
+          .get(AccountCreationPage(newAccountId)(reportId)) mustBe
+          Some(submissionTime)
+      }
+    }
+
+    "must preserve an existing account's creation timestamp when its answer is submitted again" in {
+
+      val existingAccountId = AccountId("80")
+      val originalCreationTime =
+        Instant.parse("2026-11-08T09:00:00Z")
+
+      val userAnswers = emptyUserAnswers
+        .withPage(
+          AccountIdPage(existingAccountId)(reportId),
+          existingAccountId
+        )
+        .withPage(
+          HaveNumberPage(existingAccountId)(reportId),
+          false
+        )
+        .withPage(
+          AccountCreationPage(existingAccountId)(reportId),
+          originalCreationTime
+        )
+        .withPage(
+          CurrentAccountIdPage()(reportId),
+          existingAccountId
+        )
+
+      val mockDBConnector = mock[DatabaseConnector]
+
+      when(mockDBConnector.set(any())(any()))
+        .thenReturn(Future.successful(()))
+
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(userAnswers))
+          .overrides(
+            bind[ManualSubmissionNavigator]
+              .toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
+            bind[DatabaseConnector].toInstance(mockDBConnector),
+            bind[Clock].toInstance(fixedClock)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, haveNumberRoute)
+            .withFormUrlEncodedBody("value" -> "true")
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual onwardRoute.url
+
+        val savedAnswers =
+          ArgumentCaptor.forClass(classOf[UserAnswers])
+
+        verify(mockDBConnector).set(savedAnswers.capture())(any())
+
+        savedAnswers.getValue
+          .get(HaveNumberPage(existingAccountId)(reportId)) mustBe Some(true)
+
+        savedAnswers.getValue
+          .get(AccountCreationPage(existingAccountId)(reportId)) mustBe
+          Some(originalCreationTime)
+      }
+    }
+
+    "must return a Bad Request and errors when invalid data is submitted" in {
+
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(ua)).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, haveNumberRoute)
+            .withFormUrlEncodedBody("value" -> "")
 
         val boundForm = form.bind(Map("value" -> ""))
 
@@ -126,13 +267,15 @@ class HaveNumberControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual
+          view(boundForm, NormalMode)(request, messages(application)).toString
       }
     }
 
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
-      val application = applicationBuilder(maybeUserAnswers = None).build()
+      val application =
+        applicationBuilder(maybeUserAnswers = None).build()
 
       running(application) {
         val request = FakeRequest(GET, haveNumberRoute)
@@ -140,23 +283,26 @@ class HaveNumberControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        redirectLocation(result).value mustEqual
+          routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
-      val application = applicationBuilder(maybeUserAnswers = None).build()
+      val application =
+        applicationBuilder(maybeUserAnswers = None).build()
 
       running(application) {
         val request =
           FakeRequest(POST, haveNumberRoute)
-            .withFormUrlEncodedBody(("value", "true"))
+            .withFormUrlEncodedBody("value" -> "true")
 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        redirectLocation(result).value mustEqual
+          routes.JourneyRecoveryController.onPageLoad().url
       }
     }
   }

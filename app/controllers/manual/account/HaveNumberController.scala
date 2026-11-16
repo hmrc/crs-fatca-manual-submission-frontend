@@ -22,20 +22,23 @@ import forms.manual.account.HaveNumberFormProvider
 import models.requests.AccountIdRequest
 import models.{Mode, ReportId, UserAnswers}
 import navigation.ManualSubmissionNavigator
-import pages.manual.account.{AccountIdPage, HaveNumberPage}
+import pages.manual.account.{AccountCreationPage, AccountIdPage, HaveNumberPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.account.HaveNumberView
 
+import java.time.Clock
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Success
 
 class HaveNumberController @Inject() (
   override val messagesApi: MessagesApi,
   actions: Actions,
   repository: DatabaseConnector,
   navigator: ManualSubmissionNavigator,
+  clock: Clock,
   formProvider: HaveNumberFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: HaveNumberView
@@ -45,38 +48,85 @@ class HaveNumberController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdCreation() {
-    implicit request =>
-      given reportId: ReportId = request.reportId
-      val preparedForm = request.userAnswers.get(HaveNumberPage(request.accountId)) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
+  def onPageLoad(mode: Mode): Action[AnyContent] =
+    actions.withReportIdRequiredAndAccountIdCreation() {
+      implicit request =>
+        given reportId: ReportId = request.reportId
 
-      Ok(view(preparedForm, mode))
-  }
+        val preparedForm =
+          request.userAnswers.get(HaveNumberPage(request.accountId)) match {
+            case None        => form
+            case Some(value) => form.fill(value)
+          }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountIdCreation().async {
-    implicit request =>
-      given reportId: ReportId = request.reportId
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-          value =>
-            for {
-              updatedAnswers              <- Future.fromTry(request.userAnswers.setWithReportId(HaveNumberPage(request.accountId), value))
-              updatedAnswersWithAccountId <- checkAndSetAccountId(request, updatedAnswers)
-              _                           <- repository.set(updatedAnswersWithAccountId)
-            } yield Redirect(navigator.nextPage(HaveNumberPage(request.accountId), mode, updatedAnswersWithAccountId))
-        )
-  }
+        Ok(view(preparedForm, mode))
+    }
 
-  private def checkAndSetAccountId(request: AccountIdRequest[AnyContent], updatedAnswers: UserAnswers)(implicit reportId: ReportId) =
+  def onSubmit(mode: Mode): Action[AnyContent] =
+    actions.withReportIdRequiredAndAccountIdCreation().async {
+      implicit request =>
+        given reportId: ReportId = request.reportId
+
+        form
+          .bindFromRequest()
+          .fold(
+            formWithErrors =>
+              Future.successful(
+                BadRequest(view(formWithErrors, mode))
+              ),
+            value =>
+              for {
+                updatedAnswers <- Future.fromTry(
+                  request.userAnswers.setWithReportId(
+                    HaveNumberPage(request.accountId),
+                    value
+                  )
+                )
+                updatedAnswersWithAccountId <- checkAndSetAccountId(
+                  request,
+                  updatedAnswers
+                )
+                _ <- repository.set(updatedAnswersWithAccountId)
+              } yield Redirect(
+                navigator.nextPage(
+                  HaveNumberPage(request.accountId),
+                  mode,
+                  updatedAnswersWithAccountId
+                )
+              )
+          )
+    }
+
+  private def checkAndSetAccountId(
+    request: AccountIdRequest[AnyContent],
+    updatedAnswers: UserAnswers
+  )(implicit reportId: ReportId): Future[UserAnswers] =
     Future.fromTry {
       updatedAnswers.get(AccountIdPage(request.accountId)) match {
-        case Some(_) => scala.util.Success(updatedAnswers)
-        case None    => updatedAnswers.setWithReportId(AccountIdPage(request.accountId), request.accountId)
+        case Some(_) =>
+          Success(updatedAnswers)
+
+        case None =>
+          for {
+            answersWithAccountId <- updatedAnswers.setWithReportId(
+              AccountIdPage(request.accountId),
+              request.accountId
+            )
+
+            answersWithCreationTime <-
+              if (
+                answersWithAccountId
+                  .get(AccountCreationPage(request.accountId))
+                  .isDefined
+              ) {
+                Success(answersWithAccountId)
+              } else {
+                answersWithAccountId.setWithReportId(
+                  AccountCreationPage(request.accountId),
+                  clock.instant()
+                )
+              }
+          } yield answersWithCreationTime
       }
     }
 }

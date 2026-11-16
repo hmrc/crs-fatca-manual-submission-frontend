@@ -24,4 +24,4 @@ import play.api.libs.json.JsPath
 
 final case class WhatIsAddressForAccountHolderPage(accountHolderId: AccountHolderId, reportId: ReportId) extends QuestionPage[Address]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "accountHolder" \ accountHolderId.value \ "whatIsAddressForAccountHolder"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "accountHolder" \ accountHolderId.value \ "ukAddressFromSelect"

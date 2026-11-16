@@ -24,7 +24,7 @@ import models.SubmissionsConstants.CRS
 import models.viewModels.{AccountId, Accounts}
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.accountHolders.AccountPage
+import pages.manual.accountHolders.{AccountHolderCreationPage, AccountPage}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -32,6 +32,7 @@ import services.ViewFIService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.accountHolders.AccountView
 
+import java.time.Clock
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -43,6 +44,7 @@ class AccountController @Inject() (
   formProvider: AccountFormProvider,
   viewFIService: ViewFIService,
   val controllerComponents: MessagesControllerComponents,
+  clock: Clock,
   view: AccountView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -85,9 +87,9 @@ class AccountController @Inject() (
               val accounts    = Accounts.existingAccounts(request.userAnswers, reportId)
               val existingIds = accounts.map(_._1)
 
-              val form    = formProvider(existingIds)
-              val options = Accounts.checkboxOptions(accounts)
-
+              val form                              = formProvider(existingIds)
+              val options                           = Accounts.checkboxOptions(accounts)
+              val doesAccountHolderHaveCreationTime = request.userAnswers.get(AccountHolderCreationPage(request.accountHolderId, reportId)).isDefined
               form
                 .bindFromRequest()
                 .fold(
@@ -100,12 +102,15 @@ class AccountController @Inject() (
                           selectedAccountIds
                         )
                       )
-                      _ <- repository.set(updatedAnswers)
+                      updatedAnswersWithCreationTime <-
+                        if (doesAccountHolderHaveCreationTime) Future.successful(updatedAnswers)
+                        else Future.fromTry(updatedAnswers.setWithReportId(AccountHolderCreationPage(request.accountHolderId, reportId), clock.instant()))
+                      _ <- repository.set(updatedAnswersWithCreationTime)
                     } yield Redirect(
                       navigator.nextPage(
                         AccountPage(reportId, request.accountHolderId),
                         mode,
-                        updatedAnswers
+                        updatedAnswersWithCreationTime
                       )
                     )
                 )

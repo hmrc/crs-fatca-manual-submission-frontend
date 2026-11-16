@@ -19,6 +19,7 @@
         govukButton: GovukButton,
         formHelper: FormWithCSRF,
         govukSummaryList: GovukSummaryList,
+        warning: components.Warning,
         heading: components.Heading
 )
 
@@ -32,8 +33,10 @@
 
     @govukSummaryList(list)
 
+    @warning(messages("reportDetailsCheckAnswers.warning"))
+
     @govukButton(
-     ButtonViewModel(messages("site.saveContinue"))
+     ButtonViewModel(messages("reportDetailsCheckAnswers.btn"))
      .withAttribute("id" -> "submit")
     )
     }

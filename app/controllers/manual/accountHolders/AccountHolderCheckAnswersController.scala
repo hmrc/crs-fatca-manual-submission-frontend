@@ -17,7 +17,7 @@
 package controllers.manual.accountHolders
 
 import controllers.actions.*
-import models.ReportId
+import models.{NormalMode, ReportId}
 import models.viewModels.AccountHolderId
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -49,7 +49,7 @@ class AccountHolderCheckAnswersController @Inject() (override val messagesApi: M
 
   def onSubmit: Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequiredAndAccountHolderNameRequired().async {
     implicit request =>
-      Future.successful(Redirect(controllers.routes.UnderConstructionController.onPageLoad().url))
+      Future.successful(Redirect(controllers.manual.accountHolders.routes.AccountHolderListController.onPageLoad(NormalMode).url))
   }
 
 }

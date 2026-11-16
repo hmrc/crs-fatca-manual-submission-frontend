@@ -23,4 +23,4 @@ import play.api.libs.json.JsPath
 
 final case class WhereAreTheyBasedPage(accountHolderId: AccountHolderId)(implicit reportId: ReportId) extends QuestionPage[Boolean]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "accountHolder" \ accountHolderId.value \ "whereAreTheyBased"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "accountHolder" \ accountHolderId.value \ "areTheyBasedInTheUk"
