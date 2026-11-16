@@ -16,8 +16,9 @@
 
 package controllers.manual.cpso
 
-import controllers.actions._
+import controllers.actions.*
 import forms.manual.cpso.ControllingPersonsOrSubstantialOwnersFormProvider
+
 import javax.inject.Inject
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
@@ -25,6 +26,9 @@ import pages.manual.cpso.ControllingPersonsOrSubstantialOwnersPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import connectors.DatabaseConnector
+import models.ServiceErrors.NoFiDetailFound
+import play.api.Logging
+import services.ViewFIService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.cpso.ControllingPersonsOrSubstantialOwnersView
 
@@ -40,23 +44,32 @@ class ControllingPersonsOrSubstantialOwnersController @Inject() (
   reportIdAction: ReportIdRequiredAction,
   formProvider: ControllingPersonsOrSubstantialOwnersFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: ControllingPersonsOrSubstantialOwnersView
+  view: ControllingPersonsOrSubstantialOwnersView,
+  viewFIService: ViewFIService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with Logging {
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
       val form                        = formProvider(reportId.regime)
 
-      val preparedForm = request.userAnswers.get(ControllingPersonsOrSubstantialOwnersPage()) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
+      viewFIService
+        .getFIDetail(request.fatcaId, reportId.fiId)
+        .map {
+          fiDetail =>
+            Ok(view(form, mode, fiDetail.FIName, regimeType = reportId.regime, accountHoldersWithoutCPSO = Seq(), cpsoList = Seq()))
 
-      Ok(view(preparedForm, mode))
+        }
+        .recover {
+          case NoFiDetailFound =>
+            logger.error(s"Failed to retrieve FIDetail for FiID ${reportId.fiId}")
+            Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+        }
+
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
@@ -65,15 +78,29 @@ class ControllingPersonsOrSubstantialOwnersController @Inject() (
       implicit val reportId: ReportId = request.reportId
       val form                        = formProvider(reportId.regime)
 
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(ControllingPersonsOrSubstantialOwnersPage(), value))
-              _              <- repository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(ControllingPersonsOrSubstantialOwnersPage(), mode, updatedAnswers))
-        )
+      viewFIService
+        .getFIDetail(request.fatcaId, reportId.fiId)
+        .flatMap {
+          fiDetail =>
+            form
+              .bindFromRequest()
+              .fold(
+                formWithErrors =>
+                  Future.successful(
+                    BadRequest(view(formWithErrors, mode, fiDetail.FIName, regimeType = reportId.regime, accountHoldersWithoutCPSO = Seq(), cpsoList = Seq()))
+                  ),
+                value =>
+                  for {
+                    updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(ControllingPersonsOrSubstantialOwnersPage(), value))
+                    _              <- repository.set(updatedAnswers)
+                  } yield Redirect(navigator.nextPage(ControllingPersonsOrSubstantialOwnersPage(), mode, updatedAnswers))
+              )
+        }
+        .recover {
+          case NoFiDetailFound =>
+            logger.error(s"Failed to retrieve FIDetail for FiID ${reportId.fiId}")
+            Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+        }
+
   }
 }

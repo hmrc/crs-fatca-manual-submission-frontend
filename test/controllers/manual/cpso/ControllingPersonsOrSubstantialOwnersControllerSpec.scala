@@ -20,7 +20,9 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.cpso.ControllingPersonsOrSubstantialOwnersFormProvider
+import models.ServiceErrors.NoFiDetailFound
 import models.SubmissionsConstants.CRS
+import models.response.FIDetail
 import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
@@ -31,7 +33,8 @@ import pages.manual.cpso.ControllingPersonsOrSubstantialOwnersPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
+import services.ViewFIService
 import views.html.manual.cpso.ControllingPersonsOrSubstantialOwnersView
 
 import scala.concurrent.Future
@@ -46,13 +49,21 @@ class ControllingPersonsOrSubstantialOwnersControllerSpec extends SpecBase with 
   lazy val controllingPersonsOrSubstantialOwnersRoute =
     controllers.manual.cpso.routes.ControllingPersonsOrSubstantialOwnersController.onPageLoad(NormalMode).url
 
+  private def mockFiService(result: Future[FIDetail] = Future.successful(fiDetail)): ViewFIService = {
+    val service = mock[ViewFIService]
+    when(service.getFIDetail(any(), any())(using any())) thenReturn result
+    service
+  }
+
   "ControllingPersonsOrSubstantialOwners Controller" - {
 
     val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(ua))
+        .overrides(bind[ViewFIService].toInstance(mockFiService()))
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, controllingPersonsOrSubstantialOwnersRoute)
@@ -62,7 +73,7 @@ class ControllingPersonsOrSubstantialOwnersControllerSpec extends SpecBase with 
         val view = application.injector.instanceOf[ControllingPersonsOrSubstantialOwnersView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, "fiName", CRS, Seq(), Seq())(request, messages(application)).toString
       }
     }
 
@@ -72,7 +83,9 @@ class ControllingPersonsOrSubstantialOwnersControllerSpec extends SpecBase with 
 
       val userAnswers = ua.set(ControllingPersonsOrSubstantialOwnersPage(), true).success.value
 
-      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
+        .overrides(bind[ViewFIService].toInstance(mockFiService()))
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, controllingPersonsOrSubstantialOwnersRoute)
@@ -82,7 +95,23 @@ class ControllingPersonsOrSubstantialOwnersControllerSpec extends SpecBase with 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode, "fiName", CRS, Seq(), Seq())(request, messages(application)).toString
+      }
+    }
+
+    "must redirect to Journey Recovery for a GET when the financial institution cannot be found" in {
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(ua))
+          .overrides(bind[ViewFIService].toInstance(mockFiService(Future.failed(NoFiDetailFound))))
+          .build()
+
+      running(application) {
+        val request = FakeRequest(GET, controllingPersonsOrSubstantialOwnersRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 
@@ -96,7 +125,8 @@ class ControllingPersonsOrSubstantialOwnersControllerSpec extends SpecBase with 
         applicationBuilder(maybeUserAnswers = Some(ua))
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
-            bind[DatabaseConnector].toInstance(mockSessionRepository)
+            bind[DatabaseConnector].toInstance(mockSessionRepository),
+            bind[ViewFIService].toInstance(mockFiService())
           )
           .build()
 
@@ -114,7 +144,9 @@ class ControllingPersonsOrSubstantialOwnersControllerSpec extends SpecBase with 
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(maybeUserAnswers = Some(ua)).build()
+      val application = applicationBuilder(maybeUserAnswers = Some(ua))
+        .overrides(bind[ViewFIService].toInstance(mockFiService()))
+        .build()
 
       running(application) {
         val request =
@@ -128,7 +160,26 @@ class ControllingPersonsOrSubstantialOwnersControllerSpec extends SpecBase with 
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, "fiName", CRS, Seq(), Seq())(request, messages(application)).toString
+      }
+    }
+
+    "must redirect to Journey Recovery for a POST when the financial institution cannot be found" in {
+
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(ua))
+          .overrides(bind[ViewFIService].toInstance(mockFiService(Future.failed(NoFiDetailFound))))
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, controllingPersonsOrSubstantialOwnersRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 

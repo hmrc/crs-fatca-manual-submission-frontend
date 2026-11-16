@@ -1319,7 +1319,7 @@ controllingPersonsOrSubstantialOwners.fatca.empty.heading = You have not added a
 controllingPersonsOrSubstantialOwners.crs.one.heading = You have added 1 controlling person
 controllingPersonsOrSubstantialOwners.fatca.one.heading = You have added 1 substantial owner
 controllingPersonsOrSubstantialOwners.crs.many.heading = You have added {0} controlling persons
-controllingPersonsOrSubstantialOwners.crs.many.heading = You have added {0} substantial owners
+controllingPersonsOrSubstantialOwners.fatca.many.heading = You have added {0} substantial owners
 
 controllingPersonsOrSubstantialOwners.crs.one.accountHolder.missing.cpso.p1 = The account holder {0} is missing a controlling person.
 controllingPersonsOrSubstantialOwners.fatca.one.accountHolder.missing.cpso.p1 = The account holder {0} is missing a substantial owner.
