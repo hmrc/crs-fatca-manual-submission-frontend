@@ -19,7 +19,6 @@ package controllers
 import base.SpecBase
 import controllers.manual.routes.SendAReportController
 import models.SubmissionsConstants.{CRS, FATCA}
-import models.ReportId
 import models.viewModels.TaskStatus.*
 import models.viewModels.{AccountId, SendAReportSections, TaskStatus}
 import models.{AccountBalance, Currency, NormalMode, ReportId}
@@ -34,6 +33,7 @@ import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.SendAReportService
+import services.manual.account.AccountsService
 import views.html.SendAReportView
 
 import scala.concurrent.Future
@@ -42,18 +42,19 @@ import scala.jdk.CollectionConverters.*
 class SendAReportControllerSpec extends SpecBase {
   "SendAReport Controller" - {
 
-    val mockService: SendAReportService = mock[SendAReportService]
+    val mockService: SendAReportService     = mock[SendAReportService]
+    val mockAccountService: AccountsService = mock[AccountsService]
 
     "must return OK and the correct view for a GET - FATCA" in {
 
-      val reportId = ReportId(FATCA, 2025, None, "testFiID")
+      val fatcaReportId = ReportId(FATCA, 2025, None, "testFiID")
       val ua = emptyUserAnswers
-        .withPage(ReportIdPage, reportId)
-        .withPage(HaveSponsorPage()(reportId), true)
+        .withPage(ReportIdPage, fatcaReportId)
+        .withPage(HaveSponsorPage()(fatcaReportId), true)
       val sections = SendAReportSections(
         reportDetails = Some(NotStarted),
         financialInstitutionDetails = Some(Incomplete),
-        sponsorDetails = Some(NotStarted),
+        sponsorDetails = Some(Incomplete),
         filerCategory = Some(Incomplete),
         accounts = Some(NotStarted),
         accountHolders = Some(NoStatus),
@@ -61,7 +62,7 @@ class SendAReportControllerSpec extends SpecBase {
         tbc1 = Some(Incomplete),
         tbc2 = Some(Incomplete),
         userAnswers = ua,
-        reportId = reportId
+        reportId = fatcaReportId
       )
       val application = applicationBuilder(maybeUserAnswers = Some(ua))
         .overrides(
@@ -71,10 +72,12 @@ class SendAReportControllerSpec extends SpecBase {
       running(application) {
         when(mockService.reportingFIStatus(any(), any())).thenReturn(TaskStatus.Incomplete)
         when(mockService.fillerStatus(any(), any())).thenReturn(TaskStatus.Incomplete)
+        when(mockService.sponsorStatus(any(), any())).thenReturn(TaskStatus.Incomplete)
+        when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(ua)))
         val request = FakeRequest(GET, SendAReportController.onPageLoad().url)
         val result  = route(application, request).value
         val view    = application.injector.instanceOf[SendAReportView]
-        status(result) mustEqual OK
+        status(result) mustBe OK
         contentAsString(result) mustEqual view(sections)(request, messages(application)).toString
       }
     }
@@ -86,7 +89,7 @@ class SendAReportControllerSpec extends SpecBase {
       val sections = SendAReportSections(
         reportDetails = Some(NotStarted),
         financialInstitutionDetails = Some(Incomplete),
-        sponsorDetails = Some(NotStarted),
+        sponsorDetails = None,
         filerCategory = None,
         accounts = Some(NotStarted),
         accountHolders = Some(NoStatus),
@@ -98,7 +101,8 @@ class SendAReportControllerSpec extends SpecBase {
       )
       val application = applicationBuilder(maybeUserAnswers = Some(ua))
         .overrides(
-          bind[SendAReportService].toInstance(mockService)
+          bind[SendAReportService].toInstance(mockService),
+          bind[AccountsService].toInstance(mockAccountService)
         )
         .build()
       running(application) {
@@ -141,8 +145,15 @@ class SendAReportControllerSpec extends SpecBase {
       ).foreach {
         case (scenario, answers, statusKey, expectedUrl) =>
           s"must show the correct status and link when $scenario" in {
+            when(mockService.reportingFIStatus(any(), any())).thenReturn(TaskStatus.Incomplete)
+            when(mockService.fillerStatus(any(), any())).thenReturn(TaskStatus.Incomplete)
+            when(mockService.sponsorStatus(any(), any())).thenReturn(TaskStatus.Incomplete)
             when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(answers)))
-            val application = applicationBuilder(maybeUserAnswers = Some(answers)).build()
+            val application = applicationBuilder(maybeUserAnswers = Some(answers))
+              .overrides(
+                bind[SendAReportService].toInstance(mockService)
+              )
+              .build()
 
             running(application) {
               val request = FakeRequest(GET, SendAReportController.onPageLoad().url)

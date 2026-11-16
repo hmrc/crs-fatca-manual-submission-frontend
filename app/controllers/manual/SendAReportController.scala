@@ -45,6 +45,8 @@ class SendAReportController @Inject() (
   def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
     implicit request =>
       val reportingFIStatus = service.reportingFIStatus(request.userAnswers, request.reportId)
+      val fillerStatus      = service.fillerStatus(request.userAnswers, request.reportId)
+      val sponsorStatus     = service.sponsorStatus(request.userAnswers, request.reportId)
       val accountIds = request.userAnswers
         .get(AccountsPage(request.reportId))
         .map(_.accounts.keys.toSeq.map(AccountId.apply))
@@ -67,8 +69,6 @@ class SendAReportController @Inject() (
         } else {
           Incomplete
         }
-      val fillerStatus  = service.fillerStatus(request.userAnswers, request.reportId)
-      val sponsorStatus = service.sponsorStatus(request.userAnswers, request.reportId)
       val sections = SendAReportSections(
         reportDetails = Some(NotStarted),
         financialInstitutionDetails = Some(reportingFIStatus),

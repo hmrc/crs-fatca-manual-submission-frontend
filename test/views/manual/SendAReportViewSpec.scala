@@ -78,7 +78,6 @@ class SendAReportViewSpec extends SpecBase {
 
         headings must contain("Set up the report")
         headings must contain("Check the reporting financial institution details")
-        headings must contain("Add the sponsor (optional)")
         headings must contain("Add accounts information")
       }
 
@@ -87,7 +86,6 @@ class SendAReportViewSpec extends SpecBase {
 
         pageText must include("Report details")
         pageText must include("Reporting financial institution details")
-        pageText must include("Sponsor details")
         pageText must include("Accounts")
         pageText must include("Account holders")
         pageText must include("Controlling persons")

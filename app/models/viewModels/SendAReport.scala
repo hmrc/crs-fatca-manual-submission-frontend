@@ -96,6 +96,13 @@ final case class SendAReportSections(
     )
   )
 
+  private val sponsorSection = SendAReportSection(
+    headingKey = "sendAReport.sponsor.heading",
+    idPrefix = "sponsor",
+    tasks =
+      task("sendAReport.sponsor.subHeading", sponsorDetails, href = Some(controllers.manual.sponsor.routes.HaveSponsorController.onPageLoad(NormalMode).url))
+  )
+
   val sections: Seq[SendAReportSection] =
     Seq(
       SendAReportSection(
@@ -111,17 +118,9 @@ final case class SendAReportSections(
           financialInstitutionDetails,
           href = Some(controllers.manual.reportingFI.routes.CheckDetailsForFinancialInstitutionController.onPageLoad().url)
         )
-      ),
-      SendAReportSection(
-        headingKey = "sendAReport.sponsor.heading",
-        idPrefix = "sponsor",
-        tasks = task("sendAReport.sponsor.subHeading",
-                     sponsorDetails,
-                     href = Some(controllers.manual.sponsor.routes.HaveSponsorController.onPageLoad(NormalMode).url)
-        )
       )
     ) ++
-      (if (reportId.regime == FATCA) Seq(fillerSection) else Seq.empty)
+      (if (reportId.regime == FATCA) Seq(sponsorSection, fillerSection) else Seq.empty)
       ++
       Seq(
         SendAReportSection(

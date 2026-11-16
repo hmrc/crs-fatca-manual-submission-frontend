@@ -22,7 +22,6 @@ import models.viewModels.*
 import models.viewModels.TaskStatus.{CannotStartYet, NotStarted}
 import models.{NormalMode, ReportId}
 import pages.manual.accountHolders.AccountHoldersPage
-import pages.manual.sponsor.HaveSponsorPage
 
 class SendAReportSpec extends SpecBase {
 
@@ -166,7 +165,7 @@ class SendAReportSpec extends SpecBase {
         controllingPersons = None,
         tbc1 = None,
         tbc2 = None,
-        userAnswers = emptyUserAnswers.withPage(HaveSponsorPage()(reportId), true),
+        userAnswers = emptyUserAnswers,
         reportId = reportId
       )
 
@@ -175,7 +174,7 @@ class SendAReportSpec extends SpecBase {
           "sendAReport.filerCategory.heading",
           "filer-category",
           List(
-            SendAReportTask("sendAReport.filerCategory.subHeading", CannotStartYet, Some("/manual/filer-category/sponsor"))
+            SendAReportTask("sendAReport.filerCategory.subHeading", CannotStartYet, None)
           )
         )
       )
@@ -208,6 +207,70 @@ class SendAReportSpec extends SpecBase {
         SendAReportSection(
           "sendAReport.filerCategory.heading",
           "filer-category",
+          List()
+        )
+      )
+
+    }
+
+    "must include Sponsor section when report is for FATCA" in {
+
+      val reportId = ReportId(
+        FATCA,
+        2025,
+        None,
+        "TestFIID"
+      )
+      val sendAReport = SendAReportSections(
+        reportDetails = None,
+        financialInstitutionDetails = None,
+        sponsorDetails = None,
+        filerCategory = None,
+        accounts = None,
+        accountHolders = Some(NotStarted),
+        controllingPersons = None,
+        tbc1 = None,
+        tbc2 = None,
+        userAnswers = emptyUserAnswers,
+        reportId = reportId
+      )
+
+      sendAReport.sections must contain(
+        SendAReportSection(
+          "sendAReport.sponsor.heading",
+          "sponsor",
+          List()
+        )
+      )
+
+    }
+
+    "must include Sponsor section when report is for CRS" in {
+
+      val reportId = ReportId(
+        CRS,
+        2025,
+        None,
+        "TestFIID"
+      )
+      val sendAReport = SendAReportSections(
+        reportDetails = None,
+        financialInstitutionDetails = None,
+        sponsorDetails = None,
+        filerCategory = None,
+        accounts = None,
+        accountHolders = Some(NotStarted),
+        controllingPersons = None,
+        tbc1 = None,
+        tbc2 = None,
+        userAnswers = emptyUserAnswers,
+        reportId = reportId
+      )
+
+      sendAReport.sections mustNot contain(
+        SendAReportSection(
+          "sendAReport.sponsor.heading",
+          "sponsor",
           List()
         )
       )
