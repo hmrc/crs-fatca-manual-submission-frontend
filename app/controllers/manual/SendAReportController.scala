@@ -45,7 +45,7 @@ class SendAReportController @Inject() (
     implicit request =>
       val reportingFIStatus  = service.reportingFIStatus(request.userAnswers, request.reportId)
       val cpsoCompleteStatus = service.reportingCPSOCompleteStatus(request.userAnswers, request.reportId)
-      val accountsStatus    = accountsService.sectionStatus(request.userAnswers, request.reportId)
+      val accountsStatus     = accountsService.sectionStatus(request.userAnswers, request.reportId)
 
       val sections = SendAReportSections(
         reportDetails = Some(NotStarted),
