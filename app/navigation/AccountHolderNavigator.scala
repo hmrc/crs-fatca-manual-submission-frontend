@@ -173,7 +173,7 @@ object AccountHolderNavigator {
   private def handleDoYouWantToAddAnotherAccountHolderNavigation(mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
     userAnswers.get(DoYouWantToAddAnotherAccountHolder()) match {
       case Some(true)  => controllers.manual.accountHolders.routes.AccountController.onPageLoad(mode)
-      case Some(false) => routes.UnderConstructionController.onPageLoad()
+      case Some(false) => controllers.manual.accountHolders.routes.IsAccountHoldersSectionCompleteController.onPageLoad()
       case _           => routes.JourneyRecoveryController.onPageLoad()
     }
 

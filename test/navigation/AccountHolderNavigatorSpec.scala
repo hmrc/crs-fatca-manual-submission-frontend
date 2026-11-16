@@ -972,10 +972,10 @@ class AccountHolderNavigatorSpec extends SpecBase {
               controllers.manual.accountHolders.routes.AccountController.onPageLoad(NormalMode)
           }
 
-          "must go to under construction page when DoYouWantToAddAnotherAccountHolder is false" in {
+          "must go to IsAccountHoldersSectionComplete page when DoYouWantToAddAnotherAccountHolder is false" in {
             val answers = ua.withPage(DoYouWantToAddAnotherAccountHolder(), false)
             navigator.nextPage(DoYouWantToAddAnotherAccountHolder(), NormalMode, answers) mustBe
-              routes.UnderConstructionController.onPageLoad()
+              controllers.manual.accountHolders.routes.IsAccountHoldersSectionCompleteController.onPageLoad()
           }
 
           "must go to journey recovery page when DoYouWantToAddAnotherAccountHolder is not preset" in {
