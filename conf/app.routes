@@ -543,5 +543,7 @@ POST        /manual/account-holder/change-remove-account-holder                 
 GET        /manual/account-holder/clear-account-holder-id      controllers.manual.accountHolders.ClearAccountHolderIdAndRedirectToAccountHoldersController.onRedirect(mode: Mode = NormalMode)
 GET        /manual/account-holder/change-clear-account-holder-id      controllers.manual.accountHolders.ClearAccountHolderIdAndRedirectToAccountHoldersController.onRedirect(mode: Mode = CheckMode)
 
+GET         /manual/is-cp-so-section-completed                        controllers.manual.cpso.IsCpsoSectionCompleteController.onPageLoad(mode: Mode = NormalMode)
+POST        /manual/is-cp-so-section-completed                         controllers.manual.cpso.IsCpsoSectionCompleteController.onSubmit(mode: Mode = NormalMode)
 GET        /manual/is-accounts-section-completed       controllers.manual.account.IsAccountsSectionCompletedController.onPageLoad()
 POST       /manual/is-accounts-section-completed       controllers.manual.account.IsAccountsSectionCompletedController.onSubmit()

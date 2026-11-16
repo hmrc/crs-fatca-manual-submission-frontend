@@ -56,7 +56,6 @@ class SendAReportControllerSpec extends SpecBase {
     val mockService: SendAReportService = mock[SendAReportService]
 
     "must return OK and the correct view for a GET" in {
-
       val application = applicationBuilder(maybeUserAnswers = Some(ua))
         .overrides(
           bind[SendAReportService].toInstance(mockService)
@@ -64,6 +63,7 @@ class SendAReportControllerSpec extends SpecBase {
         .build()
       running(application) {
         when(mockService.reportingFIStatus(any(), any())).thenReturn(TaskStatus.Incomplete)
+        when(mockService.reportingCPSOCompleteStatus(any(), any())).thenReturn(Completed)
         val request = FakeRequest(GET, SendAReportController.onPageLoad().url)
         val result  = route(application, request).value
         val view    = application.injector.instanceOf[SendAReportView]
