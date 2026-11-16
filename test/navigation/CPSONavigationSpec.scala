@@ -37,6 +37,7 @@ import pages.manual.cpso.{
   CpsoOrganisationNamePage,
   CpsoSelfCertificationPage,
   HaveTaxIdentificationNumberPage,
+  IsCpsoSectionCompletePage,
   IsThisTheAddressPage as IsThisTheAddressPageForCpso,
   ResidentForTaxPage,
   SelectAddressPage as SelectAddressPageForCPSO,
@@ -603,6 +604,19 @@ class CPSONavigationSpec extends SpecBase {
 
         navigator.nextPage(AccountHolderIdsPage(currentCPSOId, reportId), NormalMode, ua) mustBe
           controllers.routes.JourneyRecoveryController.onPageLoad()
+      }
+    }
+
+    "IsCpsoSectionCompletePage" - {
+      "must got to send report page when IsCpsoSectionCompletePage is completed" in {
+        val ua = UserAnswers("id")
+
+        navigator.nextPage(
+          IsCpsoSectionCompletePage(reportId),
+          NormalMode,
+          ua
+        ) mustBe
+          controllers.manual.routes.SendAReportController.onPageLoad()
       }
     }
   }
