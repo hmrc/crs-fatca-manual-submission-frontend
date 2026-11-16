@@ -18,6 +18,7 @@ package services
 
 import base.SpecBase
 import models.viewModels.TaskStatus.{Completed, Incomplete}
+import pages.manual.accountHolders.IsAccountHoldersSectionCompletePage
 import pages.manual.cpso.IsCpsoSectionCompletePage
 import pages.manual.reportingFI.HaveYouFinishedCheckingFIDetailsPage
 
@@ -61,6 +62,27 @@ class SendAReportServiceSpec extends SpecBase {
         service.reportingCPSOCompleteStatus(emptyUserAnswers
                                               .withPage(IsCpsoSectionCompletePage(reportId), true),
                                             reportId
+        ) mustBe Completed
+      }
+    }
+
+    "AccountHolders Complete Status" - {
+      "should return incomplete when page is not answered" in {
+        service.accountHoldersCompleteStatus(emptyUserAnswers, reportId) mustBe Incomplete
+      }
+
+      "should return incomplete when page is answered as false" in {
+        service.accountHoldersCompleteStatus(
+          emptyUserAnswers
+            .withPage(IsAccountHoldersSectionCompletePage(reportId), false),
+          reportId
+        ) mustBe Incomplete
+      }
+
+      "should return completed when page is answered as true" in {
+        service.accountHoldersCompleteStatus(
+          emptyUserAnswers.withPage(IsAccountHoldersSectionCompletePage(reportId), true),
+          reportId
         ) mustBe Completed
       }
     }

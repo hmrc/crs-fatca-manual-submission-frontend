@@ -19,6 +19,7 @@ package services
 import models.viewModels.TaskStatus
 import models.viewModels.TaskStatus.{Completed, Incomplete}
 import models.{viewModels, ReportId, UserAnswers}
+import pages.manual.accountHolders.IsAccountHoldersSectionCompletePage
 import pages.manual.reportingFI.HaveYouFinishedCheckingFIDetailsPage
 import pages.manual.cpso.IsCpsoSectionCompletePage
 
@@ -36,6 +37,13 @@ class SendAReportService @Inject() {
   def reportingCPSOCompleteStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
     userAnswers
       .get(IsCpsoSectionCompletePage(reportId))
+      .fold(Incomplete) {
+        value => if value then Completed else Incomplete
+      }
+
+  def accountHoldersCompleteStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
+    userAnswers
+      .get(IsAccountHoldersSectionCompletePage(reportId))
       .fold(Incomplete) {
         value => if value then Completed else Incomplete
       }
