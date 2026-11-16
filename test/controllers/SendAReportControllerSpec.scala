@@ -73,6 +73,7 @@ class SendAReportControllerSpec extends SpecBase {
         when(mockService.reportingFIStatus(any(), any())).thenReturn(TaskStatus.Incomplete)
         when(mockService.fillerStatus(any(), any())).thenReturn(TaskStatus.Incomplete)
         when(mockService.sponsorStatus(any(), any())).thenReturn(TaskStatus.Incomplete)
+        when(mockService.reportingCPSOCompleteStatus(any(), any())).thenReturn(TaskStatus.Completed)
         when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(ua)))
         val request = FakeRequest(GET, SendAReportController.onPageLoad().url)
         val result  = route(application, request).value
@@ -107,6 +108,7 @@ class SendAReportControllerSpec extends SpecBase {
         .build()
       running(application) {
         when(mockService.reportingFIStatus(any(), any())).thenReturn(TaskStatus.Incomplete)
+        when(mockService.reportingCPSOCompleteStatus(any(), any())).thenReturn(Completed)
         val request = FakeRequest(GET, SendAReportController.onPageLoad().url)
         val result  = route(application, request).value
         val view    = application.injector.instanceOf[SendAReportView]
@@ -148,6 +150,7 @@ class SendAReportControllerSpec extends SpecBase {
             when(mockService.reportingFIStatus(any(), any())).thenReturn(TaskStatus.Incomplete)
             when(mockService.fillerStatus(any(), any())).thenReturn(TaskStatus.Incomplete)
             when(mockService.sponsorStatus(any(), any())).thenReturn(TaskStatus.Incomplete)
+            when(mockService.reportingCPSOCompleteStatus(any(), any())).thenReturn(TaskStatus.Incomplete)
             when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(answers)))
             val application = applicationBuilder(maybeUserAnswers = Some(answers))
               .overrides(

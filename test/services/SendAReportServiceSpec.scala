@@ -17,24 +17,17 @@
 package services
 
 import base.SpecBase
-import models.{AddressNonUk, UkAddress}
 import models.manual.filercategory.WhatTypeOfFiler.Foreign
 import models.manual.filercategory.WhatTypeOfFilerIsSponsor
 import models.manual.filercategory.WhatTypeOfFilerIsSponsor.ForeignFI
 import models.response.{Address, Country}
 import models.viewModels.TaskStatus.{CannotStartYet, Completed, Incomplete}
+import models.{AddressNonUk, UkAddress}
 import pages.manual.FINamePage
+import pages.manual.cpso.IsCpsoSectionCompletePage
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportingFI.HaveYouFinishedCheckingFIDetailsPage
-import pages.manual.sponsor.{
-  AddressNonUkPage,
-  HaveSponsorPage,
-  SponsorNamePage,
-  TaxResidentCountriesListPage,
-  UkAddressPage,
-  WhatIsAddressForSponsorPage,
-  WhatIsGIINForSponsorPage
-}
+import pages.manual.sponsor.*
 
 class SendAReportServiceSpec extends SpecBase {
   private val service = new SendAReportService()
@@ -57,6 +50,26 @@ class SendAReportServiceSpec extends SpecBase {
         service.reportingFIStatus(emptyUserAnswers
                                     .withPage(HaveYouFinishedCheckingFIDetailsPage(reportId), true),
                                   reportId
+        ) mustBe Completed
+      }
+    }
+
+    "reporting CPSO Complete Status" - {
+      "should return incomplete when page is not answered" in {
+        service.reportingCPSOCompleteStatus(emptyUserAnswers, reportId) mustBe Incomplete
+      }
+
+      "should return incomplete when page is answered as false" in {
+        service.reportingCPSOCompleteStatus(emptyUserAnswers
+                                              .withPage(IsCpsoSectionCompletePage(reportId), false),
+                                            reportId
+        ) mustBe Incomplete
+      }
+
+      "should return completed when page is answered as true" in {
+        service.reportingCPSOCompleteStatus(emptyUserAnswers
+                                              .withPage(IsCpsoSectionCompletePage(reportId), true),
+                                            reportId
         ) mustBe Completed
       }
     }

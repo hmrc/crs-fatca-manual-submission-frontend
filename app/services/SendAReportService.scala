@@ -23,6 +23,7 @@ import models.{viewModels, ReportId, UserAnswers}
 import pages.QuestionPage
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportingFI.HaveYouFinishedCheckingFIDetailsPage
+import pages.manual.cpso.IsCpsoSectionCompletePage
 import pages.manual.sponsor.*
 
 import javax.inject.Inject
@@ -32,6 +33,13 @@ class SendAReportService @Inject() {
   def reportingFIStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
     userAnswers
       .get(HaveYouFinishedCheckingFIDetailsPage(reportId))
+      .fold(Incomplete) {
+        value => if value then Completed else Incomplete
+      }
+
+  def reportingCPSOCompleteStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
+    userAnswers
+      .get(IsCpsoSectionCompletePage(reportId))
       .fold(Incomplete) {
         value => if value then Completed else Incomplete
       }
