@@ -17,14 +17,14 @@
 package forms.manual.cpso
 
 import javax.inject.Inject
-
 import forms.mappings.Mappings
+import models.SubmissionsConstants.RegimeType
 import play.api.data.Form
 
 class ControllingPersonsOrSubstantialOwnersFormProvider @Inject() extends Mappings {
 
-  def apply(): Form[Boolean] =
+  def apply(regimeType: RegimeType): Form[Boolean] =
     Form(
-      "value" -> boolean("controllingPersonsOrSubstantialOwners.error.required")
+      "value" -> boolean(s"controllingPersonsOrSubstantialOwners.${regimeType.value.toLowerCase}.error.required")
     )
 }

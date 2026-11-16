@@ -21,9 +21,9 @@
 
 @(accountHolderName: String, fiName: String, regime: String, mode: Mode, isCpsoEmpty: Boolean)(implicit request: Request[_], messages: Messages)
 
-@* @if(isCpsoEmpty && regime.equalsIgnoreCase("crs")) {*@
-@*  <p class="govuk-body">@messages("controllingPersonsOrSubstantialOwners.empty.paragraph")</p>*@
-@*}*@
+@if(isCpsoEmpty && regime.equalsIgnoreCase("crs")) {
+  <p class="govuk-body">@messages("controllingPersonsOrSubstantialOwners.empty.paragraph")</p>
+}
 
 <p class="govuk-body">@messages(s"controllingPersonsOrSubstantialOwners.${regime}.one.accountHolder.missing.cpso.p1", accountHolderName)</p>
 
@@ -36,7 +36,7 @@
 
 @govukButton(
   ButtonViewModel(messages(s"controllingPersonsOrSubstantialOwners.${regime.toLowerCase}.empty.button.txt"))
-    .asLink(controllers.routes.UnderConstructionController.onPageLoad().url) // todo add redirect link
+    .asLink(controllers.manual.cpso.routes.ClearCpsoIdAndRedirectToAddCpsoController.onRedirect(mode).url)
 )
 <p>
   @link(

@@ -547,3 +547,9 @@ GET         /manual/controlling-persons-or-substantial-owners                   
 POST        /manual/controlling-persons-or-substantial-owners                         controllers.manual.cpso.ControllingPersonsOrSubstantialOwnersController.onSubmit(mode: Mode = NormalMode)
 GET         /manual/change-controlling-persons-or-substantial-owners                  controllers.manual.cpso.ControllingPersonsOrSubstantialOwnersController.onPageLoad(mode: Mode = CheckMode)
 POST        /manual/change-controlling-persons-or-substantial-owners                  controllers.manual.cpso.ControllingPersonsOrSubstantialOwnersController.onSubmit(mode: Mode = CheckMode)
+
+GET       /manual/change-cpso                  controllers.manual.cpso.CurrentCpsoIdController.onChangeRedirect(cpsoId: String)
+GET       /manual/remove-cpso                 controllers.manual.cpso.CurrentCpsoIdController.onRemoveRedirect(cpsoId: String)
+
+GET        /manual/cp-so/clear-cpso-id             controllers.manual.cpso.ClearCpsoIdAndRedirectToAddCpsoController.onRedirect(mode: Mode = NormalMode)
+GET        /manual/cp-so/change-clear-cpso-id      controllers.manual.cpso.ClearCpsoIdAndRedirectToAddCpsoController.onRedirect(mode: Mode = CheckMode)

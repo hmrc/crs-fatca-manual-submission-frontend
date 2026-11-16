@@ -45,12 +45,11 @@ class ControllingPersonsOrSubstantialOwnersController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  val form = formProvider()
-
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
+      val form                        = formProvider(reportId.regime)
 
       val preparedForm = request.userAnswers.get(ControllingPersonsOrSubstantialOwnersPage()) match {
         case None        => form
@@ -64,6 +63,7 @@ class ControllingPersonsOrSubstantialOwnersController @Inject() (
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
+      val form                        = formProvider(reportId.regime)
 
       form
         .bindFromRequest()

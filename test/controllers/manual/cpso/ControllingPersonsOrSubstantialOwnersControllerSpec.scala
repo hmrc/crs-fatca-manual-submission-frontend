@@ -41,7 +41,7 @@ class ControllingPersonsOrSubstantialOwnersControllerSpec extends SpecBase with 
   def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new ControllingPersonsOrSubstantialOwnersFormProvider()
-  val form         = formProvider()
+  val form         = formProvider(CRS)
 
   lazy val controllingPersonsOrSubstantialOwnersRoute =
     controllers.manual.cpso.routes.ControllingPersonsOrSubstantialOwnersController.onPageLoad(NormalMode).url

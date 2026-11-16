@@ -1319,7 +1319,7 @@ controllingPersonsOrSubstantialOwners.one.crs.accountHolder.missing.cpso.bullet1
 controllingPersonsOrSubstantialOwners.one.fatca.accountHolder.missing.cpso.bullet1 = change or add at least one substantial owner to link to the account holder
 controllingPersonsOrSubstantialOwners.one.accountHolder.missing.cpso.bullet2 = remove the account holder
 controllingPersonsOrSubstantialOwners.crs.empty.button.txt = Add a controlling person
-controllingPersonsOrSubstantialOwners.fatca.empty.button.txt = substantial owner
+controllingPersonsOrSubstantialOwners.fatca.empty.button.txt = Add a substantial owner
 controllingPersonsOrSubstantialOwners.accountHolder.sendAReport.link = Back to send a {0} report for {1}
 
 controllingPersonsOrSubstantialOwners.crs.many.accountHolders.missing.accountHolder.paragraph = These account holders are missing a controlling person:
@@ -1331,6 +1331,7 @@ controllingPersonsOrSubstantialOwners.many.account.missing.accountHolder.bullet2
 
 controllingPersonsOrSubstantialOwners.crs.radio.heading = Do you need to add another controlling person?
 controllingPersonsOrSubstantialOwners.fatca.radio.heading = Do you need to add another substantial owner?
+controllingPersonsOrSubstantialOwners.crs.error.required = Select yes if you need to add another controlling person
+controllingPersonsOrSubstantialOwners.fatca.error.required = Select yes if you need to add another substantial owner
 controllingPersonsOrSubstantialOwners.checkYourAnswersLabel = controllingPersonsOrSubstantialOwners
-controllingPersonsOrSubstantialOwners.error.required = Select yes if controllingPersonsOrSubstantialOwners
 controllingPersonsOrSubstantialOwners.change.hidden = ControllingPersonsOrSubstantialOwners

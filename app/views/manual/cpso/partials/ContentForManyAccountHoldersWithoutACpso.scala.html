@@ -21,9 +21,9 @@
 
 @(accountHoldersWithOutCpsos: Seq[String], fiName: String, regime: String, mode: Mode, isCpsoEmpty: Boolean)(implicit request: Request[_], messages: Messages)
 
-@*//@if(isCpsoEmpty && regime.equalsIgnoreCase("crs")) {*@
-@*  <p class="govuk-body">@messages("controllingPersonsOrSubstantialOwners.empty.paragraph")</p>*@
-@*}*@
+@if(isCpsoEmpty && regime.equalsIgnoreCase("crs")) {
+  <p class="govuk-body">@messages("controllingPersonsOrSubstantialOwners.empty.paragraph")</p>
+}
 
 <p class="govuk-body govuk-!-margin-bottom-2">@messages(s"controllingPersonsOrSubstantialOwners.${regime.toLowerCase}.many.accountHolders.missing.accountHolder.paragraph")</p>
 
@@ -42,7 +42,7 @@
 
 @govukButton(
   ButtonViewModel(messages(s"controllingPersonsOrSubstantialOwners.${regime.toLowerCase}.empty.button.txt"))
-    .asLink(controllers.routes.UnderConstructionController.onPageLoad().url)
+    .asLink(controllers.manual.cpso.routes.ClearCpsoIdAndRedirectToAddCpsoController.onRedirect(mode).url)
 )
 <p>
   @link(

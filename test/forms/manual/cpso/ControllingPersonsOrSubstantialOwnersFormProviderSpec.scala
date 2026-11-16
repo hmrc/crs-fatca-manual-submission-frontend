@@ -17,17 +17,38 @@
 package forms.manual.cpso
 
 import forms.behaviours.BooleanFieldBehaviours
+import models.SubmissionsConstants.{CRS, FATCA}
 import play.api.data.FormError
 
 class ControllingPersonsOrSubstantialOwnersFormProviderSpec extends BooleanFieldBehaviours {
 
-  val requiredKey = "controllingPersonsOrSubstantialOwners.error.required"
-  val invalidKey  = "error.boolean"
+  val invalidKey = "error.boolean"
 
-  val form = new ControllingPersonsOrSubstantialOwnersFormProvider()()
+  ".value crs" - {
+    val requiredKey = "controllingPersonsOrSubstantialOwners.crs.error.required"
+    val invalidKey  = "error.boolean"
+
+    val form      = new ControllingPersonsOrSubstantialOwnersFormProvider()(CRS)
+    val fieldName = "value"
+
+    behave like booleanField(
+      form,
+      fieldName,
+      invalidError = FormError(fieldName, invalidKey)
+    )
+
+    behave like mandatoryField(
+      form,
+      fieldName,
+      requiredError = FormError(fieldName, requiredKey)
+    )
+  }
 
   ".value" - {
+    val requiredKey = "controllingPersonsOrSubstantialOwners.fatca.error.required"
+    val invalidKey  = "error.boolean"
 
+    val form      = new ControllingPersonsOrSubstantialOwnersFormProvider()(FATCA)
     val fieldName = "value"
 
     behave like booleanField(
