@@ -34,9 +34,9 @@ class UnlinkedAccountHoldersSpec extends AnyFreeSpec with Matchers {
   private val fatcaReportId = ReportId(FATCA, 2025, None, "TestfiID")
 
   private def organisation(
-                            name: String,
-                            accountHolderType: AccountHolderTypes = PassiveNonFinancialWithOneOrMoreControllingPerson
-                          ): AccountHolder =
+    name: String,
+    accountHolderType: AccountHolderTypes = PassiveNonFinancialWithOneOrMoreControllingPerson
+  ): AccountHolder =
     AccountHolder(
       individualOrOrganisation = Some(Organisation),
       organisationName = Some(name),
@@ -49,11 +49,11 @@ class UnlinkedAccountHoldersSpec extends AnyFreeSpec with Matchers {
   )
 
   private def answersWith(
-                           accountHolders: Seq[(AccountHolderId, AccountHolder)] = Seq.empty,
-                           cpsos: Map[String, ControllingOrSubstantialOwner] = Map.empty,
-                           links: Map[String, Set[AccountHolderId]] = Map.empty,
-                           reportId: ReportId = crsReportId
-                         ): UserAnswers = {
+    accountHolders: Seq[(AccountHolderId, AccountHolder)] = Seq.empty,
+    cpsos: Map[String, ControllingOrSubstantialOwner] = Map.empty,
+    links: Map[String, Set[AccountHolderId]] = Map.empty,
+    reportId: ReportId = crsReportId
+  ): UserAnswers = {
     val base = UserAnswers("id")
       .set(
         AccountHoldersPage()(reportId),
