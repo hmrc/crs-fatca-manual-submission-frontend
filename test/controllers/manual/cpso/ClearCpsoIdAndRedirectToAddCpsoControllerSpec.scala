@@ -26,7 +26,7 @@ import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{never, verify, when}
 import pages.ReportIdPage
-import pages.manual.cpso.{ControllingPersonsOrSubstantialOwnersPage, CurrentCPSOIdPage}
+import pages.manual.cpso.{CurrentCPSOIdPage, DoYouWantToAddAnotherCpsoPage}
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
@@ -45,7 +45,7 @@ class ClearCpsoIdAndRedirectToAddCpsoControllerSpec extends SpecBase {
     emptyUserAnswers
       .withPage(ReportIdPage, reportId)
       .withPage(CurrentCPSOIdPage(), CPSOId("cpso-1"))
-      .withPage(ControllingPersonsOrSubstantialOwnersPage(), true)
+      .withPage(DoYouWantToAddAnotherCpsoPage(), true)
 
   private def mockRepository: DatabaseConnector = {
     val repository = mock[DatabaseConnector]
@@ -74,7 +74,7 @@ class ClearCpsoIdAndRedirectToAddCpsoControllerSpec extends SpecBase {
 
           val saved = captor.getValue
           saved.get(CurrentCPSOIdPage()) mustBe None
-          saved.get(ControllingPersonsOrSubstantialOwnersPage()) mustBe Some(true)
+          saved.get(DoYouWantToAddAnotherCpsoPage()) mustBe Some(true)
           saved.get(ReportIdPage) mustBe Some(reportId)
         }
       }

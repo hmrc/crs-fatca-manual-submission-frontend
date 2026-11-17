@@ -30,7 +30,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
-import pages.manual.cpso.ControllingPersonsOrSubstantialOwnersPage
+import pages.manual.cpso.DoYouWantToAddAnotherCpsoPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -91,7 +91,7 @@ class ControllingPersonsOrSubstantialOwnersControllerSpec extends SpecBase with 
 
       implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
 
-      val userAnswers = ua.set(ControllingPersonsOrSubstantialOwnersPage(), true).success.value
+      val userAnswers = ua.set(DoYouWantToAddAnotherCpsoPage(), true).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
         .overrides(

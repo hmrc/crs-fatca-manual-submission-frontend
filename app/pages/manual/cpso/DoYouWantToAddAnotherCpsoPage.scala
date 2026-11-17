@@ -16,10 +16,22 @@
 
 package pages.manual.cpso
 
-import models.ReportId
+import models.{ReportId, UserAnswers}
 import pages.QuestionPage
+import pages.manual.accountHolders.CurrentAccountHolderIdPage
 import play.api.libs.json.JsPath
 
-final case class ControllingPersonsOrSubstantialOwnersPage()(implicit reportId: ReportId) extends QuestionPage[Boolean]:
+import scala.util.{Success, Try}
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "controllingPersonsOrSubstantialOwners"
+final case class DoYouWantToAddAnotherCpsoPage()(implicit reportId: ReportId) extends QuestionPage[Boolean]:
+
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "cp-so" \ "doYouWantToAddAnotherCpso"
+
+  override def cleanupWithReportId(
+    value: Option[Boolean],
+    userData: UserAnswers
+  )(implicit reportId: ReportId): Try[UserAnswers] =
+    value match {
+      case Some(true) => userData.remove(CurrentCPSOIdPage())
+      case _          => Success(userData)
+    }

@@ -18,7 +18,7 @@ package viewmodels.checkAnswers.manual.cpso
 
 import controllers.manual.cpso.routes
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.cpso.ControllingPersonsOrSubstantialOwnersPage
+import pages.manual.cpso.DoYouWantToAddAnotherCpsoPage
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
@@ -27,7 +27,7 @@ import viewmodels.implicits._
 object ControllingPersonsOrSubstantialOwnersSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
-    answers.get(ControllingPersonsOrSubstantialOwnersPage()).map {
+    answers.get(DoYouWantToAddAnotherCpsoPage()).map {
       answer =>
 
         val value = if (answer) "site.yes" else "site.no"

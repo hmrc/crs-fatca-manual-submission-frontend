@@ -22,7 +22,7 @@ import forms.manual.cpso.ControllingPersonsOrSubstantialOwnersFormProvider
 import javax.inject.Inject
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.cpso.ControllingPersonsOrSubstantialOwnersPage
+import pages.manual.cpso.DoYouWantToAddAnotherCpsoPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import connectors.DatabaseConnector
@@ -110,9 +110,9 @@ class ControllingPersonsOrSubstantialOwnersController @Inject() (
                   ),
                 value =>
                   for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(ControllingPersonsOrSubstantialOwnersPage(), value))
+                    updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(DoYouWantToAddAnotherCpsoPage(), value))
                     _              <- repository.set(updatedAnswers)
-                  } yield Redirect(navigator.nextPage(ControllingPersonsOrSubstantialOwnersPage(), mode, updatedAnswers))
+                  } yield Redirect(navigator.nextPage(DoYouWantToAddAnotherCpsoPage(), mode, updatedAnswers))
               )
         }
         .recover {

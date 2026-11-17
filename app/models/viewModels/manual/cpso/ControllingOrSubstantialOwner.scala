@@ -37,11 +37,15 @@ object ControllingOrSubstantialOwner {
   implicit val format: OFormat[ControllingOrSubstantialOwner] = Json.format[ControllingOrSubstantialOwner]
 }
 
-case class ControllingOrSubstantialOwners(currentCpsoId: Option[CPSOId], cpsos: Map[String, ControllingOrSubstantialOwner])
+case class ControllingOrSubstantialOwners(currentCpsoId: Option[CPSOId],
+                                          cpsos: Map[String, ControllingOrSubstantialOwner],
+                                          doYouWantToAddAnotherCpso: Option[Boolean] = None
+)
 
 object ControllingOrSubstantialOwners {
 
-  private val CurrentcpsoId = "currentCPSOId"
+  private val CurrentcpsoId             = "currentCPSOId"
+  private val DoYouWantToAddAnotherCpso = "doYouWantToAddAnotherCpso"
 
   implicit val format: OFormat[ControllingOrSubstantialOwners] = new OFormat[ControllingOrSubstantialOwners] {
 
@@ -52,15 +56,21 @@ object ControllingOrSubstantialOwners {
           val cpsoId =
             (obj \ CurrentcpsoId).validateOpt[CPSOId]
 
+          val doYouWantToAddAnotherCpso =
+            (obj \ DoYouWantToAddAnotherCpso).validateOpt[Boolean]
+
           val cpsoEntries =
             JsObject(
-              obj.fields.filterNot(_._1 == CurrentcpsoId)
+              obj.fields.filterNot(
+                f => f._1 == CurrentcpsoId || f._1 == DoYouWantToAddAnotherCpso
+              )
             ).validate[Map[String, ControllingOrSubstantialOwner]]
 
           for {
-            currentId <- cpsoId
-            cpso      <- cpsoEntries
-          } yield ControllingOrSubstantialOwners(currentId, cpso)
+            currentId      <- cpsoId
+            cpso           <- cpsoEntries
+            addAnotherCPSO <- doYouWantToAddAnotherCpso
+          } yield ControllingOrSubstantialOwners(currentId, cpso, addAnotherCPSO)
       }
 
     override def writes(value: ControllingOrSubstantialOwners): JsObject = {

@@ -36,6 +36,7 @@ import pages.manual.cpso.{
   CPSOWhereAreTheyBasedPage,
   CpsoOrganisationNamePage,
   CpsoSelfCertificationPage,
+  DoYouWantToAddAnotherCpsoPage,
   HaveTaxIdentificationNumberPage,
   IsCpsoSectionCompletePage,
   IsThisTheAddressPage as IsThisTheAddressPageForCpso,
@@ -618,6 +619,43 @@ class CPSONavigationSpec extends SpecBase {
         ) mustBe
           controllers.manual.routes.SendAReportController.onPageLoad()
       }
+    }
+
+    "DoYouWantToAddAnotherCpsoPage" - {
+      val ua = UserAnswers("id")
+
+      "must redirect to add cpso page when DoYouWantToAddAnotherCpsoPage is true" in {
+        val answers = ua.withPage(DoYouWantToAddAnotherCpsoPage(), true)
+
+        navigator.nextPage(
+          DoYouWantToAddAnotherCpsoPage(),
+          NormalMode,
+          answers
+        ) mustBe
+          controllers.manual.cpso.routes.AccountHolderController.onPageLoad(NormalMode)
+      }
+
+      "must redirect to check cpso complete when DoYouWantToAddAnotherCpsoPage is false" in {
+        val answers = ua.withPage(DoYouWantToAddAnotherCpsoPage(), false)
+
+        navigator.nextPage(
+          DoYouWantToAddAnotherCpsoPage(),
+          NormalMode,
+          answers
+        ) mustBe
+          controllers.routes.UnderConstructionController.onPageLoad()
+      }
+
+      "must redirect to journey recovery  when DoYouWantToAddAnotherCpsoPage is not defined" in {
+
+        navigator.nextPage(
+          DoYouWantToAddAnotherCpsoPage(),
+          NormalMode,
+          ua
+        ) mustBe
+          controllers.routes.JourneyRecoveryController.onPageLoad()
+      }
+
     }
   }
 }

@@ -137,6 +137,8 @@ class ManualSubmissionNavigator @Inject() () {
       handleAccountHolderPageNavigationForCPSO(ua, mode, cpsoId)
     case (IsCpsoSectionCompletePage(reportId), mode, ua) =>
       controllers.manual.routes.SendAReportController.onPageLoad()
+    case (DoYouWantToAddAnotherCpsoPage(), mode, ua) =>
+      handleDoYouWantToAddAnotherCpso(ua, mode)
   }
 
   private def sponsorNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
@@ -281,6 +283,13 @@ class ManualSubmissionNavigator @Inject() () {
         }
       case None => routes.JourneyRecoveryController.onPageLoad()
 
+    }
+
+  private def handleDoYouWantToAddAnotherCpso(userAnswers: UserAnswers, mode: Mode)(implicit reportId: ReportId) =
+    userAnswers.get(DoYouWantToAddAnotherCpsoPage()) match {
+      case Some(true)  => controllers.manual.cpso.routes.AccountHolderController.onPageLoad(mode)
+      case Some(false) => controllers.routes.UnderConstructionController.onPageLoad() // todo redirect and check all cpso's complete
+      case None        => controllers.routes.JourneyRecoveryController.onPageLoad()
     }
 
 }
