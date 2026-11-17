@@ -18,13 +18,13 @@ package controllers.manual.cpso
 
 import connectors.DatabaseConnector
 import controllers.actions.Actions
-import models.{NormalMode, ReportId}
+import models.ReportId
 import models.requests.ReportIdRequest
 import models.viewModels.manual.cpso.CPSOId
 import pages.manual.cpso.CurrentCPSOIdPage
 import play.api.Logging
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Result}
+import play.api.mvc.*
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.Inject

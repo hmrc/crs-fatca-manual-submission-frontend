@@ -18,7 +18,6 @@ package pages.manual.cpso
 
 import models.{ReportId, UserAnswers}
 import pages.QuestionPage
-import pages.manual.accountHolders.CurrentAccountHolderIdPage
 import play.api.libs.json.JsPath
 
 import scala.util.{Success, Try}
