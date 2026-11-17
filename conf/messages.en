@@ -201,6 +201,7 @@ sendAReport.accountsInformation.TBC = TBC
 sendAReport.status.notStarted = Not started
 sendAReport.status.completed = Completed
 sendAReport.status.incomplete = Incomplete
+sendAReport.status.cannotstartyet = Cannot start yet
 sendAReport.accountsInformation.tbc1 = TBC
 sendAReport.accountsInformation.tbc2 = TBC
 sendAReport.apply = Apply
