@@ -22,9 +22,12 @@ import pages.manual.cpso.ControllingOrSubstantialOwnersPage
 import play.api.libs.json.OFormat.oFormatFromReadsAndOWrites
 import play.api.libs.json.*
 
+import java.time.Instant
+
 case class ControllingOrSubstantialOwner(accountHolders: Option[Seq[String]] = None,
                                          individualName: Option[IndividualName] = None,
-                                         organisationName: Option[String] = None
+                                         organisationName: Option[String] = None,
+                                         creationDateTime: Option[Instant] = None
 ) {
 
   def name = organisationName.getOrElse(individualName.map(_.fullName).getOrElse(""))

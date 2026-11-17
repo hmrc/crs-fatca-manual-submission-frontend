@@ -30,7 +30,7 @@ import models.ServiceErrors.NoFiDetailFound
 import models.viewModels.UnlinkedAccountHolders
 import models.viewModels.UnlinkedAccountHolders.*
 import play.api.Logging
-import services.ViewFIService
+import services.{CpsoService, ViewFIService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.cpso.ControllingPersonsOrSubstantialOwnersView
 
@@ -47,7 +47,8 @@ class ControllingPersonsOrSubstantialOwnersController @Inject() (
   formProvider: ControllingPersonsOrSubstantialOwnersFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: ControllingPersonsOrSubstantialOwnersView,
-  viewFIService: ViewFIService
+  viewFIService: ViewFIService,
+  cpsoService: CpsoService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -63,7 +64,15 @@ class ControllingPersonsOrSubstantialOwnersController @Inject() (
         .getFIDetail(request.fatcaId, reportId.fiId)
         .map {
           fiDetail =>
-            Ok(view(form, mode, fiDetail.FIName, regimeType = reportId.regime, accountHoldersWithoutACpso(request.userAnswers), cpsoList = Seq()))
+            Ok(
+              view(form,
+                   mode,
+                   fiDetail.FIName,
+                   regimeType = reportId.regime,
+                   accountHoldersWithoutACpso(request.userAnswers),
+                   cpsoService.existingCpsos(request.userAnswers)
+              )
+            )
 
         }
         .recover {
@@ -89,7 +98,15 @@ class ControllingPersonsOrSubstantialOwnersController @Inject() (
               .fold(
                 formWithErrors =>
                   Future.successful(
-                    BadRequest(view(formWithErrors, mode, fiDetail.FIName, reportId.regime, accountHoldersWithoutACpso(request.userAnswers), cpsoList = Seq()))
+                    BadRequest(
+                      view(formWithErrors,
+                           mode,
+                           fiDetail.FIName,
+                           reportId.regime,
+                           accountHoldersWithoutACpso(request.userAnswers),
+                           cpsoService.existingCpsos(request.userAnswers)
+                      )
+                    )
                   ),
                 value =>
                   for {
