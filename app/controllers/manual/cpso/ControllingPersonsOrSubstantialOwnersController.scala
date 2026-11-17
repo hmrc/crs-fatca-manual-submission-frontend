@@ -27,6 +27,8 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import connectors.DatabaseConnector
 import models.ServiceErrors.NoFiDetailFound
+import models.viewModels.UnlinkedAccountHolders
+import models.viewModels.UnlinkedAccountHolders.*
 import play.api.Logging
 import services.ViewFIService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -61,7 +63,7 @@ class ControllingPersonsOrSubstantialOwnersController @Inject() (
         .getFIDetail(request.fatcaId, reportId.fiId)
         .map {
           fiDetail =>
-            Ok(view(form, mode, fiDetail.FIName, regimeType = reportId.regime, accountHoldersWithoutCPSO = Seq(), cpsoList = Seq()))
+            Ok(view(form, mode, fiDetail.FIName, regimeType = reportId.regime, accountHoldersWithoutACpso(request.userAnswers), cpsoList = Seq()))
 
         }
         .recover {
@@ -87,7 +89,7 @@ class ControllingPersonsOrSubstantialOwnersController @Inject() (
               .fold(
                 formWithErrors =>
                   Future.successful(
-                    BadRequest(view(formWithErrors, mode, fiDetail.FIName, regimeType = reportId.regime, accountHoldersWithoutCPSO = Seq(), cpsoList = Seq()))
+                    BadRequest(view(formWithErrors, mode, fiDetail.FIName, reportId.regime, accountHoldersWithoutACpso(request.userAnswers), cpsoList = Seq()))
                   ),
                 value =>
                   for {
