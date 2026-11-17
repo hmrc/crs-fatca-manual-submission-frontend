@@ -23,6 +23,7 @@ import forms.manual.cpso.ControllingPersonsOrSubstantialOwnersFormProvider
 import models.ServiceErrors.NoFiDetailFound
 import models.SubmissionsConstants.CRS
 import models.response.FIDetail
+import models.viewModels.manual.cpso.{CPSOId, ControllingOrSubstantialOwner}
 import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
@@ -34,7 +35,7 @@ import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import services.ViewFIService
+import services.{CpsoService, ViewFIService}
 import views.html.manual.cpso.ControllingPersonsOrSubstantialOwnersView
 
 import scala.concurrent.Future
@@ -55,6 +56,12 @@ class ControllingPersonsOrSubstantialOwnersControllerSpec extends SpecBase with 
     service
   }
 
+  private def mockCpSoService(result: Seq[(CPSOId, ControllingOrSubstantialOwner)] = Seq.empty): CpsoService = {
+    val service = mock[CpsoService]
+    when(service.existingCpsos(any())(using any())) thenReturn result
+    service
+  }
+
   "ControllingPersonsOrSubstantialOwners Controller" - {
 
     val ua = emptyUserAnswers.withPage(ReportIdPage, ReportId(CRS, 2025, None, "TestfiID"))
@@ -62,7 +69,10 @@ class ControllingPersonsOrSubstantialOwnersControllerSpec extends SpecBase with 
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(maybeUserAnswers = Some(ua))
-        .overrides(bind[ViewFIService].toInstance(mockFiService()))
+        .overrides(
+          bind[ViewFIService].toInstance(mockFiService()),
+          bind[CpsoService].toInstance(mockCpSoService())
+        )
         .build()
 
       running(application) {
@@ -84,7 +94,10 @@ class ControllingPersonsOrSubstantialOwnersControllerSpec extends SpecBase with 
       val userAnswers = ua.set(ControllingPersonsOrSubstantialOwnersPage(), true).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
-        .overrides(bind[ViewFIService].toInstance(mockFiService()))
+        .overrides(
+          bind[ViewFIService].toInstance(mockFiService()),
+          bind[CpsoService].toInstance(mockCpSoService())
+        )
         .build()
 
       running(application) {
@@ -102,7 +115,10 @@ class ControllingPersonsOrSubstantialOwnersControllerSpec extends SpecBase with 
     "must redirect to Journey Recovery for a GET when the financial institution cannot be found" in {
       val application =
         applicationBuilder(maybeUserAnswers = Some(ua))
-          .overrides(bind[ViewFIService].toInstance(mockFiService(Future.failed(NoFiDetailFound))))
+          .overrides(
+            bind[ViewFIService].toInstance(mockFiService(Future.failed(NoFiDetailFound))),
+            bind[CpsoService].toInstance(mockCpSoService())
+          )
           .build()
 
       running(application) {
@@ -126,7 +142,8 @@ class ControllingPersonsOrSubstantialOwnersControllerSpec extends SpecBase with 
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
             bind[DatabaseConnector].toInstance(mockSessionRepository),
-            bind[ViewFIService].toInstance(mockFiService())
+            bind[ViewFIService].toInstance(mockFiService()),
+            bind[CpsoService].toInstance(mockCpSoService())
           )
           .build()
 
