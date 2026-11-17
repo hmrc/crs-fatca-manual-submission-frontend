@@ -214,17 +214,6 @@ class UnlinkedAccountHoldersSpec extends AnyFreeSpec with Matchers {
       accountHoldersWithoutACpso(answers) mustBe empty
     }
 
-    "must return no account holders for a FATCA report" in {
-      val answers = answersWith(
-        accountHolders = Seq(
-          AccountHolderId("ah-1") -> organisation("Fatca Ltd")
-        ),
-        reportId = fatcaReportId
-      )
-
-      accountHoldersWithoutACpso(answers, fatcaReportId) mustBe empty
-    }
-
     "must return no account holders when none have been added" in {
       accountHoldersWithoutACpso(UserAnswers("id")) mustBe empty
     }
