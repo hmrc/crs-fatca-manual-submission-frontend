@@ -22,7 +22,6 @@ import models.viewModels.TaskStatus.*
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SendAReportService
-import services.manual.account.AccountsService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.SendAReportView
 
@@ -34,7 +33,6 @@ class SendAReportController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   reportIdAction: ReportIdRequiredAction,
-  accountsService: AccountsService,
   val controllerComponents: MessagesControllerComponents,
   service: SendAReportService,
   view: SendAReportView
@@ -44,14 +42,15 @@ class SendAReportController @Inject() (
   def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
     implicit request =>
       val reportingFIStatus  = service.reportingFIStatus(request.userAnswers, request.reportId)
+      val fillerStatus       = service.fillerStatus(request.userAnswers, request.reportId)
+      val sponsorStatus      = service.sponsorStatus(request.userAnswers, request.reportId)
       val cpsoCompleteStatus = service.reportingCPSOCompleteStatus(request.userAnswers, request.reportId)
-      val accountsStatus     = accountsService.sectionStatus(request.userAnswers, request.reportId)
-
+      val accountsStatus     = service.accountStatus(request.userAnswers, request.reportId)
       val sections = SendAReportSections(
         reportDetails = Some(NotStarted),
         financialInstitutionDetails = Some(reportingFIStatus),
-        sponsorDetails = Some(NotStarted),
-        filerCategory = Some(NotStarted),
+        sponsorDetails = Some(sponsorStatus),
+        filerCategory = Some(fillerStatus),
         accounts = Some(accountsStatus),
         accountHolders = Some(NoStatus),
         controllingPersons = Some(cpsoCompleteStatus),
