@@ -1344,3 +1344,8 @@ controllingPersonsOrSubstantialOwners.crs.error.required = Select yes if you nee
 controllingPersonsOrSubstantialOwners.fatca.error.required = Select yes if you need to add another substantial owner
 controllingPersonsOrSubstantialOwners.checkYourAnswersLabel = controllingPersonsOrSubstantialOwners
 controllingPersonsOrSubstantialOwners.change.hidden = ControllingPersonsOrSubstantialOwners
+
+cpso.removeCPSO.title = Are you sure you want to remove the {0}?
+cpso.removeCPSO.heading = Are you sure you want to remove the {0} {1}?
+cpso.removeCPSO.para = Before you can send your report, you must make sure that account holders link to a {0} if needed.
+cpso.removeCPSO.error.required = Select yes if you are sure you want to remove the {0}

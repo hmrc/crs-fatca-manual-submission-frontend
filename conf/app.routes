@@ -556,3 +556,8 @@ GET       /manual/remove-cpso                 controllers.manual.cpso.CurrentCps
 
 GET        /manual/cp-so/clear-cpso-id             controllers.manual.cpso.ClearCpsoIdAndRedirectToAddCpsoController.onRedirect(mode: Mode = NormalMode)
 GET        /manual/cp-so/change-clear-cpso-id      controllers.manual.cpso.ClearCpsoIdAndRedirectToAddCpsoController.onRedirect(mode: Mode = CheckMode)
+
+GET        /manual/cp-so/remove-cp-so                        controllers.manual.cpso.RemoveCPSOController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/cp-so/remove-cp-so                        controllers.manual.cpso.RemoveCPSOController.onSubmit(mode: Mode = NormalMode)
+GET        /manual/cp-so/change-remove-cp-so                  controllers.manual.cpso.RemoveCPSOController.onPageLoad(mode: Mode = CheckMode)
+POST       /manual/cp-so/change-remove-cp-so                  controllers.manual.cpso.RemoveCPSOController.onSubmit(mode: Mode = CheckMode)

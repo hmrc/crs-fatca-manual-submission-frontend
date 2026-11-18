@@ -18,7 +18,7 @@ package pages.manual.cpso
 
 import models.ReportId
 import models.viewModels.manual.cpso.CPSOId
-import models.viewModels.{AccountHolderId, AccountId}
+import models.viewModels.AccountHolderId
 import pages.QuestionPage
 import play.api.libs.json.JsPath
 

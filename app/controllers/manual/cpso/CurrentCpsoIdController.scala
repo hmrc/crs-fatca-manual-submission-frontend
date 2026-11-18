@@ -18,7 +18,7 @@ package controllers.manual.cpso
 
 import connectors.DatabaseConnector
 import controllers.actions.Actions
-import models.ReportId
+import models.{NormalMode, ReportId}
 import models.requests.ReportIdRequest
 import models.viewModels.manual.cpso.CPSOId
 import pages.manual.cpso.CurrentCPSOIdPage
@@ -50,7 +50,7 @@ class CurrentCpsoIdController @Inject() (
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
-      redirectWithValidCpsoId(cpsoId, controllers.routes.UnderConstructionController.onPageLoad()) // todo change when url is available
+      redirectWithValidCpsoId(cpsoId, controllers.manual.cpso.routes.RemoveCPSOController.onPageLoad(NormalMode))
 
   }
 

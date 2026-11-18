@@ -139,6 +139,8 @@ class ManualSubmissionNavigator @Inject() () {
       controllers.manual.routes.SendAReportController.onPageLoad()
     case (DoYouWantToAddAnotherCpsoPage(), mode, ua) =>
       handleDoYouWantToAddAnotherCpso(ua, mode)
+    case (pages.manual.cpso.RemoveCPSOPage(_, _), mode, ua) =>
+      controllers.manual.cpso.routes.ControllingPersonsOrSubstantialOwnersController.onPageLoad(mode)
   }
 
   private def sponsorNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {

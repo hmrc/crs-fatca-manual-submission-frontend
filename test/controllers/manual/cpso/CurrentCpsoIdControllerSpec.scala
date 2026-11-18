@@ -21,7 +21,7 @@ import connectors.DatabaseConnector
 import controllers.routes
 import models.SubmissionsConstants.FATCA
 import models.viewModels.manual.cpso.CPSOId
-import models.{ReportId, UserAnswers}
+import models.{NormalMode, ReportId, UserAnswers}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{never, verify, when}
@@ -45,6 +45,9 @@ class CurrentCpsoIdControllerSpec extends SpecBase {
 
   private def underConstructionRoute: String =
     controllers.routes.UnderConstructionController.onPageLoad().url
+
+  private def removeCPSOUrl: String =
+    controllers.manual.cpso.routes.RemoveCPSOController.onPageLoad(NormalMode).url
 
   private def answersWithCurrentCpsoId(cpsoId: CPSOId): UserAnswers =
     emptyUserAnswers
@@ -118,7 +121,7 @@ class CurrentCpsoIdControllerSpec extends SpecBase {
           val result = route(application, FakeRequest(GET, removeRoute(cpsoId))).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual underConstructionRoute
+          redirectLocation(result).value mustEqual removeCPSOUrl
 
           val captor = ArgumentCaptor.forClass(classOf[UserAnswers])
           verify(repository).set(captor.capture())(any())
