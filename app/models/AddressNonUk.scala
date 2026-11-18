@@ -16,7 +16,9 @@
 
 package models
 
-import play.api.libs.json._
+import play.api.libs.json.*
+
+import scala.xml.Elem
 
 case class AddressNonUk(addressLine1: String,
                         addressLine2: Option[String],
@@ -24,7 +26,18 @@ case class AddressNonUk(addressLine1: String,
                         addressLine4: Option[String],
                         postcode: Option[String],
                         country: String
-)
+) extends AddressModel {
+  
+  val wholeAddress: String =  List(
+    addressLine1,
+    addressLine2.getOrElse(""),
+    addressLine3,
+    addressLine4.getOrElse(""),
+    postcode.getOrElse(""),
+    country
+  ).flatten.mkString(" ")
+
+}
 
 object AddressNonUk {
 

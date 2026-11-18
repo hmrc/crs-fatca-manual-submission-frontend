@@ -16,7 +16,7 @@
 
 package models
 
-import models.SubmissionsConstants.RegimeType
+import models.SubmissionsConstants.{FATCA, RegimeType}
 import play.api.libs.json.{Json, OFormat}
 
 import java.time.{LocalDateTime, ZoneOffset}
@@ -36,6 +36,9 @@ case class ReportId(regime: RegimeType, reportingYear: Int, uploadedTime: Option
       case None =>
         s"${regime.value}-$reportingYear-NONE-$fiId"
     }
+
+  val sfaOrCrsPrefix: String = if regime == FATCA then "sfa" else "crs"
+  val tinLabel: String = if regime == FATCA then "TIN" else "IN"
 
 }
 

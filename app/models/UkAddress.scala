@@ -16,9 +16,43 @@
 
 package models
 
-import play.api.libs.json._
+import models.SubmissionsConstants.{CRS, FATCA}
+import play.api.libs.json.*
+
+import scala.xml.Elem
 
 case class UkAddress(addressLine1: String, addressLine2: Option[String], city: String, county: Option[String] = None, postcode: String, country: String)
+    extends AddressModel {
+  override val regime: SubmissionsConstants.RegimeType = FATCA
+  val wholeAddress: String = List(
+    addressLine1,
+    addressLine2.getOrElse(""),
+    city,
+    county.getOrElse(""),
+    postcode,
+    country
+  ).flatten.mkString(" ")
+
+  val toAddressFix: Elem =
+    <sfa:Address>
+      <sfa:CountryCode>$
+        {country}
+      </sfa:CountryCode>
+      <sfa:AddressFix>
+      <sfa:Street>${addressLine1}</sfa:Street>
+      ${
+      county.map(
+        reg => <sfa:DistrictName>reg</sfa:DistrictName>
+      )
+    }
+      <sfa:PostCode>${postcode}</sfa:PostCode>)
+      <sfa:City>${city}</sfa:City>
+      </sfa:AddressFix>
+      <sfa:AddressFree>$
+        {wholeAddress}
+      </sfa:AddressFree>
+    </sfa:Address>
+}
 
 object UkAddress {
 
