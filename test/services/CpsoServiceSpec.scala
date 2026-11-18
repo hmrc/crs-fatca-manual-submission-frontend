@@ -36,18 +36,18 @@ class CpsoServiceSpec extends SpecBase {
   private val newestCreated = Instant.parse("2026-01-20T16:45:00Z")
 
   private def owner(
-                     name: String,
-                     creationDateTime: Option[Instant] = None
-                   ): ControllingOrSubstantialOwner =
+    name: String,
+    creationDateTime: Option[Instant] = None
+  ): ControllingOrSubstantialOwner =
     ControllingOrSubstantialOwner(
       organisationName = Some(name),
       creationDateTime = creationDateTime
     )
 
   private def answersWith(
-                           cpsos: Map[String, ControllingOrSubstantialOwner],
-                           report: ReportId = reportId
-                         ): UserAnswers =
+    cpsos: Map[String, ControllingOrSubstantialOwner],
+    report: ReportId = reportId
+  ): UserAnswers =
     emptyUserAnswers.withPage(
       ControllingOrSubstantialOwnersPage()(report),
       ControllingOrSubstantialOwners(None, cpsos)
