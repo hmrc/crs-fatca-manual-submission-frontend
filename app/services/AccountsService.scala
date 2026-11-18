@@ -17,7 +17,7 @@
 package services.manual.account
 
 import models.SubmissionsConstants.{CRS, FATCA}
-import models.viewModels.{AccountId, TaskStatus}
+import models.viewModels.AccountId
 import models.{ReportId, UserAnswers}
 import pages.manual.account.*
 
@@ -41,18 +41,6 @@ class AccountsService @Inject() () {
           id =>
             isComplete(answers, reportId, AccountId(id))
         }
-    }
-
-  def sectionStatus(answers: UserAnswers, reportId: ReportId): TaskStatus =
-    if (!hasAccounts(answers, reportId)) {
-      TaskStatus.NotStarted
-    } else if (
-      answers.get(IsAccountsSectionCompletedPage(reportId)).contains(true) &&
-      allAccountsComplete(answers, reportId)
-    ) {
-      TaskStatus.Completed
-    } else {
-      TaskStatus.Incomplete
     }
 
   def orderedAccounts(
