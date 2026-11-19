@@ -17,9 +17,10 @@
 package models.viewModels.manual.cpso
 
 import base.SpecBase
-import models.SubmissionsConstants.{CRS, RegimeType}
+import models.SubmissionsConstants.{CRS, FATCA, RegimeType}
 import models.manual.TaxResidentInformation
 import models.manual.accountHolders.IndividualDateOfBirth
+import models.manual.cpso.IndividualOrOrganisation.{Individual, Organisation}
 import models.manual.cpso.{ControllingPersonType, ControllingPersonTypes, CpsoSelfCertification, IndividualName}
 import models.{AddressNonUk, UkAddress}
 import models.response.{Address, Country}
@@ -40,6 +41,8 @@ class ControllingOrSubstantialOwnerSpec extends SpecBase {
     val taxResidentInformation = TaxResidentInformation(Country.GB, hasTaxIdentificationNumber = Some(true), taxIdentifierNumber = Some("12333"))
     val taxResidentWithoutTin  = TaxResidentInformation(Country.GB, hasTaxIdentificationNumber = Some(true), taxIdentifierNumber = None)
     val taxResidentUnknownTin  = TaxResidentInformation(Country.GB, hasTaxIdentificationNumber = None, taxIdentifierNumber = None)
+    val taxResidentNoTin       = TaxResidentInformation(Country.GB, hasTaxIdentificationNumber = Some(false), taxIdentifierNumber = None)
+    val organisationName       = "Test Organisation Ltd"
 
     "CRS regime" - {
 
@@ -93,6 +96,98 @@ class ControllingOrSubstantialOwnerSpec extends SpecBase {
       "returns false for non-uk address controlling person if any of expected fields are missing" - {
         mustBeIncomplete(CRS)(
           "the uk AddressFromSelect or ukAddressManual is missing" -> baseControllingPerson.copy(areTheyBasedInTheUk = Some(true))
+        )
+      }
+    }
+
+    "fatca regime" - {
+
+      val baseFatcaIndividual = ControllingOrSubstantialOwner(
+        individualOrOrganisation = Some(Individual),
+        individualName = Some(individualName),
+        accountHolders = Some(accountHolders),
+        individualHaveDateOfBirth = Some(false),
+        individualHavePlaceOfBirth = Some(false),
+        areTheyBasedInTheUk = Some(false),
+        taxResidentCountries = Some(Seq(taxResidentInformation)),
+        addressNonUk = Some(addressNonUk)
+      )
+
+      val baseFatcaOrganisation = ControllingOrSubstantialOwner(
+        individualOrOrganisation = Some(Organisation),
+        organisationName = Some(organisationName),
+        accountHolders = Some(accountHolders),
+        areTheyBasedInTheUk = Some(false),
+        taxResidentCountries = Some(Seq(taxResidentInformation)),
+        addressNonUk = Some(addressNonUk)
+      )
+
+      "is complete for a non-uk address substantial owner that has all required fields completed" in {
+        baseFatcaIndividual.isComplete(FATCA) mustBe true
+      }
+
+      "is complete for a uk address substantial owner that has all required fields completed" in {
+        baseFatcaIndividual
+          .copy(areTheyBasedInTheUk = Some(true), ukAddressFromSelect = Some(ukAddressSelect))
+          .isComplete(FATCA) mustBe true
+
+        baseFatcaIndividual
+          .copy(areTheyBasedInTheUk = Some(true), ukAddressManual = Some(ukAddressManual))
+          .isComplete(FATCA) mustBe true
+      }
+
+      "is complete for a non-uk address organisation substantial owner that has all required fields completed" in {
+        baseFatcaOrganisation.isComplete(FATCA) mustBe true
+      }
+
+      "is complete for a uk address organisation substantial owner that has all required fields completed" in {
+        baseFatcaOrganisation
+          .copy(areTheyBasedInTheUk = Some(true), ukAddressFromSelect = Some(ukAddressSelect))
+          .isComplete(FATCA) mustBe true
+
+        baseFatcaOrganisation
+          .copy(areTheyBasedInTheUk = Some(true), ukAddressManual = Some(ukAddressManual))
+          .isComplete(FATCA) mustBe true
+      }
+
+      "returns false for non-uk address substantial owner if any of expected fields are missing" - {
+        mustBeIncomplete(FATCA)(
+          "the individual or organisation question is missing" -> baseFatcaIndividual.copy(individualOrOrganisation = None),
+          "the individual name is missing"                     -> baseFatcaIndividual.copy(individualName = None),
+          "the account holders are missing"                    -> baseFatcaIndividual.copy(accountHolders = None),
+          "the account holders are empty"                      -> baseFatcaIndividual.copy(accountHolders = Some(Seq.empty)),
+          "the date of birth question is missing"              -> baseFatcaIndividual.copy(individualHaveDateOfBirth = None),
+          "the place of birth question is missing"             -> baseFatcaIndividual.copy(individualHavePlaceOfBirth = None),
+          "a date of birth is required but is missing" -> baseFatcaIndividual.copy(
+            individualHaveDateOfBirth = Some(true),
+            individualDateOfBirth = None
+          ),
+          "a place of birth is required but is missing" -> baseFatcaIndividual.copy(
+            individualHavePlaceOfBirth = Some(true),
+            individualPlaceOfBirth = None
+          ),
+          "the uk residency question is missing"              -> baseFatcaIndividual.copy(areTheyBasedInTheUk = None),
+          "the non-uk address is missing"                     -> baseFatcaIndividual.copy(addressNonUk = None),
+          "the tax resident countries are missing"            -> baseFatcaIndividual.copy(taxResidentCountries = None),
+          "the tax resident countries are empty"              -> baseFatcaIndividual.copy(taxResidentCountries = Some(Seq.empty)),
+          "a tax resident requires a TIN but it is missing"   -> baseFatcaIndividual.copy(taxResidentCountries = Some(Seq(taxResidentWithoutTin))),
+          "a tax resident does not have a TIN"                -> baseFatcaIndividual.copy(taxResidentCountries = Some(Seq(taxResidentNoTin))),
+          "the tax resident TIN status has not been answered" -> baseFatcaIndividual.copy(taxResidentCountries = Some(Seq(taxResidentUnknownTin)))
+        )
+      }
+
+      "returns false for non-uk address organisation substantial owner if any of expected fields are missing" - {
+        mustBeIncomplete(FATCA)(
+          "the organisation name is missing"                  -> baseFatcaOrganisation.copy(organisationName = None),
+          "the account holders are missing"                   -> baseFatcaOrganisation.copy(accountHolders = None),
+          "the account holders are empty"                     -> baseFatcaOrganisation.copy(accountHolders = Some(Seq.empty)),
+          "the uk residency question is missing"              -> baseFatcaOrganisation.copy(areTheyBasedInTheUk = None),
+          "the non-uk address is missing"                     -> baseFatcaOrganisation.copy(addressNonUk = None),
+          "the tax resident countries are missing"            -> baseFatcaOrganisation.copy(taxResidentCountries = None),
+          "the tax resident countries are empty"              -> baseFatcaOrganisation.copy(taxResidentCountries = Some(Seq.empty)),
+          "a tax resident requires a TIN but it is missing"   -> baseFatcaOrganisation.copy(taxResidentCountries = Some(Seq(taxResidentWithoutTin))),
+          "a tax resident does not have a TIN"                -> baseFatcaOrganisation.copy(taxResidentCountries = Some(Seq(taxResidentNoTin))),
+          "the tax resident TIN status has not been answered" -> baseFatcaOrganisation.copy(taxResidentCountries = Some(Seq(taxResidentUnknownTin)))
         )
       }
     }
