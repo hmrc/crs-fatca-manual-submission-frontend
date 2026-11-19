@@ -39,7 +39,6 @@ class CheckCPSOAddedOrAllowedController @Inject() (
 
       implicit val reportId: ReportId = request.reportId
       val haveCpsoBeenAdded           = ControllingOrSubstantialOwners.existingCpsos(request.userAnswers).nonEmpty
-      println(haveCpsoBeenAdded)
 
       val accountHoldersRequireCpso = AccountHolders
         .existingAccountHolders(request.userAnswers)
