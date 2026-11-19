@@ -16,8 +16,13 @@
 
 package models.viewModels.manual.cpso
 
-import models.manual.cpso.IndividualName
-import models.{ReportId, UserAnswers}
+import models.SubmissionsConstants.{CRS, FATCA, RegimeType}
+import models.manual.TaxResidentInformation
+import models.manual.accountHolders.IndividualDateOfBirth
+import models.manual.cpso.IndividualOrOrganisation.{Individual, Organisation}
+import models.manual.cpso.{ControllingPersonTypes, CpsoSelfCertification, IndividualName, IndividualOrOrganisation, IndividualPlaceOfBirth}
+import models.response.Address
+import models.{AddressNonUk, ReportId, UkAddress, UserAnswers}
 import pages.manual.cpso.ControllingOrSubstantialOwnersPage
 import play.api.libs.json.OFormat.oFormatFromReadsAndOWrites
 import play.api.libs.json.*
@@ -27,10 +32,77 @@ import java.time.Instant
 case class ControllingOrSubstantialOwner(accountHolders: Option[Seq[String]] = None,
                                          individualName: Option[IndividualName] = None,
                                          organisationName: Option[String] = None,
+                                         individualOrOrganisation: Option[IndividualOrOrganisation] = None,
+                                         individualHaveDateOfBirth: Option[Boolean] = None,
+                                         individualDateOfBirth: Option[IndividualDateOfBirth] = None,
+                                         individualHavePlaceOfBirth: Option[Boolean] = None,
+                                         individualPlaceOfBirth: Option[IndividualPlaceOfBirth] = None,
+                                         controllingPersonType: Option[ControllingPersonTypes] = None,
+                                         selfCertification: Option[CpsoSelfCertification] = None,
+                                         areTheyBasedInTheUk: Option[Boolean] = None,
+                                         addressNonUk: Option[AddressNonUk] = None,
+                                         ukAddressFromSelect: Option[Address] = None,
+                                         ukAddressManual: Option[UkAddress] = None,
+                                         taxResidentCountries: Option[Seq[TaxResidentInformation]] = None,
                                          creationDateTime: Option[Instant] = None
 ) {
 
   def name = organisationName.getOrElse(individualName.map(_.fullName).getOrElse(""))
+
+  def isComplete(regimeType: RegimeType): Boolean =
+    individualOrOrganisation match {
+      case Some(Organisation) => false
+      case None | Some(_) =>
+        (for {
+          _                <- individualName
+          _                <- individualHavePlaceOfBirth
+          _                <- individualHaveDateOfBirth
+          accountHolderIds <- accountHolders
+          basedInUk        <- areTheyBasedInTheUk
+          taxResidents     <- taxResidentCountries
+        } yield isCpsoLinkedToAccountHolder(accountHolderIds) &&
+          isIndividualBirthDetailsComplete() &&
+          taxResidencyComplete(regimeType, taxResidents) &&
+          addressComplete(basedInUk) &&
+          checkIndividualStatusIfRequired(regimeType) &&
+          crsRequirements(regimeType)).getOrElse(false)
+    }
+
+  private def isCpsoLinkedToAccountHolder(accountHolderIds: Seq[String]): Boolean = accountHolderIds.nonEmpty
+
+  private def checkIndividualStatusIfRequired(regimeType: RegimeType) =
+    regimeType != FATCA || individualOrOrganisation.contains(Individual)
+
+  private def isIndividualBirthDetailsComplete(): Boolean =
+    (!individualHavePlaceOfBirth.contains(true) || individualPlaceOfBirth.isDefined) &&
+      (!individualHaveDateOfBirth.contains(true) || individualDateOfBirth.isDefined)
+
+  private def addressComplete(basedInTheUk: Boolean): Boolean =
+    if basedInTheUk then ukAddressManual.isDefined || ukAddressFromSelect.isDefined else addressNonUk.isDefined
+
+  private def crsRequirements(regimeType: RegimeType): Boolean =
+    regimeType != CRS || (selfCertification.isDefined && controllingPersonType.isDefined)
+
+  // move this to trait
+  private def taxResidencyComplete(regimeType: RegimeType, taxResCountries: Seq[TaxResidentInformation]): Boolean =
+    regimeType match {
+      case FATCA => taxResidentCountriesCompleteForFatca(taxResCountries)
+      case CRS   => taxResidentCountriesCompleteForCRS(taxResCountries)
+      case _     => false
+    }
+
+  private def taxResidentCountriesCompleteForFatca(taxResCountries: Seq[TaxResidentInformation]): Boolean =
+    taxResCountries.nonEmpty && taxResCountries.forall(
+      tx => tx.taxIdentifierNumber.isDefined
+    )
+
+  private def taxResidentCountriesCompleteForCRS(taxResCountries: Seq[TaxResidentInformation]): Boolean =
+    taxResCountries.nonEmpty && taxResCountries.forall {
+      case TaxResidentInformation(_, Some(true), taxIdentifiers) => taxIdentifiers.isDefined
+      case TaxResidentInformation(_, Some(false), _)             => true
+      case _                                                     => false
+    }
+
 }
 
 object ControllingOrSubstantialOwner {

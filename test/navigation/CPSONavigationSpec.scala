@@ -280,13 +280,13 @@ class CPSONavigationSpec extends SpecBase {
           controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(NormalMode)
       }
 
-      "must go to under construction page when submitted and the resident tax countries list is populated" in {
+      "must go to tax resident countries page when submitted and the resident tax countries list is populated" in {
         val ua = UserAnswers("id")
           .withPage(CPSOAddressNonUkPage(currentCPSOId, reportId), nonUkAddress)
           .withPage(pages.manual.cpso.TaxResidentCountriesListPage(currentCPSOId, reportId), Seq(taxResidentInformation))
 
         navigator.nextPage(CPSOAddressNonUkPage(currentCPSOId, reportId), NormalMode, ua) mustBe
-          controllers.routes.UnderConstructionController.onPageLoad()
+          controllers.manual.cpso.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
       }
     }
 
@@ -329,7 +329,7 @@ class CPSONavigationSpec extends SpecBase {
           .withPage(pages.manual.cpso.TaxResidentCountriesListPage(currentId, reportId), Seq(taxResidentInformation))
 
         navigator.nextPage(SelectAddressPageForCPSO(currentId, reportId), NormalMode, ua) mustBe
-          controllers.routes.UnderConstructionController.onPageLoad()
+          controllers.manual.cpso.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
       }
     }
 
@@ -468,13 +468,13 @@ class CPSONavigationSpec extends SpecBase {
 
       }
 
-      "must go to under construction page when there are resident taxes are present" in {
+      "must go to tax resident countries page when there are resident taxes are present" in {
         val ua = UserAnswers("id")
           .withPage(AddressUkPage(currentCPSOId, reportId), address)
           .withPage(pages.manual.cpso.TaxResidentCountriesListPage(currentCPSOId, reportId), Seq(taxResidentInformation))
 
         navigator.nextPage(AddressUkPage(currentCPSOId, reportId), NormalMode, ua) mustBe
-          controllers.routes.UnderConstructionController.onPageLoad()
+          controllers.manual.cpso.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
 
       }
     }

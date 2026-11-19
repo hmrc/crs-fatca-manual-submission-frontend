@@ -29,7 +29,8 @@ object CpsoRow {
         CpsoRow(
           cpso.name,
           controllers.manual.cpso.routes.CurrentCpsoIdController.onChangeRedirect(cpsoId.value).url,
-          controllers.manual.cpso.routes.CurrentCpsoIdController.onRemoveRedirect(cpsoId.value).url
+          controllers.manual.cpso.routes.CurrentCpsoIdController.onRemoveRedirect(cpsoId.value).url,
+          isIncomplete = !cpso.isComplete(regimeType)
         )
     }
 }

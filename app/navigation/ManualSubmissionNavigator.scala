@@ -214,21 +214,22 @@ class ManualSubmissionNavigator @Inject() () {
   private def handleSelectAddressNavigationForCPSO(userAnswers: UserAnswers, mode: Mode, cpsoId: CPSOId)(implicit reportId: ReportId) =
     userAnswers.get(pages.manual.cpso.TaxResidentCountriesListPage(cpsoId, reportId)) match {
       case Some(countries) if countries.isEmpty => controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(mode)
-      case Some(_)                              => controllers.routes.UnderConstructionController.onPageLoad()
+      case Some(_)                              => controllers.manual.cpso.routes.TaxResidentCountriesController.onPageLoad(mode)
       case None                                 => controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(mode)
     }
 
   private def handleAddressUkNavigationForCPSO(userAnswers: UserAnswers, mode: Mode, cpsoId: CPSOId)(implicit reportId: ReportId) =
     userAnswers.get(pages.manual.cpso.TaxResidentCountriesListPage(cpsoId, reportId)) match {
       case Some(countries) if countries.isEmpty => controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(mode)
-      case Some(_)                              => controllers.routes.UnderConstructionController.onPageLoad()
-      case None                                 => controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(mode)
+      case Some(_)                              => controllers.manual.cpso.routes.TaxResidentCountriesController.onPageLoad(mode)
+
+      case None => controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(mode)
     }
 
   private def handleAddressNonUkNavigationForCPSO(userAnswers: UserAnswers, mode: Mode, cpsoId: CPSOId)(implicit reportId: ReportId) =
     userAnswers.get(pages.manual.cpso.TaxResidentCountriesListPage(cpsoId, reportId)) match {
       case Some(countries) if countries.isEmpty => controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(mode)
-      case Some(_)                              => controllers.routes.UnderConstructionController.onPageLoad()
+      case Some(_)                              => controllers.manual.cpso.routes.TaxResidentCountriesController.onPageLoad(mode)
       case None                                 => controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(mode)
     }
 
