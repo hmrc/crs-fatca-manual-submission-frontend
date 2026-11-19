@@ -59,6 +59,11 @@ class ControllingOrSubstantialOwnerSpec extends SpecBase {
         baseControllingPerson.isComplete(CRS) mustBe true
       }
 
+      "is complete for uk address controlling person that has all required fields completed" in {
+        baseControllingPerson.copy(areTheyBasedInTheUk = Some(true), ukAddressFromSelect = Some(ukAddressSelect)).isComplete(CRS) mustBe true
+        baseControllingPerson.copy(areTheyBasedInTheUk = Some(true), ukAddressManual = Some(ukAddressManual)).isComplete(CRS) mustBe true
+      }
+
       "returns false for non-uk address controlling person if any of expected fields are missing" - {
         mustBeIncomplete(CRS)(
           "the individual name is missing"         -> baseControllingPerson.copy(individualName = None),
