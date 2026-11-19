@@ -42,6 +42,12 @@
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
+        @request.flash.get("cpso-removed").map { name =>
+            @notificationBanner(
+                messages("cpso.removeCPSO.banner", term(regimeType.value.equalsIgnoreCase("crs")), name)
+            )
+        }
+
         @heading(cpsoCountHeaderOrTitleText(cpsoList.size))
 
         @if(cpsoList.isEmpty) {
@@ -98,3 +104,5 @@
     case n =>messages(s"controllingPersonsOrSubstantialOwners.${regimeType.value.toLowerCase}.many.heading", n)
   }
 }
+
+@term(isCRS: Boolean) = @{if (isCRS) "Controlling person" else "Substantial owner"}

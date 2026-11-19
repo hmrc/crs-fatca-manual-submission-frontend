@@ -28,6 +28,7 @@ import play.api.data.Form
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.FakeRequest
+import play.twirl.api.HtmlFormat
 import views.html.manual.cpso.ControllingPersonsOrSubstantialOwnersView
 
 import scala.jdk.CollectionConverters.*
@@ -399,6 +400,23 @@ class ControllingPersonsOrSubstantialOwnersViewSpec extends SpecBase {
 
         doc.select(".govuk-error-summary__list").text() mustBe
           "Select yes if you need to add another substantial owner"
+      }
+    }
+
+    "notification banner" - {
+
+      "for CRS" in {
+        implicit val request: FakeRequest[AnyContent] = FakeRequest().withFlash("cpso-removed" -> "test Name")
+        val renderedHtml: HtmlFormat.Appendable       = view(formFor(CRS), NormalMode, fiName, CRS, Seq.empty, Seq.empty)
+        lazy val doc                                  = Jsoup.parse(renderedHtml.body)
+        doc.select("h3").text() mustBe "Controlling person test Name removed."
+      }
+
+      "for FATCA" in {
+        implicit val request: FakeRequest[AnyContent] = FakeRequest().withFlash("cpso-removed" -> "test Name")
+        val renderedHtml: HtmlFormat.Appendable       = view(formFor(FATCA), NormalMode, fiName, FATCA, Seq.empty, Seq.empty)
+        lazy val doc                                  = Jsoup.parse(renderedHtml.body)
+        doc.select("h3").text() mustBe "Substantial owner test Name removed."
       }
     }
   }
