@@ -89,8 +89,13 @@ class ControllingOrSubstantialOwnerSpec extends SpecBase {
           "the controlling person type is missing"            -> baseControllingPerson.copy(controllingPersonType = None)
         )
       }
-    }
 
+      "returns false for non-uk address controlling person if any of expected fields are missing" - {
+        mustBeIncomplete(CRS)(
+          "the uk AddressFromSelect or ukAddressManual is missing" -> baseControllingPerson.copy(areTheyBasedInTheUk = Some(true))
+        )
+      }
+    }
   }
 
   private def mustBeIncomplete(regime: RegimeType)(scenarios: (String, ControllingOrSubstantialOwner)*): Unit =
