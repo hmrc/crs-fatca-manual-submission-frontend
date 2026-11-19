@@ -1309,3 +1309,7 @@ cpso.crs.isCpsoSectionComplete.paragraph = You can still change the information 
 cpso.fatca.isCpsoSectionComplete.paragraph = You can still change the information for the substantial owners later.
 cpso.crs.isCpsoSectionComplete.error.required = Select yes if you have finished adding the controlling persons for the financial institution
 cpso.fatca.isCpsoSectionComplete.error.required = Select yes if you have finished adding the subtstantial owners for the financial institution
+
+isAccountsSectionCompleted.heading = Have you finished adding the accounts for {0}?
+isAccountsSectionCompleted.hint = You can still change the accounts information later.
+isAccountsSectionCompleted.error.required = Select yes if you have finished adding the accounts for the financial institution

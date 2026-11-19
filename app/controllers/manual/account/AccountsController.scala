@@ -70,12 +70,7 @@ class AccountsController @Inject() (
       implicit request =>
         given reportId: ReportId = request.reportId
 
-        val accountIds = request.userAnswers
-          .get(AccountsPage(reportId))
-          .map(_.accounts.keys.toSeq.map(AccountId.apply))
-          .getOrElse(Seq.empty)
-
-        if (accountIds.isEmpty) {
+        if (!accountsService.hasAccounts(request.userAnswers, reportId)) {
           logger.warn(
             "No accounts found; redirecting to the accounts overview"
           )
@@ -100,19 +95,10 @@ class AccountsController @Inject() (
                   destination =
                     if (addAnother) {
                       routes.AccountsController.onAddAccount()
-                    } else if (
-                      accountIds.exists {
-                        accountId =>
-                          !accountsService.isComplete(
-                            updatedAnswers,
-                            reportId,
-                            accountId
-                          )
-                      }
-                    ) {
-                      controllers.manual.routes.SendAReportController.onPageLoad()
+                    } else if (accountsService.allAccountsComplete(updatedAnswers, reportId)) {
+                      routes.IsAccountsSectionCompletedController.onPageLoad()
                     } else {
-                      controllers.routes.UnderConstructionController.onPageLoad()
+                      controllers.manual.routes.SendAReportController.onPageLoad()
                     }
 
                   _ <- repository.set(updatedAnswers)

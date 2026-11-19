@@ -59,6 +59,7 @@ class SendAReportController @Inject() (
         userAnswers = request.userAnswers,
         reportId = request.reportId
       )
+
       Ok(view(sections))
   }
 }
