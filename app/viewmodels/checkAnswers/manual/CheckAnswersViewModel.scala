@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package utils
+package viewmodels.checkAnswers.manual
 
 import models.NumberType.{Iban, Semp}
 import models.SubmissionsConstants.{CRS, FATCA}
@@ -32,19 +32,18 @@ import pages.manual.cpso.{
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 import viewmodels.checkAnswers.manual.account.*
-import viewmodels.checkAnswers.manual.accountHolders
 import viewmodels.checkAnswers.manual.accountHolders.*
 import viewmodels.checkAnswers.manual.cpso.{
   CPSOIndividualDateOfBirthSummary,
   CPSOLinkedAccountHoldersSummary,
   CPSOTaxResidentCountriesSummary,
+  CPSOWhatIsAddressSummary,
   ControllingPersonTypeSummary,
   CpsoSelfCertificationSummary,
   IndividualHaveDateOfBirthSummary as CPSOIndividualHaveDateOfBirthSummary,
   IndividualHavePlaceOfBirthSummary as CPSOIndividualHavePlaceOfBirthSummary,
   IndividualOrOrganisationSummary as CPSOIndividualOrOrganisationSummary,
-  IndividualPlaceOfBirthSummary as CPSOIndividualPlaceOfBirthSummary,
-  WhatIsAddressSummary
+  IndividualPlaceOfBirthSummary as CPSOIndividualPlaceOfBirthSummary
 }
 import viewmodels.checkAnswers.manual.filercategory.{WhatTypeOfFilerIsSponsorSummary, WhatTypeOfFilerSummary}
 import viewmodels.checkAnswers.{CrsOrFatcaSummary, ReportingYearSummary, TypeOfReportSummary}
@@ -54,7 +53,7 @@ import viewmodels.govuk.summarylist.FluentSummaryList
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class CheckAnswersUtil @Inject() {
+class CheckAnswersViewModel @Inject() {
 
   def getReportDetailsRows(ua: UserAnswers)(implicit messages: Messages): SummaryList =
     SummaryListViewModel(
@@ -208,7 +207,7 @@ class CheckAnswersUtil @Inject() {
         CPSOLinkedAccountHoldersSummary.row(ua),
         if (reportId.regime == FATCA) CPSOIndividualOrOrganisationSummary.row(ua) else None
       ).flatten ++ (if (isIndividual) individualRows else Seq.empty) ++ Seq(
-        WhatIsAddressSummary.row(ua)
+        CPSOWhatIsAddressSummary.row(ua)
       ).flatten
 
       rows

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package utils
+package viewmodels.checkAnswers.manual
 
 import base.SpecBase
 import models.NumberType.*
@@ -74,27 +74,26 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, Summ
 import viewmodels.checkAnswers.manual.account.*
 import viewmodels.checkAnswers.manual.accountHolders.*
 import viewmodels.govuk.all.{FluentSummaryList, SummaryListViewModel}
-import viewmodels.checkAnswers.manual.accountHolders
 import viewmodels.checkAnswers.manual.cpso.{
   CPSOIndividualDateOfBirthSummary,
   CPSOLinkedAccountHoldersSummary,
+  CPSOWhatIsAddressSummary,
   ControllingPersonTypeSummary,
   CpsoSelfCertificationSummary,
   IndividualHaveDateOfBirthSummary as CPSOIndividualHaveDateOfBirthSummary,
   IndividualHavePlaceOfBirthSummary as CPSOIndividualHavePlaceOfBirthSummary,
   IndividualOrOrganisationSummary as CPSOIndividualOrOrganisationSummary,
-  IndividualPlaceOfBirthSummary as CPSOIndividualPlaceOfBirthSummary,
-  WhatIsAddressSummary
+  IndividualPlaceOfBirthSummary as CPSOIndividualPlaceOfBirthSummary
 }
 import java.time.LocalDate
 
-class CheckAnswersUtilSpec extends SpecBase {
+class CheckAnswersViewModelSpec extends SpecBase {
 
-  val util = new CheckAnswersUtil()
+  val util = new CheckAnswersViewModel()
 
   implicit val messages: Messages = stubMessages()
 
-  "ReportDetailsCheckAnswersUtil" - {
+  "CheckAnswersViewModel" - {
 
     "getReportDetailsRows" - {
 
@@ -409,7 +408,7 @@ class CheckAnswersUtilSpec extends SpecBase {
             CPSOIndividualDateOfBirthSummary.row(ua),
             CPSOIndividualHavePlaceOfBirthSummary.row(ua),
             CPSOIndividualPlaceOfBirthSummary.row(ua),
-            WhatIsAddressSummary.row(ua)
+            CPSOWhatIsAddressSummary.row(ua)
           ).flatten
 
           util.getCPSORows(ua).head.rows mustBe expectedRows
@@ -427,7 +426,7 @@ class CheckAnswersUtilSpec extends SpecBase {
           val expectedRows = Seq(
             CPSOLinkedAccountHoldersSummary.row(ua),
             CPSOIndividualOrOrganisationSummary.row(ua),
-            WhatIsAddressSummary.row(ua)
+            CPSOWhatIsAddressSummary.row(ua)
           ).flatten
 
           util.getCPSORows(ua).head.rows mustBe expectedRows
@@ -465,7 +464,7 @@ class CheckAnswersUtilSpec extends SpecBase {
             CPSOIndividualPlaceOfBirthSummary.row(ua),
             ControllingPersonTypeSummary.row(ua),
             CpsoSelfCertificationSummary.row(ua),
-            WhatIsAddressSummary.row(ua)
+            CPSOWhatIsAddressSummary.row(ua)
           ).flatten
 
           util.getCPSORows(ua).head.rows mustBe expectedRows

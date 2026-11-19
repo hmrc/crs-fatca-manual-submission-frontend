@@ -27,8 +27,8 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.CheckAnswersUtil
 import views.html.ReportDetailsCheckAnswersView
+import viewmodels.checkAnswers.manual.CheckAnswersViewModel
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -42,7 +42,7 @@ class ReportDetailsCheckAnswersController @Inject() (
   view: ReportDetailsCheckAnswersView,
   dbConnector: DatabaseConnector,
   sessionRepository: SessionRepository,
-  util: CheckAnswersUtil
+  util: CheckAnswersViewModel
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport

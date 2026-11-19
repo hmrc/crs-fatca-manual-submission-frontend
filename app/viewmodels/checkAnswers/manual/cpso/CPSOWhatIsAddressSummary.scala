@@ -16,17 +16,17 @@
 
 package viewmodels.checkAnswers.manual.cpso
 
-import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.cpso.CurrentCPSOIdPage
+import models.{CheckMode, ReportId, UkAddress, UserAnswers}
+import models.viewModels.manual.cpso.CPSOId
+import pages.manual.cpso.{AddressUkPage, CurrentCPSOIdPage, SelectAddressPage, WhatIsAddressPage}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
-import utils.manual.cpso.resolveUkAddress
 import viewmodels.govuk.summarylist.*
 import viewmodels.implicits.*
 
-object WhatIsAddressSummary {
+object CPSOWhatIsAddressSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] = {
     val regime = reportId.regime.toString.toLowerCase
@@ -61,4 +61,11 @@ object WhatIsAddressSummary {
       )
     }
   }
+
+  private def resolveUkAddress(userAnswers: UserAnswers, cpsoId: CPSOId)(implicit reportId: ReportId): Option[UkAddress] =
+    userAnswers
+      .get(WhatIsAddressPage(cpsoId, reportId))
+      .map(_.ukAddress)
+      .orElse(userAnswers.get(AddressUkPage(cpsoId, reportId)))
+      .orElse(userAnswers.get(SelectAddressPage(cpsoId, reportId)).map(_.ukAddress))
 }

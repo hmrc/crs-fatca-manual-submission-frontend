@@ -22,8 +22,8 @@ import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.CheckAnswersUtil
 import views.html.manual.filercategory.FilerCategoryCheckAnswersView
+import viewmodels.checkAnswers.manual.CheckAnswersViewModel
 
 import javax.inject.Inject
 import scala.concurrent.Future
@@ -35,7 +35,7 @@ class FilerCategoryCheckAnswersController @Inject() (override val messagesApi: M
                                                      reportIdAction: ReportIdRequiredAction,
                                                      val controllerComponents: MessagesControllerComponents,
                                                      view: FilerCategoryCheckAnswersView,
-                                                     util: CheckAnswersUtil
+                                                     util: CheckAnswersViewModel
 ) extends FrontendBaseController
     with I18nSupport
     with Logging {
