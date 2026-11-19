@@ -37,11 +37,15 @@ case class ReportId(regime: RegimeType, reportingYear: Int, uploadedTime: Option
         s"${regime.value}-$reportingYear-NONE-$fiId"
     }
 
-  val sfaOrCrsPrefix: String = if regime == FATCA then "sfa" else "crs"
+  def addressFixPrefix(isCrsPrefix:Boolean): String = if regime == FATCA then "sfa" else if isCrsPrefix then "crs" else "cfc"
   val tinLabel: String = if regime == FATCA then "TIN" else "IN"
+  val fatcaComplexTypePrefix = "ftc"
+  private val crsComplexTypePrefix = "crs"
 
 }
 
 object ReportId {
+  final val sfa = "sfa"
+//  final val sfa = "sfa"
   implicit val format: OFormat[ReportId] = Json.format[ReportId]
 }
