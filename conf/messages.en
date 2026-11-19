@@ -1349,3 +1349,4 @@ cpso.removeCPSO.title = Are you sure you want to remove the {0}?
 cpso.removeCPSO.heading = Are you sure you want to remove the {0} {1}?
 cpso.removeCPSO.para = Before you can send your report, you must make sure that account holders link to a {0} if needed.
 cpso.removeCPSO.error.required = Select yes if you are sure you want to remove the {0}
+cpso.removeCPSO.banner = {0} {1} removed.
