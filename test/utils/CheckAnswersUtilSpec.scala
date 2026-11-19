@@ -33,14 +33,17 @@ import models.manual.accountHolders.{
   OrganisationCrs,
   OrganisationFatca
 }
+import models.manual.cpso.{ControllingPersonType, ControllingPersonTypes}
 import models.manual.filercategory.{WhatTypeOfFiler, WhatTypeOfFilerIsSponsor}
-import models.viewModels.{AccountHolderId, AccountId}
+import models.viewModels.{AccountHolder, AccountHolderId, AccountHolders, AccountId}
+import models.viewModels.manual.cpso.CPSOId
 import models.{AccountBalance, CrsOrFatca, Currency, NumberType, ReportId, UserAnswers}
 import org.scalatest.freespec.AnyFreeSpec
 import pages.manual.account.*
 import pages.manual.accountHolders.{
   AccountHolderIndividualNamePage,
   AccountHolderOrganisationNamePage,
+  AccountHoldersPage,
   CurrentAccountHolderIdPage as CurrentAccountHolderIdForHolderPage,
   EquityInterestTypePage,
   IndividualDateOfBirthPage,
@@ -53,6 +56,7 @@ import pages.manual.accountHolders.{
   ProvideEquityInterestTypePage,
   SelfCertificationPage
 }
+import pages.manual.cpso.{AccountHolderIdsPage, ControllingPersonTypePage, CurrentCPSOIdPage}
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import play.api.i18n.Messages
@@ -62,6 +66,7 @@ import viewmodels.checkAnswers.manual.account.*
 import viewmodels.checkAnswers.manual.accountHolders.*
 import viewmodels.govuk.all.{FluentSummaryList, SummaryListViewModel}
 import viewmodels.checkAnswers.manual.accountHolders
+import viewmodels.checkAnswers.manual.cpso.{CPSOLinkedAccountHoldersSummary, ControllingPersonTypeSummary}
 import java.time.LocalDate
 
 class CheckAnswersUtilSpec extends SpecBase {
@@ -359,6 +364,31 @@ class CheckAnswersUtilSpec extends SpecBase {
             util.getAccountRows(ua).rows mustBe expected
           }
         }
+
+      }
+    }
+
+    "getCPSORows" - {
+
+      implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
+
+      "must include the linked account holders summary" in {
+        val cpsoId   = CPSOId("cpso-id")
+        val holderId = AccountHolderId("holder-id")
+        val ua = emptyUserAnswers
+          .withPage(CurrentCPSOIdPage()(reportId), cpsoId)
+          .withPage(
+            ControllingPersonTypePage(cpsoId, reportId),
+            ControllingPersonTypes(Seq(ControllingPersonType.TrusteeOfTrust))
+          )
+          .withPage(AccountHolderIdsPage(cpsoId, reportId), Set(holderId))
+          .withPage(
+            AccountHoldersPage()(reportId),
+            AccountHolders(None, Map(holderId.value -> AccountHolder(organisationName = Some("Organisation"))))
+          )
+
+        util.getCPSORows(ua).head.rows must contain(CPSOLinkedAccountHoldersSummary.row(ua).value)
+        util.getCPSORows(ua).head.rows must contain(ControllingPersonTypeSummary.row(ua).value)
       }
     }
 

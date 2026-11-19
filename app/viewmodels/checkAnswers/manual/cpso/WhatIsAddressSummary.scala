@@ -28,7 +28,8 @@ import viewmodels.implicits.*
 
 object WhatIsAddressSummary {
 
-  def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
+  def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] = {
+    val regime = reportId.regime.toString.toLowerCase
     for {
       currentCPSOID <- answers.get(CurrentCPSOIdPage()(reportId))
       answer        <- resolveUkAddress(answers, currentCPSOID)
@@ -55,8 +56,9 @@ object WhatIsAddressSummary {
         ),
         actions = Seq(
           ActionItemViewModel("site.change", controllers.routes.UnderConstructionController.onPageLoad().url)
-            .withVisuallyHiddenText(messages("cpso.whatIsAddress.change.hidden"))
+            .withVisuallyHiddenText(messages(s"cpso.whatIsAddress.change.hidden.$regime"))
         )
       )
     }
+  }
 }

@@ -27,7 +27,8 @@ import viewmodels.implicits.*
 
 object IndividualPlaceOfBirthSummary {
 
-  def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
+  def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] = {
+    val regime = reportId.regime.toString.toLowerCase
     for {
       currentId <- answers.get(CurrentCPSOIdPage()(reportId))
       answer    <- answers.get(IndividualPlaceOfBirthPage(currentId, reportId))
@@ -35,11 +36,12 @@ object IndividualPlaceOfBirthSummary {
       val value = HtmlFormat.escape(answer.city.getOrElse("")).toString + "<br/>" + HtmlFormat.escape(answer.region.getOrElse("")).toString
 
       SummaryListRowViewModel(
-        key = "individualPlaceOfBirth.checkYourAnswersLabel",
+        key = s"cpso.individualPlaceOfBirth.checkYourAnswersLabel.$regime",
         value = ValueViewModel(HtmlContent(value)),
         actions = Seq(
           ActionItemViewModel("site.change", controllers.manual.cpso.routes.IndividualPlaceOfBirthController.onPageLoad(CheckMode).url)
-            .withVisuallyHiddenText(messages("individualPlaceOfBirth.change.hidden"))
+            .withVisuallyHiddenText(messages(s"cpso.individualPlaceOfBirth.change.hidden.$regime"))
         )
       )
+  }
 }

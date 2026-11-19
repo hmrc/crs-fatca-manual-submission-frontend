@@ -19,15 +19,33 @@ package utils
 import models.NumberType.{Iban, Semp}
 import models.SubmissionsConstants.{CRS, FATCA}
 import models.manual.accountHolders.IndividualOrOrganisation
+import models.manual.cpso.IndividualOrOrganisation.Individual
 import models.viewModels.AccountHolderId
 import models.{ReportId, UserAnswers}
 import pages.manual.account.*
 import pages.manual.accountHolders.*
+import pages.manual.cpso.{
+  CurrentCPSOIdPage,
+  IndividualHaveDateOfBirthPage as CPSOIndividualHaveDateOfBirthPage,
+  IndividualOrOrganisationPage as CPSOIndividualOrOrganisationPage
+}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 import viewmodels.checkAnswers.manual.account.*
 import viewmodels.checkAnswers.manual.accountHolders
 import viewmodels.checkAnswers.manual.accountHolders.*
+import viewmodels.checkAnswers.manual.cpso.{
+  CPSOIndividualDateOfBirthSummary,
+  CPSOLinkedAccountHoldersSummary,
+  CPSOTaxResidentCountriesSummary,
+  ControllingPersonTypeSummary,
+  CpsoSelfCertificationSummary,
+  IndividualHaveDateOfBirthSummary as CPSOIndividualHaveDateOfBirthSummary,
+  IndividualHavePlaceOfBirthSummary as CPSOIndividualHavePlaceOfBirthSummary,
+  IndividualOrOrganisationSummary as CPSOIndividualOrOrganisationSummary,
+  IndividualPlaceOfBirthSummary as CPSOIndividualPlaceOfBirthSummary,
+  WhatIsAddressSummary
+}
 import viewmodels.checkAnswers.manual.filercategory.{WhatTypeOfFilerIsSponsorSummary, WhatTypeOfFilerSummary}
 import viewmodels.checkAnswers.{CrsOrFatcaSummary, ReportingYearSummary, TypeOfReportSummary}
 import viewmodels.govuk.all.SummaryListViewModel
@@ -170,4 +188,33 @@ class CheckAnswersUtil @Inject() {
       ++ AccountHolderTaxResidentCountriesSummary.row(ua)
   }
 
+  def getCPSORows(ua: UserAnswers)(implicit messages: Messages, reportId: ReportId): Seq[SummaryList] = {
+    val rows: Seq[SummaryListRow] = (for {
+      currentCPSOId <- ua.get(CurrentCPSOIdPage()(reportId))
+      hasDoB       = ua.get(CPSOIndividualHaveDateOfBirthPage(reportId, currentCPSOId)).contains(true)
+      isIndividual = ua.get(CPSOIndividualOrOrganisationPage(currentCPSOId)).contains(Individual) || reportId.regime == CRS
+    } yield {
+
+      val individualRows = Seq(
+        CPSOIndividualHaveDateOfBirthSummary.row(ua),
+        if (hasDoB) CPSOIndividualDateOfBirthSummary.row(ua) else None,
+        CPSOIndividualHavePlaceOfBirthSummary.row(ua),
+        CPSOIndividualPlaceOfBirthSummary.row(ua),
+        if (reportId.regime == CRS) ControllingPersonTypeSummary.row(ua) else None,
+        if (reportId.regime == CRS) CpsoSelfCertificationSummary.row(ua) else None
+      ).flatten
+
+      val rows = Seq(
+        CPSOLinkedAccountHoldersSummary.row(ua),
+        if (reportId.regime == FATCA) CPSOIndividualOrOrganisationSummary.row(ua) else None
+      ).flatten ++ (if (isIndividual) individualRows else Seq.empty) ++ Seq(
+        WhatIsAddressSummary.row(ua)
+      ).flatten
+
+      rows
+    }).getOrElse(Seq.empty)
+
+    Seq(SummaryListViewModel(rows = rows).withCssClass("govuk-!-margin-bottom-3")) ++
+      CPSOTaxResidentCountriesSummary.row(ua)
+  }
 }
