@@ -17,7 +17,7 @@
 package models.viewModels.manual.cpso
 
 import base.SpecBase
-import models.SubmissionsConstants.CRS
+import models.SubmissionsConstants.{CRS, RegimeType}
 import models.manual.TaxResidentInformation
 import models.manual.accountHolders.IndividualDateOfBirth
 import models.manual.cpso.{ControllingPersonType, ControllingPersonTypes, CpsoSelfCertification, IndividualName}
@@ -38,6 +38,8 @@ class ControllingOrSubstantialOwnerSpec extends SpecBase {
     val ukAddressManual        = UkAddress("Some Address", Some("Some Address"), "City", Some("Some Address"), "postcode: ", "coutry")
     val addressNonUk           = AddressNonUk(addressLine1 = "some address", None, "", None, None, "GB")
     val taxResidentInformation = TaxResidentInformation(Country.GB, hasTaxIdentificationNumber = Some(true), taxIdentifierNumber = Some("12333"))
+    val taxResidentWithoutTin  = TaxResidentInformation(Country.GB, hasTaxIdentificationNumber = Some(true), taxIdentifierNumber = None)
+    val taxResidentUnknownTin  = TaxResidentInformation(Country.GB, hasTaxIdentificationNumber = None, taxIdentifierNumber = None)
 
     "CRS regime" - {
 
@@ -56,8 +58,41 @@ class ControllingOrSubstantialOwnerSpec extends SpecBase {
       "is complete for a non-uk address controlling person that has all required fields completed" in {
         baseControllingPerson.isComplete(CRS) mustBe true
       }
+
+      "returns false for non-uk address controlling person if any of expected fields are missing" - {
+        mustBeIncomplete(CRS)(
+          "the individual name is missing"         -> baseControllingPerson.copy(individualName = None),
+          "the account holders are missing"        -> baseControllingPerson.copy(accountHolders = None),
+          "the account holders are empty"          -> baseControllingPerson.copy(accountHolders = Some(Seq.empty)),
+          "the date of birth question is missing"  -> baseControllingPerson.copy(individualHaveDateOfBirth = None),
+          "the place of birth question is missing" -> baseControllingPerson.copy(individualHavePlaceOfBirth = None),
+          "a date of birth is required but is missing" -> baseControllingPerson.copy(
+            individualHaveDateOfBirth = Some(true),
+            individualDateOfBirth = None
+          ),
+          "a place of birth is required but is missing" -> baseControllingPerson.copy(
+            individualHavePlaceOfBirth = Some(true),
+            individualPlaceOfBirth = None
+          ),
+          "the uk residency question is missing"              -> baseControllingPerson.copy(areTheyBasedInTheUk = None),
+          "the non-uk address is missing"                     -> baseControllingPerson.copy(addressNonUk = None),
+          "the tax resident countries are missing"            -> baseControllingPerson.copy(taxResidentCountries = None),
+          "the tax resident countries are empty"              -> baseControllingPerson.copy(taxResidentCountries = Some(Seq.empty)),
+          "a tax resident requires a TIN but it is missing"   -> baseControllingPerson.copy(taxResidentCountries = Some(Seq(taxResidentWithoutTin))),
+          "the tax resident TIN status has not been answered" -> baseControllingPerson.copy(taxResidentCountries = Some(Seq(taxResidentUnknownTin))),
+          "the self certification is missing"                 -> baseControllingPerson.copy(selfCertification = None),
+          "the controlling person type is missing"            -> baseControllingPerson.copy(controllingPersonType = None)
+        )
+      }
     }
 
   }
 
+  private def mustBeIncomplete(regime: RegimeType)(scenarios: (String, ControllingOrSubstantialOwner)*): Unit =
+    scenarios.foreach {
+      case (scenario, controllingOrSubstantialOwner) =>
+        s"when $scenario" in {
+          controllingOrSubstantialOwner.isComplete(regime) mustBe false
+        }
+    }
 }
