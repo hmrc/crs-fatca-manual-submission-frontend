@@ -16,7 +16,7 @@
 
 package viewmodels.checkAnswers.manual.cpso
 
-import models.{ReportId, UserAnswers}
+import models.{CheckMode, ReportId, UserAnswers}
 import pages.manual.cpso.CurrentCPSOIdPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
@@ -55,7 +55,7 @@ object WhatIsAddressSummary {
           HtmlContent(addressHtml)
         ),
         actions = Seq(
-          ActionItemViewModel("site.change", controllers.routes.UnderConstructionController.onPageLoad().url)
+          ActionItemViewModel("site.change", controllers.manual.cpso.routes.CPSOWhereAreTheyBasedController.onPageLoad(CheckMode).url)
             .withVisuallyHiddenText(messages(s"cpso.whatIsAddress.change.hidden.$regime"))
         )
       )

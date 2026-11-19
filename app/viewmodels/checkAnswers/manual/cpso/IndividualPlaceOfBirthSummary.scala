@@ -16,7 +16,8 @@
 
 package viewmodels.checkAnswers.manual.cpso
 
-import models.{CheckMode, ReportId, UserAnswers}
+import models.Countries.getCountryDescription
+import models.{CheckMode, Countries, ReportId, UserAnswers}
 import pages.manual.cpso.{CurrentCPSOIdPage, IndividualPlaceOfBirthPage}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
@@ -33,7 +34,12 @@ object IndividualPlaceOfBirthSummary {
       currentId <- answers.get(CurrentCPSOIdPage()(reportId))
       answer    <- answers.get(IndividualPlaceOfBirthPage(currentId, reportId))
     } yield
-      val value = HtmlFormat.escape(answer.city.getOrElse("")).toString + "<br/>" + HtmlFormat.escape(answer.region.getOrElse("")).toString
+
+      val value = (Seq(answer.city, answer.region).flatten :+ getCountryDescription(answer.country))
+        .map(
+          part => HtmlFormat.escape(part).toString
+        )
+        .mkString("<br/>")
 
       SummaryListRowViewModel(
         key = s"cpso.individualPlaceOfBirth.checkYourAnswersLabel.$regime",

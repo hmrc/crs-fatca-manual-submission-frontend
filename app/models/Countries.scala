@@ -16,6 +16,7 @@
 
 package models
 
+import models.ServiceErrors.CountryLookup_Error
 import models.SubmissionsConstants.{FATCA, RegimeType}
 import models.response.Country
 
@@ -1099,5 +1100,11 @@ object Countries {
         )
       case _ => nonUkTerritories
     }
+
+  def getCountryDescription(code: String)(implicit reportId: ReportId): String = Countries
+    .allCountries(reportId.regime)
+    .find(_.code == code)
+    .map(_.description)
+    .getOrElse(throw CountryLookup_Error)
 
 }
