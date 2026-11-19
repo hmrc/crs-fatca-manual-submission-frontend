@@ -19,9 +19,10 @@ package viewmodels
 import base.SpecBase
 import models.SubmissionsConstants.{CRS, FATCA}
 import models.viewModels.*
-import models.viewModels.TaskStatus.{CannotStartYet, NotStarted}
+import models.viewModels.TaskStatus.{CannotStartYet, Completed, Incomplete, NotStarted}
 import models.{NormalMode, ReportId}
 import pages.manual.accountHolders.AccountHoldersPage
+import pages.manual.sponsor.HaveSponsorPage
 
 class SendAReportSpec extends SpecBase {
 
@@ -115,7 +116,7 @@ class SendAReportSpec extends SpecBase {
 
     }
 
-    "must include Filler section when report is for FATCA" in {
+    "must include Filler section when report is for FATCA - InComplete" in {
 
       val reportId = ReportId(
         FATCA,
@@ -127,13 +128,13 @@ class SendAReportSpec extends SpecBase {
         reportDetails = None,
         financialInstitutionDetails = None,
         sponsorDetails = None,
-        filerCategory = None,
+        filerCategory = Some(TaskStatus.Incomplete),
         accounts = None,
         accountHolders = Some(NotStarted),
         controllingPersons = None,
         tbc1 = None,
         tbc2 = None,
-        userAnswers = emptyUserAnswers,
+        userAnswers = emptyUserAnswers.withPage(HaveSponsorPage()(reportId), true),
         reportId = reportId
       )
 
@@ -141,7 +142,54 @@ class SendAReportSpec extends SpecBase {
         SendAReportSection(
           "sendAReport.filerCategory.heading",
           "filer-category",
-          List()
+          List(
+            SendAReportTask(
+              "sendAReport.filerCategory.subHeading",
+              Incomplete,
+              Some(
+                controllers.manual.filercategory.routes.WhatTypeOfFilerIsSponsorController.onPageLoad(NormalMode).url
+              )
+            )
+          )
+        )
+      )
+
+    }
+
+    "must include Filler section when report is for FATCA - Complete" in {
+
+      val reportId = ReportId(
+        FATCA,
+        2025,
+        None,
+        "TestFIID"
+      )
+      val sendAReport = SendAReportSections(
+        reportDetails = None,
+        financialInstitutionDetails = None,
+        sponsorDetails = None,
+        filerCategory = Some(TaskStatus.Completed),
+        accounts = None,
+        accountHolders = Some(NotStarted),
+        controllingPersons = None,
+        tbc1 = None,
+        tbc2 = None,
+        userAnswers = emptyUserAnswers.withPage(HaveSponsorPage()(reportId), true),
+        reportId = reportId
+      )
+
+      sendAReport.sections must contain(
+        SendAReportSection(
+          "sendAReport.filerCategory.heading",
+          "filer-category",
+          List(
+            SendAReportTask("sendAReport.filerCategory.subHeading",
+                            Completed,
+                            Some(
+                              controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad().url
+                            )
+            )
+          )
         )
       )
 
@@ -213,7 +261,7 @@ class SendAReportSpec extends SpecBase {
 
     }
 
-    "must include Sponsor section when report is for FATCA" in {
+    "must include Sponsor section when report is for FATCA - incomplete" in {
 
       val reportId = ReportId(
         FATCA,
@@ -224,7 +272,7 @@ class SendAReportSpec extends SpecBase {
       val sendAReport = SendAReportSections(
         reportDetails = None,
         financialInstitutionDetails = None,
-        sponsorDetails = None,
+        sponsorDetails = Some(Incomplete),
         filerCategory = None,
         accounts = None,
         accountHolders = Some(NotStarted),
@@ -239,7 +287,53 @@ class SendAReportSpec extends SpecBase {
         SendAReportSection(
           "sendAReport.sponsor.heading",
           "sponsor",
-          List()
+          List(
+            SendAReportTask("sendAReport.sponsor.subHeading",
+                            Incomplete,
+                            Some(
+                              controllers.manual.sponsor.routes.HaveSponsorController.onPageLoad(NormalMode).url
+                            )
+            )
+          )
+        )
+      )
+
+    }
+
+    "must include Sponsor section when report is for FATCA - Complete" in {
+
+      val reportId = ReportId(
+        FATCA,
+        2025,
+        None,
+        "TestFIID"
+      )
+      val sendAReport = SendAReportSections(
+        reportDetails = None,
+        financialInstitutionDetails = None,
+        sponsorDetails = Some(Completed),
+        filerCategory = None,
+        accounts = None,
+        accountHolders = Some(NotStarted),
+        controllingPersons = None,
+        tbc1 = None,
+        tbc2 = None,
+        userAnswers = emptyUserAnswers,
+        reportId = reportId
+      )
+
+      sendAReport.sections must contain(
+        SendAReportSection(
+          "sendAReport.sponsor.heading",
+          "sponsor",
+          List(
+            SendAReportTask("sendAReport.sponsor.subHeading",
+                            Completed,
+                            Some(
+                              controllers.manual.sponsor.routes.CheckAnswersController.onPageLoad().url
+                            )
+            )
+          )
         )
       )
 

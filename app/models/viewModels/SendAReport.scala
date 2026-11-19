@@ -82,26 +82,38 @@ final case class SendAReportSections(
   private def task(titleKey: String, status: Option[TaskStatus], href: Option[String]): Seq[SendAReportTask] =
     status.map(SendAReportTask(titleKey, _, href)).toSeq
 
-  private val fillerSection = SendAReportSection(
-    headingKey = "sendAReport.filerCategory.heading",
-    idPrefix = "filer-category",
-    tasks = task(
-      "sendAReport.filerCategory.subHeading",
-      filerCategory,
-      href = userAnswers
-        .get(HaveSponsorPage()(reportId))
-        .fold(None)(
-          _ => Some(controllers.manual.filercategory.routes.WhatTypeOfFilerIsSponsorController.onPageLoad(NormalMode).url)
-        )
+  private val fillerSection = {
+    val redirectionLink = filerCategory match {
+      case Some(TaskStatus.Completed) => Some(controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad().url)
+      case _ =>
+        userAnswers
+          .get(HaveSponsorPage()(reportId))
+          .fold(None)(
+            _ => Some(controllers.manual.filercategory.routes.WhatTypeOfFilerIsSponsorController.onPageLoad(NormalMode).url)
+          )
+    }
+    SendAReportSection(
+      headingKey = "sendAReport.filerCategory.heading",
+      idPrefix = "filer-category",
+      tasks = task(
+        "sendAReport.filerCategory.subHeading",
+        filerCategory,
+        href = redirectionLink
+      )
     )
-  )
+  }
 
-  private val sponsorSection = SendAReportSection(
-    headingKey = "sendAReport.sponsor.heading",
-    idPrefix = "sponsor",
-    tasks =
-      task("sendAReport.sponsor.subHeading", sponsorDetails, href = Some(controllers.manual.sponsor.routes.HaveSponsorController.onPageLoad(NormalMode).url))
-  )
+  private val sponsorSection = {
+    val redirectionLink = sponsorDetails match {
+      case Some(TaskStatus.Completed) => Some(controllers.manual.sponsor.routes.CheckAnswersController.onPageLoad().url)
+      case _                          => Some(controllers.manual.sponsor.routes.HaveSponsorController.onPageLoad(NormalMode).url)
+    }
+    SendAReportSection(
+      headingKey = "sendAReport.sponsor.heading",
+      idPrefix = "sponsor",
+      tasks = task("sendAReport.sponsor.subHeading", sponsorDetails, href = redirectionLink)
+    )
+  }
 
   val sections: Seq[SendAReportSection] =
     Seq(
