@@ -449,7 +449,7 @@ class CPSONavigatorSpec extends SpecBase {
                             country = Country.GB
       ).ukAddress
 
-      "must go to tax resident page when there are no resident taxes present" in {
+      "must go to tax resident page when there are no TaxResidentCountriesList present" in {
         val ua = UserAnswers("id")
           .withPage(AddressUkPage(currentCPSOId, reportId), address)
         navigator.nextPage(AddressUkPage(currentCPSOId, reportId), NormalMode, ua) mustBe
@@ -457,26 +457,25 @@ class CPSONavigatorSpec extends SpecBase {
 
       }
 
-      // TODO check these - are they needed
-//      "must go to tax resident page when the resident taxes is empty" in {
-//        val ua = UserAnswers("id")
-//          .withPage(AddressUkPage(currentCPSOId, reportId), address)
-//          .withPage(pages.manual.cpso.TaxResidentCountriesListPage(currentCPSOId, reportId), Seq())
-//
-//        navigator.nextPage(AddressUkPage(currentCPSOId, reportId), NormalMode, ua) mustBe
-//          controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(NormalMode)
-//
-//      }
-//
-//      "must go to CPSO Check Answers when there are resident taxes are present" in {
-//        val ua = UserAnswers("id")
-//          .withPage(AddressUkPage(currentCPSOId, reportId), address)
-//          .withPage(pages.manual.cpso.TaxResidentCountriesListPage(currentCPSOId, reportId), Seq(taxResidentInformation))
-//
-//        navigator.nextPage(AddressUkPage(currentCPSOId, reportId), NormalMode, ua) mustBe
-//          controllers.manual.cpso.routes.CPSOCheckAnswersController.onPageLoad()
-//
-//      }
+      "must go to tax resident page when TaxResidentCountriesList is an empty list" in {
+        val ua = UserAnswers("id")
+          .withPage(AddressUkPage(currentCPSOId, reportId), address)
+          .withPage(pages.manual.cpso.TaxResidentCountriesListPage(currentCPSOId, reportId), Seq())
+
+        navigator.nextPage(AddressUkPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+          controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(NormalMode)
+
+      }
+
+      "must go to CPSO tax-resident-countries page when there are existing resident countries saved" in {
+        val ua = UserAnswers("id")
+          .withPage(AddressUkPage(currentCPSOId, reportId), address)
+          .withPage(pages.manual.cpso.TaxResidentCountriesListPage(currentCPSOId, reportId), Seq(taxResidentInformation))
+
+        navigator.nextPage(AddressUkPage(currentCPSOId, reportId), NormalMode, ua) mustBe
+          controllers.manual.cpso.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
+
+      }
     }
 
     "IsThisTheAddressForCPSOPage" - {
