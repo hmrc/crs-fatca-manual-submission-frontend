@@ -51,8 +51,7 @@ case class ControllingOrSubstantialOwner(accountHolders: Option[Seq[String]] = N
 
   def isComplete(regimeType: RegimeType): Boolean =
     individualOrOrganisation match {
-      case Some(Organisation) => true
-      case None | Some(_) =>
+      case None | Some(Individual) =>
         (for {
           _                <- individualName
           _                <- individualHavePlaceOfBirth
@@ -64,13 +63,22 @@ case class ControllingOrSubstantialOwner(accountHolders: Option[Seq[String]] = N
           isIndividualBirthDetailsComplete() &&
           taxResidencyComplete(regimeType, taxResidents) &&
           addressComplete(basedInUk) &&
-          checkIndividualStatusIfRequired(regimeType) &&
+          fatcaRequirements(regimeType) &&
           crsRequirements(regimeType)).getOrElse(false)
+      case Some(Organisation) =>
+        (for {
+          _                <- organisationName
+          accountHolderIds <- accountHolders
+          basedInUk        <- areTheyBasedInTheUk
+          taxResidents     <- taxResidentCountries
+        } yield isCpsoLinkedToAccountHolder(accountHolderIds) &&
+          addressComplete(basedInUk) &&
+          taxResidencyComplete(regimeType, taxResidents)).getOrElse(false)
     }
 
   private def isCpsoLinkedToAccountHolder(accountHolderIds: Seq[String]): Boolean = accountHolderIds.nonEmpty
 
-  private def checkIndividualStatusIfRequired(regimeType: RegimeType) =
+  private def fatcaRequirements(regimeType: RegimeType) =
     regimeType != FATCA || individualOrOrganisation.contains(Individual)
 
   private def isIndividualBirthDetailsComplete(): Boolean =
@@ -83,7 +91,6 @@ case class ControllingOrSubstantialOwner(accountHolders: Option[Seq[String]] = N
   private def crsRequirements(regimeType: RegimeType): Boolean =
     regimeType != CRS || (selfCertification.isDefined && controllingPersonType.isDefined)
 
-  // move this to trait
   private def taxResidencyComplete(regimeType: RegimeType, taxResCountries: Seq[TaxResidentInformation]): Boolean =
     regimeType match {
       case FATCA => taxResidentCountriesCompleteForFatca(taxResCountries)
