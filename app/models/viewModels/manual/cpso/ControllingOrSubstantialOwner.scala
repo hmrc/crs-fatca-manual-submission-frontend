@@ -51,7 +51,7 @@ case class ControllingOrSubstantialOwner(accountHolders: Option[Seq[String]] = N
 
   def isComplete(regimeType: RegimeType): Boolean =
     individualOrOrganisation match {
-      case Some(Organisation) => false
+      case Some(Organisation) => true
       case None | Some(_) =>
         (for {
           _                <- individualName

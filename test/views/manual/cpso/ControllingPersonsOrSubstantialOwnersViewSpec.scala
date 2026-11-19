@@ -19,9 +19,12 @@ package views.manual.cpso
 import base.SpecBase
 import forms.manual.cpso.ControllingPersonsOrSubstantialOwnersFormProvider
 import models.SubmissionsConstants.{CRS, FATCA, RegimeType}
-import models.manual.cpso.IndividualName
+import models.manual.TaxResidentInformation
+import models.manual.cpso.IndividualOrOrganisation.Individual
+import models.manual.cpso.{ControllingPersonType, ControllingPersonTypes, CpsoSelfCertification, IndividualName}
+import models.response.Country
 import models.viewModels.manual.cpso.{CPSOId, ControllingOrSubstantialOwner}
-import models.{CheckMode, Mode, NormalMode}
+import models.{AddressNonUk, CheckMode, Mode, NormalMode}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.data.Form
@@ -44,31 +47,49 @@ class ControllingPersonsOrSubstantialOwnersViewSpec extends SpecBase {
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
   implicit private val messages: Messages               = messagesControllerComponents.messagesApi.preferred(Seq(Lang("en")))
 
-  private val fiName             = "Acme Bank"
-  private val individualName     = IndividualName("Jane", "Doe")
-  private val individualFullName = individualName.fullName
-  private val organisationName   = "Acme Holdings Ltd"
-  private val cpsoIdOne          = CPSOId("cpso-1")
-  private val cpsoIdTwo          = CPSOId("cpso-2")
+  private val fiName                   = "Acme Bank"
+  private val individualName           = IndividualName("Jane", "Doe")
+  private val individualFullName       = individualName.fullName
+  private val secondIndividualName     = IndividualName("John", "Smith")
+  private val secondIndividualFullName = secondIndividualName.fullName
+  private val cpsoIdOne                = CPSOId("cpso-1")
+  private val cpsoIdTwo                = CPSOId("cpso-2")
+  private val controllingPersonTypes   = ControllingPersonTypes(Seq(ControllingPersonType.OwnershipOfLegalPerson))
+  private val taxResidentInformation   = TaxResidentInformation(Country.GB, hasTaxIdentificationNumber = Some(true), taxIdentifierNumber = Some("12333"))
+  private val addressNonUk             = AddressNonUk("1 Test Street", None, "", None, None, "GB")
+
+  private def completeCpso(name: IndividualName): ControllingOrSubstantialOwner =
+    ControllingOrSubstantialOwner(
+      accountHolders = Some(Seq("ah-1")),
+      individualName = Some(name),
+      individualOrOrganisation = Some(Individual),
+      individualHaveDateOfBirth = Some(false),
+      individualHavePlaceOfBirth = Some(false),
+      controllingPersonType = Some(controllingPersonTypes),
+      selfCertification = Some(CpsoSelfCertification.Yes),
+      areTheyBasedInTheUk = Some(false),
+      addressNonUk = Some(addressNonUk),
+      taxResidentCountries = Some(Seq(taxResidentInformation))
+    )
 
   private val oneCpso: Seq[(CPSOId, ControllingOrSubstantialOwner)] = Seq(
-    cpsoIdOne -> ControllingOrSubstantialOwner(individualName = Some(individualName))
+    cpsoIdOne -> completeCpso(individualName)
   )
 
   private val twoCpsos: Seq[(CPSOId, ControllingOrSubstantialOwner)] = Seq(
-    cpsoIdOne -> ControllingOrSubstantialOwner(individualName = Some(individualName)),
-    cpsoIdTwo -> ControllingOrSubstantialOwner(organisationName = Some(organisationName))
+    cpsoIdOne -> completeCpso(individualName),
+    cpsoIdTwo -> completeCpso(secondIndividualName)
   )
 
   private def formFor(regimeType: RegimeType): Form[Boolean] = formProvider(regimeType)
 
   private def render(
-    boundForm: Form[_] = formFor(CRS),
-    mode: Mode = NormalMode,
-    regimeType: RegimeType = CRS,
-    accountHoldersWithoutCPSO: Seq[String] = Seq.empty,
-    cpsoList: Seq[(CPSOId, ControllingOrSubstantialOwner)] = Seq.empty
-  ): Document =
+                      boundForm: Form[_] = formFor(CRS),
+                      mode: Mode = NormalMode,
+                      regimeType: RegimeType = CRS,
+                      accountHoldersWithoutCPSO: Seq[String] = Seq.empty,
+                      cpsoList: Seq[(CPSOId, ControllingOrSubstantialOwner)] = Seq.empty
+                    ): Document =
     Jsoup.parse(
       view(boundForm, mode, fiName, regimeType, accountHoldersWithoutCPSO, cpsoList).body
     )
@@ -279,7 +300,18 @@ class ControllingPersonsOrSubstantialOwnersViewSpec extends SpecBase {
       "must list each controlling person" in {
         val rows = render(cpsoList = twoCpsos).select(".govuk-summary-list__row").asScala.toList
 
-        rows.map(_.select(".govuk-summary-list__key").text()) mustBe List(individualFullName, organisationName)
+        rows.map(_.select(".govuk-summary-list__key > span").text()) mustBe List(individualFullName, secondIndividualFullName)
+      }
+
+      "must not mark complete controlling persons as incomplete" in {
+        render(cpsoList = twoCpsos).select(".govuk-summary-list strong.govuk-tag").size() mustBe 0
+      }
+
+      "must mark a controlling person as incomplete when their details are not complete" in {
+        val incompleteCpso = Seq(cpsoIdOne -> ControllingOrSubstantialOwner(individualName = Some(individualName)))
+        val rows           = render(cpsoList = incompleteCpso).select(".govuk-summary-list__row").asScala.toList
+
+        rows.map(_.select("strong.govuk-tag").text()) mustBe List("Incomplete")
       }
 
       "must link each controlling person to the change and remove pages" in {
