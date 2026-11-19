@@ -35,7 +35,7 @@ object UnlinkedAccountHolders {
     AccountHolders
       .existingAccountHolders(userAnswers)
       .filter(
-        (_, accountHolder) => accountHolder.canHaveCPSO() && accountHolder.getName().nonEmpty
+        (_, accountHolder) => accountHolder.cpsoIsMandatory(reportId.regime) && accountHolder.getName().nonEmpty
       )
 
   private def linkedAccountHolderIds(answers: UserAnswers)(using reportId: ReportId): Set[AccountHolderId] =
