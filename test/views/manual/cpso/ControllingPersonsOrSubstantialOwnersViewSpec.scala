@@ -84,12 +84,12 @@ class ControllingPersonsOrSubstantialOwnersViewSpec extends SpecBase {
   private def formFor(regimeType: RegimeType): Form[Boolean] = formProvider(regimeType)
 
   private def render(
-                      boundForm: Form[_] = formFor(CRS),
-                      mode: Mode = NormalMode,
-                      regimeType: RegimeType = CRS,
-                      accountHoldersWithoutCPSO: Seq[String] = Seq.empty,
-                      cpsoList: Seq[(CPSOId, ControllingOrSubstantialOwner)] = Seq.empty
-                    ): Document =
+    boundForm: Form[_] = formFor(CRS),
+    mode: Mode = NormalMode,
+    regimeType: RegimeType = CRS,
+    accountHoldersWithoutCPSO: Seq[String] = Seq.empty,
+    cpsoList: Seq[(CPSOId, ControllingOrSubstantialOwner)] = Seq.empty
+  ): Document =
     Jsoup.parse(
       view(boundForm, mode, fiName, regimeType, accountHoldersWithoutCPSO, cpsoList).body
     )
