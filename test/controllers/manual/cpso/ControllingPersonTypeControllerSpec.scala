@@ -116,7 +116,7 @@ class ControllingPersonTypeControllerSpec extends SpecBase with MockitoSugar {
 
     "must show 13 checkboxes when the reporting year is after 2025" in {
 
-      val newReportId = ReportId(FATCA, 2026, None, "TestfiID")
+      val newReportId = ReportId(FATCA, 2028, None, "TestfiID")
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswersFor(newReportId))).build()
       when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(emptyUserAnswers.withPage(ReportIdPage, newReportId))))
 
