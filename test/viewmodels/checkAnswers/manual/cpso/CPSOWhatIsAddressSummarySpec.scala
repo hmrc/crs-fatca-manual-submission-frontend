@@ -17,11 +17,11 @@
 package viewmodels.checkAnswers.manual.cpso
 
 import base.SpecBase
-import models.{ReportId, UkAddress}
 import models.SubmissionsConstants.CRS
 import models.response.{Address, Country}
 import models.viewModels.manual.cpso.CPSOId
-import pages.manual.cpso.{AddressUkPage, CurrentCPSOIdPage, SelectAddressPage, WhatIsAddressPage}
+import models.{AddressNonUk, ReportId, UkAddress}
+import pages.manual.cpso.*
 import play.api.i18n.Messages
 import play.api.test.Helpers.stubMessages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
@@ -42,6 +42,15 @@ class CPSOWhatIsAddressSummarySpec extends SpecBase {
     country = Country("GB", "United Kingdom")
   )
   private val manualAddress = UkAddress("Manual address", None, "Manchester", postcode = "M1 1AA", country = "GB")
+
+  private val nonUkAddress = AddressNonUk(
+    addressLine1 = "Non-UK address",
+    addressLine2 = Some("Second line"),
+    addressLine3 = "Paris",
+    addressLine4 = None,
+    postcode = Some("75001"),
+    country = "FR"
+  )
 
   private val lookupAddress = Address(
     uprn = Some(2L),
@@ -68,7 +77,7 @@ class CPSOWhatIsAddressSummarySpec extends SpecBase {
 
       CPSOWhatIsAddressSummary.row(answers).value.value mustBe ValueViewModel(
         HtmlContent(
-          """<span class="govuk-!-margin-bottom-0">Selected address</span><br><span class="govuk-!-margin-bottom-0">London</span><br>SW1A 1AA<span>GB</span><br>"""
+          """<span class="govuk-!-margin-bottom-0">Selected address</span><br><span class="govuk-!-margin-bottom-0">London</span><br><span class="govuk-!-margin-bottom-0">SW1A 1AA</span><br><span>United Kingdom</span><br>"""
         )
       )
     }
@@ -81,7 +90,7 @@ class CPSOWhatIsAddressSummarySpec extends SpecBase {
 
       CPSOWhatIsAddressSummary.row(answers).value.value mustBe ValueViewModel(
         HtmlContent(
-          """<span class="govuk-!-margin-bottom-0">Manual address</span><br><span class="govuk-!-margin-bottom-0">Manchester</span><br>M1 1AA<span>GB</span><br>"""
+          """<span class="govuk-!-margin-bottom-0">Manual address</span><br><span class="govuk-!-margin-bottom-0">Manchester</span><br><span class="govuk-!-margin-bottom-0">M1 1AA</span><br><span>United Kingdom</span><br>"""
         )
       )
 
@@ -91,7 +100,19 @@ class CPSOWhatIsAddressSummarySpec extends SpecBase {
 
       CPSOWhatIsAddressSummary.row(lookupOnlyAnswers).value.value mustBe ValueViewModel(
         HtmlContent(
-          """<span class="govuk-!-margin-bottom-0">Lookup address</span><br><span class="govuk-!-margin-bottom-0">Bristol</span><br>BS1 1AA<span>GB</span><br>"""
+          """<span class="govuk-!-margin-bottom-0">Lookup address</span><br><span class="govuk-!-margin-bottom-0">Bristol</span><br><span class="govuk-!-margin-bottom-0">BS1 1AA</span><br><span>United Kingdom</span><br>"""
+        )
+      )
+    }
+
+    "must fall back to CPSOAddressNonUkPage" in {
+      val answers = emptyUserAnswers
+        .withPage(CurrentCPSOIdPage()(reportId), cpsoId)
+        .withPage(CPSOAddressNonUkPage(cpsoId, reportId), nonUkAddress)
+
+      CPSOWhatIsAddressSummary.row(answers).value.value mustBe ValueViewModel(
+        HtmlContent(
+          """<span class="govuk-!-margin-bottom-0">Non-UK address</span><br><span class="govuk-!-margin-bottom-0">Second line</span><br><span class="govuk-!-margin-bottom-0">Paris</span><br><span class="govuk-!-margin-bottom-0">75001</span><br><span>France</span><br>"""
         )
       )
     }
