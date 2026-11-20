@@ -43,7 +43,7 @@
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                fieldset = Fieldset()
+                legend = LegendViewModel(messages("cpso.removeCPSO.heading",term(isCRS), cpsoName)).withCssClass("govuk-fieldset__legend govuk-visually-hidden")
             )
         )
 
