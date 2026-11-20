@@ -16,7 +16,7 @@
 
 package services
 
-import models.SubmissionsConstants.{CRS, FATCA}
+import models.SubmissionsConstants.CRS
 import models.viewModels.AccountHolders
 import models.viewModels.manual.cpso.{CPSOId, ControllingOrSubstantialOwner}
 import models.{ReportId, UserAnswers}
@@ -40,35 +40,24 @@ class CpsoService {
       .sortBy(_._2.creationDateTime)(Ordering.Option[Instant].reverse)
       .reverse
 
-
-  def areAllCpsosComplete(userAnswers: UserAnswers)(implicit reportId: ReportId): Boolean = {
-    //are there any account holders that require cpsos.
-    // If not then return true
-    //else get all cpsos, if empty and fatca then return true
-    // if crs and empty return false
-    // go through list of cpso and call iscomplete method
-
-    val accountHoldersRequireCpso = AccountHolders
-      .existingAccountHolders(userAnswers)
-      .exists(
-        (_, accountHolder) => accountHolder.canHaveCPSO() && accountHolder.organisationName.nonEmpty
-      )
-
-    val allCpsos = existingCpsos(userAnswers)
-
-    if(!accountHoldersRequireCpso) {
+  def areAllCpsosComplete(userAnswers: UserAnswers)(implicit reportId: ReportId): Boolean =
+    if (!accountHoldersRequireCpso(userAnswers)) {
       true
     } else {
-        if(allCpsos.isEmpty && reportId.regime == FATCA) {
-          true
-        }
-        else if(allCpsos.isEmpty && reportId.regime == CRS) {
-          false
-        }
-        else {
-          allCpsos.forall(_._2.isComplete(reportId.regime))
-        }
+      existingCpsos(userAnswers) match {
+        case Seq() => reportId.regime != CRS
+        case cpsos =>
+          cpsos.forall {
+            case (_, cpso) => cpso.isComplete(reportId.regime)
+          }
+      }
     }
 
-  }
+  private def accountHoldersRequireCpso(userAnswers: UserAnswers)(implicit reportId: ReportId): Boolean =
+    AccountHolders
+      .existingAccountHolders(userAnswers)
+      .exists {
+        case (_, accountHolder) =>
+          accountHolder.canHaveCPSO() && accountHolder.organisationName.nonEmpty
+      }
 }

@@ -18,9 +18,16 @@ package services
 
 import base.SpecBase
 import models.SubmissionsConstants.FATCA
-import models.manual.cpso.IndividualName
+import models.manual.TaxResidentInformation
+import models.manual.accountHolders.AccountHolderTypes.{CrsReportablePerson, OwnerDocumentedForeignFinancialInstitution}
+import models.manual.accountHolders.IndividualOrOrganisation.{Individual as AccountHolderIndividual, Organisation as AccountHolderOrganisation}
+import models.manual.cpso.IndividualOrOrganisation.Individual as CpsoIndividual
+import models.manual.cpso.{ControllingPersonType, ControllingPersonTypes, CpsoSelfCertification, IndividualName}
+import models.response.Country
 import models.viewModels.manual.cpso.{CPSOId, ControllingOrSubstantialOwner, ControllingOrSubstantialOwners}
-import models.{ReportId, UserAnswers}
+import models.viewModels.{AccountHolder, AccountHolders}
+import models.{AddressNonUk, ReportId, UserAnswers}
+import pages.manual.accountHolders.AccountHoldersPage
 import pages.manual.cpso.ControllingOrSubstantialOwnersPage
 
 import java.time.Instant
@@ -35,6 +42,40 @@ class CpsoServiceSpec extends SpecBase {
   private val middleCreated = Instant.parse("2025-08-15T12:30:00Z")
   private val newestCreated = Instant.parse("2026-01-20T16:45:00Z")
 
+  private val addressNonUk           = AddressNonUk("1 Test Street", None, "", None, None, "GB")
+  private val taxResidentInformation = TaxResidentInformation(Country.GB, hasTaxIdentificationNumber = Some(true), taxIdentifierNumber = Some("12333"))
+
+  private val completeCpso = ControllingOrSubstantialOwner(
+    individualOrOrganisation = Some(CpsoIndividual),
+    individualName = Some(IndividualName("Jane", "Doe")),
+    accountHolders = Some(Seq("ah-1")),
+    individualHaveDateOfBirth = Some(false),
+    individualHavePlaceOfBirth = Some(false),
+    areTheyBasedInTheUk = Some(false),
+    addressNonUk = Some(addressNonUk),
+    taxResidentCountries = Some(Seq(taxResidentInformation)),
+    selfCertification = Some(CpsoSelfCertification.Yes),
+    controllingPersonType = Some(ControllingPersonTypes(Seq(ControllingPersonType.OwnershipOfLegalPerson)))
+  )
+
+  private val incompleteCpso = completeCpso.copy(individualName = None)
+
+  private val accountHolderRequiringCpso = AccountHolder(
+    individualOrOrganisation = Some(AccountHolderOrganisation),
+    organisationName = Some("Acme Ltd"),
+    accountHolderType = Some(OwnerDocumentedForeignFinancialInstitution)
+  )
+
+  private val individualAccountHolder = AccountHolder(
+    individualOrOrganisation = Some(AccountHolderIndividual)
+  )
+
+  private val nonMandatoryOrganisationAccountHolder = AccountHolder(
+    individualOrOrganisation = Some(AccountHolderOrganisation),
+    organisationName = Some("Non-mandatory Ltd"),
+    accountHolderType = Some(CrsReportablePerson)
+  )
+
   private def owner(
     name: String,
     creationDateTime: Option[Instant] = None
@@ -45,13 +86,24 @@ class CpsoServiceSpec extends SpecBase {
     )
 
   private def answersWith(
-    cpsos: Map[String, ControllingOrSubstantialOwner],
+    cpsos: Map[String, ControllingOrSubstantialOwner] = Map.empty,
+    accountHolders: Map[String, AccountHolder] = Map.empty,
     report: ReportId = reportId
-  ): UserAnswers =
-    emptyUserAnswers.withPage(
+  ): UserAnswers = {
+    val withCpsos = emptyUserAnswers.withPage(
       ControllingOrSubstantialOwnersPage()(report),
       ControllingOrSubstantialOwners(None, cpsos)
     )
+
+    if accountHolders.isEmpty then {
+      withCpsos
+    } else {
+      withCpsos.withPage(
+        AccountHoldersPage()(report),
+        AccountHolders(None, accountHolders)
+      )
+    }
+  }
 
   "CpsoService.existingCpsos" - {
 
@@ -135,4 +187,98 @@ class CpsoServiceSpec extends SpecBase {
       service.existingCpsos(answers)(using fatcaReportId).map(_._2.name) mustBe Seq("FATCA owner")
     }
   }
+  "CpsoService.areAllCpsosComplete" - {
+
+    "must return true when no account holders require a CPSo" in {
+      service.areAllCpsosComplete(answersWith())(using reportId) mustBe true
+    }
+
+    "must return true when the account holders do not require a CPSo" in {
+      val answers = answersWith(
+        accountHolders = Map(
+          "ah-1" -> individualAccountHolder,
+          "ah-2" -> nonMandatoryOrganisationAccountHolder
+        )
+      )
+
+      service.areAllCpsosComplete(answers)(using reportId) mustBe true
+    }
+
+    "must return false for a CRS report when an account holder requires a CPSo but none have been added" in {
+      val answers = answersWith(
+        accountHolders = Map("ah-1" -> accountHolderRequiringCpso)
+      )
+
+      service.areAllCpsosComplete(answers)(using reportId) mustBe false
+    }
+
+    "must return true for a FATCA report when an account holder requires a CPSo but none have been added" in {
+      val answers = answersWith(
+        accountHolders = Map("ah-1" -> accountHolderRequiringCpso),
+        report = fatcaReportId
+      )
+
+      service.areAllCpsosComplete(answers)(using fatcaReportId) mustBe true
+    }
+
+    "must return true when every CPSo is complete" - {
+
+      "for a CRS report" in {
+        val answers = answersWith(
+          cpsos = Map("21" -> completeCpso),
+          accountHolders = Map("ah-1" -> accountHolderRequiringCpso)
+        )
+
+        service.areAllCpsosComplete(answers)(using reportId) mustBe true
+      }
+
+      "for a FATCA report" in {
+        val answers = answersWith(
+          cpsos = Map("21" -> completeCpso),
+          accountHolders = Map("ah-1" -> accountHolderRequiringCpso),
+          report = fatcaReportId
+        )
+
+        service.areAllCpsosComplete(answers)(using fatcaReportId) mustBe true
+      }
+    }
+
+    "must return false when any CPSo is incomplete" - {
+
+      "for a CRS report" in {
+        val answers = answersWith(
+          cpsos = Map(
+            "21" -> completeCpso,
+            "22" -> incompleteCpso
+          ),
+          accountHolders = Map("ah-1" -> accountHolderRequiringCpso)
+        )
+
+        service.areAllCpsosComplete(answers)(using reportId) mustBe false
+      }
+
+      "for a FATCA report" in {
+        val answers = answersWith(
+          cpsos = Map(
+            "21" -> completeCpso,
+            "22" -> incompleteCpso
+          ),
+          accountHolders = Map("ah-1" -> accountHolderRequiringCpso),
+          report = fatcaReportId
+        )
+
+        service.areAllCpsosComplete(answers)(using fatcaReportId) mustBe false
+      }
+    }
+
+    "must return true when CPsos exist but no account holder requires one" in {
+      val answers = answersWith(
+        cpsos = Map("21" -> incompleteCpso),
+        accountHolders = Map("ah-1" -> individualAccountHolder)
+      )
+
+      service.areAllCpsosComplete(answers)(using reportId) mustBe true
+    }
+  }
+
 }

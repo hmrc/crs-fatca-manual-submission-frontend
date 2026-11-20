@@ -24,7 +24,7 @@ import pages.manual.cpso.IsCpsoSectionCompletePage
 
 import javax.inject.Inject
 
-class SendAReportService @Inject() {
+class SendAReportService @Inject() (cpsoService: CpsoService) {
 
   def reportingFIStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
     userAnswers
@@ -37,7 +37,7 @@ class SendAReportService @Inject() {
     userAnswers
       .get(IsCpsoSectionCompletePage(reportId))
       .fold(Incomplete) {
-        value => if value then Completed else Incomplete
+        value => if value && cpsoService.areAllCpsosComplete(userAnswers)(using reportId) then Completed else Incomplete
       }
 
 }

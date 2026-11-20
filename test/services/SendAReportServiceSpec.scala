@@ -18,11 +18,14 @@ package services
 
 import base.SpecBase
 import models.viewModels.TaskStatus.{Completed, Incomplete}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito
 import pages.manual.cpso.IsCpsoSectionCompletePage
 import pages.manual.reportingFI.HaveYouFinishedCheckingFIDetailsPage
 
 class SendAReportServiceSpec extends SpecBase {
-  private val service = new SendAReportService()
+  val mockCpsoService = mock[CpsoService]
+  private val service = new SendAReportService(mockCpsoService)
 
   "SendAReportService" - {
     "reportingFIStatus" - {
@@ -47,10 +50,12 @@ class SendAReportServiceSpec extends SpecBase {
 
     "reporting CPSO Complete Status" - {
       "should return incomplete when page is not answered" in {
+
         service.reportingCPSOCompleteStatus(emptyUserAnswers, reportId) mustBe Incomplete
       }
 
       "should return incomplete when page is answered as false" in {
+        Mockito.when(mockCpsoService.areAllCpsosComplete(any())(any())).thenReturn(true)
         service.reportingCPSOCompleteStatus(emptyUserAnswers
                                               .withPage(IsCpsoSectionCompletePage(reportId), false),
                                             reportId
@@ -58,6 +63,7 @@ class SendAReportServiceSpec extends SpecBase {
       }
 
       "should return completed when page is answered as true" in {
+        Mockito.when(mockCpsoService.areAllCpsosComplete(any())(any())).thenReturn(true)
         service.reportingCPSOCompleteStatus(emptyUserAnswers
                                               .withPage(IsCpsoSectionCompletePage(reportId), true),
                                             reportId

@@ -22,11 +22,8 @@ import models.manual.TaxResidentInformation
 import models.manual.accountHolders.IndividualDateOfBirth
 import models.manual.cpso.IndividualOrOrganisation.{Individual, Organisation}
 import models.manual.cpso.{ControllingPersonType, ControllingPersonTypes, CpsoSelfCertification, IndividualName}
-import models.{AddressNonUk, UkAddress}
 import models.response.{Address, Country}
-import org.scalatest.freespec.AnyFreeSpec
-
-import java.time.LocalDate
+import models.{AddressNonUk, UkAddress}
 
 class ControllingOrSubstantialOwnerSpec extends SpecBase {
 
