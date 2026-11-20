@@ -94,8 +94,7 @@ object AccountHolderNavigator {
           reportId.regime match {
             case CRS =>
               controllers.manual.accountHolders.routes.OrganisationCrsController.onPageLoad(mode)
-
-            case FATCA =>
+            case _ =>
               controllers.manual.accountHolders.routes.OrganisationFatcaController.onPageLoad(mode)
           }
 
@@ -174,7 +173,7 @@ object AccountHolderNavigator {
   private def handleDoYouWantToAddAnotherAccountHolderNavigation(mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
     userAnswers.get(DoYouWantToAddAnotherAccountHolder()) match {
       case Some(true)  => controllers.manual.accountHolders.routes.AccountController.onPageLoad(mode)
-      case Some(false) => routes.UnderConstructionController.onPageLoad()
+      case Some(false) => controllers.manual.accountHolders.routes.IsAccountHoldersSectionCompleteController.onPageLoad()
       case _           => routes.JourneyRecoveryController.onPageLoad()
     }
 

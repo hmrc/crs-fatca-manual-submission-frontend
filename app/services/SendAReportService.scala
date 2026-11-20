@@ -17,14 +17,15 @@
 package services
 
 import models.CrsOrFatca.reads
-import models.viewModels.{AccountId, TaskStatus}
 import models.viewModels.TaskStatus.{CannotStartYet, Completed, Incomplete, NotStarted}
+import models.viewModels.{AccountId, TaskStatus}
 import models.{viewModels, ReportId, UserAnswers}
 import pages.QuestionPage
 import pages.manual.account.AccountsPage
+import pages.manual.accountHolders.IsAccountHoldersSectionCompletePage
+import pages.manual.cpso.IsCpsoSectionCompletePage
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportingFI.HaveYouFinishedCheckingFIDetailsPage
-import pages.manual.cpso.IsCpsoSectionCompletePage
 import pages.manual.sponsor.*
 import services.manual.account.AccountsService
 
@@ -42,6 +43,13 @@ class SendAReportService @Inject() (accountsService: AccountsService) {
   def reportingCPSOCompleteStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
     userAnswers
       .get(IsCpsoSectionCompletePage(reportId))
+      .fold(Incomplete) {
+        value => if value then Completed else Incomplete
+      }
+
+  def accountHoldersCompleteStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
+    userAnswers
+      .get(IsAccountHoldersSectionCompletePage(reportId))
       .fold(Incomplete) {
         value => if value then Completed else Incomplete
       }
