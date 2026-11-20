@@ -35,7 +35,7 @@ import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
 import pages.manual.accountHolders.AccountHoldersPage
-import pages.manual.cpso.{AccountHolderIdsPage, CurrentCPSOIdPage}
+import pages.manual.cpso.{AccountHolderIdsPage, CpsoCreationPage, CurrentCPSOIdPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -259,6 +259,7 @@ class AccountHolderControllerSpec extends SpecBase with MockitoSugar {
         verify(mockRepository).set(captor.capture())(any())
 
         captor.getValue.get(AccountHolderIdsPage(cpsoId, reportId)) mustBe Some(Set(eligibleHolderId))
+        captor.getValue.get(CpsoCreationPage(cpsoId, reportId)).isDefined mustBe true
       }
     }
 

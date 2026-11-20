@@ -47,8 +47,7 @@ class CheckCPSOAddedOrAllowedController @Inject() (
         )
 
       if (haveCpsoBeenAdded) {
-        logger.info("redirecting to controlling-persons-or-substantial-owners")
-        Redirect(controllers.routes.UnderConstructionController.onPageLoad())
+        Redirect(controllers.manual.cpso.routes.ControllingPersonsOrSubstantialOwnersController.onPageLoad(mode))
       } else if (accountHoldersRequireCpso) {
         Redirect(controllers.manual.cpso.routes.AccountHolderController.onPageLoad(mode))
       } else {

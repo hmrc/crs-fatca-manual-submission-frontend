@@ -137,6 +137,10 @@ class ManualSubmissionNavigator @Inject() () {
       handleAccountHolderPageNavigationForCPSO(ua, mode, cpsoId)
     case (IsCpsoSectionCompletePage(reportId), mode, ua) =>
       controllers.manual.routes.SendAReportController.onPageLoad()
+    case (DoYouWantToAddAnotherCpsoPage(), mode, ua) =>
+      handleDoYouWantToAddAnotherCpso(ua, mode)
+    case (pages.manual.cpso.RemoveCPSOPage(_, _), mode, ua) =>
+      controllers.manual.cpso.routes.ControllingPersonsOrSubstantialOwnersController.onPageLoad(mode)
   }
 
   private def sponsorNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
@@ -200,7 +204,7 @@ class ManualSubmissionNavigator @Inject() () {
       case Some(value) if value =>
         userAnswers.get(pages.manual.cpso.TaxResidentCountriesListPage(cpsoId, reportId)) match {
           case Some(countries) if countries.isEmpty => controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(mode)
-          case Some(_)                              => controllers.routes.UnderConstructionController.onPageLoad()
+          case Some(_)                              => controllers.manual.cpso.routes.TaxResidentCountriesController.onPageLoad(mode)
           case None                                 => controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(mode)
         }
       case Some(_) => controllers.manual.cpso.routes.AddressUkController.onPageLoad(mode)
@@ -210,21 +214,22 @@ class ManualSubmissionNavigator @Inject() () {
   private def handleSelectAddressNavigationForCPSO(userAnswers: UserAnswers, mode: Mode, cpsoId: CPSOId)(implicit reportId: ReportId) =
     userAnswers.get(pages.manual.cpso.TaxResidentCountriesListPage(cpsoId, reportId)) match {
       case Some(countries) if countries.isEmpty => controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(mode)
-      case Some(_)                              => controllers.routes.UnderConstructionController.onPageLoad()
+      case Some(_)                              => controllers.manual.cpso.routes.TaxResidentCountriesController.onPageLoad(mode)
       case None                                 => controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(mode)
     }
 
   private def handleAddressUkNavigationForCPSO(userAnswers: UserAnswers, mode: Mode, cpsoId: CPSOId)(implicit reportId: ReportId) =
     userAnswers.get(pages.manual.cpso.TaxResidentCountriesListPage(cpsoId, reportId)) match {
       case Some(countries) if countries.isEmpty => controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(mode)
-      case Some(_)                              => controllers.routes.UnderConstructionController.onPageLoad()
-      case None                                 => controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(mode)
+      case Some(_)                              => controllers.manual.cpso.routes.TaxResidentCountriesController.onPageLoad(mode)
+
+      case None => controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(mode)
     }
 
   private def handleAddressNonUkNavigationForCPSO(userAnswers: UserAnswers, mode: Mode, cpsoId: CPSOId)(implicit reportId: ReportId) =
     userAnswers.get(pages.manual.cpso.TaxResidentCountriesListPage(cpsoId, reportId)) match {
       case Some(countries) if countries.isEmpty => controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(mode)
-      case Some(_)                              => controllers.routes.UnderConstructionController.onPageLoad()
+      case Some(_)                              => controllers.manual.cpso.routes.TaxResidentCountriesController.onPageLoad(mode)
       case None                                 => controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(mode)
     }
 
@@ -281,6 +286,13 @@ class ManualSubmissionNavigator @Inject() () {
         }
       case None => routes.JourneyRecoveryController.onPageLoad()
 
+    }
+
+  private def handleDoYouWantToAddAnotherCpso(userAnswers: UserAnswers, mode: Mode)(implicit reportId: ReportId) =
+    userAnswers.get(DoYouWantToAddAnotherCpsoPage()) match {
+      case Some(true)  => controllers.manual.cpso.routes.AccountHolderController.onPageLoad(mode)
+      case Some(false) => controllers.routes.UnderConstructionController.onPageLoad() // todo redirect and check all cpso's complete
+      case None        => controllers.routes.JourneyRecoveryController.onPageLoad()
     }
 
 }
