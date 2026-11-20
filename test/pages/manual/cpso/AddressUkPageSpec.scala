@@ -17,10 +17,9 @@
 package pages.manual.cpso
 
 import base.SpecBase
-import models.ReportId
-import models.UkAddress
 import models.response.{Address, Country}
 import models.viewModels.manual.cpso.CPSOId
+import models.{AddressNonUk, ReportId, UkAddress}
 
 class AddressUkPageSpec extends SpecBase {
 
@@ -34,37 +33,33 @@ class AddressUkPageSpec extends SpecBase {
   private val ukAddress: UkAddress =
     UkAddress("line 1", None, "town", None, "ZZ1 1ZZ", "GB")
 
+  private val nonUkAddress: AddressNonUk =
+    AddressNonUk("line 1", None, "town", None, Some("12345"), "US")
+
   "cleanupWithReportId" - {
 
-    "must remove the selected address when a UK address is populated" in {
-
+    "must remove all competing address answers when a AddressUkPage is populated" in {
       val userAnswers = emptyUserAnswers
         .withPage(SelectAddressPage(cpsoId, reportId), address)
-        .withPage(AddressUkPage(cpsoId, reportId), ukAddress)
-
-      val result = AddressUkPage(cpsoId, reportId)
-        .cleanupWithReportId(Some(ukAddress), userAnswers)
-        .success
-        .value
-
-      mustBeRemoved(result, SelectAddressPage(cpsoId, reportId))
-    }
-
-    "must remove the uk post code when a UK address is populated" in {
-
-      val userAnswers = emptyUserAnswers
+        .withPage(CPSOAddressNonUkPage(cpsoId, reportId), nonUkAddress)
+        .withPage(WhatIsAddressPage(cpsoId, reportId), address)
         .withPage(UkPostCodePage(cpsoId, reportId), "ZZ1 1ZZ")
-        .withPage(AddressUkPage(cpsoId, reportId), ukAddress)
 
       val result = AddressUkPage(cpsoId, reportId)
         .cleanupWithReportId(Some(ukAddress), userAnswers)
         .success
         .value
 
-      mustBeRemoved(result, UkPostCodePage(cpsoId, reportId))
+      mustBeRemoved(
+        result,
+        SelectAddressPage(cpsoId, reportId),
+        CPSOAddressNonUkPage(cpsoId, reportId),
+        WhatIsAddressPage(cpsoId, reportId),
+        UkPostCodePage(cpsoId, reportId)
+      )
     }
 
-    "must remove nothing when no UK address is populated" in {
+    "must remove nothing when no AddressUkPage is populated" in {
 
       val userAnswers = emptyUserAnswers
         .withPage(SelectAddressPage(cpsoId, reportId), address)

@@ -16,7 +16,8 @@
 
 package viewmodels.checkAnswers.manual.cpso
 
-import models.{CheckMode, ReportId, UserAnswers}
+import models.Countries.getCountryDescription
+import models.{CheckMode, Countries, ReportId, UserAnswers}
 import pages.manual.cpso.{CurrentCPSOIdPage, IndividualPlaceOfBirthPage}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
@@ -27,19 +28,26 @@ import viewmodels.implicits.*
 
 object IndividualPlaceOfBirthSummary {
 
-  def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
+  def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] = {
+    val regime = reportId.regime.toString.toLowerCase
     for {
       currentId <- answers.get(CurrentCPSOIdPage()(reportId))
       answer    <- answers.get(IndividualPlaceOfBirthPage(currentId, reportId))
     } yield
-      val value = HtmlFormat.escape(answer.city.getOrElse("")).toString + "<br/>" + HtmlFormat.escape(answer.region.getOrElse("")).toString
+
+      val value = (Seq(answer.city, answer.region).flatten :+ getCountryDescription(answer.country))
+        .map(
+          part => HtmlFormat.escape(part).toString
+        )
+        .mkString("<br/>")
 
       SummaryListRowViewModel(
-        key = "individualPlaceOfBirth.checkYourAnswersLabel",
+        key = s"cpso.individualPlaceOfBirth.checkYourAnswersLabel.$regime",
         value = ValueViewModel(HtmlContent(value)),
         actions = Seq(
           ActionItemViewModel("site.change", controllers.manual.cpso.routes.IndividualPlaceOfBirthController.onPageLoad(CheckMode).url)
-            .withVisuallyHiddenText(messages("individualPlaceOfBirth.change.hidden"))
+            .withVisuallyHiddenText(messages(s"cpso.individualPlaceOfBirth.change.hidden.$regime"))
         )
       )
+  }
 }
