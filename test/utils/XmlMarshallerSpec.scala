@@ -12,6 +12,14 @@ import scala.language.postfixOps
 import scala.xml.{Elem, NodeSeq}
 
 class XmlMarshallerSpec extends SpecBase with PrivateMethodTester{
+  val nonUkAddress = AddressNonUk(addressLine1 = "Middle of nowhere",
+    addressLine2 = None,
+    addressLine3 = "bad place",
+    addressLine4 = None,
+    postcode = Some("Hell22"),
+    country = "HE")
+  val residency = TaxResidentInformation(Country("GB", "United Kingdom"), taxIdentifierNumbers = Some("12345"))
+  val ukAddress = UkAddress(addressLine1 = "line1", addressLine2 = None, city = "Bradford", county = None, postcode = "D17", country = "UK")
 
   "XmlMarshaller" - {
 
@@ -32,9 +40,7 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester{
     "taxIdToXml" - {
       "create a TIN with sfa prefix for FATCA" in {
         val taxIdToXml = PrivateMethod[NodeSeq](Symbol("taxIdToXml"))
-        val residency = TaxResidentInformation(Country("GB", "United Kingdom"), taxIdentifierNumbers = Some("12345"))
         val reportId = ReportId(FATCA, 2020, None, "fi12")
-
         val result = XmlMarshaller invokePrivate taxIdToXml(residency, reportId)
         println(s"result looks like ${result.toString}")
         result.size mustEqual 2
@@ -58,7 +64,6 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester{
       }
 
     "ukAddressToAddressFix" - {
-      val ukAddress = UkAddress(addressLine1 = "line1", addressLine2 = None, city = "Bradford", county = None, postcode = "D17", country = "UK")
       val ukAddressToAddressFix = PrivateMethod[NodeSeq](Symbol("ukAddressToAddressFix"))
       "must create a valid AddressFix with the correct prefixes for CRS" in {
         val reportId = ReportId(CRS, 2020, None, "fi12")
@@ -101,12 +106,6 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester{
 
 
     "nonUkAddressToAddressFix" - {
-      val nonUkAddress = AddressNonUk(addressLine1= "Middle of nowhere",
-        addressLine2= None,
-        addressLine3= "bad place",
-        addressLine4= None,
-        postcode= Some("Hell22"),
-        country= "HE")
       val nonUkAddressToAddressFix = PrivateMethod[NodeSeq](Symbol("nonUkAddressToAddressFix"))
       "must create a valid AddressFix with the correct prefixes for CRS" in {
         val reportId = ReportId(CRS, 2020, None, "fi12")
@@ -141,6 +140,10 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester{
         (result \ "AddressFix" \ "PostCode") mustBe empty
         (result \ "AddressFix" \ "City").text mustEqual "bad place"
       }
+    }
+
+    "toOrganisationPartyType" - {
+//      val baseOrg =
     }
 
 

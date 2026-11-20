@@ -16,7 +16,47 @@
 
 package models.manual
 
+import models.SubmissionsConstants.{CRS, FATCA}
+import models.manual.accountHolders.AdditionalOrgAhInfo
+import models.manual.filercategory.{FilerCategoryTypes, WhatTypeOfFiler, WhatTypeOfFilerIsSponsor}
 import models.{AddressModel, ReportId, TaxResidentInformation}
+import utils.manual.XmlMarshaller
 
-case class OrganisationType (name: String, address:AddressModel, residency: Seq[TaxResidentInformation], reportId: ReportId, entityType: EntityType)
+import scala.xml.NodeSeq
+
+case class OrganisationType (name: String, address:AddressModel, residency: Seq[TaxResidentInformation], reportId: ReportId, xmlEntityType: XmlEntityType, additionalOrgAhInfo: Option[AdditionalOrgAhInfo], filerCategory: Option[FilerCategoryTypes]) {
+  val hasWrongAccountHolderData: Boolean =  if (xmlEntityType == AccountHolder & reportId.regime == CRS ) {
+    additionalOrgAhInfo.forall(_.hasIncorrectCrsData)
+  } else if (xmlEntityType == AccountHolder & reportId.regime == FATCA) {
+    additionalOrgAhInfo.isEmpty || additionalOrgAhInfo.forall(_.hasIncorrectFatcaData)
+  } else if (xmlEntityType != AccountHolder & additionalOrgAhInfo.isDefined) then true else false
+    
+  
+
+  val isIncorrectFilerProvided: Boolean =
+    if(reportId.regime == FATCA & xmlEntityType == Sponsor) {
+      !filerCategory.contains(WhatTypeOfFilerIsSponsor)}
+    else if (reportId.regime == CRS || (reportId.regime == FATCA & xmlEntityType != ReportingFI)){
+      filerCategory.isDefined
+    } else false
+
+}
+
+object OrganisationType {
+  def toXml(org:OrganisationType): Either[XmlErrors, NodeSeq] =
+    if (org.hasWrongAccountHolderData) {
+      Left(MissingMandatoryAccountHolderData)
+    } else if ((org.xmlEntityType == Sponsor | org.xmlEntityType == SubstantialOwner) & org.reportId.regime == CRS){
+      Left(InvalidObjectForRegime)
+    }
+    else if (org.xmlEntityType == ControllingPerson & org.reportId.regime == FATCA){
+      Left(InvalidObjectForRegime)
+    }
+    else if (org.isIncorrectFilerProvided)  {
+      Left(InvalidObjectForRegime)
+    }
+    else {
+      Right(XmlMarshaller.toOrganisationPartyType(org))
+    }
+}
 
