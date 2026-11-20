@@ -33,7 +33,6 @@ class ControllingOrSubstantialOwnerSpec extends SpecBase {
   "IsComplete" - {
     val controllingPersonTypes = ControllingPersonTypes(Seq(ControllingPersonType.OwnershipOfLegalPerson))
     val accountHolders         = Seq("ah-1")
-    val individualDateOfBirth  = IndividualDateOfBirth(LocalDate.of(2000, 10, 12))
     val individualName         = IndividualName("First Name", "Last Name")
     val ukAddressSelect        = Address(None, "addressLine1", None, None, None, "town", None, Country.GB)
     val ukAddressManual        = UkAddress("Some Address", Some("Some Address"), "City", Some("Some Address"), "postcode: ", "coutry")
