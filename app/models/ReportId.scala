@@ -16,7 +16,7 @@
 
 package models
 
-import models.SubmissionsConstants.{FATCA, RegimeType}
+import models.SubmissionsConstants.{CRS, FATCA, RegimeType}
 import play.api.libs.json.{Json, OFormat}
 
 import java.time.{LocalDateTime, ZoneOffset}
@@ -37,15 +37,13 @@ case class ReportId(regime: RegimeType, reportingYear: Int, uploadedTime: Option
         s"${regime.value}-$reportingYear-NONE-$fiId"
     }
 
-  def addressFixPrefix(isCrsPrefix:Boolean): String = if regime == FATCA then "sfa" else if isCrsPrefix then "crs" else "cfc"
+  def getChildPrefix(isCrsPrefix:Boolean): String = if regime == FATCA then "sfa" else if isCrsPrefix then "crs" else "cfc"
   val tinLabel: String = if regime == FATCA then "TIN" else "IN"
-  val fatcaComplexTypePrefix = "ftc"
-  private val crsComplexTypePrefix = "crs"
+  val addressPrefix: String = if regime == CRS then "crs" else "sfa"
+  val parentPrefix: String = if regime == FATCA then "ftc" else "crs"
 
 }
 
 object ReportId {
-  final val sfa = "sfa"
-//  final val sfa = "sfa"
   implicit val format: OFormat[ReportId] = Json.format[ReportId]
 }
