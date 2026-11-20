@@ -16,15 +16,22 @@
 
 package services
 
-import models.viewModels.TaskStatus
-import models.viewModels.TaskStatus.{Completed, Incomplete}
+import models.CrsOrFatca.reads
+import models.viewModels.{AccountId, TaskStatus}
+import models.viewModels.TaskStatus.{CannotStartYet, Completed, Incomplete, NotStarted}
 import models.{viewModels, ReportId, UserAnswers}
+import pages.QuestionPage
+import pages.manual.account.AccountsPage
+import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportingFI.HaveYouFinishedCheckingFIDetailsPage
 import pages.manual.cpso.IsCpsoSectionCompletePage
+import pages.manual.sponsor.*
+import services.manual.account.AccountsService
 
 import javax.inject.Inject
 
-class SendAReportService @Inject() (cpsoService: CpsoService) {
+
+class SendAReportService @Inject() (accountsService: AccountsService, cpsoService: CpsoService) {
 
   def reportingFIStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
     userAnswers
@@ -39,5 +46,84 @@ class SendAReportService @Inject() (cpsoService: CpsoService) {
       .fold(Incomplete) {
         value => if value && cpsoService.areAllCpsosComplete(userAnswers)(using reportId) then Completed else Incomplete
       }
+
+  def fillerStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
+    userAnswers.get(HaveSponsorPage()(reportId)).fold[TaskStatus](CannotStartYet) {
+      hasSponsor =>
+        if hasSponsor then
+          userAnswers
+            .get(WhatTypeOfFilerIsSponsorPage()(reportId))
+            .fold(Incomplete)(
+              _ => Completed
+            )
+        else
+          userAnswers
+            .get(WhatTypeOfFilerPage()(reportId))
+            .fold(Incomplete)(
+              _ => Completed
+            )
+    }
+
+  def sponsorStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
+    userAnswers.get(HaveSponsorPage()(reportId)).fold[TaskStatus](Incomplete) {
+      case false => Completed
+      case true =>
+        Option
+          .when(allSponsorPagesAnswered(userAnswers)(using reportId))(Completed)
+          .getOrElse(Incomplete)
+    }
+
+  def accountStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
+    getAccountStatus(userAnswers, reportId)
+
+  private def sponsorRequiredPages(using reportId: ReportId): Seq[QuestionPage[_]] =
+    List(
+      SponsorNamePage(),
+      WhatIsGIINForSponsorPage(),
+      TaxResidentCountriesListPage()
+    )
+
+  private def sponsorAddressPages(using reportId: ReportId): Seq[QuestionPage[?]] =
+    List(
+      WhatIsAddressForSponsorPage(),
+      UkAddressPage(),
+      AddressNonUkPage()
+    )
+
+  private def pageAnswered(
+    page: QuestionPage[?],
+    userAnswers: UserAnswers
+  ): Boolean =
+    page.path.asSingleJsResult(userAnswers.data).isSuccess
+
+  private def allSponsorPagesAnswered(
+    userAnswers: UserAnswers
+  )(using reportId: ReportId): Boolean = {
+
+    val requiredPagesPresent = sponsorRequiredPages.forall(pageAnswered(_, userAnswers))
+
+    val addressPresent = sponsorAddressPages.exists(pageAnswered(_, userAnswers))
+
+    requiredPagesPresent && addressPresent
+  }
+
+  private def getAccountStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus = {
+    val accountIds = userAnswers
+      .get(AccountsPage(reportId))
+      .map(_.accounts.keys.toSeq.map(AccountId.apply))
+      .getOrElse(Seq.empty)
+
+    if accountIds.isEmpty then NotStarted
+    else if accountIds.forall {
+        accountId =>
+          accountsService.isComplete(
+            userAnswers,
+            reportId,
+            accountId
+          )
+      }
+    then Completed
+    else Incomplete
+  }
 
 }
