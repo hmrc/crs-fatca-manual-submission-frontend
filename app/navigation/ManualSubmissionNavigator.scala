@@ -204,7 +204,7 @@ class ManualSubmissionNavigator @Inject() () {
       case Some(value) if value =>
         userAnswers.get(pages.manual.cpso.TaxResidentCountriesListPage(cpsoId, reportId)) match {
           case Some(countries) if countries.isEmpty => controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(mode)
-          case Some(_)                              => controllers.routes.UnderConstructionController.onPageLoad()
+          case Some(_)                              => controllers.manual.cpso.routes.TaxResidentCountriesController.onPageLoad(mode)
           case None                                 => controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(mode)
         }
       case Some(_) => controllers.manual.cpso.routes.AddressUkController.onPageLoad(mode)
