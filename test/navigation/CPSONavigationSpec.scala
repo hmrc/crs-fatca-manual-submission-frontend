@@ -502,13 +502,13 @@ class CPSONavigationSpec extends SpecBase {
           controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(NormalMode)
       }
 
-      "must go to under construction page when answer is yes and resident tax countries is populated" in {
+      "must go to resident tax page when answer is yes and resident tax countries is populated" in {
         val ua = UserAnswers("id")
           .withPage(IsThisTheAddressPageForCpso(currentCPSOId, reportId), true)
           .withPage(pages.manual.cpso.TaxResidentCountriesListPage(currentCPSOId, reportId), Seq(taxResidentInformation))
 
         navigator.nextPage(IsThisTheAddressPageForCpso(currentCPSOId, reportId), NormalMode, ua) mustBe
-          controllers.routes.UnderConstructionController.onPageLoad()
+          controllers.manual.cpso.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
       }
 
       "must go to address uk for a no answer" in {
