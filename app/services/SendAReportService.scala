@@ -30,7 +30,6 @@ import services.manual.account.AccountsService
 
 import javax.inject.Inject
 
-
 class SendAReportService @Inject() (accountsService: AccountsService, cpsoService: CpsoService) {
 
   def reportingFIStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =

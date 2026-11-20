@@ -26,7 +26,8 @@ import models.viewModels.AccountId
 import models.viewModels.TaskStatus.{CannotStartYet, Completed, Incomplete, NotStarted}
 import models.{AccountBalance, AddressNonUk, Currency, ReportId, UkAddress}
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito
+import org.mockito.Mockito.*
 import pages.ReportIdPage
 import pages.manual.FINamePage
 import pages.manual.account.*
@@ -37,7 +38,7 @@ import pages.manual.sponsor.*
 import services.manual.account.AccountsService
 
 class SendAReportServiceSpec extends SpecBase {
-  val mockCpsoService = mock[CpsoService]
+  val mockCpsoService    = mock[CpsoService]
   val mockAccountService = mock[AccountsService]
   private val service    = new SendAReportService(mockAccountService, mockCpsoService)
 
@@ -70,7 +71,7 @@ class SendAReportServiceSpec extends SpecBase {
       }
 
       "should return incomplete when page is answered as false" in {
-        Mockito.when(mockCpsoService.areAllCpsosComplete(any())(any())).thenReturn(true)
+        when(mockCpsoService.areAllCpsosComplete(any())(any())).thenReturn(true)
         service.reportingCPSOCompleteStatus(emptyUserAnswers
                                               .withPage(IsCpsoSectionCompletePage(reportId), false),
                                             reportId
@@ -78,7 +79,7 @@ class SendAReportServiceSpec extends SpecBase {
       }
 
       "should return completed when page is answered as true" in {
-        Mockito.when(mockCpsoService.areAllCpsosComplete(any())(any())).thenReturn(true)
+        when(mockCpsoService.areAllCpsosComplete(any())(any())).thenReturn(true)
         service.reportingCPSOCompleteStatus(emptyUserAnswers
                                               .withPage(IsCpsoSectionCompletePage(reportId), true),
                                             reportId
