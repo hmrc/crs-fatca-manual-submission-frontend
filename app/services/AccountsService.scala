@@ -28,6 +28,21 @@ import scala.util.Try
 @Singleton
 class AccountsService @Inject() () {
 
+  def hasAccounts(answers: UserAnswers, reportId: ReportId): Boolean =
+    answers
+      .get(AccountsPage(reportId))
+      .exists(_.accounts.nonEmpty)
+
+  def allAccountsComplete(answers: UserAnswers, reportId: ReportId): Boolean =
+    answers.get(AccountsPage(reportId)).exists {
+      data =>
+        data.accounts.nonEmpty &&
+        data.accounts.keys.forall {
+          id =>
+            isComplete(answers, reportId, AccountId(id))
+        }
+    }
+
   def orderedAccounts(
     userAnswers: UserAnswers,
     reportId: ReportId

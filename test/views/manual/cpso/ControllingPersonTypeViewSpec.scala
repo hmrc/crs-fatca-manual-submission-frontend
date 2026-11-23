@@ -87,14 +87,14 @@ class ControllingPersonTypeViewSpec extends SpecBase {
     }
 
     "must display all 14 checkboxes for reporting year 2025" in {
-      val doc = render(2025)
+      val doc = render(2027)
 
       doc.select("input[type=checkbox]").size() mustBe 14
       doc.select("""input[type=checkbox][value="notReported"]""").size() mustBe 1
     }
 
     "must display only 13 checkboxes for reporting years after 2025" in {
-      val doc = render(2026)
+      val doc = render(2028)
 
       doc.select("input[type=checkbox]").size() mustBe 13
       doc.select("""input[type=checkbox][value="notReported"]""").size() mustBe 0
