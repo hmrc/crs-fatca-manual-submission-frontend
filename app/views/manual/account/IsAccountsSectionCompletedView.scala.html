@@ -19,12 +19,14 @@
   formHelper: FormWithCSRF,
   govukErrorSummary: GovukErrorSummary,
   govukRadios: GovukRadios,
-  govukButton: GovukButton
+  govukButton: GovukButton,
+  heading: components.Heading,
+  paragraph: components.Paragraph,
 )
 
 @(form: Form[Boolean], fiName: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("isAccountsSectionCompleted.heading", fiName))) {
+@layout(pageTitle = title(form, messages("isAccountsSectionCompleted.title", fiName))) {
 
     @formHelper(
         action = controllers.manual.account.routes.IsAccountsSectionCompletedController.onSubmit(),
@@ -34,15 +36,16 @@
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
+        @heading(messages("isAccountsSectionCompleted.heading", fiName))
+
+        @paragraph(messages("isAccountsSectionCompleted.hint"))
 
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
                 legend = LegendViewModel(
                     messages("isAccountsSectionCompleted.heading", fiName)
-                ).asPageHeading()
-            ).withHint(
-                HintViewModel(messages("isAccountsSectionCompleted.hint"))
+                ).withCssClass("govuk-visually-hidden")
             )
         )
 
