@@ -17,11 +17,20 @@
 package services
 
 import models.SubmissionsConstants.{CRS, FATCA}
+import models.manual.TaxResidentInformation
 import models.manual.account.WhatAccountType
+import models.manual.accountHolders.AccountHolderTypes
 import models.manual.accountHolders.AccountHolderTypes.PassiveNonFinancialWithOneOrMoreControllingPerson
+import models.manual.accountHolders.EquityInterestType
+import models.manual.accountHolders.EquityInterestTypes
+import models.manual.accountHolders.IndividualDateOfBirth
+import models.manual.accountHolders.IndividualName
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
+import models.manual.accountHolders.IndividualPlaceOfBirth
+import models.manual.accountHolders.SelfCertification
+import models.response.Country
 import models.viewModels.{Account, AccountHolder, AccountHolderId, AccountHolders, AccountId, Accounts}
-import models.{ReportId, UserAnswers}
+import models.{AddressNonUk, ReportId, UkAddress, UserAnswers}
 import org.scalatest.OptionValues
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -87,6 +96,87 @@ class AccountHolderServiceSpec extends AnyFreeSpec with Matchers with OptionValu
         )
         .get
   }
+
+  private val ukAddress =
+    UkAddress(
+      addressLine1 = "1 High Street",
+      addressLine2 = None,
+      city = "London",
+      postcode = "AA1 1AA",
+      country = "GB"
+    )
+
+  private val nonUkAddress =
+    AddressNonUk(
+      addressLine1 = "1 Rue de Rivoli",
+      addressLine2 = None,
+      addressLine3 = "Paris",
+      addressLine4 = None,
+      postcode = None,
+      country = "FR"
+    )
+
+  private val taxResident =
+    TaxResidentInformation(
+      country = Country.GB,
+      hasTaxIdentificationNumber = Some(true),
+      taxIdentifierNumber = Some("TIN-123")
+    )
+
+  private def completeOrganisationHolder(
+    name: String = "Alpha Holdings",
+    accountHolderType: Option[AccountHolderTypes] = Some(PassiveNonFinancialWithOneOrMoreControllingPerson),
+    account: Option[Seq[String]] = Some(Seq("80")),
+    areTheyBasedInTheUk: Option[Boolean] = Some(true),
+    ukAddressManual: Option[UkAddress] = Some(ukAddress),
+    addressNonUk: Option[AddressNonUk] = None,
+    taxResidentCountries: Option[Seq[TaxResidentInformation]] = Some(Seq(taxResident)),
+    selfCertification: Option[SelfCertification] = Some(SelfCertification.Yes),
+    provideEquityInterestType: Option[Boolean] = None,
+    equityInterestType: Option[EquityInterestTypes] = None
+  ): AccountHolder =
+    AccountHolder(
+      individualOrOrganisation = Some(Organisation),
+      organisationName = Some(name),
+      accountHolderType = accountHolderType,
+      account = account,
+      areTheyBasedInTheUk = areTheyBasedInTheUk,
+      ukAddressManual = ukAddressManual,
+      addressNonUk = addressNonUk,
+      taxResidentCountries = taxResidentCountries,
+      selfCertification = selfCertification,
+      provideEquityInterestType = provideEquityInterestType,
+      equityInterestType = equityInterestType
+    )
+
+  private def completeIndividualHolder(
+    firstName: String = "First Name",
+    lastName: String = "Last Name",
+    account: Option[Seq[String]] = Some(Seq("80")),
+    areTheyBasedInTheUk: Option[Boolean] = Some(true),
+    ukAddressManual: Option[UkAddress] = Some(ukAddress),
+    addressNonUk: Option[AddressNonUk] = None,
+    taxResidentCountries: Option[Seq[TaxResidentInformation]] = Some(Seq(taxResident)),
+    selfCertification: Option[SelfCertification] = Some(SelfCertification.Yes),
+    individualHavePlaceOfBirth: Option[Boolean] = Some(false),
+    individualPlaceOfBirth: Option[IndividualPlaceOfBirth] = None,
+    individualHaveDateOfBirth: Option[Boolean] = Some(false),
+    individualDateOfBirth: Option[IndividualDateOfBirth] = None
+  ): AccountHolder =
+    AccountHolder(
+      individualOrOrganisation = Some(Individual),
+      individualName = Some(IndividualName(firstName, lastName)),
+      account = account,
+      areTheyBasedInTheUk = areTheyBasedInTheUk,
+      ukAddressManual = ukAddressManual,
+      addressNonUk = addressNonUk,
+      taxResidentCountries = taxResidentCountries,
+      selfCertification = selfCertification,
+      individualHavePlaceOfBirth = individualHavePlaceOfBirth,
+      individualPlaceOfBirth = individualPlaceOfBirth,
+      individualHaveDateOfBirth = individualHaveDateOfBirth,
+      individualDateOfBirth = individualDateOfBirth
+    )
 
   "AccountHolderService.accountHolders" - {
 
@@ -201,6 +291,178 @@ class AccountHolderServiceSpec extends AnyFreeSpec with Matchers with OptionValu
 
     "must return no account holders when none have been added" in {
       service.accountHolders(UserAnswers("id"))(using reportId) mustBe empty
+    }
+  }
+
+  "AccountHolderService.areAllAccountHoldersComplete" - {
+
+    "must return false when there are no account holders" in {
+
+      service.areAllAccountHoldersComplete(UserAnswers("id"))(using reportId) mustBe false
+    }
+
+    "must return true when every account holder is complete" in {
+
+      val answers = userAnswersWith(
+        holders = Map(
+          "21" -> completeOrganisationHolder(),
+          "22" -> completeIndividualHolder()
+        )
+      )
+
+      service.areAllAccountHoldersComplete(answers)(using reportId) mustBe true
+    }
+
+    "must return false when any account holder is incomplete" in {
+
+      val answers = userAnswersWith(
+        holders = Map(
+          "21" -> completeOrganisationHolder(),
+          "22" -> completeOrganisationHolder(name = "Incomplete Holdings", ukAddressManual = None)
+        )
+      )
+
+      service.areAllAccountHoldersComplete(answers)(using reportId) mustBe false
+    }
+
+    "must ignore account holders without a name" in {
+
+      val answers = userAnswersWith(
+        holders = Map(
+          "21" -> completeOrganisationHolder(),
+          "22" -> unnamedHolder
+        )
+      )
+
+      service.areAllAccountHoldersComplete(answers)(using reportId) mustBe true
+    }
+
+    "must return false when an account holder has no linked account" in {
+
+      val answers = userAnswersWith(
+        holders = Map("21" -> completeOrganisationHolder(account = Some(Seq.empty)))
+      )
+
+      service.areAllAccountHoldersComplete(answers)(using reportId) mustBe false
+    }
+
+    "must return false when an account holder has no address" in {
+
+      val answers = userAnswersWith(
+        holders = Map("21" -> completeOrganisationHolder(ukAddressManual = None))
+      )
+
+      service.areAllAccountHoldersComplete(answers)(using reportId) mustBe false
+    }
+
+    "must return false when an account holder has no tax resident countries" in {
+
+      val answers = userAnswersWith(
+        holders = Map("21" -> completeOrganisationHolder(taxResidentCountries = Some(Seq.empty)))
+      )
+
+      service.areAllAccountHoldersComplete(answers)(using reportId) mustBe false
+    }
+
+    "must return true for a complete individual account holder" in {
+
+      val answers = userAnswersWith(holders = Map("21" -> completeIndividualHolder()))
+
+      service.areAllAccountHoldersComplete(answers)(using reportId) mustBe true
+    }
+
+    "must return true for an individual based outside the UK with a non-UK address" in {
+
+      val answers = userAnswersWith(
+        holders = Map(
+          "21" -> completeIndividualHolder(
+            areTheyBasedInTheUk = Some(false),
+            ukAddressManual = None,
+            addressNonUk = Some(nonUkAddress)
+          )
+        )
+      )
+
+      service.areAllAccountHoldersComplete(answers)(using reportId) mustBe true
+    }
+
+    "must return false when an individual is missing their place of birth details" in {
+
+      val answers = userAnswersWith(
+        holders = Map(
+          "21" -> completeIndividualHolder(
+            individualHavePlaceOfBirth = Some(true),
+            individualPlaceOfBirth = None
+          )
+        )
+      )
+
+      service.areAllAccountHoldersComplete(answers)(using reportId) mustBe false
+    }
+
+    "must return false when an individual is missing their date of birth details" in {
+
+      val answers = userAnswersWith(
+        holders = Map(
+          "21" -> completeIndividualHolder(
+            individualHaveDateOfBirth = Some(true),
+            individualDateOfBirth = None
+          )
+        )
+      )
+
+      service.areAllAccountHoldersComplete(answers)(using reportId) mustBe false
+    }
+
+    "must require self-certification for a CRS report" in {
+
+      val answers = userAnswersWith(
+        holders = Map("21" -> completeOrganisationHolder(selfCertification = None))
+      )
+
+      service.areAllAccountHoldersComplete(answers)(using reportId) mustBe false
+    }
+
+    "must require an equity interest type when a linked account is an investment entity" in {
+
+      val answers = userAnswersWith(
+        holders = Map("21" -> completeOrganisationHolder(account = Some(Seq("80")))),
+        accounts = Seq(account("80", Some(WhatAccountType.InvestmentEntity)))
+      )
+
+      service.areAllAccountHoldersComplete(answers)(using reportId) mustBe false
+    }
+
+    "must return true when the equity interest type is provided" in {
+
+      val answers = userAnswersWith(
+        holders = Map(
+          "21" -> completeOrganisationHolder(
+            account = Some(Seq("80")),
+            provideEquityInterestType = Some(true),
+            equityInterestType = Some(EquityInterestTypes(Seq(EquityInterestType.BeneficiaryOfTrust)))
+          )
+        ),
+        accounts = Seq(account("80", Some(WhatAccountType.InvestmentEntity)))
+      )
+
+      service.areAllAccountHoldersComplete(answers)(using reportId) mustBe true
+    }
+
+    "must not require self-certification or equity interest details for a FATCA report" in {
+
+      val answers = userAnswersWith(
+        holders = Map(
+          "21" -> completeOrganisationHolder(
+            selfCertification = None,
+            account = Some(Seq("80"))
+          )
+        ),
+        accounts = Seq(account("80", Some(WhatAccountType.InvestmentEntity))),
+        reportId = fatcaReportId
+      )
+
+      service.areAllAccountHoldersComplete(answers)(using fatcaReportId) mustBe true
     }
   }
 }

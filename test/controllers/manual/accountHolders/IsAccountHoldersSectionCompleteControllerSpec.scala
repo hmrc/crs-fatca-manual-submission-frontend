@@ -24,7 +24,7 @@ import models.{NormalMode, UserAnswers}
 import models.viewModels.AccountHolderId
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{never, reset, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
 import pages.manual.accountHolders.IsAccountHoldersSectionCompletePage
@@ -32,8 +32,8 @@ import pages.manual.accountHolders.CurrentAccountHolderIdPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import services.ViewFIService
+import play.api.test.Helpers.*
+import services.{AccountHolderService, ViewFIService}
 import views.html.manual.accountHolders.IsAccountHoldersSectionCompleteView
 
 import scala.concurrent.Future
@@ -42,11 +42,21 @@ class IsAccountHoldersSectionCompleteControllerSpec extends SpecBase with Mockit
 
   def onwardRoute = Call("GET", "/foo")
 
-  val formProvider                         = new IsAccountHoldersSectionCompleteFormProvider()
-  val form                                 = formProvider()
-  private val mockFiService: ViewFIService = mock[ViewFIService]
+  val formProvider                                           = new IsAccountHoldersSectionCompleteFormProvider()
+  val form                                                   = formProvider()
+  private val mockFiService: ViewFIService                   = mock[ViewFIService]
+  private val mockAccountHolderService: AccountHolderService = mock[AccountHolderService]
 
   lazy val isAccountHoldersSectionCompleteRoute = controllers.manual.accountHolders.routes.IsAccountHoldersSectionCompleteController.onPageLoad().url
+
+  override def afterEach(): Unit =
+    try reset(mockFiService, mockAccountHolderService)
+    finally super.afterEach()
+
+  def setMockAccountHolderService(result: Boolean = true): AccountHolderService = {
+    when(mockAccountHolderService.areAllAccountHoldersComplete(any())(using any())).thenReturn(result)
+    mockAccountHolderService
+  }
 
   "IsAccountHoldersSectionComplete Controller" - {
 
@@ -57,7 +67,10 @@ class IsAccountHoldersSectionCompleteControllerSpec extends SpecBase with Mockit
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(maybeUserAnswers = Some(ua))
-        .overrides(bind[ViewFIService].toInstance(mockFiService))
+        .overrides(
+          bind[ViewFIService].toInstance(mockFiService),
+          bind[AccountHolderService].toInstance(setMockAccountHolderService())
+        )
         .build()
       when(mockFiService.getFIDetail(any(), any())(using any())).thenReturn(Future.successful(fiDetail))
 
@@ -73,12 +86,38 @@ class IsAccountHoldersSectionCompleteControllerSpec extends SpecBase with Mockit
       }
     }
 
+    "must redirect to send report when all account holders are not complete for a GET" in {
+      val accountHoldersComplete = false
+      val application = applicationBuilder(maybeUserAnswers = Some(ua))
+        .overrides(
+          bind[ViewFIService].toInstance(mockFiService),
+          bind[AccountHolderService].toInstance(setMockAccountHolderService(accountHoldersComplete))
+        )
+        .build()
+      when(mockFiService.getFIDetail(any(), any())(using any())).thenReturn(Future.successful(fiDetail))
+
+      running(application) {
+        val request = FakeRequest(GET, isAccountHoldersSectionCompleteRoute)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[IsAccountHoldersSectionCompleteView]
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.manual.routes.SendAReportController.onPageLoad().url
+        verify(mockFiService, never()).getFIDetail(any(), any())(using any())
+      }
+    }
+
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
       val userAnswers = ua.set(IsAccountHoldersSectionCompletePage(reportId), true).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
-        .overrides(bind[ViewFIService].toInstance(mockFiService))
+        .overrides(
+          bind[ViewFIService].toInstance(mockFiService),
+          bind[AccountHolderService].toInstance(setMockAccountHolderService())
+        )
         .build()
       when(mockFiService.getFIDetail(any(), any())(using any())).thenReturn(Future.successful(fiDetail))
 
@@ -105,7 +144,8 @@ class IsAccountHoldersSectionCompleteControllerSpec extends SpecBase with Mockit
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
             bind[DatabaseConnector].toInstance(mockSessionRepository),
-            bind[ViewFIService].toInstance(mockFiService)
+            bind[ViewFIService].toInstance(mockFiService),
+            bind[AccountHolderService].toInstance(setMockAccountHolderService())
           )
           .build()
       when(mockFiService.getFIDetail(any(), any())(using any())).thenReturn(Future.successful(fiDetail))
@@ -122,10 +162,42 @@ class IsAccountHoldersSectionCompleteControllerSpec extends SpecBase with Mockit
       }
     }
 
+    "must redirect to send report account holders are not complete for a submit" in {
+      val accountHoldersComplete = false
+      val mockSessionRepository  = mock[DatabaseConnector]
+
+      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(ua))
+          .overrides(
+            bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
+            bind[DatabaseConnector].toInstance(mockSessionRepository),
+            bind[ViewFIService].toInstance(mockFiService),
+            bind[AccountHolderService].toInstance(setMockAccountHolderService(accountHoldersComplete))
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, isAccountHoldersSectionCompleteRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.manual.routes.SendAReportController.onPageLoad().url
+        verify(mockFiService, never()).getFIDetail(any(), any())(using any())
+      }
+    }
+
     "must return a Bad Request and errors when invalid data is submitted" in {
 
       val application = applicationBuilder(maybeUserAnswers = Some(ua))
-        .overrides(bind[ViewFIService].toInstance(mockFiService))
+        .overrides(
+          bind[ViewFIService].toInstance(mockFiService),
+          bind[AccountHolderService].toInstance(setMockAccountHolderService())
+        )
         .build()
       when(mockFiService.getFIDetail(any(), any())(using any())).thenReturn(Future.successful(fiDetail))
 

@@ -41,11 +41,11 @@ class SendAReportController @Inject() (
 
   def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
     implicit request =>
-      val reportingFIStatus  = service.reportingFIStatus(request.userAnswers, request.reportId)
-      val fillerStatus       = service.fillerStatus(request.userAnswers, request.reportId)
-      val sponsorStatus      = service.sponsorStatus(request.userAnswers, request.reportId)
-      val cpsoCompleteStatus = service.reportingCPSOCompleteStatus(request.userAnswers, request.reportId)
-      val accountsStatus     = service.accountStatus(request.userAnswers, request.reportId)
+      val reportingFIStatus            = service.reportingFIStatus(request.userAnswers, request.reportId)
+      val fillerStatus                 = service.fillerStatus(request.userAnswers, request.reportId)
+      val sponsorStatus                = service.sponsorStatus(request.userAnswers, request.reportId)
+      val cpsoCompleteStatus           = service.reportingCPSOCompleteStatus(request.userAnswers, request.reportId)
+      val accountsStatus               = service.accountStatus(request.userAnswers, request.reportId)
       val accountHoldersCompleteStatus = service.accountHoldersCompleteStatus(request.userAnswers, request.reportId)
 
       val sections = SendAReportSections(
