@@ -206,25 +206,44 @@ class AccountsControllerSpec extends SpecBase {
     }
 
     Seq(
-      ("Change", routes.AccountsController.onChange(secondId.value), routes.AccountCheckAnswersController.onPageLoad()),
-      ("Remove", routes.AccountsController.onRemove(secondId.value), routes.RemoveAccountController.onPageLoad())
+      (
+        "Change for a complete account",
+        firstId,
+        secondId,
+        routes.AccountsController.onChange(firstId.value),
+        routes.AccountCheckAnswersController.onPageLoad()
+      ),
+      (
+        "Change for an incomplete account",
+        secondId,
+        firstId,
+        routes.AccountsController.onChange(secondId.value),
+        routes.HaveNumberController.onPageLoad(NormalMode)
+      ),
+      (
+        "Remove",
+        secondId,
+        firstId,
+        routes.AccountsController.onRemove(secondId.value),
+        routes.RemoveAccountController.onPageLoad()
+      )
     ).foreach {
-      case (link, entry, destination) =>
-        s"must select the second account when its $link link is followed" in {
-          val answers = mixedAccounts.withPage(CurrentAccountIdPage()(report), firstId)
+      case (scenario, selectedId, previousId, entry, destination) =>
+        s"must select the correct account, preserve its answers and redirect correctly for $scenario" in {
+          val answers = mixedAccounts.withPage(CurrentAccountIdPage()(report), previousId)
 
           withApp(answers) {
             (app, connector) =>
               val result = route(app, FakeRequest(GET, entry.url)).value
 
               status(result) mustBe SEE_OTHER
-              redirectLocation(result).value mustBe destination.url
-              val expected = answers.withPage(CurrentAccountIdPage()(report), secondId)
+              redirectLocation(result) mustBe Some(destination.url)
+
+              val expected = answers.withPage(CurrentAccountIdPage()(report), selectedId)
               verify(connector).set(eqTo(expected))(any())
           }
         }
     }
-
     "must redirect to journey recovery without saving when the requested account ID is unknown" in {
       withApp(oneComplete) {
         (app, connector) =>

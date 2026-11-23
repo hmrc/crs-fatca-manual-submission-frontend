@@ -143,18 +143,23 @@ class AccountsController @Inject() (
   def onChange(accountId: String): Action[AnyContent] =
     selectAccount(
       accountId,
-      routes.AccountCheckAnswersController.onPageLoad()
+      request =>
+        if (accountsService.isComplete(request.userAnswers, request.reportId, AccountId(accountId))) {
+          routes.AccountCheckAnswersController.onPageLoad()
+        } else {
+          routes.HaveNumberController.onPageLoad(NormalMode)
+        }
     )
 
   def onRemove(accountId: String): Action[AnyContent] =
     selectAccount(
       accountId,
-      routes.RemoveAccountController.onPageLoad()
+      _ => routes.RemoveAccountController.onPageLoad()
     )
 
   private def selectAccount(
     accountId: String,
-    destination: Call
+    destination: ReportIdRequest[AnyContent] => Call
   ): Action[AnyContent] =
     actions.withReportIdRequired().async {
       implicit request =>
@@ -184,11 +189,13 @@ class AccountsController @Inject() (
             )
             _ <- repository.set(updatedAnswers)
           } yield {
+            val nextPage = destination(request)
+
             logger.info(
-              s"Saved the current account selection; redirecting to ${destination.url}"
+              s"Saved the current account selection; redirecting to ${nextPage.url}"
             )
 
-            Redirect(destination)
+            Redirect(nextPage)
           }
         }
     }
