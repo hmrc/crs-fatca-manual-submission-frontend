@@ -27,6 +27,13 @@ import javax.inject.Inject
 
 class AccountHolderService @Inject() () {
 
+  def areAllAccountHoldersComplete(userAnswers: UserAnswers)(implicit reportId: ReportId): Boolean =
+    accountHolders(userAnswers)(using reportId).forall {
+      case (_, accountHolder) => accountHolder.isComplete(reportId.regime)
+
+    }
+
+
   def accountHolders(userAnswers: UserAnswers)(implicit reportId: ReportId): Seq[(AccountHolderId, AccountHolder)] = {
     val accountTypes: Map[String, Option[WhatAccountType]] =
       userAnswers
