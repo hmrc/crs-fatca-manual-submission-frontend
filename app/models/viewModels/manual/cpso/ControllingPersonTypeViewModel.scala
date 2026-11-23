@@ -21,6 +21,7 @@ import play.api.data.Form
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.checkboxes.CheckboxItem
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
+import utils.ReportingConstants.CPSO_NOT_REPORTED_THRESHOLD_YEAR
 
 object ControllingPersonTypeViewModel {
 
@@ -29,7 +30,7 @@ object ControllingPersonTypeViewModel {
 
     ControllingPersonType.values
       .filter(
-        personType => reportingYear <= 2025 || personType != ControllingPersonType.NotReported
+        personType => reportingYear <= CPSO_NOT_REPORTED_THRESHOLD_YEAR || personType != ControllingPersonType.NotReported
       )
       .zipWithIndex
       .map {
