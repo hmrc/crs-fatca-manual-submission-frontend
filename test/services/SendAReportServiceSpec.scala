@@ -37,8 +37,8 @@ import pages.manual.sponsor.*
 import services.manual.account.AccountsService
 
 class SendAReportServiceSpec extends SpecBase {
-  val mockCpsoService    = mock[CpsoService]
-  private val service    = new SendAReportService(new AccountsService()), mockCpsoService)
+  val mockCpsoService: CpsoService = mock[CpsoService]
+  private val service    = new SendAReportService(new AccountsService(), mockCpsoService)
 
   "SendAReportService" - {
 
@@ -69,9 +69,6 @@ class SendAReportServiceSpec extends SpecBase {
       }
 
       "should return incomplete when page is answered as false" in {
-        service.reportingCPSOCompleteStatus(
-          emptyUserAnswers.withPage(IsCpsoSectionCompletePage(reportId), false),
-          reportId
         when(mockCpsoService.areAllCpsosComplete(any())(any())).thenReturn(true)
         service.reportingCPSOCompleteStatus(emptyUserAnswers
                                               .withPage(IsCpsoSectionCompletePage(reportId), false),
@@ -80,9 +77,6 @@ class SendAReportServiceSpec extends SpecBase {
       }
 
       "should return completed when page is answered as true" in {
-        service.reportingCPSOCompleteStatus(
-          emptyUserAnswers.withPage(IsCpsoSectionCompletePage(reportId), true),
-          reportId
         when(mockCpsoService.areAllCpsosComplete(any())(any())).thenReturn(true)
         service.reportingCPSOCompleteStatus(emptyUserAnswers
                                               .withPage(IsCpsoSectionCompletePage(reportId), true),
