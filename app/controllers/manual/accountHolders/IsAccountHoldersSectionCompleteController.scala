@@ -26,7 +26,7 @@ import play.api.Logging
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.ViewFIService
+import services.{AccountHolderService, ViewFIService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.accountHolders.IsAccountHoldersSectionCompleteView
 
@@ -41,7 +41,8 @@ class IsAccountHoldersSectionCompleteController @Inject() (
   formProvider: IsAccountHoldersSectionCompleteFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: IsAccountHoldersSectionCompleteView,
-  viewFIService: ViewFIService
+  viewFIService: ViewFIService,
+  accountHolderService: AccountHolderService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -51,44 +52,58 @@ class IsAccountHoldersSectionCompleteController @Inject() (
 
   def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequired().async {
     implicit request =>
-      viewFIService
-        .getFIDetail(request.fatcaId, request.reportId.fiId)
-        .map {
-          fiDetail =>
-            val preparedForm = request.userAnswers
-              .get(IsAccountHoldersSectionCompletePage(request.reportId))
-              .fold(form)(form.fill)
-            Ok(view(preparedForm, mode, fiDetail.FIName))
-        }
-        .recover {
-          case e =>
-            logger.error(s"Failed to retrieve FIDetail for FiID ${request.reportId.fiId}")
-            Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
-        }
+      if (accountHolderService.areAllAccountHoldersComplete(request.userAnswers)(using request.reportId)) {
+        viewFIService
+          .getFIDetail(request.fatcaId, request.reportId.fiId)
+          .map {
+            fiDetail =>
+              val preparedForm = request.userAnswers
+                .get(IsAccountHoldersSectionCompletePage(request.reportId))
+                .fold(form)(form.fill)
+              Ok(view(preparedForm, mode, fiDetail.FIName))
+          }
+          .recover {
+            case e =>
+              logger.error(s"Failed to retrieve FIDetail for FiID ${request.reportId.fiId}")
+              Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+          }
+      } else {
+        Future.successful(
+          Redirect(controllers.manual.routes.SendAReportController.onPageLoad())
+        )
+      }
+
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequired().async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
-      viewFIService
-        .getFIDetail(request.fatcaId, reportId.fiId)
-        .flatMap {
-          fiDetail =>
-            form
-              .bindFromRequest()
-              .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiDetail.FIName))),
-                value =>
-                  for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(IsAccountHoldersSectionCompletePage(reportId), value))
-                    _              <- repository.set(updatedAnswers)
-                  } yield Redirect(navigator.nextPage(IsAccountHoldersSectionCompletePage(reportId), mode, updatedAnswers))
-              )
-        }
-        .recover {
-          case e =>
-            logger.error(s"Failed to retrieve FIDetail for FiID ${reportId.fiId}")
-            Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
-        }
+      if (accountHolderService.areAllAccountHoldersComplete(request.userAnswers)(using request.reportId)) {
+        viewFIService
+          .getFIDetail(request.fatcaId, reportId.fiId)
+          .flatMap {
+            fiDetail =>
+              form
+                .bindFromRequest()
+                .fold(
+                  formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiDetail.FIName))),
+                  value =>
+                    for {
+                      updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(IsAccountHoldersSectionCompletePage(reportId), value))
+                      _              <- repository.set(updatedAnswers)
+                    } yield Redirect(navigator.nextPage(IsAccountHoldersSectionCompletePage(reportId), mode, updatedAnswers))
+                )
+          }
+          .recover {
+            case e =>
+              logger.error(s"Failed to retrieve FIDetail for FiID ${reportId.fiId}")
+              Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+          }
+      } else {
+        Future.successful(
+          Redirect(controllers.manual.routes.SendAReportController.onPageLoad())
+        )
+      }
+
   }
 }
