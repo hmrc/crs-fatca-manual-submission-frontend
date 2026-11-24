@@ -32,7 +32,7 @@ import services.manual.account.AccountsService
 import javax.inject.Inject
 
 class SendAReportService @Inject() (accountsService: AccountsService) {
-
+  //todo add accountHolderService#isComplete in ccountHoldersCompleteStatus method
   def reportingFIStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
     userAnswers
       .get(HaveYouFinishedCheckingFIDetailsPage(reportId))

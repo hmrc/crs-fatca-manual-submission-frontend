@@ -137,6 +137,7 @@ class ManualSubmissionNavigator @Inject() () {
       handleAccountHolderPageNavigationForCPSO(ua, mode, cpsoId)
     case (IsCpsoSectionCompletePage(reportId), mode, ua) =>
       controllers.manual.routes.SendAReportController.onPageLoad()
+    //todo DoYouWantToAddAnotherAccountHolder navigation to the IsAccountHoldersSectionCompleteController  
   }
 
   private def sponsorNavigation(implicit reportId: ReportId): PartialFunction[(Page, Mode, UserAnswers), Call] = {
