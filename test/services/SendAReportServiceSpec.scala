@@ -18,16 +18,21 @@ package services
 
 import base.SpecBase
 import models.SubmissionsConstants.FATCA
+import models.manual.TaxResidentInformation
+import models.manual.accountHolders.AccountHolderTypes.PassiveNonFinancialWithOneOrMoreControllingPerson
+import models.manual.accountHolders.{IndividualDateOfBirth, IndividualName, IndividualPlaceOfBirth}
+import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
+import models.manual.accountHolders.SelfCertification
 import models.manual.filercategory.WhatTypeOfFiler.Foreign
 import models.manual.filercategory.WhatTypeOfFilerIsSponsor.ForeignFI
 import models.response.{Address, Country}
-import models.viewModels.AccountId
 import models.viewModels.TaskStatus.{CannotStartYet, Completed, Incomplete, NotStarted}
+import models.viewModels.{AccountHolder, AccountHolders, AccountId}
 import models.{AccountBalance, AddressNonUk, Currency, ReportId, UkAddress}
 import pages.ReportIdPage
 import pages.manual.FINamePage
 import pages.manual.account.*
-import pages.manual.accountHolders.IsAccountHoldersSectionCompletePage
+import pages.manual.accountHolders.{AccountHoldersPage, IsAccountHoldersSectionCompletePage}
 import pages.manual.cpso.IsCpsoSectionCompletePage
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportingFI.HaveYouFinishedCheckingFIDetailsPage
@@ -36,7 +41,7 @@ import services.manual.account.AccountsService
 
 class SendAReportServiceSpec extends SpecBase {
 
-  private val service = new SendAReportService(new AccountsService())
+  private val service = new SendAReportService(new AccountsService(), new AccountHolderService())
 
   "SendAReportService" - {
 
@@ -81,21 +86,90 @@ class SendAReportServiceSpec extends SpecBase {
     }
 
     "AccountHolders Complete Status" - {
-      "should return incomplete when page is not answered" in {
-        service.accountHoldersCompleteStatus(emptyUserAnswers, reportId) mustBe Incomplete
+
+      val completeOrgAccountHolder = AccountHolder(
+        individualOrOrganisation = Some(Organisation),
+        organisationName = Some("someOrg"),
+        accountHolderType = Some(PassiveNonFinancialWithOneOrMoreControllingPerson),
+        areTheyBasedInTheUk = Some(true),
+        addressNonUk = None,
+        selfCertification = Some(SelfCertification.Yes),
+        taxResidentCountries = Some(
+          Seq(TaxResidentInformation(Country.GB, Some(true), Some("someTin")))
+        ),
+        ukAddressManual = Some(UkAddress("test", None, "test", None, "ABC 123", "GB")),
+        account = Some(Seq("accountId")),
+        checkEquityInterestTypeRequired = Some(false)
+      )
+
+      val completeIndividualAccountHolder = AccountHolder(
+        individualOrOrganisation = Some(Individual),
+        individualName = Some(IndividualName("First", "Last")),
+        individualHavePlaceOfBirth = Some(false),
+        individualHaveDateOfBirth = Some(false),
+        areTheyBasedInTheUk = Some(true),
+        selfCertification = Some(SelfCertification.Yes),
+        taxResidentCountries = Some(
+          Seq(TaxResidentInformation(Country.GB, Some(true), Some("someTin")))
+        ),
+        ukAddressManual = Some(UkAddress("test", None, "test", None, "ABC 123", "GB")),
+        account = Some(Seq("accountId")),
+        checkEquityInterestTypeRequired = Some(false)
+      )
+
+      def userAnswersWithAccountHolder(accountHolder: AccountHolder) =
+        emptyUserAnswers.withPage(
+          AccountHoldersPage()(reportId),
+          AccountHolders(None, Map("holder-id" -> accountHolder))
+        )
+
+      "should return not started when there are no account holders" in {
+        service.accountHoldersCompleteStatus(emptyUserAnswers, reportId) mustBe NotStarted
+      }
+
+      "should return incomplete when account holders exist but the completion page is not answered" in {
+        val answers = userAnswersWithAccountHolder(completeOrgAccountHolder)
+
+        service.accountHoldersCompleteStatus(answers, reportId) mustBe Incomplete
       }
 
       "should return incomplete when page is answered as false" in {
         service.accountHoldersCompleteStatus(
-          emptyUserAnswers
+          userAnswersWithAccountHolder(completeOrgAccountHolder)
             .withPage(IsAccountHoldersSectionCompletePage(reportId), false),
           reportId
         ) mustBe Incomplete
       }
 
-      "should return completed when page is answered as true" in {
+      "should return not started when the completion page is true but no holders exist" in {
         service.accountHoldersCompleteStatus(
           emptyUserAnswers.withPage(IsAccountHoldersSectionCompletePage(reportId), true),
+          reportId
+        ) mustBe NotStarted
+      }
+
+      "should return incomplete when the completion page is true but an account holder is incomplete" in {
+        val incompleteAccountHolder = completeOrgAccountHolder.copy(individualOrOrganisation = None)
+
+        service.accountHoldersCompleteStatus(
+          userAnswersWithAccountHolder(incompleteAccountHolder)
+            .withPage(IsAccountHoldersSectionCompletePage(reportId), true),
+          reportId
+        ) mustBe Incomplete
+      }
+
+      "should return completed when the completion page is true and all account holders are complete" in {
+        val answers = userAnswersWithAccountHolder(completeOrgAccountHolder)
+          .withPage(IsAccountHoldersSectionCompletePage(reportId), true)
+
+        new AccountHolderService().accountHolders(answers)(reportId).map(_._2.getName()) mustBe Seq("someOrg")
+        service.accountHoldersCompleteStatus(answers, reportId) mustBe Completed
+      }
+
+      "should return completed when the completion page is true and an individual account holder is complete" in {
+        service.accountHoldersCompleteStatus(
+          userAnswersWithAccountHolder(completeIndividualAccountHolder)
+            .withPage(IsAccountHoldersSectionCompletePage(reportId), true),
           reportId
         ) mustBe Completed
       }

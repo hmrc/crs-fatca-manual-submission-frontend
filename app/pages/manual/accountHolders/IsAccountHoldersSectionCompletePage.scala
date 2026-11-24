@@ -22,4 +22,4 @@ import play.api.libs.json.JsPath
 
 final case class IsAccountHoldersSectionCompletePage(reportId: ReportId) extends QuestionPage[Boolean]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "accountHolder" \ "isAccountHoldersSectionComplete"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "isAccountHoldersSectionComplete"

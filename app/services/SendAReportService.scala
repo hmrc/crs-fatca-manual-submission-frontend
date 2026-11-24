@@ -22,7 +22,6 @@ import models.viewModels.{AccountId, TaskStatus}
 import models.{viewModels, ReportId, UserAnswers}
 import pages.QuestionPage
 import pages.manual.account.{AccountsPage, IsAccountsSectionCompletedPage}
-import pages.manual.account.{AccountsPage, IsAccountsSectionCompletedPage}
 import pages.manual.accountHolders.IsAccountHoldersSectionCompletePage
 import pages.manual.cpso.IsCpsoSectionCompletePage
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
@@ -32,8 +31,8 @@ import services.manual.account.AccountsService
 
 import javax.inject.Inject
 
-class SendAReportService @Inject() (accountsService: AccountsService) {
-  //todo add accountHolderService#isComplete in ccountHoldersCompleteStatus method
+class SendAReportService @Inject() (accountsService: AccountsService, accountHolderService: AccountHolderService) {
+
   def reportingFIStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
     userAnswers
       .get(HaveYouFinishedCheckingFIDetailsPage(reportId))
@@ -48,12 +47,20 @@ class SendAReportService @Inject() (accountsService: AccountsService) {
         value => if value then Completed else Incomplete
       }
 
-  def accountHoldersCompleteStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
-    userAnswers
-      .get(IsAccountHoldersSectionCompletePage(reportId))
-      .fold(Incomplete) {
-        value => if value then Completed else Incomplete
-      }
+  def accountHoldersCompleteStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus = {
+    val accountHolders = accountHolderService.accountHolders(userAnswers)(reportId)
+
+    if (accountHolders.isEmpty) {
+      NotStarted
+    } else if (
+      userAnswers.get(IsAccountHoldersSectionCompletePage(reportId)).contains(true) &&
+      accountHolderService.areAllAccountHoldersComplete(userAnswers)(reportId)
+    ) {
+      Completed
+    } else {
+      Incomplete
+    }
+  }
 
   def fillerStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
     userAnswers.get(HaveSponsorPage()(reportId)).fold[TaskStatus](CannotStartYet) {
