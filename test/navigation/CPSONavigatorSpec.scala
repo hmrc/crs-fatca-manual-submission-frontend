@@ -47,7 +47,7 @@ import pages.manual.sponsor.*
 
 import java.time.LocalDate
 
-class CPSONavigationSpec extends SpecBase {
+class CPSONavigatorSpec extends SpecBase {
 
   val nonUkAddress = AddressNonUk(
     addressLine1 = "string",
@@ -285,7 +285,7 @@ class CPSONavigationSpec extends SpecBase {
           .withPage(pages.manual.cpso.TaxResidentCountriesListPage(currentCPSOId, reportId), Seq(taxResidentInformation))
 
         navigator.nextPage(CPSOAddressNonUkPage(currentCPSOId, reportId), NormalMode, ua) mustBe
-          controllers.routes.UnderConstructionController.onPageLoad()
+          controllers.manual.cpso.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
       }
     }
 
@@ -322,13 +322,13 @@ class CPSONavigationSpec extends SpecBase {
           controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(NormalMode)
       }
 
-      "must go to under construction page when the country list is populated" in {
+      "must go to TaxResidentCountries PAGE when the country list is populated" in {
         val ua = UserAnswers("id")
           .withPage(SelectAddressPageForCPSO(currentId, reportId), address)
           .withPage(pages.manual.cpso.TaxResidentCountriesListPage(currentId, reportId), Seq(taxResidentInformation))
 
         navigator.nextPage(SelectAddressPageForCPSO(currentId, reportId), NormalMode, ua) mustBe
-          controllers.routes.UnderConstructionController.onPageLoad()
+          controllers.manual.cpso.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
       }
     }
 
@@ -449,7 +449,7 @@ class CPSONavigationSpec extends SpecBase {
                             country = Country.GB
       ).ukAddress
 
-      "must go to tax resident page when there are no resident taxes present" in {
+      "must go to tax resident page when there are no TaxResidentCountriesList present" in {
         val ua = UserAnswers("id")
           .withPage(AddressUkPage(currentCPSOId, reportId), address)
         navigator.nextPage(AddressUkPage(currentCPSOId, reportId), NormalMode, ua) mustBe
@@ -457,7 +457,7 @@ class CPSONavigationSpec extends SpecBase {
 
       }
 
-      "must go to tax resident page when the resident taxes is empty" in {
+      "must go to tax resident page when TaxResidentCountriesList is an empty list" in {
         val ua = UserAnswers("id")
           .withPage(AddressUkPage(currentCPSOId, reportId), address)
           .withPage(pages.manual.cpso.TaxResidentCountriesListPage(currentCPSOId, reportId), Seq())
@@ -467,13 +467,13 @@ class CPSONavigationSpec extends SpecBase {
 
       }
 
-      "must go to under construction page when there are resident taxes are present" in {
+      "must go to CPSO tax-resident-countries page when there are existing resident countries saved" in {
         val ua = UserAnswers("id")
           .withPage(AddressUkPage(currentCPSOId, reportId), address)
           .withPage(pages.manual.cpso.TaxResidentCountriesListPage(currentCPSOId, reportId), Seq(taxResidentInformation))
 
         navigator.nextPage(AddressUkPage(currentCPSOId, reportId), NormalMode, ua) mustBe
-          controllers.routes.UnderConstructionController.onPageLoad()
+          controllers.manual.cpso.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
 
       }
     }
@@ -551,7 +551,8 @@ class CPSONavigationSpec extends SpecBase {
           NormalMode,
           ua
         ) mustBe
-          controllers.routes.UnderConstructionController.onPageLoad()
+          controllers.manual.cpso.routes.CPSOCheckAnswersController.onPageLoad()
+
       }
 
       "must got to journey recovery page when DoYouWantToAddTaxResidentCountryPage is not defined" in {

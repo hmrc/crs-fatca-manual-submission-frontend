@@ -16,12 +16,29 @@
 
 package pages.manual.cpso
 
-import models.ReportId
 import models.response.Address
 import models.viewModels.manual.cpso.CPSOId
+import models.{ReportId, UserAnswers}
 import pages.QuestionPage
 import play.api.libs.json.JsPath
+
+import scala.util.{Success, Try}
 
 final case class WhatIsAddressPage(currentId: CPSOId, reportId: ReportId) extends QuestionPage[Address]:
 
   override def path: JsPath = JsPath \ reportId.mongoKey \ "cp-so" \ currentId.value \ "whatIsAddress"
+
+  override def cleanupWithReportId(
+    value: Option[Address],
+    userData: UserAnswers
+  )(implicit reportId: ReportId): Try[UserAnswers] =
+    value match {
+      case Some(_) =>
+        List(
+          UkPostCodePage(currentId, reportId),
+          SelectAddressPage(currentId, reportId),
+          AddressUkPage(currentId, reportId),
+          CPSOAddressNonUkPage(currentId, reportId)
+        ).foldLeft(Try(userData))(removePage())
+      case _ => Success(userData)
+    }

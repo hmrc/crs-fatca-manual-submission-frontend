@@ -553,7 +553,7 @@ cpso.individualOrOrganisation.individual = Individual
 cpso.individualOrOrganisation.organisation = Organisation
 cpso.individualOrOrganisation.checkYourAnswersLabel = Is the substantial owner an individual or organisation?
 cpso.individualOrOrganisation.error.required = Select whether the substantial owner is an individual or organisation
-cpso.individualOrOrganisation.change.hidden = IndividualOrOrganisation
+cpso.individualOrOrganisation.change.hidden = Change if the substantial owner is an individual or organisation
 
 individualName.title = What is the name of the account holder?
 individualName.heading = What is the name of the account holder?
@@ -578,7 +578,10 @@ cpso.individualName.crs.heading = What is the name of the controlling person?
 cpso.individualName.fatca.heading = What is the name of the substantial owner?
 cpso.individualName.firstName = First name
 cpso.individualName.LastName = Last name
-cpso.individualName.checkYourAnswersLabel = IndividualName
+cpso.individualName.checkYourAnswersLabel.crs = What is the name of the controlling person?
+cpso.individualName.checkYourAnswersLabel.fatca = What is the name of the substantial owner?
+cpso.individualName.change.hidden.crs = Change the name of the controlling person
+cpso.individualName.change.hidden.fatca = Change the name of the substantial owner
 cpso.individualName.crs.error.firstName.required = Enter the first name of the controlling person
 cpso.individualName.crs.error.firstName.length = Controlling person’s first name must be 200 characters or less
 cpso.individualName.crs.error.firstName.invalid.characters = Controlling person’s first name must only include letters a to z, ampersands (&), apostrophes, backslashes, carets (^), grave accents (`), hyphens and spaces
@@ -797,8 +800,10 @@ cpso.individualDateOfBirth.error.monthYear.required.FATCA = Enter the month and 
 cpso.individualDateOfBirth.error.real = Enter a real date of birth
 cpso.individualDateOfBirth.error.past = Date of birth must be after 1899
 cpso.individualDateOfBirth.error.future = Date of birth must be no later than {0}
-cpso.individualDateOfBirth.checkYourAnswersLabel = Date of birth
-cpso.individualDateOfBirth.change.hidden = date of birth
+cpso.individualDateOfBirth.checkYourAnswersLabel.crs = What is the date of birth for the controlling person?
+cpso.individualDateOfBirth.checkYourAnswersLabel.fatca = What is the date of birth for the substantial owner?
+cpso.individualDateOfBirth.change.hidden.crs = Change the date of birth for the controlling person
+cpso.individualDateOfBirth.change.hidden.fatca = Change the date of birth for the substantial owner
 
 cpso.organisationName.title = What is the name of the organisation?
 cpso.organisationName.heading = What is the name of the organisation?
@@ -806,9 +811,10 @@ cpso.organisationName.error.required = Enter the name of the organisation
 cpso.organisationName.error.length = Organisation’s name must be 200 characters or less
 cpso.organisationName.error.invalid = Organisation’s name must only include letters a to z, numbers 0 to 9, ampersands (&), apostrophes, backslashes, carets (^), grave accents (`), hyphens and spaces
 cpso.organisationName.error.invalid-combination = Organisation’s name must not include a double dash (--)
-cpso.organisationName.checkYourAnswersLabel = Organisation name
-cpso.organisationName.organizationName.change.hidden = Organisation name
-cpso.organisationName.organizationName = organizationName
+cpso.organisationName.checkYourAnswersLabel.crs = What is the name of the controlling person?
+cpso.organisationName.checkYourAnswersLabel.fatca = What is the name of the substantial owner?
+cpso.organisationName.change.hidden.crs = Change the name of the controlling person
+cpso.organisationName.change.hidden.fatca = Change the name of the substantial owner
 cpso.organisationName.empty =
 
 cpso.selfCertification.title = Has the controlling person provided a valid self-certification?
@@ -818,7 +824,7 @@ cpso.selfCertification.CRS1001 = Yes
 cpso.selfCertification.CRS1002 = No
 cpso.selfCertification.checkYourAnswersLabel = Have they provided a valid self certification?
 cpso.selfCertification.error.required = Select whether the controlling person has provided a valid self-certification
-cpso.selfCertification.change.hidden = CpsoSelfCertification
+cpso.selfCertification.change.hidden = Change if they have provided a valid self certification
 
 account.payments.title.crs.no.payments = You have not added any payments made to this account
 account.payments.title.fatca.no.payments = You have not added any payments made to this account, a payee or an owner
@@ -879,16 +885,19 @@ accountHolders.selfCertification.change.hidden = Change if the account holder ha
 
 cpso.individualHavePlaceOfBirth.title = Do you want to provide the place of birth for the {0}?
 cpso.individualHavePlaceOfBirth.heading = Do you want to provide the place of birth for {0}?
-cpso.individualHavePlaceOfBirth.checkYourAnswersLabel = Do you want to provide the place of birth for {0}?
+cpso.individualHavePlaceOfBirth.checkYourAnswersLabel.crs = Do you want to provide the place of birth for controlling person?
+cpso.individualHavePlaceOfBirth.checkYourAnswersLabel.fatca = Do you want to provide the place of birth for substantial owner?
 cpso.individualHavePlaceOfBirth.error.required = Select yes if you want to provide the place of birth for the {0}
-cpso.individualHavePlaceOfBirth.change.hidden = IndividualHavePlaceOfBirth
+cpso.individualHavePlaceOfBirth.change.hidden.crs = Change if you want to provide the place of birth for the controlling person
+cpso.individualHavePlaceOfBirth.change.hidden.fatca = Change if you want to provide the place of birth for the substantial owner
 
 cpso.individualPlaceOfBirth.title = What is the {0}’s place of birth?
 cpso.individualPlaceOfBirth.heading = What is the place of birth for {0}?
 cpso.individualPlaceOfBirth.city = City (optional)
 cpso.individualPlaceOfBirth.region = Region (optional)
 cpso.individualPlaceOfBirth.country = Country
-cpso.individualPlaceOfBirth.checkYourAnswersLabel = IndividualPlaceOfBirth
+cpso.individualPlaceOfBirth.checkYourAnswersLabel.crs = What is the place of birth for the controlling person?
+cpso.individualPlaceOfBirth.checkYourAnswersLabel.fatca = What is the place of birth for the substantial owner?
 cpso.individualPlaceOfBirth.error.country.required = Select country
 cpso.individualPlaceOfBirth.error.city.invalid = City must only include letters a to z, numbers 0 to 9, apostrophes, commas, ampersands (&), hyphens, full stops and spaces
 cpso.individualPlaceOfBirth.error.city.invalidCombination = City must not include a double dash (--)
@@ -896,8 +905,8 @@ cpso.individualPlaceOfBirth.error.city.length = City must be 200 characters or l
 cpso.individualPlaceOfBirth.error.region.invalid = Region must only include letters a to z, numbers 0 to 9, apostrophes, commas, ampersands (&), hyphens, full stops and spaces
 cpso.individualPlaceOfBirth.error.region.invalidCombination = Region must not include a double dash (--)
 cpso.individualPlaceOfBirth.error.region.length = Region must be 200 characters or less
-cpso.individualPlaceOfBirth.city.change.hidden = City
-cpso.individualPlaceOfBirth.region.change.hidden = Region
+cpso.individualPlaceOfBirth.change.hidden.crs = Change the place of birth for the controlling person
+cpso.individualPlaceOfBirth.change.hidden.fatca = Change the place of birth for the substantial owner
 
 cpso.crs.ukPostCode.title = What is the postcode for the controlling person?
 cpso.fatca.ukPostCode.title = What is the postcode for the substantial owner?
@@ -952,9 +961,6 @@ cpso.addressUk.error.postCode.invalid = Postcode must only include letters a to 
 cpso.addressUk.error.postCode.format = Enter a real postcode
 cpso.addressUk.error.country.required = Select country
 
-cpso.whatIsAddress.checkYourAnswersLabel = Address
-cpso.whatIsAddress.change.hidden = Change Address
-
 accountHolder.individualPlaceOfBirth.title = What is the account holder’s place of birth?
 accountHolder.individualPlaceOfBirth.heading = What is the place of birth for {0}?
 accountHolder.individualPlaceOfBirth.city = City (optional)
@@ -972,9 +978,11 @@ accountHolder.individualPlaceOfBirth.change.hidden = Change the place of birth f
 
 cpso.individualHaveDateOfBirth.title = Date of birth for the {0}
 cpso.individualHaveDateOfBirth.heading = Date of birth for the {0}
-cpso.individualHaveDateOfBirth.checkYourAnswersLabel = What is the date of birth for the account holder?
+cpso.individualHaveDateOfBirth.checkYourAnswersLabel.crs = Do you need to provide the date of birth for the controlling person?
+cpso.individualHaveDateOfBirth.checkYourAnswersLabel.fatca = Do you need to provide the date of birth for the substantial owner?
 cpso.individualHaveDateOfBirth.error.required = Select yes if you need to provide the date of birth for the {0}
-cpso.individualHaveDateOfBirth.change.hidden = Change the date of birth for the account holder
+cpso.individualHaveDateOfBirth.change.hidden.crs = Change if you need to provide the date of birth for the controlling person
+cpso.individualHaveDateOfBirth.change.hidden.fatca = Change if you need to provide the date of birth for the substantial owner
 cpso.individualHaveDateOfBirth.crs.paragraph=You must provide the date of birth for {0} for new accounts. For pre-existing accounts, you must provide the date of birth if it’s:
 cpso.individualHaveDateOfBirth.fatca.paragraph=You must provide the date of birth for {0} for pre-existing accounts if it’s:
 cpso.individualHaveDateOfBirth.bullet1=in records maintained by {0}
@@ -1029,6 +1037,8 @@ cpso.controllingPersonType.protectorEquivalent = Protector-equivalent of another
 cpso.controllingPersonType.beneficiaryEquivalent = Beneficiary-equivalent of another legal arrangement
 cpso.controllingPersonType.otherLegalArrangementEquivalent = Other equivalent of another legal arrangement
 cpso.controllingPersonType.notReported = Not reported
+cpso.controllingPersonType.checkYourAnswersLabel = What type of controlling person are they?
+cpso.controllingPersonType.change.hidden = Change what type of controlling person they are
 
 cpso.controllingPersonType.error.required = Select what type of controlling person they are
 
@@ -1202,8 +1212,13 @@ cpso.taxResidentCountries.btn = Add a country
 cpso.taxResidentCountries.p1 = You must add at least one country.
 cpso.taxResidentCountries.error.required = 	Select yes if you need to add another country
 
-cpso.taxResidentCountries.checkYourAnswersLabel = taxResidentCountries
+cpso.taxResidentCountries.checkYourAnswersLabel = Where is the controlling person resident for tax?
 cpso.taxResidentCountries.change.hidden = TaxResidentCountries
+cpso.taxResidentCountries.checkYourAnswersSummaryHeading = Tax resident countries
+cpso.taxResidentCountries.checkYourAnswersLink = Add, change or remove
+cpso.taxResidentCountries.taxIdentifier = Identification number for {0}
+cpso.taxResidentCountries.taxIdentifiers = Identification numbers for {0}
+
 
 cpso.crs.removeTaxResidentCountry.title = Are you sure you want to remove this tax-resident country for the controlling person?
 cpso.fatca.removeTaxResidentCountry.title = Are you sure you want to remove this tax-resident country for the substantial owner?
@@ -1300,7 +1315,6 @@ accountHolder.removeAccountHolder.radio.heading = Are you sure you want to remov
 accountHolder.removeAccountHolder.error.required = 	Select yes if you are sure you want to remove the account holder
 accountHolder.removeAccountHolder.change.hidden = RemoveAccountHolder
 
-
 cpso.crs.isCpsoSectionComplete.title = Have you finished adding the controlling persons for the financial institution?
 cpso.fatca.isCpsoSectionComplete.title = Have you finished adding the substantial owners for the financial institution?
 cpso.crs.isCpsoSectionComplete.heading = Have you finished adding the controlling persons for {0}?
@@ -1308,7 +1322,21 @@ cpso.fatca.isCpsoSectionComplete.heading = Have you finished adding the substant
 cpso.crs.isCpsoSectionComplete.paragraph = You can still change the information for the controlling persons later.
 cpso.fatca.isCpsoSectionComplete.paragraph = You can still change the information for the substantial owners later.
 cpso.crs.isCpsoSectionComplete.error.required = Select yes if you have finished adding the controlling persons for the financial institution
-cpso.fatca.isCpsoSectionComplete.error.required = Select yes if you have finished adding the subtstantial owners for the financial institution
+cpso.fatca.isCpsoSectionComplete.error.required = Select yes if you have finished adding the substantial owners for the financial institution
+
+cpso.accountHolders.checkYourAnswersLabel.crs = Which account holders are linked to this controlling person?
+cpso.accountHolders.checkYourAnswersLabel.fatca = Which account holders are linked to this substantial owner?
+cpso.accountHolders.change.hidden.crs =  Change which account holders are linked to this controlling person
+cpso.accountHolders.change.hidden.fatca =  Change which account holders are linked to this substantial owner
+
+cpso.whatIsAddress.checkYourAnswersLabel = Address
+cpso.whatIsAddress.change.hidden.crs = Change the address for the controlling person
+cpso.whatIsAddress.change.hidden.fatca = Change the address for the substantial owner
+
+cpso.checkAnswers.title.crs = Check your answers for the controlling person
+cpso.checkAnswers.title.fatca = Check your answers for the substantial owner
+cpso.checkAnswers.heading.crs = Check your answers for the controlling person
+cpso.checkAnswers.heading.fatca = Check your answers for the substantial owner
 
 isAccountsSectionCompleted.heading = Have you finished adding the accounts for {0}?
 isAccountsSectionCompleted.title = Have you finished adding the accounts for the financial institution?

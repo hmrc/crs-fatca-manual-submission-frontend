@@ -27,6 +27,7 @@ import viewmodels.implicits.*
 object IndividualHavePlaceOfBirthSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
+    val regime = reportId.regime.toString.toLowerCase
     for {
       currentId <- answers.get(CurrentCPSOIdPage()(reportId))
       answer    <- answers.get(IndividualHavePlaceOfBirthPage(currentId, reportId))
@@ -34,11 +35,11 @@ object IndividualHavePlaceOfBirthSummary {
       val value = if (answer) "site.yes" else "site.no"
 
       SummaryListRowViewModel(
-        key = "individualHavePlaceOfBirth.checkYourAnswersLabel",
+        key = s"cpso.individualHavePlaceOfBirth.checkYourAnswersLabel.$regime",
         value = ValueViewModel(value),
         actions = Seq(
           ActionItemViewModel("site.change", routes.IndividualHavePlaceOfBirthController.onPageLoad(CheckMode).url)
-            .withVisuallyHiddenText(messages("individualHavePlaceOfBirth.change.hidden"))
+            .withVisuallyHiddenText(messages(s"cpso.individualHavePlaceOfBirth.change.hidden.$regime"))
         )
       )
 }
