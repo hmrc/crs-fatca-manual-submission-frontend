@@ -414,8 +414,8 @@ class CheckAnswersViewModelSpec extends SpecBase {
 
           val expectedRows = Seq(
             CPSOLinkedAccountHoldersSummary.row(ua),
-            CPSOIndividualNameSummary.row(ua),
             CPSOIndividualOrOrganisationSummary.row(ua),
+            CPSOIndividualNameSummary.row(ua),
             CPSOIndividualHaveDateOfBirthSummary.row(ua),
             CPSOIndividualDateOfBirthSummary.row(ua),
             CPSOIndividualHavePlaceOfBirthSummary.row(ua),
@@ -438,8 +438,8 @@ class CheckAnswersViewModelSpec extends SpecBase {
 
           val expectedRows = Seq(
             CPSOLinkedAccountHoldersSummary.row(ua),
-            CpsoOrganisationNameSummary.row(ua),
             CPSOIndividualOrOrganisationSummary.row(ua),
+            CpsoOrganisationNameSummary.row(ua),
             CPSOWhatIsAddressSummary.row(ua)
           ).flatten
 

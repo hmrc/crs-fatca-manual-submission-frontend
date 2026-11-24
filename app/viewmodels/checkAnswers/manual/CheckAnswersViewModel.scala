@@ -211,8 +211,8 @@ class CheckAnswersViewModel @Inject() {
 
       val rows = Seq(
         CPSOLinkedAccountHoldersSummary.row(ua),
-        nameRow,
-        if (reportId.regime == FATCA) CPSOIndividualOrOrganisationSummary.row(ua) else None
+        if (reportId.regime == FATCA) CPSOIndividualOrOrganisationSummary.row(ua) else None,
+        nameRow
       ).flatten ++ (if (isIndividual) individualRows else Seq.empty) ++ Seq(
         CPSOWhatIsAddressSummary.row(ua)
       ).flatten
