@@ -19,6 +19,7 @@ package navigation
 import base.SpecBase
 import models.*
 import models.SubmissionsConstants.{CRFA, CRS, FATCA}
+import models.manual.TaxResidentInformation
 import models.manual.account.PaymentType
 import models.manual.account.PaymentType.*
 import models.manual.accountHolders.*

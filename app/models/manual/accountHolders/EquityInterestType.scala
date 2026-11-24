@@ -19,20 +19,42 @@ package models.manual.accountHolders
 import models.{Enumerable, WithName}
 import play.api.libs.json.*
 
-sealed trait EquityInterestType
+sealed trait EquityInterestType {
+  val xmlValue: String
+}
 
 object EquityInterestType {
 
-  case object SettlorOfTrust extends WithName("settlorOfTrust") with EquityInterestType
-  case object TrusteeOfTrust extends WithName("trusteeOfTrust") with EquityInterestType
-  case object ProtectorOfTrust extends WithName("protectorOfTrust") with EquityInterestType
-  case object BeneficiaryOfTrust extends WithName("beneficiaryOfTrust") with EquityInterestType
-  case object OtherTrustEquityInterestHolder extends WithName("otherTrustEquityInterestHolder") with EquityInterestType
-  case object SettlorEquivalent extends WithName("settlorEquivalent") with EquityInterestType
-  case object TrusteeEquivalent extends WithName("trusteeEquivalent") with EquityInterestType
-  case object ProtectorEquivalent extends WithName("protectorEquivalent") with EquityInterestType
-  case object BeneficiaryEquivalent extends WithName("beneficiaryEquivalent") with EquityInterestType
-  case object OtherEquivalent extends WithName("otherEquivalent") with EquityInterestType
+  case object SettlorOfTrust extends WithName("settlorOfTrust") with EquityInterestType {
+    val xmlValue = "CRS401"
+  }
+  case object TrusteeOfTrust extends WithName("trusteeOfTrust") with EquityInterestType{
+    val xmlValue = "CRS402"
+  }
+  case object ProtectorOfTrust extends WithName("protectorOfTrust") with EquityInterestType{
+    val xmlValue = "CRS403"
+  }
+  case object BeneficiaryOfTrust extends WithName("beneficiaryOfTrust") with EquityInterestType{
+    val xmlValue = "CRS404"
+  }
+  case object OtherTrustEquityInterestHolder extends WithName("otherTrustEquityInterestHolder") with EquityInterestType{
+    val xmlValue = "CRS405"
+  }
+  case object SettlorEquivalent extends WithName("settlorEquivalent") with EquityInterestType{
+    val xmlValue = "CRS406"
+  }
+  case object TrusteeEquivalent extends WithName("trusteeEquivalent") with EquityInterestType{
+    val xmlValue = "CRS407"
+  }
+  case object ProtectorEquivalent extends WithName("protectorEquivalent") with EquityInterestType{
+    val xmlValue = "CRS408"
+  }
+  case object BeneficiaryEquivalent extends WithName("beneficiaryEquivalent") with EquityInterestType{
+    val xmlValue = "CRS409"
+  }
+  case object OtherEquivalent extends WithName("otherEquivalent") with EquityInterestType{
+    val xmlValue = "CRS410"
+  }
 
   val values: Seq[EquityInterestType] = Seq(
     SettlorOfTrust,

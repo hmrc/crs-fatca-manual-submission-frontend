@@ -18,7 +18,7 @@ package controllers.actions
 
 import base.SpecBase
 import models.SubmissionsConstants.FATCA
-import models.TaxResidentInformation
+import models.manual.TaxResidentInformation
 import models.requests.{CPSONameRequest, TaxResidentCountryIdForCPSORequest}
 import models.response.Country
 import models.viewModels.manual.cpso.CPSOId
