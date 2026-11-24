@@ -43,7 +43,7 @@ object CPSOIndividualDateOfBirthSummary {
       actions = Seq(
         ActionItemViewModel(
           "site.change",
-          controllers.manual.cpso.routes.IndividualHaveDateOfBirthController.onPageLoad(CheckMode).url
+          controllers.manual.cpso.routes.CPSOIndividualDateOfBirthController.onPageLoad(CheckMode).url
         )
           .withVisuallyHiddenText(messages(s"cpso.individualDateOfBirth.change.hidden.$regime"))
       )
