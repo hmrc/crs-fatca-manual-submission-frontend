@@ -24,8 +24,8 @@ import pages.ReportIdPage
 import pages.manual.accountHolders.{AccountHolderIndividualNamePage, CurrentAccountHolderIdPage, IndividualOrOrganisationPage}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import utils.CheckAnswersUtil
 import views.html.manual.accountHolders.AccountHolderCheckAnswersView
+import viewmodels.checkAnswers.manual.CheckAnswersViewModel
 
 class AccountHolderCheckAnswersControllerSpec extends SpecBase {
 
@@ -46,7 +46,7 @@ class AccountHolderCheckAnswersControllerSpec extends SpecBase {
         val request = FakeRequest(GET, controllers.manual.accountHolders.routes.AccountHolderCheckAnswersController.onPageLoad().url)
         val result  = route(application, request).value
         val view    = application.injector.instanceOf[AccountHolderCheckAnswersView]
-        val rows    = new CheckAnswersUtil().getAccountHolderRows(userAnswers)(messages(application), reportId, accountHolderId)
+        val rows    = new CheckAnswersViewModel().getAccountHolderRows(userAnswers)(messages(application), reportId, accountHolderId)
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(rows)(request, messages(application)).toString

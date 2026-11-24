@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package viewmodels.checkAnswers
+package viewmodels.checkAnswers.manual.cpso
 
 import models.{CheckMode, ReportId, UserAnswers}
 import pages.manual.cpso.{CpsoOrganisationNamePage, CurrentCPSOIdPage}
@@ -27,7 +27,8 @@ import viewmodels.implicits.*
 
 object CpsoOrganisationNameSummary {
 
-  def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
+  def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] = {
+    val regime = reportId.regime.value.toLowerCase
     for {
       currentId <- answers.get(CurrentCPSOIdPage()(reportId))
       answer    <- answers.get(CpsoOrganisationNamePage(currentId, reportId))
@@ -35,12 +36,13 @@ object CpsoOrganisationNameSummary {
       val value = HtmlFormat.escape(answer).toString + "<br/>"
 
       SummaryListRowViewModel(
-        key = "cpso.organisationName.checkYourAnswersLabel",
+        key = s"cpso.organisationName.checkYourAnswersLabel.$regime",
         value = ValueViewModel(HtmlContent(value)),
         actions = Seq(
           ActionItemViewModel("site.change", controllers.manual.cpso.routes.CpsoOrganisationNameController.onPageLoad(CheckMode).url)
-            .withVisuallyHiddenText(messages("cpsoOrganisationName.change.hidden"))
+            .withVisuallyHiddenText(messages(s"cpso.organisationName.change.hidden.$regime"))
         )
       )
     }
+  }
 }

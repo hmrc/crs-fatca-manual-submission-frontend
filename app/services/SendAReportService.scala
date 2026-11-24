@@ -21,7 +21,7 @@ import models.viewModels.TaskStatus.{CannotStartYet, Completed, Incomplete, NotS
 import models.viewModels.{AccountId, TaskStatus}
 import models.{viewModels, ReportId, UserAnswers}
 import pages.QuestionPage
-import pages.manual.account.AccountsPage
+import pages.manual.account.{AccountsPage, IsAccountsSectionCompletedPage}
 import pages.manual.accountHolders.IsAccountHoldersSectionCompletePage
 import pages.manual.cpso.IsCpsoSectionCompletePage
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
@@ -120,8 +120,11 @@ class SendAReportService @Inject() (accountsService: AccountsService) {
       .map(_.accounts.keys.toSeq.map(AccountId.apply))
       .getOrElse(Seq.empty)
 
-    if accountIds.isEmpty then NotStarted
-    else if accountIds.forall {
+    if (accountIds.isEmpty) {
+      NotStarted
+    } else if (
+      userAnswers.get(IsAccountsSectionCompletedPage(reportId)).contains(true) &&
+      accountIds.forall {
         accountId =>
           accountsService.isComplete(
             userAnswers,
@@ -129,8 +132,11 @@ class SendAReportService @Inject() (accountsService: AccountsService) {
             accountId
           )
       }
-    then Completed
-    else Incomplete
+    ) {
+      Completed
+    } else {
+      Incomplete
+    }
   }
 
 }

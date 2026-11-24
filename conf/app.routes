@@ -500,7 +500,6 @@ POST       /manual/cp-so/change-remove-tax-resident-country                 cont
 GET        /manual/account-holder/check-answers                                      controllers.manual.accountHolders.AccountHolderCheckAnswersController.onPageLoad()
 POST       /manual/account-holder/check-answers                                      controllers.manual.accountHolders.AccountHolderCheckAnswersController.onSubmit()
 
-
 GET        /manual/accounts                            controllers.manual.account.AccountsController.onPageLoad()
 POST       /manual/accounts                            controllers.manual.account.AccountsController.onSubmit()
 
@@ -526,6 +525,9 @@ POST        /manual/cp-so/account-holder                       controllers.manua
 GET         /manual/cp-so/change-account-holder                 controllers.manual.cpso.AccountHolderController.onPageLoad(mode: Mode = CheckMode)
 POST        /manual/cp-so/change-account-holder                 controllers.manual.cpso.AccountHolderController.onSubmit(mode: Mode = CheckMode)
 
+GET        /manual/cp-so/check-answers                                      controllers.manual.cpso.CPSOCheckAnswersController.onPageLoad()
+POST       /manual/cp-so/check-answers                                      controllers.manual.cpso.CPSOCheckAnswersController.onSubmit()
+
 GET        /manual/cp-so/check-cpso-add-or-allowed      controllers.manual.cpso.CheckCPSOAddedOrAllowedController.onChangeRedirect(mode: Mode = NormalMode)
 
 GET        /manual/account-holders                         controllers.manual.accountHolders.AccountHolderListController.onPageLoad(mode: Mode = NormalMode)
@@ -546,3 +548,6 @@ GET        /manual/account-holder/change-clear-account-holder-id      controller
 
 GET         /manual/is-cp-so-section-completed                        controllers.manual.cpso.IsCpsoSectionCompleteController.onPageLoad(mode: Mode = NormalMode)
 POST        /manual/is-cp-so-section-completed                         controllers.manual.cpso.IsCpsoSectionCompleteController.onSubmit(mode: Mode = NormalMode)
+
+GET        /manual/is-accounts-section-completed       controllers.manual.account.IsAccountsSectionCompletedController.onPageLoad()
+POST       /manual/is-accounts-section-completed       controllers.manual.account.IsAccountsSectionCompletedController.onSubmit()

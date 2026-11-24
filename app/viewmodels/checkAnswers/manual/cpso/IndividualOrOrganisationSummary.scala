@@ -42,7 +42,7 @@ object IndividualOrOrganisationSummary {
         value = value,
         actions = Seq(
           ActionItemViewModel("site.change", controllers.manual.cpso.routes.IndividualOrOrganisationController.onPageLoad(CheckMode).url)
-            .withVisuallyHiddenText(messages("individualOrOrganisation.change.hidden"))
+            .withVisuallyHiddenText(messages("cpso.individualOrOrganisation.change.hidden"))
         )
       )
 }

@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package utils.manual.cpso
+package forms.manual.account
 
-import models.{ReportId, UkAddress, UserAnswers}
-import models.viewModels.manual.cpso.CPSOId
-import pages.manual.cpso.{AddressUkPage, SelectAddressPage}
+import forms.mappings.Mappings
+import play.api.data.Form
 
-def resolveUkAddress(userAnswers: UserAnswers, cpsoId: CPSOId)(implicit reportId: ReportId): Option[UkAddress] =
-  userAnswers
-    .get(AddressUkPage(cpsoId, reportId))
-    .orElse(
-      userAnswers
-        .get(SelectAddressPage(cpsoId, reportId))
-        .map(_.ukAddress)
+import javax.inject.Inject
+
+class IsAccountsSectionCompletedFormProvider @Inject() extends Mappings {
+
+  def apply(): Form[Boolean] =
+    Form(
+      "value" -> boolean("isAccountsSectionCompleted.error.required")
     )
+}

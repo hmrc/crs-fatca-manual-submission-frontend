@@ -23,8 +23,8 @@ import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.CheckAnswersUtil
 import views.html.manual.accountHolders.AccountHolderCheckAnswersView
+import viewmodels.checkAnswers.manual.CheckAnswersViewModel
 
 import javax.inject.Inject
 import scala.concurrent.Future
@@ -33,7 +33,7 @@ class AccountHolderCheckAnswersController @Inject() (override val messagesApi: M
                                                      actions: Actions,
                                                      val controllerComponents: MessagesControllerComponents,
                                                      view: AccountHolderCheckAnswersView,
-                                                     util: CheckAnswersUtil
+                                                     util: CheckAnswersViewModel
 ) extends FrontendBaseController
     with I18nSupport
     with Logging {

@@ -17,5 +17,6 @@
 package utils
 
 object ReportingConstants:
-  val REPORTING_THRESHOLD_YEAR: Int = 2026
-  val REPORTING_START_YEAR: Int     = 2014
+  final val REPORTING_THRESHOLD_YEAR: Int         = 2026
+  final val REPORTING_START_YEAR: Int             = 2014
+  final val CPSO_NOT_REPORTED_THRESHOLD_YEAR: Int = 2027

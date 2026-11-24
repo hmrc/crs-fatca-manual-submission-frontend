@@ -17,7 +17,7 @@
 package viewmodels.checkAnswers.manual.cpso
 
 import models.{CheckMode, ReportId, UserAnswers}
-import pages.manual.accountHolders.{CurrentAccountHolderIdPage, IndividualDateOfBirthPage}
+import pages.manual.cpso.{CPSOIndividualDateOfBirthPage, CurrentCPSOIdPage}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist.*
@@ -32,18 +32,20 @@ object CPSOIndividualDateOfBirthSummary {
     DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.UK)
 
   def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
+    val regime = reportId.regime.toString.toLowerCase
+
     for {
-      currentAccountHolderId <- answers.get(CurrentAccountHolderIdPage()(reportId))
-      answer                 <- answers.get(IndividualDateOfBirthPage(currentAccountHolderId)(reportId))
+      currentCPSOId <- answers.get(CurrentCPSOIdPage()(reportId))
+      answer        <- answers.get(CPSOIndividualDateOfBirthPage(currentCPSOId, reportId))
     } yield SummaryListRowViewModel(
-      key = "individualDateOfBirth.checkYourAnswersLabel",
+      key = s"cpso.individualDateOfBirth.checkYourAnswersLabel.$regime",
       value = ValueViewModel(answer.dateOfBirth.format(dateFormatter)),
       actions = Seq(
         ActionItemViewModel(
           "site.change",
-          controllers.manual.accountHolders.routes.IndividualDateOfBirthController.onPageLoad(CheckMode).url
+          controllers.manual.cpso.routes.CPSOIndividualDateOfBirthController.onPageLoad(CheckMode).url
         )
-          .withVisuallyHiddenText(messages("individualDateOfBirth.change.hidden"))
+          .withVisuallyHiddenText(messages(s"cpso.individualDateOfBirth.change.hidden.$regime"))
       )
     )
 }

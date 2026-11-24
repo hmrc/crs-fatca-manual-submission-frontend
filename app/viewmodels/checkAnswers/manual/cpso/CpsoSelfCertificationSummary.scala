@@ -60,7 +60,7 @@ object CpsoSelfCertificationSummary {
         value = value,
         actions = Seq(
           ActionItemViewModel("site.change", controllers.manual.cpso.routes.CpsoSelfCertificationController.onPageLoad(CheckMode).url)
-            .withVisuallyHiddenText(messages("cpsoSelfCertification.change.hidden"))
+            .withVisuallyHiddenText(messages("cpso.selfCertification.change.hidden"))
         )
       )
     }
