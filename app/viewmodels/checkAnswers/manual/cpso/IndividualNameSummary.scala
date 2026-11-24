@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package viewmodels.checkAnswers
+package viewmodels.checkAnswers.manual.cpso
 
 import models.{CheckMode, ReportId, UserAnswers}
 import pages.manual.cpso.{CurrentCPSOIdPage, IndividualNamePage}

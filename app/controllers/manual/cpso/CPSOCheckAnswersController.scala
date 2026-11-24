@@ -39,7 +39,7 @@ class CPSOCheckAnswersController @Inject() (
   def onPageLoad(): Action[AnyContent] = actions.withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequired() {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
-      Ok(view(util.getCPSORows(request.userAnswers)))
+      Ok(view(util.getCPSORows(request.userAnswers), reportId.regime.value.toLowerCase))
   }
 
   def onSubmit: Action[AnyContent] = actions.withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequired().async {

@@ -39,9 +39,11 @@ import viewmodels.checkAnswers.manual.cpso.{
   CPSOTaxResidentCountriesSummary,
   CPSOWhatIsAddressSummary,
   ControllingPersonTypeSummary,
+  CpsoOrganisationNameSummary,
   CpsoSelfCertificationSummary,
   IndividualHaveDateOfBirthSummary as CPSOIndividualHaveDateOfBirthSummary,
   IndividualHavePlaceOfBirthSummary as CPSOIndividualHavePlaceOfBirthSummary,
+  IndividualNameSummary as CPSOIndividualNameSummary,
   IndividualOrOrganisationSummary as CPSOIndividualOrOrganisationSummary,
   IndividualPlaceOfBirthSummary as CPSOIndividualPlaceOfBirthSummary
 }
@@ -203,8 +205,13 @@ class CheckAnswersViewModel @Inject() {
         if (reportId.regime == CRS) CpsoSelfCertificationSummary.row(ua) else None
       ).flatten
 
+      val nameRow =
+        if (isIndividual) CPSOIndividualNameSummary.row(ua)
+        else CpsoOrganisationNameSummary.row(ua)
+
       val rows = Seq(
         CPSOLinkedAccountHoldersSummary.row(ua),
+        nameRow,
         if (reportId.regime == FATCA) CPSOIndividualOrOrganisationSummary.row(ua) else None
       ).flatten ++ (if (isIndividual) individualRows else Seq.empty) ++ Seq(
         CPSOWhatIsAddressSummary.row(ua)

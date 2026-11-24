@@ -22,7 +22,7 @@
     heading: components.Heading
 )
 
-@(lists: Seq[SummaryList], regime: String = "crs" )(implicit request: Request[_], messages: Messages)
+@(lists: Seq[SummaryList], regime: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages(s"cpso.checkAnswers.title.$regime"))) {
 

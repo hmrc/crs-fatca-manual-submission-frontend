@@ -35,15 +35,19 @@ object IndividualPlaceOfBirthSummary {
       answer    <- answers.get(IndividualPlaceOfBirthPage(currentId, reportId))
     } yield
 
-      val value = (Seq(answer.city, answer.region).flatten :+ getCountryDescription(answer.country))
-        .map(
-          part => HtmlFormat.escape(part).toString
-        )
-        .mkString("<br/>")
+      def formatLine(line: String): String =
+        s"""<span class="govuk-!-margin-bottom-0">${HtmlFormat.escape(line)}</span><br>"""
+
+      def formatLastLine(line: String): String = s"""<span>${HtmlFormat.escape(line)}</span><br>"""
+
+      val addressHtml: String =
+        answer.city.fold("")(formatLine) concat
+          answer.region.fold("")(formatLine) concat
+          formatLastLine(getCountryDescription(answer.country))
 
       SummaryListRowViewModel(
         key = s"cpso.individualPlaceOfBirth.checkYourAnswersLabel.$regime",
-        value = ValueViewModel(HtmlContent(value)),
+        value = ValueViewModel(HtmlContent(addressHtml)),
         actions = Seq(
           ActionItemViewModel("site.change", controllers.manual.cpso.routes.IndividualPlaceOfBirthController.onPageLoad(CheckMode).url)
             .withVisuallyHiddenText(messages(s"cpso.individualPlaceOfBirth.change.hidden.$regime"))

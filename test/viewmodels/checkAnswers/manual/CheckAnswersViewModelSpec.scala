@@ -33,7 +33,13 @@ import models.manual.accountHolders.{
   OrganisationCrs,
   OrganisationFatca
 }
-import models.manual.cpso.{ControllingPersonType, ControllingPersonTypes, CpsoSelfCertification, IndividualOrOrganisation as CPSOType}
+import models.manual.cpso.{
+  ControllingPersonType,
+  ControllingPersonTypes,
+  CpsoSelfCertification,
+  IndividualName as CPSOIndividualName,
+  IndividualOrOrganisation as CPSOType
+}
 import models.manual.filercategory.{WhatTypeOfFiler, WhatTypeOfFilerIsSponsor}
 import models.viewModels.{AccountHolder, AccountHolderId, AccountHolders, AccountId}
 import models.viewModels.manual.cpso.CPSOId
@@ -59,10 +65,12 @@ import pages.manual.cpso.{
   AccountHolderIdsPage,
   CPSOIndividualDateOfBirthPage,
   ControllingPersonTypePage,
+  CpsoOrganisationNamePage,
   CpsoSelfCertificationPage,
   CurrentCPSOIdPage,
   IndividualHaveDateOfBirthPage as CPSOIndividualHaveDateOfBirthPage,
   IndividualHavePlaceOfBirthPage as CPSOIndividualHavePlaceOfBirthPage,
+  IndividualNamePage as CPSOIndividualNamePage,
   IndividualOrOrganisationPage as CPSOIndividualOrOrganisationPage
 }
 import pages.manual.accountHolders.AccountHoldersPage
@@ -79,9 +87,11 @@ import viewmodels.checkAnswers.manual.cpso.{
   CPSOLinkedAccountHoldersSummary,
   CPSOWhatIsAddressSummary,
   ControllingPersonTypeSummary,
+  CpsoOrganisationNameSummary,
   CpsoSelfCertificationSummary,
   IndividualHaveDateOfBirthSummary as CPSOIndividualHaveDateOfBirthSummary,
   IndividualHavePlaceOfBirthSummary as CPSOIndividualHavePlaceOfBirthSummary,
+  IndividualNameSummary as CPSOIndividualNameSummary,
   IndividualOrOrganisationSummary as CPSOIndividualOrOrganisationSummary,
   IndividualPlaceOfBirthSummary as CPSOIndividualPlaceOfBirthSummary
 }
@@ -397,12 +407,14 @@ class CheckAnswersViewModelSpec extends SpecBase {
           val ua = emptyUserAnswers
             .withPage(CurrentCPSOIdPage()(reportId), cpsoId)
             .withPage(CPSOIndividualOrOrganisationPage(cpsoId), CPSOType.Individual)
+            .withPage(CPSOIndividualNamePage(cpsoId), CPSOIndividualName("First", "Last"))
             .withPage(CPSOIndividualHaveDateOfBirthPage(reportId, cpsoId), true)
             .withPage(CPSOIndividualDateOfBirthPage(cpsoId, reportId), IndividualDateOfBirth(LocalDate.of(1980, 3, 31)))
             .withPage(CPSOIndividualHavePlaceOfBirthPage(cpsoId, reportId), false)
 
           val expectedRows = Seq(
             CPSOLinkedAccountHoldersSummary.row(ua),
+            CPSOIndividualNameSummary.row(ua),
             CPSOIndividualOrOrganisationSummary.row(ua),
             CPSOIndividualHaveDateOfBirthSummary.row(ua),
             CPSOIndividualDateOfBirthSummary.row(ua),
@@ -419,12 +431,14 @@ class CheckAnswersViewModelSpec extends SpecBase {
           val ua = emptyUserAnswers
             .withPage(CurrentCPSOIdPage()(reportId), cpsoId)
             .withPage(CPSOIndividualOrOrganisationPage(cpsoId), CPSOType.Organisation)
+            .withPage(CpsoOrganisationNamePage(cpsoId, reportId), "Example Organisation")
             .withPage(CPSOIndividualHaveDateOfBirthPage(reportId, cpsoId), true)
             .withPage(CPSOIndividualDateOfBirthPage(cpsoId, reportId), IndividualDateOfBirth(LocalDate.of(1980, 3, 31)))
             .withPage(CPSOIndividualHavePlaceOfBirthPage(cpsoId, reportId), true)
 
           val expectedRows = Seq(
             CPSOLinkedAccountHoldersSummary.row(ua),
+            CpsoOrganisationNameSummary.row(ua),
             CPSOIndividualOrOrganisationSummary.row(ua),
             CPSOWhatIsAddressSummary.row(ua)
           ).flatten
@@ -447,6 +461,7 @@ class CheckAnswersViewModelSpec extends SpecBase {
               AccountHoldersPage()(reportId),
               AccountHolders(None, Map(holderId.value -> AccountHolder(organisationName = Some("Organisation"))))
             )
+            .withPage(CPSOIndividualNamePage(cpsoId), CPSOIndividualName("First", "Last"))
             .withPage(CPSOIndividualHaveDateOfBirthPage(reportId, cpsoId), true)
             .withPage(CPSOIndividualDateOfBirthPage(cpsoId, reportId), IndividualDateOfBirth(LocalDate.of(1980, 3, 31)))
             .withPage(CPSOIndividualHavePlaceOfBirthPage(cpsoId, reportId), false)
@@ -458,6 +473,7 @@ class CheckAnswersViewModelSpec extends SpecBase {
 
           val expectedRows = Seq(
             CPSOLinkedAccountHoldersSummary.row(ua),
+            CPSOIndividualNameSummary.row(ua),
             CPSOIndividualHaveDateOfBirthSummary.row(ua),
             CPSOIndividualDateOfBirthSummary.row(ua),
             CPSOIndividualHavePlaceOfBirthSummary.row(ua),
