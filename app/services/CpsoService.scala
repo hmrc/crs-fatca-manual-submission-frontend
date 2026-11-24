@@ -40,6 +40,17 @@ class CpsoService {
       .sortBy(_._2.creationDateTime)(Ordering.Option[Instant].reverse)
       .reverse
 
+  def isCpsoComplete(userAnswers: UserAnswers, cpsoId: CPSOId)(implicit reportId: ReportId): Boolean =
+    existingCpsos(userAnswers)(using reportId)
+      .filter(
+        (csId, _) => csId == cpsoId
+      )
+      .map {
+        case (csId, controllingOrSubstantialOwner) => controllingOrSubstantialOwner.isComplete(reportId.regime)
+      }
+      .headOption
+      .getOrElse(false)
+
   def areAllCpsosComplete(userAnswers: UserAnswers)(implicit reportId: ReportId): Boolean =
     if (!accountHoldersRequireCpso(userAnswers)) {
       true

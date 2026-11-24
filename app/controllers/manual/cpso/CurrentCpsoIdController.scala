@@ -18,13 +18,14 @@ package controllers.manual.cpso
 
 import connectors.DatabaseConnector
 import controllers.actions.Actions
-import models.{NormalMode, ReportId}
+import models.{CheckMode, NormalMode, ReportId}
 import models.requests.ReportIdRequest
 import models.viewModels.manual.cpso.CPSOId
 import pages.manual.cpso.CurrentCPSOIdPage
 import play.api.Logging
 import play.api.i18n.I18nSupport
 import play.api.mvc.*
+import services.CpsoService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.Inject
@@ -33,6 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class CurrentCpsoIdController @Inject() (
   repository: DatabaseConnector,
   actions: Actions,
+  cpsoService: CpsoService,
   val controllerComponents: MessagesControllerComponents
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -43,7 +45,10 @@ class CurrentCpsoIdController @Inject() (
     implicit request =>
 
       implicit val reportId: ReportId = request.reportId
-      redirectWithValidCpsoId(cpsoId, controllers.routes.UnderConstructionController.onPageLoad()) // todo change when url is available
+      val call =
+        if (cpsoService.isCpsoComplete(request.userAnswers, CPSOId(cpsoId))) controllers.routes.UnderConstructionController.onPageLoad()
+        else controllers.manual.cpso.routes.AccountHolderController.onPageLoad(CheckMode)
+      redirectWithValidCpsoId(cpsoId, call)
   }
 
   def onRemoveRedirect(cpsoId: String): Action[AnyContent] = actions.withReportIdRequired().async {

@@ -19,9 +19,10 @@ package controllers.manual.cpso
 import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
+import forms.behaviours.BooleanFieldBehaviours
 import models.SubmissionsConstants.FATCA
 import models.viewModels.manual.cpso.CPSOId
-import models.{NormalMode, ReportId, UserAnswers}
+import models.{CheckMode, NormalMode, ReportId, UserAnswers}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{never, verify, when}
@@ -30,6 +31,7 @@ import pages.manual.cpso.CurrentCPSOIdPage
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
+import services.CpsoService
 
 import scala.concurrent.Future
 
@@ -43,7 +45,10 @@ class CurrentCpsoIdControllerSpec extends SpecBase {
   private def removeRoute(cpsoId: String): String =
     controllers.manual.cpso.routes.CurrentCpsoIdController.onRemoveRedirect(cpsoId).url
 
-  private def underConstructionRoute: String =
+  private def changeCpsoNotCompleteRoute: String =
+    controllers.manual.cpso.routes.AccountHolderController.onPageLoad(CheckMode).url
+
+  private def changeCpsoCompleteRoute: String =
     controllers.routes.UnderConstructionController.onPageLoad().url
 
   private def removeCPSOUrl: String =
@@ -60,21 +65,57 @@ class CurrentCpsoIdControllerSpec extends SpecBase {
     repository
   }
 
+  private def mockCpsoService(result: Boolean): CpsoService = {
+    val cpsoService = mock[CpsoService]
+    when(cpsoService.isCpsoComplete(any(), any())(any())).thenReturn(result)
+
+    cpsoService
+  }
+
   "CurrentCpsoIdController" - {
 
     "onChangeRedirect" - {
 
-      "must store the CPSo id and redirect to the change CPSo page" in {
-        val repository = mockRepository
+      "must store the CPSo id and redirect to the accounts page because cpso is incomplete" in {
+        val cpsoIsIncomplete = false
+        val repository       = mockRepository
+        val cpsoService      = mockCpsoService(cpsoIsIncomplete)
         val application = applicationBuilder(Some(answersWithCurrentCpsoId(CPSOId("old-cpso"))))
-          .overrides(bind[DatabaseConnector].toInstance(repository))
+          .overrides(
+            bind[DatabaseConnector].toInstance(repository),
+            bind[CpsoService].toInstance(cpsoService)
+          )
           .build()
 
         running(application) {
           val result = route(application, FakeRequest(GET, changeRoute(cpsoId))).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual underConstructionRoute
+          redirectLocation(result).value mustEqual changeCpsoNotCompleteRoute
+
+          val captor = ArgumentCaptor.forClass(classOf[UserAnswers])
+          verify(repository).set(captor.capture())(any())
+
+          captor.getValue.get(CurrentCPSOIdPage()) mustBe Some(CPSOId(cpsoId))
+        }
+      }
+
+      "must store the CPSo id and redirect to check answers page because cpso is complete" in {
+        val cpsoIsComplete = true
+        val repository     = mockRepository
+        val cpsoService    = mockCpsoService(cpsoIsComplete)
+        val application = applicationBuilder(Some(answersWithCurrentCpsoId(CPSOId("old-cpso"))))
+          .overrides(
+            bind[DatabaseConnector].toInstance(repository),
+            bind[CpsoService].toInstance(cpsoService)
+          )
+          .build()
+
+        running(application) {
+          val result = route(application, FakeRequest(GET, changeRoute(cpsoId))).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual changeCpsoCompleteRoute
 
           val captor = ArgumentCaptor.forClass(classOf[UserAnswers])
           verify(repository).set(captor.capture())(any())
