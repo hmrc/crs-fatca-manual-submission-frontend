@@ -21,7 +21,7 @@ import models.SubmissionsConstants.FATCA
 import models.manual.TaxResidentInformation
 import models.manual.accountHolders.AccountHolderTypes.{CrsReportablePerson, OwnerDocumentedForeignFinancialInstitution}
 import models.manual.accountHolders.IndividualOrOrganisation.{Individual as AccountHolderIndividual, Organisation as AccountHolderOrganisation}
-import models.manual.cpso.IndividualOrOrganisation.Individual as CpsoIndividual
+import models.manual.cpso.IndividualOrOrganisation.{Individual as CpsoIndividual, Organisation as CpsoOrganisation}
 import models.manual.cpso.{ControllingPersonType, ControllingPersonTypes, CpsoSelfCertification, IndividualName}
 import models.response.Country
 import models.viewModels.manual.cpso.{CPSOId, ControllingOrSubstantialOwner, ControllingOrSubstantialOwners}
@@ -59,6 +59,15 @@ class CpsoServiceSpec extends SpecBase {
   )
 
   private val incompleteCpso = completeCpso.copy(individualName = None)
+
+  private val completeOrganisationCpso = ControllingOrSubstantialOwner(
+    individualOrOrganisation = Some(CpsoOrganisation),
+    organisationName = Some("Acme Ltd"),
+    accountHolders = Some(Seq("ah-1")),
+    areTheyBasedInTheUk = Some(false),
+    addressNonUk = Some(addressNonUk),
+    taxResidentCountries = Some(Seq(taxResidentInformation))
+  )
 
   private val accountHolderRequiringCpso = AccountHolder(
     individualOrOrganisation = Some(AccountHolderOrganisation),
@@ -278,6 +287,79 @@ class CpsoServiceSpec extends SpecBase {
       )
 
       service.areAllCpsosComplete(answers)(using reportId) mustBe true
+    }
+  }
+
+  "CpsoService.isCpsoComplete" - {
+
+    "must return true when the identified CP-SO is complete" in {
+      val answers = answersWith(Map("21" -> completeCpso))
+
+      service.isCpsoComplete(answers, CPSOId("21"))(using reportId) mustBe true
+    }
+
+    "must return true for a FATCA report when the identified CP-SO is complete" in {
+      val answers = answersWith(Map("21" -> completeCpso), report = fatcaReportId)
+
+      service.isCpsoComplete(answers, CPSOId("21"))(using fatcaReportId) mustBe true
+    }
+
+    "must return false when the identified CP-SO is incomplete" in {
+      val answers = answersWith(Map("21" -> incompleteCpso))
+
+      service.isCpsoComplete(answers, CPSOId("21"))(using reportId) mustBe false
+    }
+
+    "must return false for a CRS report when the CP-SO has no self certification" in {
+      val answers = answersWith(Map("21" -> completeCpso.copy(selfCertification = None)))
+
+      service.isCpsoComplete(answers, CPSOId("21"))(using reportId) mustBe false
+    }
+
+    "must return false for a CRS report when the CP-SO has no controlling person type" in {
+      val answers = answersWith(Map("21" -> completeCpso.copy(controllingPersonType = None)))
+
+      service.isCpsoComplete(answers, CPSOId("21"))(using reportId) mustBe false
+    }
+
+    "must not require self certification or controlling person type for a FATCA report" in {
+      val cpso    = completeCpso.copy(selfCertification = None, controllingPersonType = None)
+      val answers = answersWith(Map("21" -> cpso), report = fatcaReportId)
+
+      service.isCpsoComplete(answers, CPSOId("21"))(using fatcaReportId) mustBe true
+    }
+
+    "must return true for a CRS report when an organisation CP-SO has all of its own details" in {
+      val answers = answersWith(Map("21" -> completeOrganisationCpso))
+
+      service.isCpsoComplete(answers, CPSOId("21"))(using reportId) mustBe true
+    }
+
+    "must return false when the CP-SO is not linked to an account holder" in {
+      val answers = answersWith(Map("21" -> completeCpso.copy(accountHolders = Some(Seq.empty))))
+
+      service.isCpsoComplete(answers, CPSOId("21"))(using reportId) mustBe false
+    }
+
+    "must return false when the requested CP-SO does not exist" in {
+      val answers = answersWith(Map("21" -> completeCpso))
+
+      service.isCpsoComplete(answers, CPSOId("99"))(using reportId) mustBe false
+    }
+
+    "must return false when no CP-SOs have been added" in {
+      service.isCpsoComplete(answersWith(), CPSOId("21"))(using reportId) mustBe false
+    }
+
+    "must return false when there are no user answers at all" in {
+      service.isCpsoComplete(emptyUserAnswers, CPSOId("21"))(using reportId) mustBe false
+    }
+
+    "must only consider the requested CP-SO, not the others in the report" in {
+      val answers = answersWith(Map("21" -> completeCpso, "22" -> incompleteCpso))
+
+      service.isCpsoComplete(answers, CPSOId("21"))(using reportId) mustBe true
+      service.isCpsoComplete(answers, CPSOId("22"))(using reportId) mustBe false
     }
   }
 
