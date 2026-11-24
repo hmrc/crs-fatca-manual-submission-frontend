@@ -16,7 +16,7 @@
 
 package models.manual
 
-import models.manual.account.{AccountNumber, PaymentType, WasAccountOpen, WhatAccountType}
+import models.manual.account.{AccountNumber, WasAccountOpen, WhatAccountType}
 import models.{AccountBalance, NumberType}
 
 sealed trait AccountType {

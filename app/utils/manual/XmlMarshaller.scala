@@ -19,10 +19,9 @@ package utils.manual
 import models.manual.AccountType.{CrsAccount, FatcaAccount}
 import models.manual.IndividualType.{ControllingPerson, CrsIndividualAccountHolder}
 import models.manual.OrgPartyType.{CrsAccountHolder, FatcaAccountHolder, ReportingFIWithFiler, Sponsor}
-import models.manual.account.PaymentType
 import models.manual.accountHolders.{EquityInterestType, SelfCertification}
 import models.manual.cpso.{ControllingPersonType, CpsoSelfCertification}
-import models.manual.{AccountType, CityBirthInfo, CountryBirthInfo, IndividualType, OrgPartyType, Payment, RegionBirthInfo, TaxResidentInformation}
+import models.manual.*
 import models.{AddressNonUk, ReportId, UkAddress}
 
 import java.time.LocalDate

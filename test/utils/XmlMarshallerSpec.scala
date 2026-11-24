@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package utils
 
 import base.SpecBase
@@ -23,7 +39,6 @@ import models.{AccountBalance, AddressNonUk, Currency, ReportId, UkAddress}
 import org.scalatest.PrivateMethodTester
 import org.scalatest.matchers.should.Matchers.{should, shouldEqual}
 import utils.manual.XmlMarshaller
-
 import java.time.LocalDate
 import scala.language.postfixOps
 import scala.xml.{Elem, NodeSeq}
@@ -245,15 +260,15 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester {
         val reportId = ReportId(CRS, 2020, None, "fi12")
         val result   = XmlMarshaller invokePrivate createNameType("firstName", "lastName", reportId)
         result.head.prefix mustEqual "crs"
-        result.head.text.trim mustEqual "firstName"
-        result.last.text.trim mustEqual "lastName"
+        (result \ "FirstName").head.text.trim mustEqual "firstName"
+        (result \ "LastName").head.text.trim mustEqual "lastName"
       }
       "must create individual name with appropriate prefix for crs" in {
         val reportId = ReportId(FATCA, 2020, None, "fi12")
         val result   = XmlMarshaller invokePrivate createNameType("firstName", "lastName", reportId)
         result.head.prefix mustEqual "sfa"
-        result.head.text.trim mustEqual "firstName"
-        result.last.text.trim mustEqual "lastName"
+        (result \ "FirstName").head.text.trim mustEqual "firstName"
+        (result \ "LastName").head.text.trim mustEqual "lastName"
       }
     }
 
@@ -345,7 +360,7 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester {
         (result \ "AcctHolderType").head.prefix mustEqual "crs"
         (result \ "SelfCert").text.trim mustEqual Yes.toString
         (result \ "SelfCert").head.prefix mustEqual "crs"
-        (result \ "EquityInterestType").text.trim mustEqual BeneficiaryEquivalent.toString
+        (result \ "EquityInterestType").text.trim mustEqual BeneficiaryEquivalent.xmlValue
         (result \ "EquityInterestType").head.prefix mustEqual "crs"
       }
 
