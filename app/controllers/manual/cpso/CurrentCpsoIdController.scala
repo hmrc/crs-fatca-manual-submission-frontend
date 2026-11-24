@@ -46,7 +46,7 @@ class CurrentCpsoIdController @Inject() (
 
       implicit val reportId: ReportId = request.reportId
       val call =
-        if (cpsoService.isCpsoComplete(request.userAnswers, CPSOId(cpsoId))) controllers.routes.UnderConstructionController.onPageLoad()
+        if (cpsoService.isCpsoComplete(request.userAnswers, CPSOId(cpsoId))) controllers.manual.cpso.routes.CPSOCheckAnswersController.onPageLoad()
         else controllers.manual.cpso.routes.AccountHolderController.onPageLoad(CheckMode)
       redirectWithValidCpsoId(cpsoId, call)
   }

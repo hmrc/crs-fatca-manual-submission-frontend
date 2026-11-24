@@ -49,7 +49,7 @@ class CurrentCpsoIdControllerSpec extends SpecBase {
     controllers.manual.cpso.routes.AccountHolderController.onPageLoad(CheckMode).url
 
   private def changeCpsoCompleteRoute: String =
-    controllers.routes.UnderConstructionController.onPageLoad().url
+    controllers.manual.cpso.routes.CPSOCheckAnswersController.onPageLoad().url
 
   private def removeCPSOUrl: String =
     controllers.manual.cpso.routes.RemoveCPSOController.onPageLoad(NormalMode).url

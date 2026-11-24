@@ -40,6 +40,7 @@ import pages.manual.cpso.{
   HaveTaxIdentificationNumberPage,
   IsCpsoSectionCompletePage,
   IsThisTheAddressPage as IsThisTheAddressPageForCpso,
+  RemoveCPSOPage,
   ResidentForTaxPage,
   SelectAddressPage as SelectAddressPageForCPSO,
   UkPostCodePage as UkPostCodePageForCpso
@@ -644,7 +645,7 @@ class CPSONavigatorSpec extends SpecBase {
           NormalMode,
           answers
         ) mustBe
-          controllers.routes.UnderConstructionController.onPageLoad()
+          controllers.manual.cpso.routes.IsCpsoSectionCompleteController.onPageLoad()
       }
 
       "must redirect to journey recovery  when DoYouWantToAddAnotherCpsoPage is not defined" in {
@@ -657,6 +658,20 @@ class CPSONavigatorSpec extends SpecBase {
           controllers.routes.JourneyRecoveryController.onPageLoad()
       }
 
+    }
+
+    "RemoveCPSOPage" - {
+      val ua = UserAnswers("id")
+
+      "must redirect to ControllingPersonsOrSubstantialOwners" in {
+
+        navigator.nextPage(
+          RemoveCPSOPage(reportId, CPSOId("some-id")),
+          NormalMode,
+          ua
+        ) mustBe
+          controllers.manual.cpso.routes.ControllingPersonsOrSubstantialOwnersController.onPageLoad(NormalMode)
+      }
     }
   }
 }
