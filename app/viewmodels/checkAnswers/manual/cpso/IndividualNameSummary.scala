@@ -27,20 +27,22 @@ import viewmodels.implicits.*
 
 object IndividualNameSummary {
 
-  def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] =
+  def row(answers: UserAnswers)(implicit messages: Messages, reportId: ReportId): Option[SummaryListRow] = {
+    val regime = reportId.regime.value.toLowerCase
     for {
       currentId <- answers.get(CurrentCPSOIdPage()(reportId))
       answer    <- answers.get(IndividualNamePage(currentId)(reportId))
     } yield {
-      val value = HtmlFormat.escape(answer.firstName).toString + "<br/>" + HtmlFormat.escape(answer.lastName).toString
+      val value = s"${HtmlFormat.escape(answer.firstName).toString} ${HtmlFormat.escape(answer.lastName).toString}"
       SummaryListRowViewModel(
-        key = "cpso.individualName.checkYourAnswersLabel",
+        key = s"cpso.individualName.checkYourAnswersLabel.$regime",
         value = ValueViewModel(HtmlContent(value)),
         actions = Seq(
           ActionItemViewModel("site.change", controllers.manual.cpso.routes.IndividualNameController.onPageLoad(CheckMode).url)
-            .withVisuallyHiddenText(messages("cpso.individualName.change.hidden"))
+            .withVisuallyHiddenText(messages(s"cpso.individualName.change.hidden.$regime"))
         )
       )
     }
+  }
 
 }
