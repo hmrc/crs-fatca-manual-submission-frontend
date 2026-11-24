@@ -28,8 +28,9 @@ sealed trait FilerCategoryTypes {
 }
 
 object FilerCategoryTypes {
-  def isSponsorType(filer:FilerCategoryTypes): Boolean =
-    if (filer == WhatTypeOfFilerIsSponsor) true else false 
+
+  def isSponsorType(filer: FilerCategoryTypes): Boolean =
+    if (filer == WhatTypeOfFilerIsSponsor) true else false
 }
 sealed trait WhatTypeOfFilerIsSponsor extends FilerCategoryTypes
 
@@ -43,7 +44,7 @@ object WhatTypeOfFilerIsSponsor extends Enumerable.Implicits {
     val xmlValue = "FATCA608"
   }
 
-  case object Trustee extends WithName("trustee") with WhatTypeOfFilerIsSponsor{
+  case object Trustee extends WithName("trustee") with WhatTypeOfFilerIsSponsor {
     val xmlValue = "FATCA609"
   }
 
@@ -69,40 +70,40 @@ object WhatTypeOfFilerIsSponsor extends Enumerable.Implicits {
       ): _*
     )
 }
-  object WhatTypeOfFiler extends Enumerable.Implicits {
 
-    case object Foreign extends WithName("foreign") with WhatTypeOfFiler{
-      val xmlValue = "FATCA601"
-    }
+object WhatTypeOfFiler extends Enumerable.Implicits {
 
-    case object Registered extends WithName("registered") with WhatTypeOfFiler{
-      val xmlValue = "FATCA602"
-    }
+  case object Foreign extends WithName("foreign") with WhatTypeOfFiler {
+    val xmlValue = "FATCA601"
+  }
 
-    case object Withholding extends WithName("withholding") with WhatTypeOfFiler{
-      val xmlValue = "FATCA610"
-    }
+  case object Registered extends WithName("registered") with WhatTypeOfFiler {
+    val xmlValue = "FATCA602"
+  }
 
-    val values: Seq[WhatTypeOfFiler] = Seq(
-      Foreign,
-      Registered,
-      Withholding
-    )
+  case object Withholding extends WithName("withholding") with WhatTypeOfFiler {
+    val xmlValue = "FATCA610"
+  }
 
-    def options(implicit messages: Messages): Seq[RadioItem] = values.zipWithIndex.map {
-      case (value, index) =>
-        RadioItem(
-          content = Text(messages(s"whatTypeOfFiler.${value.toString}")),
-          value = Some(value.toString),
-          id = Some(s"value_$index")
-        )
-    }
+  val values: Seq[WhatTypeOfFiler] = Seq(
+    Foreign,
+    Registered,
+    Withholding
+  )
 
-    implicit val enumerable: Enumerable[WhatTypeOfFiler] =
-      Enumerable(
-        values.map(
-          v => v.toString -> v
-        ): _*
+  def options(implicit messages: Messages): Seq[RadioItem] = values.zipWithIndex.map {
+    case (value, index) =>
+      RadioItem(
+        content = Text(messages(s"whatTypeOfFiler.${value.toString}")),
+        value = Some(value.toString),
+        id = Some(s"value_$index")
       )
   }
 
+  implicit val enumerable: Enumerable[WhatTypeOfFiler] =
+    Enumerable(
+      values.map(
+        v => v.toString -> v
+      ): _*
+    )
+}

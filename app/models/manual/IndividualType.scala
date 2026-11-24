@@ -23,71 +23,100 @@ import models.{AddressModel, ReportId}
 import java.time.LocalDate
 
 sealed trait IndividualType {
-def firstName: String
-def lastName: String
-def birthDate: Option[LocalDate]
-def country: Option[CountryBirthInfo]
-def city: Option[CityBirthInfo]
-def region: Option[RegionBirthInfo]
-def reportId: ReportId
-def address: AddressModel
-def residency: Seq[TaxResidentInformation]
-def xmlElementName: String
+  def firstName: String
+  def lastName: String
+  def birthDate: Option[LocalDate]
+  def country: Option[CountryBirthInfo]
+  def city: Option[CityBirthInfo]
+  def region: Option[RegionBirthInfo]
+  def reportId: ReportId
+  def address: AddressModel
+  def residency: Seq[TaxResidentInformation]
+  def xmlElementName: String
 }
+
 object IndividualType {
+
   case class CrsIndividualAccountHolder(
-                                         individualName: models.manual.accountHolders.IndividualName,
-                                         dateOfBirth: Option[IndividualDateOfBirth],
-                                         placeOfBirth: Option[models.manual.accountHolders.IndividualPlaceOfBirth],
-                                         address: AddressModel,
-                                         residency: Seq[TaxResidentInformation],
-                                         reportId: ReportId,
-                                         interestType: Option[EquityInterestType],
-                                         selfCert: SelfCertification
-                                       ) extends IndividualType {
-    val xmlElementName: String = "AccountHolder"
-    val firstName: String = individualName.firstName
-    val lastName: String = individualName.lastName
+    individualName: models.manual.accountHolders.IndividualName,
+    dateOfBirth: Option[IndividualDateOfBirth],
+    placeOfBirth: Option[models.manual.accountHolders.IndividualPlaceOfBirth],
+    address: AddressModel,
+    residency: Seq[TaxResidentInformation],
+    reportId: ReportId,
+    interestType: Option[EquityInterestType],
+    selfCert: SelfCertification
+  ) extends IndividualType {
+    val xmlElementName: String       = "AccountHolder"
+    val firstName: String            = individualName.firstName
+    val lastName: String             = individualName.lastName
     val birthDate: Option[LocalDate] = dateOfBirth.map(_.dateOfBirth)
-    val country: Option[CountryBirthInfo] = placeOfBirth.map(p => CountryBirthInfo(p.country))
-    val city: Option[CityBirthInfo] = placeOfBirth.flatMap(p=> p.city.map(CityBirthInfo(_)))
-    val region: Option[RegionBirthInfo] = placeOfBirth.flatMap(p=>p.region.map(RegionBirthInfo(_)))
+
+    val country: Option[CountryBirthInfo] = placeOfBirth.map(
+      p => CountryBirthInfo(p.country)
+    )
+
+    val city: Option[CityBirthInfo] = placeOfBirth.flatMap(
+      p => p.city.map(CityBirthInfo(_))
+    )
+
+    val region: Option[RegionBirthInfo] = placeOfBirth.flatMap(
+      p => p.region.map(RegionBirthInfo(_))
+    )
   }
 
   case class ControllingPerson(
-                                         individualName: models.manual.cpso.IndividualName,
-                                         dateOfBirth: Option[IndividualDateOfBirth],
-                                         placeOfBirth: Option[models.manual.cpso.IndividualPlaceOfBirth],
-                                         address: AddressModel,
-                                         residency: Seq[TaxResidentInformation],
-                                         reportId: ReportId,
-                                         cpType: ControllingPersonType,
-                                         selfCert: CpsoSelfCertification
-                                       ) extends IndividualType {
-    val xmlElementName: String = "ControllingPerson"
-    val firstName: String = individualName.firstName
-    val lastName: String = individualName.lastName
+    individualName: models.manual.cpso.IndividualName,
+    dateOfBirth: Option[IndividualDateOfBirth],
+    placeOfBirth: Option[models.manual.cpso.IndividualPlaceOfBirth],
+    address: AddressModel,
+    residency: Seq[TaxResidentInformation],
+    reportId: ReportId,
+    cpType: ControllingPersonType,
+    selfCert: CpsoSelfCertification
+  ) extends IndividualType {
+    val xmlElementName: String       = "ControllingPerson"
+    val firstName: String            = individualName.firstName
+    val lastName: String             = individualName.lastName
     val birthDate: Option[LocalDate] = dateOfBirth.map(_.dateOfBirth)
-    val country: Option[CountryBirthInfo] = placeOfBirth.map(p => CountryBirthInfo(p.country))
-    val city: Option[CityBirthInfo] = placeOfBirth.flatMap(p=> p.city.map(CityBirthInfo(_)))
-    val region: Option[RegionBirthInfo] = placeOfBirth.flatMap(p=>p.region.map(RegionBirthInfo(_)))
+
+    val country: Option[CountryBirthInfo] = placeOfBirth.map(
+      p => CountryBirthInfo(p.country)
+    )
+
+    val city: Option[CityBirthInfo] = placeOfBirth.flatMap(
+      p => p.city.map(CityBirthInfo(_))
+    )
+
+    val region: Option[RegionBirthInfo] = placeOfBirth.flatMap(
+      p => p.region.map(RegionBirthInfo(_))
+    )
   }
 
   case class SubstantialOwner(
-                                individualName: models.manual.cpso.IndividualName,
-                                dateOfBirth: Option[IndividualDateOfBirth],
-                                placeOfBirth: Option[models.manual.cpso.IndividualPlaceOfBirth],
-                                address: AddressModel,
-                                residency: Seq[TaxResidentInformation],
-                                reportId: ReportId,
-                              ) extends IndividualType {
-    val xmlElementName: String = "SubstantialOwner"
-    val firstName: String = individualName.firstName
-    val lastName: String = individualName.lastName
+    individualName: models.manual.cpso.IndividualName,
+    dateOfBirth: Option[IndividualDateOfBirth],
+    placeOfBirth: Option[models.manual.cpso.IndividualPlaceOfBirth],
+    address: AddressModel,
+    residency: Seq[TaxResidentInformation],
+    reportId: ReportId
+  ) extends IndividualType {
+    val xmlElementName: String       = "SubstantialOwner"
+    val firstName: String            = individualName.firstName
+    val lastName: String             = individualName.lastName
     val birthDate: Option[LocalDate] = dateOfBirth.map(_.dateOfBirth)
-    val country: Option[CountryBirthInfo] = placeOfBirth.map(p => CountryBirthInfo(p.country))
-    val city: Option[CityBirthInfo] = placeOfBirth.flatMap(p => p.city.map(CityBirthInfo(_)))
-    val region: Option[RegionBirthInfo] = placeOfBirth.flatMap(p => p.region.map(RegionBirthInfo(_)))
+
+    val country: Option[CountryBirthInfo] = placeOfBirth.map(
+      p => CountryBirthInfo(p.country)
+    )
+
+    val city: Option[CityBirthInfo] = placeOfBirth.flatMap(
+      p => p.city.map(CityBirthInfo(_))
+    )
+
+    val region: Option[RegionBirthInfo] = placeOfBirth.flatMap(
+      p => p.region.map(RegionBirthInfo(_))
+    )
   }
-  
+
 }

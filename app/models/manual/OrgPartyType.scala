@@ -27,64 +27,66 @@ sealed trait OrgPartyType {
   def reportId: ReportId
   def xmlElementName: String
 }
+
 object OrgPartyType {
+
   case class CrsAccountHolder(
-                               name: String,
-                               address: AddressModel,
-                               residency: Seq[TaxResidentInformation],
-                               reportId: ReportId,
-                               accountHolderType: OrganisationCrs,
-                               interestType: Option[EquityInterestType],
-                               selfCert: SelfCertification
-                             ) extends OrgPartyType{
+    name: String,
+    address: AddressModel,
+    residency: Seq[TaxResidentInformation],
+    reportId: ReportId,
+    accountHolderType: OrganisationCrs,
+    interestType: Option[EquityInterestType],
+    selfCert: SelfCertification
+  ) extends OrgPartyType {
     val xmlElementName: String = "AccountHolder"
   }
 
   case class FatcaAccountHolder(
-                               name: String,
-                               address: AddressModel,
-                               residency: Seq[TaxResidentInformation],
-                               reportId: ReportId,
-                               accountHolderType: OrganisationFatca
-                             ) extends OrgPartyType {
+    name: String,
+    address: AddressModel,
+    residency: Seq[TaxResidentInformation],
+    reportId: ReportId,
+    accountHolderType: OrganisationFatca
+  ) extends OrgPartyType {
     val xmlElementName: String = "AccountHolder"
   }
-  
+
   case class SubstantialOwner(
-                                name: String,
-                                address: AddressModel,
-                                residency: Seq[TaxResidentInformation],
-                                reportId: ReportId
-                              ) extends OrgPartyType {
+    name: String,
+    address: AddressModel,
+    residency: Seq[TaxResidentInformation],
+    reportId: ReportId
+  ) extends OrgPartyType {
     val xmlElementName: String = "SubstantialOwner"
   }
 
   case class Sponsor(
-                           name: String,
-                           address: AddressModel,
-                           residency: Seq[TaxResidentInformation],
-                           reportId: ReportId,
-                           filerCategory: WhatTypeOfFilerIsSponsor
-                         ) extends OrgPartyType{
+    name: String,
+    address: AddressModel,
+    residency: Seq[TaxResidentInformation],
+    reportId: ReportId,
+    filerCategory: WhatTypeOfFilerIsSponsor
+  ) extends OrgPartyType {
     val xmlElementName: String = "Sponsor"
   }
 
   case class ReportingFIWithFiler(
-                      name: String,
-                      address: AddressModel,
-                      residency: Seq[TaxResidentInformation],
-                      reportId: ReportId,
-                      filerCategory: WhatTypeOfFiler
-                    ) extends OrgPartyType{
+    name: String,
+    address: AddressModel,
+    residency: Seq[TaxResidentInformation],
+    reportId: ReportId,
+    filerCategory: WhatTypeOfFiler
+  ) extends OrgPartyType {
     val xmlElementName: String = "ReportingFI"
   }
 
   case class ReportingFI(
-                                   name: String,
-                                   address: AddressModel,
-                                   residency: Seq[TaxResidentInformation],
-                                   reportId: ReportId,
-                                 ) extends OrgPartyType{
+    name: String,
+    address: AddressModel,
+    residency: Seq[TaxResidentInformation],
+    reportId: ReportId
+  ) extends OrgPartyType {
     val xmlElementName: String = "ReportingFI"
   }
 }

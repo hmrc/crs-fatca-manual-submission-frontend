@@ -18,4 +18,4 @@ package models.manual
 
 import models.manual.account.{AccountPaymentsAmount, PaymentType}
 
-case class Payment (paymentType: PaymentType, amount: AccountPaymentsAmount)
+case class Payment(paymentType: PaymentType, amount: AccountPaymentsAmount)

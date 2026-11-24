@@ -20,52 +20,65 @@ import models.{Enumerable, WithName}
 import play.api.libs.json.*
 
 sealed trait ControllingPersonType {
-  def xmlValue : String
+  def xmlValue: String
 }
 
 object ControllingPersonType extends Enumerable.Implicits {
 
   case object OwnershipOfLegalPerson extends WithName("ownershipOfLegalPerson") with ControllingPersonType {
-    val xmlValue= "CRS801"
+    val xmlValue = "CRS801"
   }
+
   case object OtherMeansOfControl extends WithName("otherMeansOfControl") with ControllingPersonType {
-    val xmlValue= "CRS802"
+    val xmlValue = "CRS802"
   }
+
   case object SeniorManagingOfficial extends WithName("seniorManagingOfficial") with ControllingPersonType {
-    val xmlValue= "CRS803"
+    val xmlValue = "CRS803"
   }
+
   case object SettlorOfTrust extends WithName("settlorOfTrust") with ControllingPersonType {
-    val xmlValue= "CRS804"
+    val xmlValue = "CRS804"
   }
+
   case object TrusteeOfTrust extends WithName("trusteeOfTrust") with ControllingPersonType {
-    val xmlValue= "CRS805"
+    val xmlValue = "CRS805"
   }
+
   case object ProtectorOfTrust extends WithName("protectorOfTrust") with ControllingPersonType {
-    val xmlValue= "CRS806"
+    val xmlValue = "CRS806"
   }
+
   case object BeneficiaryOfTrust extends WithName("beneficiaryOfTrust") with ControllingPersonType {
-    val xmlValue= "CRS807"
+    val xmlValue = "CRS807"
   }
+
   case object OtherControllingPersonOfTrust extends WithName("otherControllingPersonOfTrust") with ControllingPersonType {
-    val xmlValue= "CRS808"
+    val xmlValue = "CRS808"
   }
+
   case object SettlorEquivalent extends WithName("settlorEquivalent") with ControllingPersonType {
-    val xmlValue= "CRS809"
+    val xmlValue = "CRS809"
   }
+
   case object TrusteeEquivalent extends WithName("trusteeEquivalent") with ControllingPersonType {
-    val xmlValue= "CRS810"
+    val xmlValue = "CRS810"
   }
+
   case object ProtectorEquivalent extends WithName("protectorEquivalent") with ControllingPersonType {
-    val xmlValue= "CRS811"
+    val xmlValue = "CRS811"
   }
+
   case object BeneficiaryEquivalent extends WithName("beneficiaryEquivalent") with ControllingPersonType {
-    val xmlValue= "CRS812"
+    val xmlValue = "CRS812"
   }
+
   case object OtherLegalArrangementEquivalent extends WithName("otherLegalArrangementEquivalent") with ControllingPersonType {
-    val xmlValue= "CRS813"
+    val xmlValue = "CRS813"
   }
+
   case object NotReported extends WithName("notReported") with ControllingPersonType {
-    val xmlValue= "CRS800"
+    val xmlValue = "CRS800"
   }
 
   val values: Seq[ControllingPersonType] = Seq(

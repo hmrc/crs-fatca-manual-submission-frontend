@@ -21,7 +21,8 @@ import play.api.libs.json.*
 sealed trait AddressModel
 
 case class UkAddress(addressLine1: String, addressLine2: Option[String], city: String, county: Option[String] = None, postcode: String, country: String)
-  extends AddressModel {
+    extends AddressModel {
+
   val addressFreeFormat: String = List(
     addressLine1,
     addressLine2.getOrElse(""),
@@ -45,9 +46,9 @@ case class AddressNonUk(addressLine1: String,
                         addressLine4: Option[String],
                         postcode: Option[String],
                         country: String
-                       ) extends AddressModel {
+) extends AddressModel {
 
-  val addressFreeFormat: String =  List(
+  val addressFreeFormat: String = List(
     addressLine1,
     addressLine2.getOrElse(""),
     addressLine3,
@@ -63,11 +64,7 @@ object AddressNonUk {
   implicit val format: OFormat[AddressNonUk] = Json.format
 }
 
-
-
 object AddressModel {
-
-
 
   implicit val addressFormatter: Format[AddressModel] = new Format[AddressModel] {
     override def writes(address: AddressModel): JsValue = address match {

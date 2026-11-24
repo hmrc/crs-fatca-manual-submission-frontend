@@ -28,15 +28,18 @@ import java.time.LocalDate
 import scala.language.postfixOps
 import scala.xml.{Elem, NodeSeq}
 
-class XmlMarshallerSpec extends SpecBase with PrivateMethodTester{
+class XmlMarshallerSpec extends SpecBase with PrivateMethodTester {
+
   val nonUkAddress = AddressNonUk(addressLine1 = "Middle of nowhere",
-    addressLine2 = None,
-    addressLine3 = "bad place",
-    addressLine4 = None,
-    postcode = Some("Hell22"),
-    country = "HE")
-  val residency: TaxResidentInformation = TaxResidentInformation(Country("GB", "United Kingdom"), taxIdentifierNumber= Some("12345"))
+                                  addressLine2 = None,
+                                  addressLine3 = "bad place",
+                                  addressLine4 = None,
+                                  postcode = Some("Hell22"),
+                                  country = "HE"
+  )
+  val residency: TaxResidentInformation = TaxResidentInformation(Country("GB", "United Kingdom"), taxIdentifierNumber = Some("12345"))
   val ukAddress = UkAddress(addressLine1 = "line1", addressLine2 = None, city = "Bradford", county = None, postcode = "D17", country = "UK")
+
   val crsIndividualAccountHolder = CrsIndividualAccountHolder(
     individualName = IndividualName("James", "Bond"),
     dateOfBirth = Some(IndividualDateOfBirth(LocalDate.of(1999, 12, 12))),
@@ -47,6 +50,7 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester{
     interestType = Some(SettlorOfTrust),
     selfCert = NotReported
   )
+
   val fatcaAh = FatcaAccountHolder(
     name = "FATCA Org",
     address = nonUkAddress,
@@ -55,6 +59,7 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester{
     accountHolderType = OwnerDocumented
   )
   val selfCert = models.manual.cpso.CpsoSelfCertification.NotReported
+
   val controllingPerson = ControllingPerson(
     individualName = models.manual.cpso.IndividualName("James", "Bond"),
     dateOfBirth = Some(IndividualDateOfBirth(LocalDate.of(1999, 12, 12))),
@@ -65,13 +70,14 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester{
     cpType = OwnershipOfLegalPerson,
     selfCert = selfCert
   )
+
   val substantialOwner = SubstantialOwner(
     individualName = models.manual.cpso.IndividualName("James", "Bond"),
     dateOfBirth = Some(IndividualDateOfBirth(LocalDate.of(1999, 12, 12))),
     placeOfBirth = Some(models.manual.cpso.IndividualPlaceOfBirth(Some("London"), Some("Greater London"), "GB")),
     address = ukAddress,
     residency = Seq.empty,
-    reportId = reportId.copy(regime = FATCA),
+    reportId = reportId.copy(regime = FATCA)
   )
   "XmlMarshaller" - {
 
@@ -88,12 +94,11 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester{
       result.prefix mustEqual "somePrefix"
     }
 
-
     "taxIdToXml" - {
       "create a TIN with sfa prefix for FATCA" in {
         val taxIdToXml = PrivateMethod[NodeSeq](Symbol("taxIdToXml"))
-        val reportId = ReportId(FATCA, 2020, None, "fi12")
-        val result = XmlMarshaller invokePrivate taxIdToXml(residency, reportId)
+        val reportId   = ReportId(FATCA, 2020, None, "fi12")
+        val result     = XmlMarshaller invokePrivate taxIdToXml(residency, reportId)
         println(s"result looks like ${result.toString}")
         result.size mustEqual 2
         result.head.prefix mustEqual "sfa"
@@ -104,9 +109,9 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester{
 
       "create a In with crs prefix for FATCA" in {
         val taxIdToXml = PrivateMethod[NodeSeq](Symbol("taxIdToXml"))
-        val residency = TaxResidentInformation(Country("USA", "United Kingdom"), taxIdentifierNumber = Some("1111"))
-        val reportId = ReportId(CRS, 2020, None, "fi12")
-        val result = XmlMarshaller invokePrivate taxIdToXml(residency, reportId)
+        val residency  = TaxResidentInformation(Country("USA", "United Kingdom"), taxIdentifierNumber = Some("1111"))
+        val reportId   = ReportId(CRS, 2020, None, "fi12")
+        val result     = XmlMarshaller invokePrivate taxIdToXml(residency, reportId)
         result.size mustEqual 2
         result.head.prefix mustEqual "crs"
         result.last.label mustEqual "IN"
@@ -119,7 +124,7 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester{
       val ukAddressToAddressFix = PrivateMethod[NodeSeq](Symbol("ukAddressToAddressFix"))
       "must create a valid AddressFix with the correct prefixes for CRS" in {
         val reportId = ReportId(CRS, 2020, None, "fi12")
-        val result = XmlMarshaller invokePrivate ukAddressToAddressFix(ukAddress, reportId)
+        val result   = XmlMarshaller invokePrivate ukAddressToAddressFix(ukAddress, reportId)
         println(result.toString)
         result.head.prefix mustEqual "crs"
         (result \ "AddressFix").head.prefix mustEqual "cfc"
@@ -137,9 +142,9 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester{
       }
 
       "must create a valid AddressFix with the correct prefixes for FATCA" in {
-        val address = ukAddress.copy(county = Some("Yorkshire"))
+        val address  = ukAddress.copy(county = Some("Yorkshire"))
         val reportId = ReportId(FATCA, 2020, None, "fi12")
-        val result = XmlMarshaller invokePrivate ukAddressToAddressFix(address, reportId)
+        val result   = XmlMarshaller invokePrivate ukAddressToAddressFix(address, reportId)
         result.head.prefix mustEqual "sfa"
         (result \ "CountryCode").text.trim mustEqual "UK"
         (result \ "CountryCode").head.prefix mustEqual "sfa"
@@ -156,12 +161,11 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester{
       }
     }
 
-
     "nonUkAddressToAddressFix" - {
       val nonUkAddressToAddressFix = PrivateMethod[NodeSeq](Symbol("nonUkAddressToAddressFix"))
       "must create a valid AddressFix with the correct prefixes for CRS" in {
         val reportId = ReportId(CRS, 2020, None, "fi12")
-        val result = XmlMarshaller invokePrivate nonUkAddressToAddressFix(nonUkAddress, reportId)
+        val result   = XmlMarshaller invokePrivate nonUkAddressToAddressFix(nonUkAddress, reportId)
         result.head.prefix mustEqual "crs"
         (result \ "CountryCode").text.trim mustEqual "HE"
         (result \ "CountryCode").head.prefix mustEqual "cfc"
@@ -181,9 +185,9 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester{
       }
 
       "must create a valid AddressFix with the correct prefixes for FATCA" in {
-        val address = nonUkAddress.copy(postcode = None)
+        val address  = nonUkAddress.copy(postcode = None)
         val reportId = ReportId(FATCA, 2020, None, "fi12")
-        val result = XmlMarshaller invokePrivate nonUkAddressToAddressFix(address, reportId)
+        val result   = XmlMarshaller invokePrivate nonUkAddressToAddressFix(address, reportId)
         result.head.prefix mustEqual "sfa"
         (result \ "CountryCode").text.trim mustEqual "HE"
         (result \ "AddressFree").text.trim mustEqual address.addressFreeFormat
@@ -194,17 +198,17 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester{
       }
     }
 
-    "accountHolderToXml"- {
+    "accountHolderToXml" - {
       val accountHolderToXml = PrivateMethod[NodeSeq](Symbol("accountHolderToXml"))
       "must create account holder type with the correct prefix for fatca" in {
         val reportId = ReportId(FATCA, 2020, None, "fi12")
-        val result = XmlMarshaller invokePrivate accountHolderToXml("someType", reportId)
+        val result   = XmlMarshaller invokePrivate accountHolderToXml("someType", reportId)
         result.head.prefix mustEqual "ftc"
         result.head.text.trim mustEqual "someType"
       }
       "must create account holder type with the correct prefix for CRS" in {
         val reportId = ReportId(CRS, 2020, None, "fi12")
-        val result = XmlMarshaller invokePrivate accountHolderToXml("someType", reportId)
+        val result   = XmlMarshaller invokePrivate accountHolderToXml("someType", reportId)
         result.head.prefix mustEqual "crs"
         result.head.text.trim mustEqual "someType"
       }
@@ -212,7 +216,7 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester{
     "filerCategoryToXml" - {
       "should create filer category" in {
         val filerCategoryToXml = PrivateMethod[NodeSeq](Symbol("filerCategoryToXml"))
-        val result = XmlMarshaller invokePrivate filerCategoryToXml("filer")
+        val result             = XmlMarshaller invokePrivate filerCategoryToXml("filer")
         result.head.prefix mustEqual "ftc"
         result.head.text.trim mustEqual "filer"
       }
@@ -239,14 +243,14 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester{
       val createNameType = PrivateMethod[NodeSeq](Symbol("createNameType"))
       "must create individual name with appropriate prefix for fatca" in {
         val reportId = ReportId(CRS, 2020, None, "fi12")
-        val result = XmlMarshaller invokePrivate createNameType("firstName", "lastName", reportId)
+        val result   = XmlMarshaller invokePrivate createNameType("firstName", "lastName", reportId)
         result.head.prefix mustEqual "crs"
         result.head.text.trim mustEqual "firstName"
         result.last.text.trim mustEqual "lastName"
       }
       "must create individual name with appropriate prefix for crs" in {
         val reportId = ReportId(FATCA, 2020, None, "fi12")
-        val result = XmlMarshaller invokePrivate createNameType("firstName", "lastName", reportId)
+        val result   = XmlMarshaller invokePrivate createNameType("firstName", "lastName", reportId)
         result.head.prefix mustEqual "sfa"
         result.head.text.trim mustEqual "firstName"
         result.last.text.trim mustEqual "lastName"
@@ -257,13 +261,13 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester{
       val createBirthInfo = PrivateMethod[NodeSeq](Symbol("createBirthInfo"))
       "must create an empty NodeSeq if none have been provided" in {
         val reportId = ReportId(CRS, 2020, None, "fi12")
-        val result = XmlMarshaller invokePrivate createBirthInfo(reportId,None,None,None, None)
+        val result   = XmlMarshaller invokePrivate createBirthInfo(reportId, None, None, None, None)
         result.size mustEqual 0
       }
       "must BirthInfo with only birthDate" in {
         val reportId = ReportId(FATCA, 2020, None, "fi12")
-        val date = LocalDate.now()
-        val result = XmlMarshaller invokePrivate createBirthInfo(reportId,Some(date), None,None, None)
+        val date     = LocalDate.now()
+        val result   = XmlMarshaller invokePrivate createBirthInfo(reportId, Some(date), None, None, None)
         println(result.toString)
         result.size mustEqual 1
         result.head.prefix mustEqual "sfa"
@@ -274,7 +278,7 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester{
       }
       "must BirthInfo with only country" in {
         val reportId = ReportId(CRS, 2020, None, "fi12")
-        val result = XmlMarshaller invokePrivate createBirthInfo(reportId,None,Some(CountryBirthInfo("uk")),None, None)
+        val result   = XmlMarshaller invokePrivate createBirthInfo(reportId, None, Some(CountryBirthInfo("uk")), None, None)
         result.size mustEqual 1
         result.head.prefix mustEqual "crs"
         (result \ "CountryInfo" \ "CountryCode").text.trim mustEqual "uk"
@@ -284,7 +288,7 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester{
       }
       "must BirthInfo with only city" in {
         val reportId = ReportId(CRS, 2020, None, "fi12")
-        val result = XmlMarshaller invokePrivate createBirthInfo(reportId, None, None, Some(CityBirthInfo("Newcastle")), None)
+        val result   = XmlMarshaller invokePrivate createBirthInfo(reportId, None, None, Some(CityBirthInfo("Newcastle")), None)
         result.size mustEqual 1
         result.head.prefix mustEqual "crs"
         (result \ "City").text.trim mustEqual "Newcastle"
@@ -294,7 +298,7 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester{
       }
       "must BirthInfo with only region" in {
         val reportId = ReportId(FATCA, 2020, None, "fi12")
-        val result = XmlMarshaller invokePrivate createBirthInfo(reportId, None, None, None, Some(RegionBirthInfo("north east")))
+        val result   = XmlMarshaller invokePrivate createBirthInfo(reportId, None, None, None, Some(RegionBirthInfo("north east")))
         result.size mustEqual 1
         result.head.prefix mustEqual "sfa"
         (result \ "CitySubEntity").text.trim mustEqual "north east"
@@ -306,7 +310,7 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester{
     "createCPInfo" - {
       val createCPInfo = PrivateMethod[NodeSeq](Symbol("createCPInfo"))
       "must create controlling person type and self cert when called" in {
-        val yes = models.manual.cpso.CpsoSelfCertification.Yes
+        val yes    = models.manual.cpso.CpsoSelfCertification.Yes
         val result = XmlMarshaller invokePrivate createCPInfo(yes, SeniorManagingOfficial)
         result.head.prefix mustEqual "crs"
         result.size mustEqual 2
@@ -332,10 +336,10 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester{
 
         result.prefix mustEqual "crs"
         result.label mustEqual "AccountHolder"
-        (result \ "Organisation" \"ResCountryCode").text.trim mustEqual "GB"
-        (result \ "Organisation" \"IN").text.trim mustEqual "12345"
+        (result \ "Organisation" \ "ResCountryCode").text.trim mustEqual "GB"
+        (result \ "Organisation" \ "IN").text.trim mustEqual "12345"
         (result \ "Organisation" \ "Name").text.trim mustEqual "CRS Org Ltd"
-        (result \ "Organisation" \"Name").head.prefix mustEqual "crs"
+        (result \ "Organisation" \ "Name").head.prefix mustEqual "crs"
         (result \ "Organisation" \ "Address").head.prefix mustEqual "crs"
         (result \ "AcctHolderType").text.trim mustEqual PassiveWithMultiplePersons.toString
         (result \ "AcctHolderType").head.prefix mustEqual "crs"
@@ -376,7 +380,7 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester{
         (result \ "Organisation" \ "TIN").text.trim mustEqual "12345"
         (result \ "Organisation" \ "Name").text.trim mustEqual "FATCA Org"
         (result \ "Organisation" \ "Name").head.prefix mustEqual "sfa"
-        (result \ "Organisation" \"Address").head.prefix mustEqual "sfa"
+        (result \ "Organisation" \ "Address").head.prefix mustEqual "sfa"
         (result \ "AcctHolderType").text.trim mustEqual OwnerDocumented.toString
         (result \ "AcctHolderType").head.prefix mustEqual "ftc"
         (result \ "SelfCert") mustBe empty
@@ -424,21 +428,21 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester{
       }
     }
     "toIndividualType" - {
-    "CrsIndividualAccountHolder" in {
+      "CrsIndividualAccountHolder" in {
 
-      val result = XmlMarshaller.toIndividualType(crsIndividualAccountHolder)
-      result.prefix mustEqual "crs"
-      result.label mustEqual "AccountHolder"
-      (result \ "AcctHolderType") mustBe empty
-      (result \ "SelfCert").text.trim mustBe NotReported.toString
-      (result \ "EquityInterestType").text.trim mustBe SettlorOfTrust.xmlValue
-      (result \ "Individual" \ "Name" \ "FirstName").text.trim mustBe "James"
-      (result \ "Individual" \ "Name" \ "LastName").text.trim mustBe "Bond"
-      (result \ "Individual" \ "BirthInfo" \ "BirthDate").text.trim mustBe LocalDate.of(1999,12,12).toString
-      (result \ "Individual" \ "BirthInfo" \ "City").text.trim mustBe "London"
-      (result \ "Individual" \ "BirthInfo" \ "CitySubEntity").text.trim mustBe "Greater London"
-      (result \ "Individual" \ "BirthInfo" \ "CountryInfo" \ "CountryCode").text.trim mustBe "GB"
-    }
+        val result = XmlMarshaller.toIndividualType(crsIndividualAccountHolder)
+        result.prefix mustEqual "crs"
+        result.label mustEqual "AccountHolder"
+        (result \ "AcctHolderType") mustBe empty
+        (result \ "SelfCert").text.trim mustBe NotReported.toString
+        (result \ "EquityInterestType").text.trim mustBe SettlorOfTrust.xmlValue
+        (result \ "Individual" \ "Name" \ "FirstName").text.trim mustBe "James"
+        (result \ "Individual" \ "Name" \ "LastName").text.trim mustBe "Bond"
+        (result \ "Individual" \ "BirthInfo" \ "BirthDate").text.trim mustBe LocalDate.of(1999, 12, 12).toString
+        (result \ "Individual" \ "BirthInfo" \ "City").text.trim mustBe "London"
+        (result \ "Individual" \ "BirthInfo" \ "CitySubEntity").text.trim mustBe "Greater London"
+        (result \ "Individual" \ "BirthInfo" \ "CountryInfo" \ "CountryCode").text.trim mustBe "GB"
+      }
 
       "controllingPerson" in {
         val result = XmlMarshaller.toIndividualType(controllingPerson)
@@ -449,7 +453,7 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester{
         (result \ "CtrlgPersonType").text.trim mustBe OwnershipOfLegalPerson.xmlValue
         (result \ "Individual" \ "Name" \ "FirstName").text.trim mustBe "James"
         (result \ "Individual" \ "Name" \ "LastName").text.trim mustBe "Bond"
-        (result \ "Individual" \ "BirthInfo" \ "BirthDate").text.trim mustBe LocalDate.of(1999,12,12).toString
+        (result \ "Individual" \ "BirthInfo" \ "BirthDate").text.trim mustBe LocalDate.of(1999, 12, 12).toString
         (result \ "Individual" \ "BirthInfo" \ "City").text.trim mustBe "London"
         (result \ "Individual" \ "BirthInfo" \ "CitySubEntity").text.trim mustBe "Greater London"
         (result \ "Individual" \ "BirthInfo" \ "CountryInfo" \ "CountryCode").text.trim mustBe "GB"
@@ -474,22 +478,21 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester{
 
     }
 
-    "toAccountReport" -{
-      val payments = List(Payment(CRSDividends, AccountPaymentsAmount(Currency.GBP, "400")),
-        Payment(CRSDividends, AccountPaymentsAmount(Currency.GBP, "200")))
+    "toAccountReport" - {
+      val payments = List(Payment(CRSDividends, AccountPaymentsAmount(Currency.GBP, "400")), Payment(CRSDividends, AccountPaymentsAmount(Currency.GBP, "200")))
       val accountBalance = AccountBalance(Currency.GBP, "200")
-      val repId = reportId.copy(regime = FATCA)
+      val repId          = reportId.copy(regime = FATCA)
       "wrap fatca account with accountHolder and substancial owner into a reportingGroup" in {
         val fatcaAccountHolder = XmlMarshaller.toOrganisationPartyType(fatcaAh)
-        val so = XmlMarshaller.toIndividualType(substantialOwner)
+        val so                 = XmlMarshaller.toIndividualType(substantialOwner)
         val fatcAccount = FatcaAccount(
           numberType = Some(Iban),
-          accountIdentifier= AccountNumber(id= "account1"),
+          accountIdentifier = AccountNumber(id = "account1"),
           accountBalance = accountBalance,
           isClosed = true,
-          payments =  payments
+          payments = payments
         )
-        val result = XmlMarshaller.toAccountReport(fatcAccount,repId)(fatcaAccountHolder ++ so)
+        val result = XmlMarshaller.toAccountReport(fatcAccount, repId)(fatcaAccountHolder ++ so)
         result.prefix mustEqual "ftc"
         result.label mustEqual "ReportingGroup"
         (result \ "AccountReport" \ "Payment").size mustEqual 2
@@ -507,10 +510,9 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester{
         (result \ "AccountReport" \ "AccountHolder").size mustEqual 1
       }
 
-
       "wrap crs account with accountHolder and controlling person into a reportingGroup" in {
         val crsAccountHolder = XmlMarshaller.toIndividualType(crsIndividualAccountHolder)
-        val cp = XmlMarshaller.toIndividualType(controllingPerson)
+        val cp               = XmlMarshaller.toIndividualType(controllingPerson)
         val crsAccount = CrsAccount(
           numberType = Some(Iban),
           accountIdentifier = AccountNumber(id = "account1"),
@@ -519,7 +521,7 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester{
           isUndocumented = true,
           isDormant = false,
           wasOpenInRP = models.manual.account.WasAccountOpen.Yes,
-          howManyJointHolders= Some(2),
+          howManyJointHolders = Some(2),
           accountType = Depository,
           payments = payments :+ Payment(CRSDividends, AccountPaymentsAmount(Currency.GBP, "100"))
         )
@@ -528,11 +530,11 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester{
         result.prefix mustEqual "crs"
         result.label mustEqual "ReportingGroup"
         (result \ "AccountReport" \ "Payment").size mustEqual 3
-        (result \ "AccountReport" \ "AccountNumber").head  \@ "ClosedAccount" mustEqual "false"
+        (result \ "AccountReport" \ "AccountNumber").head \@ "ClosedAccount" mustEqual "false"
         (result \ "AccountReport" \ "AccountType").head.text.trim mustEqual Depository.toString
         (result \ "AccountReport" \ "DDProcedure").head.text.trim mustEqual models.manual.account.WasAccountOpen.Yes.xmlValue
-        (result \ "AccountReport" \ "AccountNumber").head  \@ "UndocumentedAccount" mustEqual "true"
-        (result \ "AccountReport" \ "AccountNumber").head  \@ "DormantAccount" mustEqual "false"
+        (result \ "AccountReport" \ "AccountNumber").head \@ "UndocumentedAccount" mustEqual "true"
+        (result \ "AccountReport" \ "AccountNumber").head \@ "DormantAccount" mustEqual "false"
         (result \ "AccountReport" \ "AccountNumber").head.text.trim mustEqual "account1"
         (result \ "AccountReport" \ "AccountNumber").head \@ "AcctNumberType" mustEqual Iban.xmlValue
         (result \ "AccountReport" \ "Payment" \ "Type").head.text.trim mustEqual CRSDividends.toString
@@ -547,7 +549,6 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester{
         (result \ "AccountReport" \ "AccountHolder").size mustEqual 1
       }
     }
-
 
   }
 

@@ -16,6 +16,6 @@
 
 package models.manual
 
-case class CountryBirthInfo (country:String)
-case class CityBirthInfo (city:String)
-case class RegionBirthInfo (region:String)
+case class CountryBirthInfo(country: String)
+case class CityBirthInfo(city: String)
+case class RegionBirthInfo(region: String)

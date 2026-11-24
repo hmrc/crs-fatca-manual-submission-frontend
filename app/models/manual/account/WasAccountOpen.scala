@@ -22,19 +22,21 @@ import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 
 sealed trait WasAccountOpen {
-  val xmlValue : String
+  val xmlValue: String
 }
 
 object WasAccountOpen extends Enumerable.Implicits {
 
   case object Yes extends WithName("yes") with WasAccountOpen {
-    val xmlValue : String = "CRS1201"
+    val xmlValue: String = "CRS1201"
   }
-  case object No extends WithName("no") with WasAccountOpen{
-    val xmlValue : String = "CRS1202"
+
+  case object No extends WithName("no") with WasAccountOpen {
+    val xmlValue: String = "CRS1202"
   }
-  case object NotReported extends WithName("notReported") with WasAccountOpen{
-    val xmlValue : String = "CRS1200"
+
+  case object NotReported extends WithName("notReported") with WasAccountOpen {
+    val xmlValue: String = "CRS1200"
   }
 
   val allValues: Seq[WasAccountOpen] = Seq(

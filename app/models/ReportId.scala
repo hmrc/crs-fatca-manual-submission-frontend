@@ -37,9 +37,9 @@ case class ReportId(regime: RegimeType, reportingYear: Int, uploadedTime: Option
         s"${regime.value}-$reportingYear-NONE-$fiId"
     }
 
-  def getChildPrefix(isCrsPrefix:Boolean): String = if regime == FATCA then "sfa" else if isCrsPrefix then "crs" else "cfc"
-  val tinLabel: String = if regime == FATCA then "TIN" else "IN"
-  val parentPrefix: String = if regime == FATCA then "ftc" else "crs"
+  def getChildPrefix(isCrsPrefix: Boolean): String = if regime == FATCA then "sfa" else if isCrsPrefix then "crs" else "cfc"
+  val tinLabel: String                             = if regime == FATCA then "TIN" else "IN"
+  val parentPrefix: String                         = if regime == FATCA then "ftc" else "crs"
 
 }
 

@@ -16,4 +16,4 @@
 
 package models.manual.account
 
-case class AccountNumber (id: String)
+case class AccountNumber(id: String)

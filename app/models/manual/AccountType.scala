@@ -39,7 +39,7 @@ object AccountType {
                         accountType: WhatAccountType,
                         payments: List[Payment]
   ) extends AccountType {
-    val accountNumber: String = accountIdentifier.id
+    val accountNumber: String            = accountIdentifier.id
     override val balance: AccountBalance = if isClosed then accountBalance.copy(amount = "0.00") else accountBalance
   }
 
@@ -47,8 +47,9 @@ object AccountType {
                           accountIdentifier: AccountNumber,
                           accountBalance: AccountBalance,
                           isClosed: Boolean,
-                          payments: List[Payment]) extends AccountType {
-    val accountNumber: String = accountIdentifier.id
-    override val balance: AccountBalance  = if isClosed then accountBalance.copy(amount = "0.00") else accountBalance
+                          payments: List[Payment]
+  ) extends AccountType {
+    val accountNumber: String            = accountIdentifier.id
+    override val balance: AccountBalance = if isClosed then accountBalance.copy(amount = "0.00") else accountBalance
   }
 }
