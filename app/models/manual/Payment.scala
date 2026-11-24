@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-package models
+package models.manual
 
-import models.response.Country
-import play.api.libs.json.{Json, OFormat}
+import models.manual.account.{AccountPaymentsAmount, PaymentType}
 
-case class TaxResidentInformation(country: Country, hasTaxIdentificationNumber: Option[Boolean] = None, taxIdentifierNumbers: Option[String] = None)
-
-object TaxResidentInformation {
-
-  implicit val format: OFormat[TaxResidentInformation] = Json.format
-}
+case class Payment (paymentType: PaymentType, amount: AccountPaymentsAmount)

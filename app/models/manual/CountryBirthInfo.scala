@@ -16,25 +16,6 @@
 
 package models.manual
 
-import models.ReportId
-import scala.xml.{Elem, NodeSeq, Null, TopScope}
-
-sealed trait XmlEntityType
-case object Sponsor extends XmlEntityType 
-case object ReportingFI extends XmlEntityType 
-case object AccountHolder extends XmlEntityType 
-case object SubstantialOwner extends XmlEntityType
-case object ControllingPerson extends XmlEntityType 
-
-object XmlEntityType {
-  def wrap(e:XmlEntityType, reportId: ReportId)(children: NodeSeq) : Elem =
-  Elem(
-  prefix = reportId.parentPrefix,
-  label = e.toString,
-  attributes = Null,
-  scope = TopScope,
-  minimizeEmpty = false,
-  child = children: _*
-  )
-
-}
+case class CountryBirthInfo (country:String)
+case class CityBirthInfo (city:String)
+case class RegionBirthInfo (region:String)

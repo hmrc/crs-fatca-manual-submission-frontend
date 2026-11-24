@@ -23,12 +23,9 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 
 sealed trait WhatTypeOfFiler extends FilerCategoryTypes
 
-
-import models.{Enumerable, WithName}
-import play.api.i18n.Messages
-import uk.gov.hmrc.govukfrontend.views.Aliases.Text
-import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
-sealed trait FilerCategoryTypes
+sealed trait FilerCategoryTypes {
+  val xmlValue: String
+}
 
 object FilerCategoryTypes {
   def isSponsorType(filer:FilerCategoryTypes): Boolean =
@@ -38,11 +35,17 @@ sealed trait WhatTypeOfFilerIsSponsor extends FilerCategoryTypes
 
 object WhatTypeOfFilerIsSponsor extends Enumerable.Implicits {
 
-  case object ForeignFI extends WithName("foreignFI") with WhatTypeOfFilerIsSponsor
+  case object ForeignFI extends WithName("foreignFI") with WhatTypeOfFilerIsSponsor {
+    val xmlValue = "FATCA607"
+  }
 
-  case object DirectNonFinancial extends WithName("directNonFinancial") with WhatTypeOfFilerIsSponsor
+  case object DirectNonFinancial extends WithName("directNonFinancial") with WhatTypeOfFilerIsSponsor {
+    val xmlValue = "FATCA608"
+  }
 
-  case object Trustee extends WithName("trustee") with WhatTypeOfFilerIsSponsor
+  case object Trustee extends WithName("trustee") with WhatTypeOfFilerIsSponsor{
+    val xmlValue = "FATCA609"
+  }
 
   val values: Seq[WhatTypeOfFilerIsSponsor] = Seq(
     ForeignFI,
@@ -68,11 +71,17 @@ object WhatTypeOfFilerIsSponsor extends Enumerable.Implicits {
 }
   object WhatTypeOfFiler extends Enumerable.Implicits {
 
-    case object Foreign extends WithName("foreign") with WhatTypeOfFiler
+    case object Foreign extends WithName("foreign") with WhatTypeOfFiler{
+      val xmlValue = "FATCA601"
+    }
 
-    case object Registered extends WithName("registered") with WhatTypeOfFiler
+    case object Registered extends WithName("registered") with WhatTypeOfFiler{
+      val xmlValue = "FATCA602"
+    }
 
-    case object Withholding extends WithName("withholding") with WhatTypeOfFiler
+    case object Withholding extends WithName("withholding") with WhatTypeOfFiler{
+      val xmlValue = "FATCA610"
+    }
 
     val values: Seq[WhatTypeOfFiler] = Seq(
       Foreign,
