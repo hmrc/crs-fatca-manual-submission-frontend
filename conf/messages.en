@@ -1333,3 +1333,8 @@ cpso.checkAnswers.title.crs = Check your answers for the controlling person
 cpso.checkAnswers.title.fatca = Check your answers for the substantial owner
 cpso.checkAnswers.heading.crs = Check your answers for the controlling person
 cpso.checkAnswers.heading.fatca = Check your answers for the substantial owner
+
+isAccountsSectionCompleted.heading = Have you finished adding the accounts for {0}?
+isAccountsSectionCompleted.title = Have you finished adding the accounts for the financial institution?
+isAccountsSectionCompleted.hint = You can still change the accounts information later.
+isAccountsSectionCompleted.error.required = Select yes if you have finished adding the accounts for the financial institution
