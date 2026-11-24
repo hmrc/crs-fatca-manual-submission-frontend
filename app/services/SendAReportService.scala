@@ -22,6 +22,7 @@ import models.viewModels.{AccountId, TaskStatus}
 import models.{viewModels, ReportId, UserAnswers}
 import pages.QuestionPage
 import pages.manual.account.{AccountsPage, IsAccountsSectionCompletedPage}
+import pages.manual.account.{AccountsPage, IsAccountsSectionCompletedPage}
 import pages.manual.accountHolders.IsAccountHoldersSectionCompletePage
 import pages.manual.cpso.IsCpsoSectionCompletePage
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
