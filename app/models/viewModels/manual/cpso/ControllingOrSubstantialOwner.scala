@@ -118,13 +118,15 @@ object ControllingOrSubstantialOwner {
 
 case class ControllingOrSubstantialOwners(currentCpsoId: Option[CPSOId],
                                           cpsos: Map[String, ControllingOrSubstantialOwner],
-                                          doYouWantToAddAnotherCpso: Option[Boolean] = None
+                                          doYouWantToAddAnotherCpso: Option[Boolean] = None,
+                                          cpsoSectionComplete: Option[Boolean] = None
 )
 
 object ControllingOrSubstantialOwners {
 
   private val CurrentcpsoId             = "currentCPSOId"
   private val DoYouWantToAddAnotherCpso = "doYouWantToAddAnotherCpso"
+  private val CpsoSectionComplete       = "cpsoSectionComplete"
 
   implicit val format: OFormat[ControllingOrSubstantialOwners] = new OFormat[ControllingOrSubstantialOwners] {
 
@@ -138,18 +140,22 @@ object ControllingOrSubstantialOwners {
           val doYouWantToAddAnotherCpso =
             (obj \ DoYouWantToAddAnotherCpso).validateOpt[Boolean]
 
+          val cpsoSectionComplete =
+            (obj \ CpsoSectionComplete).validateOpt[Boolean]
+
           val cpsoEntries =
             JsObject(
               obj.fields.filterNot(
-                f => f._1 == CurrentcpsoId || f._1 == DoYouWantToAddAnotherCpso
+                f => f._1 == CurrentcpsoId || f._1 == DoYouWantToAddAnotherCpso || f._1 == CpsoSectionComplete
               )
             ).validate[Map[String, ControllingOrSubstantialOwner]]
 
           for {
-            currentId      <- cpsoId
-            cpso           <- cpsoEntries
-            addAnotherCPSO <- doYouWantToAddAnotherCpso
-          } yield ControllingOrSubstantialOwners(currentId, cpso, addAnotherCPSO)
+            currentId              <- cpsoId
+            cpso                   <- cpsoEntries
+            addAnotherCPSO         <- doYouWantToAddAnotherCpso
+            addCpsoSectionComplete <- cpsoSectionComplete
+          } yield ControllingOrSubstantialOwners(currentId, cpso, addCpsoSectionComplete)
       }
 
     override def writes(value: ControllingOrSubstantialOwners): JsObject = {
