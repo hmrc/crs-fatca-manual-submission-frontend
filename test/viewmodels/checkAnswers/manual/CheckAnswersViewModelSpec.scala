@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package utils
+package viewmodels.checkAnswers.manual
 
 import base.SpecBase
 import models.NumberType.*
@@ -33,8 +33,16 @@ import models.manual.accountHolders.{
   OrganisationCrs,
   OrganisationFatca
 }
+import models.manual.cpso.{
+  ControllingPersonType,
+  ControllingPersonTypes,
+  CpsoSelfCertification,
+  IndividualName as CPSOIndividualName,
+  IndividualOrOrganisation as CPSOType
+}
 import models.manual.filercategory.{WhatTypeOfFiler, WhatTypeOfFilerIsSponsor}
-import models.viewModels.{AccountHolderId, AccountId}
+import models.viewModels.{AccountHolder, AccountHolderId, AccountHolders, AccountId}
+import models.viewModels.manual.cpso.CPSOId
 import models.{AccountBalance, CrsOrFatca, Currency, NumberType, ReportId, UserAnswers}
 import org.scalatest.freespec.AnyFreeSpec
 import pages.manual.account.*
@@ -53,6 +61,19 @@ import pages.manual.accountHolders.{
   ProvideEquityInterestTypePage,
   SelfCertificationPage
 }
+import pages.manual.cpso.{
+  AccountHolderIdsPage,
+  CPSOIndividualDateOfBirthPage,
+  ControllingPersonTypePage,
+  CpsoOrganisationNamePage,
+  CpsoSelfCertificationPage,
+  CurrentCPSOIdPage,
+  IndividualHaveDateOfBirthPage as CPSOIndividualHaveDateOfBirthPage,
+  IndividualHavePlaceOfBirthPage as CPSOIndividualHavePlaceOfBirthPage,
+  IndividualNamePage as CPSOIndividualNamePage,
+  IndividualOrOrganisationPage as CPSOIndividualOrOrganisationPage
+}
+import pages.manual.accountHolders.AccountHoldersPage
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage, TypeOfReportPage}
 import play.api.i18n.Messages
@@ -61,16 +82,28 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, Summ
 import viewmodels.checkAnswers.manual.account.*
 import viewmodels.checkAnswers.manual.accountHolders.*
 import viewmodels.govuk.all.{FluentSummaryList, SummaryListViewModel}
-import viewmodels.checkAnswers.manual.accountHolders
+import viewmodels.checkAnswers.manual.cpso.{
+  CPSOIndividualDateOfBirthSummary,
+  CPSOLinkedAccountHoldersSummary,
+  CPSOWhatIsAddressSummary,
+  ControllingPersonTypeSummary,
+  CpsoOrganisationNameSummary,
+  CpsoSelfCertificationSummary,
+  IndividualHaveDateOfBirthSummary as CPSOIndividualHaveDateOfBirthSummary,
+  IndividualHavePlaceOfBirthSummary as CPSOIndividualHavePlaceOfBirthSummary,
+  IndividualNameSummary as CPSOIndividualNameSummary,
+  IndividualOrOrganisationSummary as CPSOIndividualOrOrganisationSummary,
+  IndividualPlaceOfBirthSummary as CPSOIndividualPlaceOfBirthSummary
+}
 import java.time.LocalDate
 
-class CheckAnswersUtilSpec extends SpecBase {
+class CheckAnswersViewModelSpec extends SpecBase {
 
-  val util = new CheckAnswersUtil()
+  val util = new CheckAnswersViewModel()
 
   implicit val messages: Messages = stubMessages()
 
-  "ReportDetailsCheckAnswersUtil" - {
+  "CheckAnswersViewModel" - {
 
     "getReportDetailsRows" - {
 
@@ -358,6 +391,99 @@ class CheckAnswersUtilSpec extends SpecBase {
 
             util.getAccountRows(ua).rows mustBe expected
           }
+        }
+
+      }
+    }
+
+    "getCPSORows" - {
+
+      "when the regime is FATCA" - {
+
+        implicit val reportId: ReportId = ReportId(FATCA, 2025, None, "TestfiID")
+
+        "when the CPSO is an individual" in {
+          val cpsoId = CPSOId("cpso-id")
+          val ua = emptyUserAnswers
+            .withPage(CurrentCPSOIdPage()(reportId), cpsoId)
+            .withPage(CPSOIndividualOrOrganisationPage(cpsoId), CPSOType.Individual)
+            .withPage(CPSOIndividualNamePage(cpsoId), CPSOIndividualName("First", "Last"))
+            .withPage(CPSOIndividualHaveDateOfBirthPage(reportId, cpsoId), true)
+            .withPage(CPSOIndividualDateOfBirthPage(cpsoId, reportId), IndividualDateOfBirth(LocalDate.of(1980, 3, 31)))
+            .withPage(CPSOIndividualHavePlaceOfBirthPage(cpsoId, reportId), false)
+
+          val expectedRows = Seq(
+            CPSOLinkedAccountHoldersSummary.row(ua),
+            CPSOIndividualOrOrganisationSummary.row(ua),
+            CPSOIndividualNameSummary.row(ua),
+            CPSOIndividualHaveDateOfBirthSummary.row(ua),
+            CPSOIndividualDateOfBirthSummary.row(ua),
+            CPSOIndividualHavePlaceOfBirthSummary.row(ua),
+            CPSOIndividualPlaceOfBirthSummary.row(ua),
+            CPSOWhatIsAddressSummary.row(ua)
+          ).flatten
+
+          util.getCPSORows(ua).head.rows mustBe expectedRows
+        }
+
+        "when the CPSO is an organisation" in {
+          val cpsoId = CPSOId("cpso-id")
+          val ua = emptyUserAnswers
+            .withPage(CurrentCPSOIdPage()(reportId), cpsoId)
+            .withPage(CPSOIndividualOrOrganisationPage(cpsoId), CPSOType.Organisation)
+            .withPage(CpsoOrganisationNamePage(cpsoId, reportId), "Example Organisation")
+            .withPage(CPSOIndividualHaveDateOfBirthPage(reportId, cpsoId), true)
+            .withPage(CPSOIndividualDateOfBirthPage(cpsoId, reportId), IndividualDateOfBirth(LocalDate.of(1980, 3, 31)))
+            .withPage(CPSOIndividualHavePlaceOfBirthPage(cpsoId, reportId), true)
+
+          val expectedRows = Seq(
+            CPSOLinkedAccountHoldersSummary.row(ua),
+            CPSOIndividualOrOrganisationSummary.row(ua),
+            CpsoOrganisationNameSummary.row(ua),
+            CPSOWhatIsAddressSummary.row(ua)
+          ).flatten
+
+          util.getCPSORows(ua).head.rows mustBe expectedRows
+        }
+      }
+
+      "when the regime is CRS" - {
+
+        implicit val reportId: ReportId = ReportId(CRS, 2025, None, "TestfiID")
+
+        "must include the individual and CRS-specific rows" in {
+          val cpsoId   = CPSOId("cpso-id")
+          val holderId = AccountHolderId("holder-id")
+          val ua = emptyUserAnswers
+            .withPage(CurrentCPSOIdPage()(reportId), cpsoId)
+            .withPage(AccountHolderIdsPage(cpsoId, reportId), Set(holderId))
+            .withPage(
+              AccountHoldersPage()(reportId),
+              AccountHolders(None, Map(holderId.value -> AccountHolder(organisationName = Some("Organisation"))))
+            )
+            .withPage(CPSOIndividualNamePage(cpsoId), CPSOIndividualName("First", "Last"))
+            .withPage(CPSOIndividualHaveDateOfBirthPage(reportId, cpsoId), true)
+            .withPage(CPSOIndividualDateOfBirthPage(cpsoId, reportId), IndividualDateOfBirth(LocalDate.of(1980, 3, 31)))
+            .withPage(CPSOIndividualHavePlaceOfBirthPage(cpsoId, reportId), false)
+            .withPage(
+              ControllingPersonTypePage(cpsoId, reportId),
+              ControllingPersonTypes(Seq(ControllingPersonType.TrusteeOfTrust))
+            )
+            .withPage(CpsoSelfCertificationPage(cpsoId, reportId), CpsoSelfCertification.Yes)
+
+          val expectedRows = Seq(
+            CPSOLinkedAccountHoldersSummary.row(ua),
+            CPSOIndividualNameSummary.row(ua),
+            CPSOIndividualHaveDateOfBirthSummary.row(ua),
+            CPSOIndividualDateOfBirthSummary.row(ua),
+            CPSOIndividualHavePlaceOfBirthSummary.row(ua),
+            CPSOIndividualPlaceOfBirthSummary.row(ua),
+            ControllingPersonTypeSummary.row(ua),
+            CpsoSelfCertificationSummary.row(ua),
+            CPSOWhatIsAddressSummary.row(ua)
+          ).flatten
+
+          util.getCPSORows(ua).head.rows mustBe expectedRows
         }
       }
     }

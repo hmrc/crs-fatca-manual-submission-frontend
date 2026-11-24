@@ -16,9 +16,9 @@
 
 package pages.manual.cpso
 
-import models.{ReportId, UserAnswers}
 import models.response.Address
 import models.viewModels.manual.cpso.CPSOId
+import models.{ReportId, UserAnswers}
 import pages.QuestionPage
 import play.api.libs.json.JsPath
 
@@ -34,7 +34,12 @@ final case class SelectAddressPage(currentId: CPSOId, reportId: ReportId) extend
   )(implicit reportId: ReportId): Try[UserAnswers] =
     value match {
       case Some(_) =>
-        List(UkPostCodePage(currentId, reportId), AddressUkPage(currentId, reportId))
+        List(
+          UkPostCodePage(currentId, reportId),
+          AddressUkPage(currentId, reportId),
+          CPSOAddressNonUkPage(currentId, reportId),
+          WhatIsAddressPage(currentId, reportId)
+        )
           .foldLeft(Try(userData))(removePage())
       case _ => Success(userData)
     }

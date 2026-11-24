@@ -17,10 +17,9 @@
 package pages.manual.cpso
 
 import base.SpecBase
-import models.ReportId
 import models.response.{Address, Country}
-import models.UkAddress
 import models.viewModels.manual.cpso.CPSOId
+import models.{AddressNonUk, ReportId, UkAddress}
 
 class SelectAddressPageSpec extends SpecBase {
 
@@ -31,16 +30,20 @@ class SelectAddressPageSpec extends SpecBase {
   private val address: Address =
     Address(None, "line 1", None, None, None, "town", Some("ZZ1 1ZZ"), Country.GB)
 
+  private val nonUkAddress: AddressNonUk =
+    AddressNonUk("line 1", None, "town", None, Some("12345"), "US")
+
   private val ukAddress: UkAddress =
     UkAddress("line 1", None, "town", None, "ZZ1 1ZZ", "GB")
 
   "cleanupWithReportId" - {
 
-    "must remove the manually-entered UK address when an address is selected" in {
-
+    "must remove all competing address answers when an address is selected" in {
       val userAnswers = emptyUserAnswers
         .withPage(UkPostCodePage(cpsoId, reportId), "ZZ1 1ZZ")
         .withPage(AddressUkPage(cpsoId, reportId), ukAddress)
+        .withPage(CPSOAddressNonUkPage(cpsoId, reportId), nonUkAddress)
+        .withPage(WhatIsAddressPage(cpsoId, reportId), address)
 
       val result = SelectAddressPage(cpsoId, reportId)
         .cleanupWithReportId(Some(address), userAnswers)
@@ -49,31 +52,17 @@ class SelectAddressPageSpec extends SpecBase {
 
       mustBeRemoved(
         result,
-        AddressUkPage(cpsoId, reportId)
+        UkPostCodePage(cpsoId, reportId),
+        AddressUkPage(cpsoId, reportId),
+        CPSOAddressNonUkPage(cpsoId, reportId),
+        WhatIsAddressPage(cpsoId, reportId)
       )
     }
 
-    "must remove the postcode  when an address is selected" in {
-
+    "must preserve competing addresses when the selected address is removed" in {
       val userAnswers = emptyUserAnswers
         .withPage(UkPostCodePage(cpsoId, reportId), "ZZ1 1ZZ")
-
-      val result = SelectAddressPage(cpsoId, reportId)
-        .cleanupWithReportId(Some(address), userAnswers)
-        .success
-        .value
-
-      mustBeRemoved(
-        result,
-        UkPostCodePage(cpsoId, reportId)
-      )
-    }
-
-    "must remove nothing when no address is selected" in {
-
-      val userAnswers = emptyUserAnswers
-        .withPage(UkPostCodePage(cpsoId, reportId), "ZZ1 1ZZ")
-        .withPage(AddressUkPage(cpsoId, reportId), ukAddress)
+        .withPage(CPSOAddressNonUkPage(cpsoId, reportId), nonUkAddress)
 
       val result = SelectAddressPage(cpsoId, reportId)
         .cleanupWithReportId(None, userAnswers)
@@ -83,7 +72,7 @@ class SelectAddressPageSpec extends SpecBase {
       mustBeUnaffected(
         result,
         UkPostCodePage(cpsoId, reportId),
-        AddressUkPage(cpsoId, reportId)
+        CPSOAddressNonUkPage(cpsoId, reportId)
       )
     }
   }
