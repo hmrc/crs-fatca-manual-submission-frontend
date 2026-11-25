@@ -23,7 +23,7 @@ import models.ServiceErrors.NoFiDetailFound
 import models.viewModels.AccountHolders
 import models.{Mode, ReportId}
 import navigation.ManualSubmissionNavigator
-import pages.manual.cpso.AccountHolderIdsPage
+import pages.manual.cpso.{AccountHolderIdsPage, CpsoCreationPage}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -31,6 +31,7 @@ import services.ViewFIService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.cpso.AccountHolderView
 
+import java.time.Clock
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -42,6 +43,7 @@ class AccountHolderController @Inject() (
   formProvider: AccountHolderFormProvider,
   viewFIService: ViewFIService,
   val controllerComponents: MessagesControllerComponents,
+  clock: Clock,
   view: AccountHolderView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -90,9 +92,11 @@ class AccountHolderController @Inject() (
               .filter(
                 (_, accountHolder) => accountHolder.canHaveCPSO() && accountHolder.organisationName.nonEmpty
               )
-            val existingIds = accountHolders.map(_._1)
-            val form        = formProvider(existingIds)
-            val options     = AccountHolders.checkboxOptions(accountHolders)
+            val existingIds              = accountHolders.map(_._1)
+            val form                     = formProvider(existingIds)
+            val options                  = AccountHolders.checkboxOptions(accountHolders)
+            val doesCpsoHaveCreationTime = request.userAnswers.get(CpsoCreationPage(request.cpsoId, reportId)).isDefined
+
             form
               .bindFromRequest()
               .fold(
@@ -100,8 +104,11 @@ class AccountHolderController @Inject() (
                 value =>
                   for {
                     updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(AccountHolderIdsPage(request.cpsoId, reportId), value))
-                    _              <- repository.set(updatedAnswers)
-                  } yield Redirect(navigator.nextPage(AccountHolderIdsPage(request.cpsoId, reportId), mode, updatedAnswers))
+                    updatedAnswersWithCreationTime <-
+                      if (doesCpsoHaveCreationTime) Future.successful(updatedAnswers)
+                      else Future.fromTry(updatedAnswers.setWithReportId(CpsoCreationPage(request.cpsoId, reportId), clock.instant()))
+                    _ <- repository.set(updatedAnswersWithCreationTime)
+                  } yield Redirect(navigator.nextPage(AccountHolderIdsPage(request.cpsoId, reportId), mode, updatedAnswersWithCreationTime))
               )
         }
         .recover {

@@ -24,6 +24,9 @@ import models.response.{Address, Country}
 import models.viewModels.AccountId
 import models.viewModels.TaskStatus.{CannotStartYet, Completed, Incomplete, NotStarted}
 import models.{AccountBalance, AddressNonUk, Currency, ReportId, UkAddress}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito
+import org.mockito.Mockito.*
 import pages.ReportIdPage
 import pages.manual.FINamePage
 import pages.manual.account.*
@@ -34,8 +37,8 @@ import pages.manual.sponsor.*
 import services.manual.account.AccountsService
 
 class SendAReportServiceSpec extends SpecBase {
-
-  private val service = new SendAReportService(new AccountsService())
+  val mockCpsoService: CpsoService = mock[CpsoService]
+  private val service              = new SendAReportService(new AccountsService(), mockCpsoService)
 
   "SendAReportService" - {
 
@@ -61,20 +64,23 @@ class SendAReportServiceSpec extends SpecBase {
 
     "reporting CPSO Complete Status" - {
       "should return incomplete when page is not answered" in {
+
         service.reportingCPSOCompleteStatus(emptyUserAnswers, reportId) mustBe Incomplete
       }
 
       "should return incomplete when page is answered as false" in {
-        service.reportingCPSOCompleteStatus(
-          emptyUserAnswers.withPage(IsCpsoSectionCompletePage(reportId), false),
-          reportId
+        when(mockCpsoService.areAllCpsosComplete(any(), any())).thenReturn(true)
+        service.reportingCPSOCompleteStatus(emptyUserAnswers
+                                              .withPage(IsCpsoSectionCompletePage(reportId), false),
+                                            reportId
         ) mustBe Incomplete
       }
 
       "should return completed when page is answered as true" in {
-        service.reportingCPSOCompleteStatus(
-          emptyUserAnswers.withPage(IsCpsoSectionCompletePage(reportId), true),
-          reportId
+        when(mockCpsoService.areAllCpsosComplete(any(), any())).thenReturn(true)
+        service.reportingCPSOCompleteStatus(emptyUserAnswers
+                                              .withPage(IsCpsoSectionCompletePage(reportId), true),
+                                            reportId
         ) mustBe Completed
       }
     }

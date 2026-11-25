@@ -17,7 +17,7 @@
 package controllers.manual.cpso
 
 import controllers.actions.*
-import models.ReportId
+import models.{NormalMode, ReportId}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -44,6 +44,6 @@ class CPSOCheckAnswersController @Inject() (
 
   def onSubmit: Action[AnyContent] = actions.withReportIdRequiredAndCPSOIdRequiredAndCPSONameRequired().async {
     _ =>
-      Future.successful(Redirect(controllers.routes.UnderConstructionController.onPageLoad().url))
+      Future.successful(Redirect(controllers.manual.cpso.routes.ControllingPersonsOrSubstantialOwnersController.onPageLoad(NormalMode).url))
   }
 }

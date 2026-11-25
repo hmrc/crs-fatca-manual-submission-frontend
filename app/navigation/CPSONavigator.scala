@@ -110,6 +110,10 @@ object CPSONavigator {
       handleAccountHolderNavigation(ua, mode, cpsoId)
     case (IsCpsoSectionCompletePage(_), _, _) =>
       controllers.manual.routes.SendAReportController.onPageLoad()
+    case (DoYouWantToAddAnotherCpsoPage(_), mode, ua) =>
+      handleDoYouWantToAddAnotherCpso(ua, mode)
+    case (pages.manual.cpso.RemoveCPSOPage(_, _), mode, ua) =>
+      controllers.manual.cpso.routes.ControllingPersonsOrSubstantialOwnersController.onPageLoad(mode)
   }
 
   private def handleUKPostcodeNavigation(userAnswers: UserAnswers, mode: Mode, cpsoId: CPSOId)(implicit reportId: ReportId) =
@@ -125,7 +129,7 @@ object CPSONavigator {
       case Some(true) =>
         userAnswers.get(TaxResidentCountriesListPage(cpsoId, reportId)) match {
           case Some(countries) if countries.isEmpty => controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(mode)
-          case Some(_)                              => routes.UnderConstructionController.onPageLoad()
+          case Some(_)                              => controllers.manual.cpso.routes.TaxResidentCountriesController.onPageLoad(mode)
           case None                                 => controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(mode)
         }
       case Some(false) => controllers.manual.cpso.routes.AddressUkController.onPageLoad(mode)
@@ -187,5 +191,12 @@ object CPSONavigator {
           case _     => routes.JourneyRecoveryController.onPageLoad()
         }
       case None => routes.JourneyRecoveryController.onPageLoad()
+    }
+
+  private def handleDoYouWantToAddAnotherCpso(userAnswers: UserAnswers, mode: Mode)(implicit reportId: ReportId) =
+    userAnswers.get(DoYouWantToAddAnotherCpsoPage(reportId)) match {
+      case Some(true)  => controllers.manual.cpso.routes.AccountHolderController.onPageLoad(mode)
+      case Some(false) => controllers.manual.cpso.routes.IsCpsoSectionCompleteController.onPageLoad()
+      case None        => controllers.routes.JourneyRecoveryController.onPageLoad()
     }
 }
