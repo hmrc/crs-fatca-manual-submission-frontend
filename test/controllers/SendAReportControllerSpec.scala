@@ -46,25 +46,12 @@ class SendAReportControllerSpec extends SpecBase {
         .withPage(ReportIdPage, fatcaReportId)
         .withPage(HaveSponsorPage()(fatcaReportId), true)
 
-      val sections = SendAReportSections(
-        reportDetails = Some(NotStarted),
-        financialInstitutionDetails = Some(Incomplete),
-        sponsorDetails = Some(Incomplete),
-        filerCategory = Some(Incomplete),
-        accounts = Some(Incomplete),
-        accountHolders = Some(NoStatus),
-        controllingPersons = Some(Completed),
-        tbc1 = Some(Incomplete),
-        tbc2 = Some(Incomplete),
-        userAnswers = ua,
-        reportId = fatcaReportId
-      )
-
       when(mockService.reportingFIStatus(any(), any())).thenReturn(Incomplete)
       when(mockService.fillerStatus(any(), any())).thenReturn(Incomplete)
       when(mockService.sponsorStatus(any(), any())).thenReturn(Incomplete)
       when(mockService.reportingCPSOCompleteStatus(any(), any())).thenReturn(Completed)
       when(mockService.accountStatus(any(), any())).thenReturn(Incomplete)
+      when(mockService.accountHoldersCompleteStatus(any(), any())).thenReturn(Incomplete)
       when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(ua)))
 
       val application = applicationBuilder(maybeUserAnswers = Some(ua))
@@ -77,6 +64,19 @@ class SendAReportControllerSpec extends SpecBase {
         val request = FakeRequest(GET, SendAReportController.onPageLoad().url)
         val result  = route(application, request).value
         val view    = application.injector.instanceOf[SendAReportView]
+        val sections = SendAReportSections(
+          reportDetails = Some(NotStarted),
+          financialInstitutionDetails = Some(Incomplete),
+          sponsorDetails = Some(Incomplete),
+          filerCategory = Some(Incomplete),
+          accounts = Some(Incomplete),
+          accountHolders = Some(Incomplete),
+          controllingPersons = Some(Completed),
+          tbc1 = Some(Incomplete),
+          tbc2 = Some(Incomplete),
+          userAnswers = ua,
+          reportId = fatcaReportId
+        )
 
         status(result) mustBe OK
         contentAsString(result) mustEqual view(sections)(request, messages(application)).toString
@@ -89,25 +89,12 @@ class SendAReportControllerSpec extends SpecBase {
       val reportId = ReportId(CRS, 2025, None, "testFiID")
       val ua       = emptyUserAnswers.withPage(ReportIdPage, reportId)
 
-      val sections = SendAReportSections(
-        reportDetails = Some(NotStarted),
-        financialInstitutionDetails = Some(Incomplete),
-        sponsorDetails = None,
-        filerCategory = None,
-        accounts = Some(Incomplete),
-        accountHolders = Some(NoStatus),
-        controllingPersons = Some(Completed),
-        tbc1 = Some(Incomplete),
-        tbc2 = Some(Incomplete),
-        userAnswers = ua,
-        reportId = reportId
-      )
-
       when(mockService.reportingFIStatus(any(), any())).thenReturn(Incomplete)
       when(mockService.fillerStatus(any(), any())).thenReturn(Incomplete)
       when(mockService.sponsorStatus(any(), any())).thenReturn(Incomplete)
       when(mockService.reportingCPSOCompleteStatus(any(), any())).thenReturn(Completed)
       when(mockService.accountStatus(any(), any())).thenReturn(Incomplete)
+      when(mockService.accountHoldersCompleteStatus(any(), any())).thenReturn(Incomplete)
       when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(ua)))
 
       val application = applicationBuilder(maybeUserAnswers = Some(ua))
@@ -120,6 +107,19 @@ class SendAReportControllerSpec extends SpecBase {
         val request = FakeRequest(GET, SendAReportController.onPageLoad().url)
         val result  = route(application, request).value
         val view    = application.injector.instanceOf[SendAReportView]
+        val sections = SendAReportSections(
+          reportDetails = Some(NotStarted),
+          financialInstitutionDetails = Some(Incomplete),
+          sponsorDetails = None,
+          filerCategory = None,
+          accounts = Some(Incomplete),
+          accountHolders = Some(Incomplete),
+          controllingPersons = Some(Completed),
+          tbc1 = Some(Incomplete),
+          tbc2 = Some(Incomplete),
+          userAnswers = ua,
+          reportId = reportId
+        )
 
         status(result) mustBe OK
         contentAsString(result) mustEqual view(sections)(request, messages(application)).toString

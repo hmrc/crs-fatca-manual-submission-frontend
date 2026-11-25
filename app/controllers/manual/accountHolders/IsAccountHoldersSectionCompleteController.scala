@@ -52,7 +52,7 @@ class IsAccountHoldersSectionCompleteController @Inject() (
 
   def onPageLoad(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequired().async {
     implicit request =>
-      if (accountHolderService.areAllAccountHoldersComplete(request.userAnswers)(using request.reportId)) {
+      if (accountHolderService.areAllAccountHoldersComplete(request.userAnswers, request.reportId)) {
         viewFIService
           .getFIDetail(request.fatcaId, request.reportId.fiId)
           .map {
@@ -78,7 +78,7 @@ class IsAccountHoldersSectionCompleteController @Inject() (
   def onSubmit(mode: Mode): Action[AnyContent] = actions.withReportIdRequiredAndAccountHolderIdRequired().async {
     implicit request =>
       implicit val reportId: ReportId = request.reportId
-      if (accountHolderService.areAllAccountHoldersComplete(request.userAnswers)(using request.reportId)) {
+      if (accountHolderService.areAllAccountHoldersComplete(request.userAnswers, request.reportId)) {
         viewFIService
           .getFIDetail(request.fatcaId, reportId.fiId)
           .flatMap {

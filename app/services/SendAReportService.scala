@@ -48,18 +48,14 @@ class SendAReportService @Inject() (accountsService: AccountsService, accountHol
       }
 
   def accountHoldersCompleteStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus = {
-    val accountHolders = accountHolderService.accountHolders(userAnswers)(reportId)
+    val noAccountHoldersAdded: Boolean     = accountHolderService.accountHolders(userAnswers)(reportId).isEmpty
+    val sectionIsDeclaredComplete: Boolean = userAnswers.get(IsAccountHoldersSectionCompletePage(reportId)).contains(true)
+    val accountHoldersAreComplete: Boolean = accountHolderService.areAllAccountHoldersComplete(userAnswers, reportId)
 
-    if (accountHolders.isEmpty) {
-      NotStarted
-    } else if (
-      userAnswers.get(IsAccountHoldersSectionCompletePage(reportId)).contains(true) &&
-      accountHolderService.areAllAccountHoldersComplete(userAnswers)(reportId)
-    ) {
-      Completed
-    } else {
-      Incomplete
-    }
+    if (noAccountHoldersAdded) NotStarted
+    else if (sectionIsDeclaredComplete && accountHoldersAreComplete) Completed
+    else Incomplete
+
   }
 
   def fillerStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =

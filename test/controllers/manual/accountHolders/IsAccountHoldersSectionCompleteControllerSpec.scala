@@ -20,6 +20,7 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.accountHolders.IsAccountHoldersSectionCompleteFormProvider
+import models.ServiceErrors.NoFiDetailFound
 import models.{NormalMode, UserAnswers}
 import models.viewModels.AccountHolderId
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
@@ -54,7 +55,7 @@ class IsAccountHoldersSectionCompleteControllerSpec extends SpecBase with Mockit
     finally super.afterEach()
 
   def setMockAccountHolderService(result: Boolean = true): AccountHolderService = {
-    when(mockAccountHolderService.areAllAccountHoldersComplete(any())(using any())).thenReturn(result)
+    when(mockAccountHolderService.areAllAccountHoldersComplete(any(), any())).thenReturn(result)
     mockAccountHolderService
   }
 
@@ -133,6 +134,24 @@ class IsAccountHoldersSectionCompleteControllerSpec extends SpecBase with Mockit
       }
     }
 
+    "must redirect to Journey Recovery when retrieving FI details fails for a GET" in {
+      val application = applicationBuilder(maybeUserAnswers = Some(ua))
+        .overrides(
+          bind[ViewFIService].toInstance(mockFiService),
+          bind[AccountHolderService].toInstance(setMockAccountHolderService())
+        )
+        .build()
+      when(mockFiService.getFIDetail(any(), any())(using any())).thenReturn(Future.failed(NoFiDetailFound))
+
+      running(application) {
+        val request = FakeRequest(GET, isAccountHoldersSectionCompleteRoute)
+        val result  = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
     "must redirect to the next page when valid data is submitted" in {
 
       val mockSessionRepository = mock[DatabaseConnector]
@@ -159,6 +178,26 @@ class IsAccountHoldersSectionCompleteControllerSpec extends SpecBase with Mockit
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
+      }
+    }
+
+    "must redirect to Journey Recovery when retrieving FI details fails for POST" in {
+      val application = applicationBuilder(maybeUserAnswers = Some(ua))
+        .overrides(
+          bind[ViewFIService].toInstance(mockFiService),
+          bind[AccountHolderService].toInstance(setMockAccountHolderService())
+        )
+        .build()
+      when(mockFiService.getFIDetail(any(), any())(using any())).thenReturn(Future.failed(NoFiDetailFound))
+
+      running(application) {
+        val request =
+          FakeRequest(POST, isAccountHoldersSectionCompleteRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 

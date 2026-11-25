@@ -27,7 +27,7 @@ import javax.inject.Inject
 
 class AccountHolderService @Inject() () {
 
-  def areAllAccountHoldersComplete(userAnswers: UserAnswers)(implicit reportId: ReportId): Boolean = {
+  def areAllAccountHoldersComplete(userAnswers: UserAnswers, reportId: ReportId): Boolean = {
     val accountHolderList = accountHolders(userAnswers)(using reportId)
     accountHolderList.nonEmpty && accountHolderList.forall {
       case (_, accountHolder) => accountHolder.isComplete(reportId.regime)

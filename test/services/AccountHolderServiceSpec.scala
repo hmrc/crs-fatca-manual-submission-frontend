@@ -298,7 +298,7 @@ class AccountHolderServiceSpec extends AnyFreeSpec with Matchers with OptionValu
 
     "must return false when there are no account holders" in {
 
-      service.areAllAccountHoldersComplete(UserAnswers("id"))(using reportId) mustBe false
+      service.areAllAccountHoldersComplete(UserAnswers("id"), reportId) mustBe false
     }
 
     "must return true when every account holder is complete" in {
@@ -310,7 +310,7 @@ class AccountHolderServiceSpec extends AnyFreeSpec with Matchers with OptionValu
         )
       )
 
-      service.areAllAccountHoldersComplete(answers)(using reportId) mustBe true
+      service.areAllAccountHoldersComplete(answers, reportId) mustBe true
     }
 
     "must return false when any account holder is incomplete" in {
@@ -322,7 +322,7 @@ class AccountHolderServiceSpec extends AnyFreeSpec with Matchers with OptionValu
         )
       )
 
-      service.areAllAccountHoldersComplete(answers)(using reportId) mustBe false
+      service.areAllAccountHoldersComplete(answers, reportId) mustBe false
     }
 
     "must ignore account holders without a name" in {
@@ -334,7 +334,7 @@ class AccountHolderServiceSpec extends AnyFreeSpec with Matchers with OptionValu
         )
       )
 
-      service.areAllAccountHoldersComplete(answers)(using reportId) mustBe true
+      service.areAllAccountHoldersComplete(answers, reportId) mustBe true
     }
 
     "must return false when an account holder has no linked account" in {
@@ -343,7 +343,7 @@ class AccountHolderServiceSpec extends AnyFreeSpec with Matchers with OptionValu
         holders = Map("21" -> completeOrganisationHolder(account = Some(Seq.empty)))
       )
 
-      service.areAllAccountHoldersComplete(answers)(using reportId) mustBe false
+      service.areAllAccountHoldersComplete(answers, reportId) mustBe false
     }
 
     "must return false when an account holder has no address" in {
@@ -352,7 +352,7 @@ class AccountHolderServiceSpec extends AnyFreeSpec with Matchers with OptionValu
         holders = Map("21" -> completeOrganisationHolder(ukAddressManual = None))
       )
 
-      service.areAllAccountHoldersComplete(answers)(using reportId) mustBe false
+      service.areAllAccountHoldersComplete(answers, reportId) mustBe false
     }
 
     "must return false when an account holder has no tax resident countries" in {
@@ -361,14 +361,14 @@ class AccountHolderServiceSpec extends AnyFreeSpec with Matchers with OptionValu
         holders = Map("21" -> completeOrganisationHolder(taxResidentCountries = Some(Seq.empty)))
       )
 
-      service.areAllAccountHoldersComplete(answers)(using reportId) mustBe false
+      service.areAllAccountHoldersComplete(answers, reportId) mustBe false
     }
 
     "must return true for a complete individual account holder" in {
 
       val answers = userAnswersWith(holders = Map("21" -> completeIndividualHolder()))
 
-      service.areAllAccountHoldersComplete(answers)(using reportId) mustBe true
+      service.areAllAccountHoldersComplete(answers, reportId) mustBe true
     }
 
     "must return true for an individual based outside the UK with a non-UK address" in {
@@ -383,7 +383,7 @@ class AccountHolderServiceSpec extends AnyFreeSpec with Matchers with OptionValu
         )
       )
 
-      service.areAllAccountHoldersComplete(answers)(using reportId) mustBe true
+      service.areAllAccountHoldersComplete(answers, reportId) mustBe true
     }
 
     "must return false when an individual is missing their place of birth details" in {
@@ -397,7 +397,7 @@ class AccountHolderServiceSpec extends AnyFreeSpec with Matchers with OptionValu
         )
       )
 
-      service.areAllAccountHoldersComplete(answers)(using reportId) mustBe false
+      service.areAllAccountHoldersComplete(answers, reportId) mustBe false
     }
 
     "must return false when an individual is missing their date of birth details" in {
@@ -411,7 +411,7 @@ class AccountHolderServiceSpec extends AnyFreeSpec with Matchers with OptionValu
         )
       )
 
-      service.areAllAccountHoldersComplete(answers)(using reportId) mustBe false
+      service.areAllAccountHoldersComplete(answers, reportId) mustBe false
     }
 
     "must require self-certification for a CRS report" in {
@@ -420,7 +420,7 @@ class AccountHolderServiceSpec extends AnyFreeSpec with Matchers with OptionValu
         holders = Map("21" -> completeOrganisationHolder(selfCertification = None))
       )
 
-      service.areAllAccountHoldersComplete(answers)(using reportId) mustBe false
+      service.areAllAccountHoldersComplete(answers, reportId) mustBe false
     }
 
     "must require an equity interest type when a linked account is an investment entity" in {
@@ -430,7 +430,7 @@ class AccountHolderServiceSpec extends AnyFreeSpec with Matchers with OptionValu
         accounts = Seq(account("80", Some(WhatAccountType.InvestmentEntity)))
       )
 
-      service.areAllAccountHoldersComplete(answers)(using reportId) mustBe false
+      service.areAllAccountHoldersComplete(answers, reportId) mustBe false
     }
 
     "must return true when the equity interest type is provided" in {
@@ -446,7 +446,7 @@ class AccountHolderServiceSpec extends AnyFreeSpec with Matchers with OptionValu
         accounts = Seq(account("80", Some(WhatAccountType.InvestmentEntity)))
       )
 
-      service.areAllAccountHoldersComplete(answers)(using reportId) mustBe true
+      service.areAllAccountHoldersComplete(answers, reportId) mustBe true
     }
 
     "must not require self-certification or equity interest details for a FATCA report" in {
@@ -462,7 +462,7 @@ class AccountHolderServiceSpec extends AnyFreeSpec with Matchers with OptionValu
         reportId = fatcaReportId
       )
 
-      service.areAllAccountHoldersComplete(answers)(using fatcaReportId) mustBe true
+      service.areAllAccountHoldersComplete(answers, fatcaReportId) mustBe true
     }
   }
 }
