@@ -532,7 +532,7 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester {
           numberType = Some(Iban),
           accountIdentifier = AccountNumber(id = "account1"),
           accountBalance = accountBalance,
-          isClosed = true, //if accountClosed then account balance must be 0
+          isClosed = true, // if accountClosed then account balance must be 0
           isUndocumented = true,
           isDormant = false,
           wasOpenInRP = models.manual.account.WasAccountOpen.Yes,
