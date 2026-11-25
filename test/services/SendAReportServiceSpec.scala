@@ -44,8 +44,7 @@ import services.manual.account.AccountsService
 
 class SendAReportServiceSpec extends SpecBase {
   val mockCpsoService: CpsoService = mock[CpsoService]
-  val mockAccountHolderService: AccountHolderService = mock[AccountHolderService]
-  private val service              = new SendAReportService(new AccountsService(), mockCpsoService, mockAccountHolderService)
+  private val service              = new SendAReportService(new AccountsService(), mockCpsoService, new AccountHolderService())
 
   "SendAReportService" - {
 
