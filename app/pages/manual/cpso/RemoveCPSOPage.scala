@@ -14,19 +14,13 @@
  * limitations under the License.
  */
 
-package models
+package pages.manual.cpso
 
-import play.api.libs.json._
+import models.ReportId
+import models.viewModels.manual.cpso.CPSOId
+import pages.QuestionPage
+import play.api.libs.json.JsPath
 
-case class AddressNonUk(addressLine1: String,
-                        addressLine2: Option[String],
-                        addressLine3: String,
-                        addressLine4: Option[String],
-                        postcode: Option[String],
-                        country: String
-)
+final case class RemoveCPSOPage(reportId: ReportId, currentId: CPSOId) extends QuestionPage[Boolean]:
 
-object AddressNonUk {
-
-  implicit val format: OFormat[AddressNonUk] = Json.format
-}
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "cp-so" \ currentId.value \ "removeCPSO"

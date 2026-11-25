@@ -20,10 +20,11 @@ import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
 import forms.manual.cpso.TaxResidentCountriesFormProvider
+import models.NormalMode
+import models.manual.TaxResidentInformation
 import models.manual.cpso.IndividualName
 import models.response.Country
 import models.viewModels.manual.cpso.CPSOId
-import models.{NormalMode, TaxResidentInformation}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when

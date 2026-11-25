@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 
-package models
+package forms.manual.cpso
 
-import play.api.libs.json._
+import javax.inject.Inject
+import forms.mappings.Mappings
+import models.SubmissionsConstants.{CRS, RegimeType}
+import play.api.data.Form
 
-case class UkAddress(addressLine1: String, addressLine2: Option[String], city: String, county: Option[String] = None, postcode: String, country: String)
+class RemoveCPSOFormProvider @Inject() extends Mappings {
 
-object UkAddress {
+  def apply(regimeType: RegimeType): Form[Boolean] =
+    Form(
+      "value" -> boolean("cpso.removeCPSO.error.required", args = Seq(term(regimeType)))
+    )
 
-  implicit val format: OFormat[UkAddress] = Json.format
-
-  def from(postCode: String) = UkAddress("", None, "", None, postCode, "")
+  private def term(regimeType: RegimeType): String =
+    if regimeType == CRS then "controlling person"
+    else "substantial owner"
 }

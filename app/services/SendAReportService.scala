@@ -31,7 +31,7 @@ import services.manual.account.AccountsService
 
 import javax.inject.Inject
 
-class SendAReportService @Inject() (accountsService: AccountsService, accountHolderService: AccountHolderService) {
+class SendAReportService @Inject() (accountsService: AccountsService,cpsoService: CpsoService, accountHolderService: AccountHolderService) {
 
   def reportingFIStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
     userAnswers
@@ -44,7 +44,7 @@ class SendAReportService @Inject() (accountsService: AccountsService, accountHol
     userAnswers
       .get(IsCpsoSectionCompletePage(reportId))
       .fold(Incomplete) {
-        value => if value then Completed else Incomplete
+        value => if value && cpsoService.areAllCpsosComplete(userAnswers, reportId) then Completed else Incomplete
       }
 
   def accountHoldersCompleteStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus = {

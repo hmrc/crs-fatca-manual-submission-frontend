@@ -19,6 +19,7 @@ package navigation
 import base.SpecBase
 import models.*
 import models.SubmissionsConstants.{CRFA, CRS, FATCA}
+import models.manual.TaxResidentInformation
 import models.manual.account.PaymentType
 import models.manual.account.PaymentType.*
 import models.manual.accountHolders.*
@@ -36,9 +37,11 @@ import pages.manual.cpso.{
   CPSOWhereAreTheyBasedPage,
   CpsoOrganisationNamePage,
   CpsoSelfCertificationPage,
+  DoYouWantToAddAnotherCpsoPage,
   HaveTaxIdentificationNumberPage,
   IsCpsoSectionCompletePage,
   IsThisTheAddressPage as IsThisTheAddressPageForCpso,
+  RemoveCPSOPage,
   ResidentForTaxPage,
   SelectAddressPage as SelectAddressPageForCPSO,
   UkPostCodePage as UkPostCodePageForCpso
@@ -279,7 +282,7 @@ class CPSONavigatorSpec extends SpecBase {
           controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(NormalMode)
       }
 
-      "must go to under construction page when submitted and the resident tax countries list is populated" in {
+      "must go to tax resident countries page when submitted and the resident tax countries list is populated" in {
         val ua = UserAnswers("id")
           .withPage(CPSOAddressNonUkPage(currentCPSOId, reportId), nonUkAddress)
           .withPage(pages.manual.cpso.TaxResidentCountriesListPage(currentCPSOId, reportId), Seq(taxResidentInformation))
@@ -501,13 +504,13 @@ class CPSONavigatorSpec extends SpecBase {
           controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(NormalMode)
       }
 
-      "must go to under construction page when answer is yes and resident tax countries is populated" in {
+      "must go to resident tax page when answer is yes and resident tax countries is populated" in {
         val ua = UserAnswers("id")
           .withPage(IsThisTheAddressPageForCpso(currentCPSOId, reportId), true)
           .withPage(pages.manual.cpso.TaxResidentCountriesListPage(currentCPSOId, reportId), Seq(taxResidentInformation))
 
         navigator.nextPage(IsThisTheAddressPageForCpso(currentCPSOId, reportId), NormalMode, ua) mustBe
-          controllers.routes.UnderConstructionController.onPageLoad()
+          controllers.manual.cpso.routes.TaxResidentCountriesController.onPageLoad(NormalMode)
       }
 
       "must go to address uk for a no answer" in {
@@ -542,7 +545,7 @@ class CPSONavigatorSpec extends SpecBase {
           controllers.manual.cpso.routes.ResidentForTaxController.onPageLoad(NormalMode)
 
       }
-      "must got to under construction page when answer is no" in {
+      "must got to check answers page when answer is no" in {
         val ua = UserAnswers("id")
           .withPage(pages.manual.cpso.DoYouWantToAddTaxResidentCountryPage(currentCPSOId, reportId), false)
 
@@ -618,6 +621,57 @@ class CPSONavigatorSpec extends SpecBase {
           ua
         ) mustBe
           controllers.manual.routes.SendAReportController.onPageLoad()
+      }
+    }
+
+    "DoYouWantToAddAnotherCpsoPage" - {
+      val ua = UserAnswers("id")
+
+      "must redirect to add cpso page when DoYouWantToAddAnotherCpsoPage is true" in {
+        val answers = ua.withPage(DoYouWantToAddAnotherCpsoPage(reportId), true)
+
+        navigator.nextPage(
+          DoYouWantToAddAnotherCpsoPage(reportId),
+          NormalMode,
+          answers
+        ) mustBe
+          controllers.manual.cpso.routes.AccountHolderController.onPageLoad(NormalMode)
+      }
+
+      "must redirect to check cpso complete when DoYouWantToAddAnotherCpsoPage is false" in {
+        val answers = ua.withPage(DoYouWantToAddAnotherCpsoPage(reportId), false)
+
+        navigator.nextPage(
+          DoYouWantToAddAnotherCpsoPage(reportId),
+          NormalMode,
+          answers
+        ) mustBe
+          controllers.manual.cpso.routes.IsCpsoSectionCompleteController.onPageLoad()
+      }
+
+      "must redirect to journey recovery  when DoYouWantToAddAnotherCpsoPage is not defined" in {
+
+        navigator.nextPage(
+          DoYouWantToAddAnotherCpsoPage(reportId),
+          NormalMode,
+          ua
+        ) mustBe
+          controllers.routes.JourneyRecoveryController.onPageLoad()
+      }
+
+    }
+
+    "RemoveCPSOPage" - {
+      val ua = UserAnswers("id")
+
+      "must redirect to ControllingPersonsOrSubstantialOwners" in {
+
+        navigator.nextPage(
+          RemoveCPSOPage(reportId, CPSOId("some-id")),
+          NormalMode,
+          ua
+        ) mustBe
+          controllers.manual.cpso.routes.ControllingPersonsOrSubstantialOwnersController.onPageLoad(NormalMode)
       }
     }
   }

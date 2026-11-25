@@ -25,15 +25,16 @@ import models.SubmissionsConstants.CRS
 import models.{NormalMode, ReportId}
 import navigation.{FakeManualSubmissionNavigator, ManualSubmissionNavigator}
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{never, reset, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReportIdPage
 import pages.manual.cpso.IsCpsoSectionCompletePage
+import play.api.data.Form
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import services.ViewFIService
+import services.{CpsoService, ViewFIService}
 import views.html.manual.cpso.IsCpsoSectionCompleteView
 
 import scala.concurrent.Future
@@ -43,11 +44,21 @@ class IsCpsoSectionCompleteControllerSpec extends SpecBase with MockitoSugar {
   def onwardRoute = Call("GET", "/foo")
 
   val mockFiService: ViewFIService = mock[ViewFIService]
+  val mockCpsoService: CpsoService = mock[CpsoService]
   val formProvider                 = new IsCpsoSectionCompleteFormProvider()
 
-  val form = formProvider(CRS)
+  val form: Form[Boolean] = formProvider(CRS)
 
-  lazy val isCpsoSectionCompleteRoute = controllers.manual.cpso.routes.IsCpsoSectionCompleteController.onPageLoad().url
+  override def afterEach(): Unit =
+    try reset(mockFiService, mockCpsoService)
+    finally super.afterEach()
+
+  lazy val isCpsoSectionCompleteRoute: String = controllers.manual.cpso.routes.IsCpsoSectionCompleteController.onPageLoad().url
+
+  def setUpMockCpso(result: Boolean = true): CpsoService = {
+    when(mockCpsoService.areAllCpsosComplete(any(), any())).thenReturn(result)
+    mockCpsoService
+  }
 
   "IsCpsoSectionComplete Controller" - {
 
@@ -56,7 +67,10 @@ class IsCpsoSectionCompleteControllerSpec extends SpecBase with MockitoSugar {
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(maybeUserAnswers = Some(ua))
-        .overrides(bind[ViewFIService].toInstance(mockFiService))
+        .overrides(
+          bind[ViewFIService].toInstance(mockFiService),
+          bind[CpsoService].toInstance(setUpMockCpso())
+        )
         .build()
 
       when(mockFiService.getFIDetail(any(), any())(using any())).thenReturn(Future.successful(fiDetail))
@@ -73,10 +87,33 @@ class IsCpsoSectionCompleteControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
+    "must redirect to send report when cpsos are not complete for a GET" in {
+
+      val application = applicationBuilder(maybeUserAnswers = Some(ua))
+        .overrides(
+          bind[ViewFIService].toInstance(mockFiService),
+          bind[CpsoService].toInstance(setUpMockCpso(false))
+        )
+        .build()
+
+      running(application) {
+        val request = FakeRequest(GET, isCpsoSectionCompleteRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.manual.routes.SendAReportController.onPageLoad().url
+        verify(mockFiService, never()).getFIDetail(any(), any())(using any())
+      }
+    }
+
     "must redirect when FIDetail fails to retrieve" in {
 
       val application = applicationBuilder(maybeUserAnswers = Some(ua))
-        .overrides(bind[ViewFIService].toInstance(mockFiService))
+        .overrides(
+          bind[ViewFIService].toInstance(mockFiService),
+          bind[CpsoService].toInstance(setUpMockCpso())
+        )
         .build()
       when(mockFiService.getFIDetail(any(), any())(using any())).thenReturn(Future.failed(NoFiDetailFound))
 
@@ -95,7 +132,10 @@ class IsCpsoSectionCompleteControllerSpec extends SpecBase with MockitoSugar {
       val userAnswers = ua.set(IsCpsoSectionCompletePage(reportId), true).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
-        .overrides(bind[ViewFIService].toInstance(mockFiService))
+        .overrides(
+          bind[ViewFIService].toInstance(mockFiService),
+          bind[CpsoService].toInstance(setUpMockCpso())
+        )
         .build()
 
       when(mockFiService.getFIDetail(any(), any())(using any())).thenReturn(Future.successful(fiDetail))
@@ -123,7 +163,8 @@ class IsCpsoSectionCompleteControllerSpec extends SpecBase with MockitoSugar {
           .overrides(
             bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
             bind[DatabaseConnector].toInstance(mockSessionRepository),
-            bind[ViewFIService].toInstance(mockFiService)
+            bind[ViewFIService].toInstance(mockFiService),
+            bind[CpsoService].toInstance(setUpMockCpso())
           )
           .build()
 
@@ -141,10 +182,43 @@ class IsCpsoSectionCompleteControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
+    "must redirect to the send report when cpsos are incomplete when valid data is submitted" in {
+
+      val mockSessionRepository = mock[DatabaseConnector]
+
+      when(mockSessionRepository.set(any())(any())) thenReturn Future.successful(())
+
+      val application =
+        applicationBuilder(maybeUserAnswers = Some(ua))
+          .overrides(
+            bind[ManualSubmissionNavigator].toInstance(new FakeManualSubmissionNavigator(onwardRoute)),
+            bind[DatabaseConnector].toInstance(mockSessionRepository),
+            bind[ViewFIService].toInstance(mockFiService),
+            bind[CpsoService].toInstance(setUpMockCpso(false))
+          )
+          .build()
+
+      when(mockFiService.getFIDetail(any(), any())(using any())).thenReturn(Future.successful(fiDetail))
+
+      running(application) {
+        val request =
+          FakeRequest(POST, isCpsoSectionCompleteRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.manual.routes.SendAReportController.onPageLoad().url
+      }
+    }
+
     "must return a Bad Request and errors when invalid data is submitted" in {
 
       val application = applicationBuilder(maybeUserAnswers = Some(ua))
-        .overrides(bind[ViewFIService].toInstance(mockFiService))
+        .overrides(
+          bind[ViewFIService].toInstance(mockFiService),
+          bind[CpsoService].toInstance(setUpMockCpso())
+        )
         .build()
 
       when(mockFiService.getFIDetail(any(), any())(using any())).thenReturn(Future.successful(fiDetail))
