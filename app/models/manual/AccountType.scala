@@ -43,13 +43,8 @@ object AccountType {
     override val balance: AccountBalance = if isClosed then accountBalance.copy(amount = "0.00") else accountBalance
   }
 
-  case class FatcaAccount(numberType: Option[NumberType],
-                          accountIdentifier: AccountNumber,
-                          accountBalance: AccountBalance,
-                          isClosed: Boolean,
-                          payments: List[Payment]
-  ) extends AccountType {
-    val accountNumber: String            = accountIdentifier.id
-    override val balance: AccountBalance = if isClosed then accountBalance.copy(amount = "0.00") else accountBalance
+  case class FatcaAccount(numberType: Option[NumberType], accountIdentifier: AccountNumber, balance: AccountBalance, isClosed: Boolean, payments: List[Payment])
+      extends AccountType {
+    val accountNumber: String = accountIdentifier.id
   }
 }

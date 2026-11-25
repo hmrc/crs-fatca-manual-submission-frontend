@@ -503,7 +503,7 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester {
         val fatcAccount = FatcaAccount(
           numberType = Some(Iban),
           accountIdentifier = AccountNumber(id = "account1"),
-          accountBalance = accountBalance,
+          balance = accountBalance,
           isClosed = true,
           payments = payments
         )
@@ -517,7 +517,7 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester {
         (result \ "AccountReport" \ "Payment" \ "Type").head.text.trim mustEqual CRSDividends.toString
         (result \ "AccountReport" \ "Payment" \ "PaymentAmnt").map(_ \@ "currCode") must contain only Currency.GBP.code
         (result \ "AccountReport" \ "Payment" \ "PaymentAmnt").map(_.text.trim.toInt).sum mustEqual 600
-        (result \ "AccountReport" \ "AccountBalance").head.text.trim mustEqual "0.00"
+        (result \ "AccountReport" \ "AccountBalance").head.text.trim mustEqual "200"
         (result \ "AccountReport" \ "AccountBalance").head \@ "currCode" mustEqual Currency.GBP.code
         (result \ "AccountReport" \ "SubstantialOwner").size mustEqual 1
         (result \ "AccountReport" \ "SubstantialOwner").head.prefix mustEqual "ftc"
@@ -532,7 +532,7 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester {
           numberType = Some(Iban),
           accountIdentifier = AccountNumber(id = "account1"),
           accountBalance = accountBalance,
-          isClosed = false,
+          isClosed = true, //if accountClosed then account balance must be 0
           isUndocumented = true,
           isDormant = false,
           wasOpenInRP = models.manual.account.WasAccountOpen.Yes,
@@ -545,7 +545,7 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester {
         result.prefix mustEqual "crs"
         result.label mustEqual "ReportingGroup"
         (result \ "AccountReport" \ "Payment").size mustEqual 3
-        (result \ "AccountReport" \ "AccountNumber").head \@ "ClosedAccount" mustEqual "false"
+        (result \ "AccountReport" \ "AccountNumber").head \@ "ClosedAccount" mustEqual "true"
         (result \ "AccountReport" \ "AccountType").head.text.trim mustEqual Depository.toString
         (result \ "AccountReport" \ "DDProcedure").head.text.trim mustEqual models.manual.account.WasAccountOpen.Yes.xmlValue
         (result \ "AccountReport" \ "AccountNumber").head \@ "UndocumentedAccount" mustEqual "true"
@@ -555,7 +555,7 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester {
         (result \ "AccountReport" \ "Payment" \ "Type").head.text.trim mustEqual CRSDividends.toString
         (result \ "AccountReport" \ "Payment" \ "PaymentAmnt").map(_ \@ "currCode") must contain only Currency.GBP.code
         (result \ "AccountReport" \ "Payment" \ "PaymentAmnt").map(_.text.trim.toInt).sum mustEqual 700
-        (result \ "AccountReport" \ "AccountBalance").head.text.trim mustEqual "200"
+        (result \ "AccountReport" \ "AccountBalance").head.text.trim mustEqual "0.00"
         (result \ "AccountReport" \ "AccountBalance").head \@ "currCode" mustEqual Currency.GBP.code
         (result \ "AccountReport" \ "ControllingPerson").size mustEqual 1
         (result \ "AccountReport" \ "ControllingPerson").head.prefix mustEqual "crs"
