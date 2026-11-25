@@ -19,10 +19,11 @@ package controllers.manual.cpso
 import base.SpecBase
 import connectors.DatabaseConnector
 import models.SubmissionsConstants.CRS
+import models.manual.TaxResidentInformation
 import models.manual.cpso.{IndividualName, IndividualOrOrganisation}
 import models.response.Country
 import models.viewModels.manual.cpso.CPSOId
-import models.{CheckMode, ReportId, TaxResidentInformation}
+import models.{CheckMode, ReportId}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar

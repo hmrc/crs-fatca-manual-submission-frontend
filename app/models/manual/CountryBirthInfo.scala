@@ -14,15 +14,8 @@
  * limitations under the License.
  */
 
-package models
+package models.manual
 
-import play.api.libs.json._
-
-case class UkAddress(addressLine1: String, addressLine2: Option[String], city: String, county: Option[String] = None, postcode: String, country: String)
-
-object UkAddress {
-
-  implicit val format: OFormat[UkAddress] = Json.format
-
-  def from(postCode: String) = UkAddress("", None, "", None, postCode, "")
-}
+case class CountryBirthInfo(country: String)
+case class CityBirthInfo(city: String)
+case class RegionBirthInfo(region: String)

@@ -20,12 +20,13 @@ import controllers.actions.*
 import forms.manual.cpso.RemoveTaxResidentCountryFormProvider
 
 import javax.inject.Inject
-import models.{Countries, Mode, ReportId, TaxResidentInformation, UserAnswers}
+import models.{Countries, Mode, ReportId, UserAnswers}
 import navigation.ManualSubmissionNavigator
 import pages.manual.cpso.{RemoveTaxResidentCountryPage, ResidentForTaxPage, TaxResidentCountriesListPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import connectors.DatabaseConnector
+import models.manual.TaxResidentInformation
 import models.viewModels.manual.cpso.CPSOId
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.cpso.RemoveTaxResidentCountryView

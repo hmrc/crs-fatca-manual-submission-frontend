@@ -14,19 +14,8 @@
  * limitations under the License.
  */
 
-package models
+package models.manual
 
-import play.api.libs.json._
+import models.manual.account.{AccountPaymentsAmount, PaymentType}
 
-case class AddressNonUk(addressLine1: String,
-                        addressLine2: Option[String],
-                        addressLine3: String,
-                        addressLine4: Option[String],
-                        postcode: Option[String],
-                        country: String
-)
-
-object AddressNonUk {
-
-  implicit val format: OFormat[AddressNonUk] = Json.format
-}
+case class Payment(paymentType: PaymentType, amount: AccountPaymentsAmount)
