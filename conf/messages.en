@@ -885,8 +885,8 @@ accountHolders.selfCertification.change.hidden = Change if the account holder ha
 
 cpso.individualHavePlaceOfBirth.title = Do you want to provide the place of birth for the {0}?
 cpso.individualHavePlaceOfBirth.heading = Do you want to provide the place of birth for {0}?
-cpso.individualHavePlaceOfBirth.checkYourAnswersLabel.crs = Do you want to provide the place of birth for controlling person?
-cpso.individualHavePlaceOfBirth.checkYourAnswersLabel.fatca = Do you want to provide the place of birth for substantial owner?
+cpso.individualHavePlaceOfBirth.checkYourAnswersLabel.crs = Do you want to provide the place of birth for the controlling person?
+cpso.individualHavePlaceOfBirth.checkYourAnswersLabel.fatca = Do you want to provide the place of birth for the substantial owner?
 cpso.individualHavePlaceOfBirth.error.required = Select yes if you want to provide the place of birth for the {0}
 cpso.individualHavePlaceOfBirth.change.hidden.crs = Change if you want to provide the place of birth for the controlling person
 cpso.individualHavePlaceOfBirth.change.hidden.fatca = Change if you want to provide the place of birth for the substantial owner
