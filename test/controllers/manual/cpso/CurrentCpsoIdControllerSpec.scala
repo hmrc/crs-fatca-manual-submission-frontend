@@ -19,7 +19,6 @@ package controllers.manual.cpso
 import base.SpecBase
 import connectors.DatabaseConnector
 import controllers.routes
-import forms.behaviours.BooleanFieldBehaviours
 import models.SubmissionsConstants.FATCA
 import models.viewModels.manual.cpso.CPSOId
 import models.{CheckMode, NormalMode, ReportId, UserAnswers}
@@ -67,7 +66,7 @@ class CurrentCpsoIdControllerSpec extends SpecBase {
 
   private def mockCpsoService(result: Boolean): CpsoService = {
     val cpsoService = mock[CpsoService]
-    when(cpsoService.isCpsoComplete(any(), any())(any())).thenReturn(result)
+    when(cpsoService.isCpsoComplete(any(), any(), any())).thenReturn(result)
 
     cpsoService
   }

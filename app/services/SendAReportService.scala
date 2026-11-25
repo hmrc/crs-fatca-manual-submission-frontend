@@ -43,7 +43,7 @@ class SendAReportService @Inject() (accountsService: AccountsService, cpsoServic
     userAnswers
       .get(IsCpsoSectionCompletePage(reportId))
       .fold(Incomplete) {
-        value => if value && cpsoService.areAllCpsosComplete(userAnswers)(using reportId) then Completed else Incomplete
+        value => if value && cpsoService.areAllCpsosComplete(userAnswers, reportId) then Completed else Incomplete
       }
 
   def fillerStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =

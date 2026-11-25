@@ -56,7 +56,7 @@ class IsCpsoSectionCompleteControllerSpec extends SpecBase with MockitoSugar {
   lazy val isCpsoSectionCompleteRoute: String = controllers.manual.cpso.routes.IsCpsoSectionCompleteController.onPageLoad().url
 
   def setUpMockCpso(result: Boolean = true): CpsoService = {
-    when(mockCpsoService.areAllCpsosComplete(any())(using any())).thenReturn(result)
+    when(mockCpsoService.areAllCpsosComplete(any(), any())).thenReturn(result)
     mockCpsoService
   }
 

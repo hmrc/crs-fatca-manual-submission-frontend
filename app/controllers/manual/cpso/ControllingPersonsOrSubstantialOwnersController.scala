@@ -57,20 +57,21 @@ class ControllingPersonsOrSubstantialOwnersController @Inject() (
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
     implicit request =>
 
-      implicit val reportId: ReportId = request.reportId
-      val form                        = formProvider(reportId.regime)
+      val reportId: ReportId = request.reportId
+      val form               = formProvider(reportId.regime)
 
       viewFIService
         .getFIDetail(request.fatcaId, reportId.fiId)
         .map {
           fiDetail =>
             Ok(
-              view(form,
-                   mode,
-                   fiDetail.FIName,
-                   regimeType = reportId.regime,
-                   accountHoldersWithoutACpso(request.userAnswers),
-                   cpsoService.existingCpsos(request.userAnswers)
+              view(
+                form,
+                mode,
+                fiDetail.FIName,
+                regimeType = reportId.regime,
+                accountHoldersWithoutACpso(request.userAnswers, reportId),
+                cpsoService.existingCpsos(request.userAnswers, reportId)
               )
             )
 
@@ -99,20 +100,21 @@ class ControllingPersonsOrSubstantialOwnersController @Inject() (
                 formWithErrors =>
                   Future.successful(
                     BadRequest(
-                      view(formWithErrors,
-                           mode,
-                           fiDetail.FIName,
-                           reportId.regime,
-                           accountHoldersWithoutACpso(request.userAnswers),
-                           cpsoService.existingCpsos(request.userAnswers)
+                      view(
+                        formWithErrors,
+                        mode,
+                        fiDetail.FIName,
+                        reportId.regime,
+                        accountHoldersWithoutACpso(request.userAnswers, reportId),
+                        cpsoService.existingCpsos(request.userAnswers, reportId)
                       )
                     )
                   ),
                 value =>
                   for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(DoYouWantToAddAnotherCpsoPage(), value))
+                    updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(DoYouWantToAddAnotherCpsoPage(reportId), value))
                     _              <- repository.set(updatedAnswers)
-                  } yield Redirect(navigator.nextPage(DoYouWantToAddAnotherCpsoPage(), mode, updatedAnswers))
+                  } yield Redirect(navigator.nextPage(DoYouWantToAddAnotherCpsoPage(reportId), mode, updatedAnswers))
               )
         }
         .recover {

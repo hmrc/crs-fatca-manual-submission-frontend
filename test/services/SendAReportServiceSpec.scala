@@ -69,7 +69,7 @@ class SendAReportServiceSpec extends SpecBase {
       }
 
       "should return incomplete when page is answered as false" in {
-        when(mockCpsoService.areAllCpsosComplete(any())(any())).thenReturn(true)
+        when(mockCpsoService.areAllCpsosComplete(any(), any())).thenReturn(true)
         service.reportingCPSOCompleteStatus(emptyUserAnswers
                                               .withPage(IsCpsoSectionCompletePage(reportId), false),
                                             reportId
@@ -77,7 +77,7 @@ class SendAReportServiceSpec extends SpecBase {
       }
 
       "should return completed when page is answered as true" in {
-        when(mockCpsoService.areAllCpsosComplete(any())(any())).thenReturn(true)
+        when(mockCpsoService.areAllCpsosComplete(any(), any())).thenReturn(true)
         service.reportingCPSOCompleteStatus(emptyUserAnswers
                                               .withPage(IsCpsoSectionCompletePage(reportId), true),
                                             reportId

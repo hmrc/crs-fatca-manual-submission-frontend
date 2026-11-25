@@ -18,8 +18,8 @@ package controllers.manual.cpso
 
 import connectors.DatabaseConnector
 import controllers.actions.Actions
+import models.Mode
 import models.requests.ReportIdRequest
-import models.{Mode, ReportId}
 import pages.manual.cpso.CurrentCPSOIdPage
 import play.api.Logging
 import play.api.i18n.I18nSupport
@@ -40,18 +40,14 @@ class ClearCpsoIdAndRedirectToAddCpsoController @Inject() (
 
   def onRedirect(mode: Mode): Action[AnyContent] = actions.withReportIdRequired().async {
     implicit request =>
-
-      implicit val reportId: ReportId = request.reportId
-
       redirectAndClearCpsoId(controllers.manual.cpso.routes.AccountHolderController.onPageLoad(mode))
   }
 
   private def redirectAndClearCpsoId(successCall: Call)(implicit
-    request: ReportIdRequest[AnyContent],
-    reportId: ReportId
+    request: ReportIdRequest[AnyContent]
   ): Future[Result] =
     for {
-      updatedAnswers <- Future.fromTry(request.userAnswers.remove(CurrentCPSOIdPage()))
+      updatedAnswers <- Future.fromTry(request.userAnswers.remove(CurrentCPSOIdPage()(using request.reportId)))
       _              <- repository.set(updatedAnswers)
     } yield Redirect(successCall)
 

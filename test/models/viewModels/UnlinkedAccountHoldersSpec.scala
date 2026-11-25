@@ -92,7 +92,7 @@ class UnlinkedAccountHoldersSpec extends AnyFreeSpec with Matchers {
   }
 
   private def accountHoldersWithoutACpso(answers: UserAnswers, reportId: ReportId = crsReportId): Seq[String] =
-    UnlinkedAccountHolders.accountHoldersWithoutACpso(answers)(using reportId)
+    UnlinkedAccountHolders.accountHoldersWithoutACpso(answers, reportId)
 
   "UnlinkedAccountHolders.accountHoldersWithoutACpso" - {
 

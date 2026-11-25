@@ -22,7 +22,7 @@ import play.api.libs.json.JsPath
 
 import scala.util.{Success, Try}
 
-final case class DoYouWantToAddAnotherCpsoPage()(implicit reportId: ReportId) extends QuestionPage[Boolean]:
+final case class DoYouWantToAddAnotherCpsoPage(reportId: ReportId) extends QuestionPage[Boolean]:
 
   override def path: JsPath = JsPath \ reportId.mongoKey \ "cp-so" \ "doYouWantToAddAnotherCpso"
 

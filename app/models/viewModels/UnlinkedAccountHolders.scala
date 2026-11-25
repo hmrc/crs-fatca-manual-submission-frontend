@@ -22,25 +22,25 @@ import pages.manual.cpso.CpsoAccountHolderIdsPage
 
 object UnlinkedAccountHolders {
 
-  def accountHoldersWithoutACpso(answers: UserAnswers)(using reportId: ReportId): Seq[String] =
-    allAccountHolders(answers)
+  def accountHoldersWithoutACpso(answers: UserAnswers, reportId: ReportId): Seq[String] =
+    allAccountHolders(answers, reportId)
       .filterNot(
-        accountHolders => linkedAccountHolderIds(answers).contains(accountHolders._1)
+        accountHolders => linkedAccountHolderIds(answers, reportId).contains(accountHolders._1)
       )
       .map(
         accountHolder => accountHolder._2.getName()
       )
 
-  private def allAccountHolders(userAnswers: UserAnswers)(using reportId: ReportId) =
+  private def allAccountHolders(userAnswers: UserAnswers, reportId: ReportId) =
     AccountHolders
-      .existingAccountHolders(userAnswers)
+      .existingAccountHolders(userAnswers)(using reportId)
       .filter(
         (_, accountHolder) => accountHolder.cpsoIsMandatory(reportId.regime) && accountHolder.getName().nonEmpty
       )
 
-  private def linkedAccountHolderIds(answers: UserAnswers)(using reportId: ReportId): Set[AccountHolderId] =
+  private def linkedAccountHolderIds(answers: UserAnswers, reportId: ReportId): Set[AccountHolderId] =
     ControllingOrSubstantialOwners
-      .existingCpsos(answers)
+      .existingCpsos(answers)(using reportId)
       .flatMap(
         (cpsoId, _) => answers.get(CpsoAccountHolderIdsPage(cpsoId, reportId)).getOrElse(Set.empty[AccountHolderId])
       )

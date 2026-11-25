@@ -627,10 +627,10 @@ class CPSONavigatorSpec extends SpecBase {
       val ua = UserAnswers("id")
 
       "must redirect to add cpso page when DoYouWantToAddAnotherCpsoPage is true" in {
-        val answers = ua.withPage(DoYouWantToAddAnotherCpsoPage(), true)
+        val answers = ua.withPage(DoYouWantToAddAnotherCpsoPage(reportId), true)
 
         navigator.nextPage(
-          DoYouWantToAddAnotherCpsoPage(),
+          DoYouWantToAddAnotherCpsoPage(reportId),
           NormalMode,
           answers
         ) mustBe
@@ -638,10 +638,10 @@ class CPSONavigatorSpec extends SpecBase {
       }
 
       "must redirect to check cpso complete when DoYouWantToAddAnotherCpsoPage is false" in {
-        val answers = ua.withPage(DoYouWantToAddAnotherCpsoPage(), false)
+        val answers = ua.withPage(DoYouWantToAddAnotherCpsoPage(reportId), false)
 
         navigator.nextPage(
-          DoYouWantToAddAnotherCpsoPage(),
+          DoYouWantToAddAnotherCpsoPage(reportId),
           NormalMode,
           answers
         ) mustBe
@@ -651,7 +651,7 @@ class CPSONavigatorSpec extends SpecBase {
       "must redirect to journey recovery  when DoYouWantToAddAnotherCpsoPage is not defined" in {
 
         navigator.nextPage(
-          DoYouWantToAddAnotherCpsoPage(),
+          DoYouWantToAddAnotherCpsoPage(reportId),
           NormalMode,
           ua
         ) mustBe

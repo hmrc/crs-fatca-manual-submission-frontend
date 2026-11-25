@@ -26,9 +26,9 @@ import java.time.Instant
 
 class CpsoService {
 
-  def existingCpsos(userAnswers: UserAnswers)(implicit reportId: ReportId): Seq[(CPSOId, ControllingOrSubstantialOwner)] =
+  def existingCpsos(userAnswers: UserAnswers, reportId: ReportId): Seq[(CPSOId, ControllingOrSubstantialOwner)] =
     userAnswers
-      .get(ControllingOrSubstantialOwnersPage())
+      .get(ControllingOrSubstantialOwnersPage()(using reportId))
       .map(
         _.cpsos
           .map(
@@ -40,8 +40,8 @@ class CpsoService {
       .sortBy(_._2.creationDateTime)(Ordering.Option[Instant].reverse)
       .reverse
 
-  def isCpsoComplete(userAnswers: UserAnswers, cpsoId: CPSOId)(implicit reportId: ReportId): Boolean =
-    existingCpsos(userAnswers)(using reportId)
+  def isCpsoComplete(userAnswers: UserAnswers, cpsoId: CPSOId, reportId: ReportId): Boolean =
+    existingCpsos(userAnswers, reportId)
       .filter(
         (csId, _) => csId == cpsoId
       )
@@ -51,11 +51,11 @@ class CpsoService {
       .headOption
       .getOrElse(false)
 
-  def areAllCpsosComplete(userAnswers: UserAnswers)(implicit reportId: ReportId): Boolean =
-    if (!accountHoldersRequireCpso(userAnswers)) {
+  def areAllCpsosComplete(userAnswers: UserAnswers, reportId: ReportId): Boolean =
+    if (!accountHoldersRequireCpso(userAnswers, reportId)) {
       true
     } else {
-      existingCpsos(userAnswers) match {
+      existingCpsos(userAnswers, reportId) match {
         case Seq() => reportId.regime != CRS
         case cpsos =>
           cpsos.forall {
@@ -64,9 +64,9 @@ class CpsoService {
       }
     }
 
-  private def accountHoldersRequireCpso(userAnswers: UserAnswers)(implicit reportId: ReportId): Boolean =
+  private def accountHoldersRequireCpso(userAnswers: UserAnswers, reportId: ReportId): Boolean =
     AccountHolders
-      .existingAccountHolders(userAnswers)
+      .existingAccountHolders(userAnswers)(using reportId)
       .exists {
         case (_, accountHolder) =>
           accountHolder.canHaveCPSO() && accountHolder.organisationName.nonEmpty

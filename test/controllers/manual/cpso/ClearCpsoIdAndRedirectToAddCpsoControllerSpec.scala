@@ -45,7 +45,7 @@ class ClearCpsoIdAndRedirectToAddCpsoControllerSpec extends SpecBase {
     emptyUserAnswers
       .withPage(ReportIdPage, reportId)
       .withPage(CurrentCPSOIdPage(), CPSOId("cpso-1"))
-      .withPage(DoYouWantToAddAnotherCpsoPage(), true)
+      .withPage(DoYouWantToAddAnotherCpsoPage(reportId), true)
 
   private def mockRepository: DatabaseConnector = {
     val repository = mock[DatabaseConnector]
@@ -74,7 +74,7 @@ class ClearCpsoIdAndRedirectToAddCpsoControllerSpec extends SpecBase {
 
           val saved = captor.getValue
           saved.get(CurrentCPSOIdPage()) mustBe None
-          saved.get(DoYouWantToAddAnotherCpsoPage()) mustBe Some(true)
+          saved.get(DoYouWantToAddAnotherCpsoPage(reportId)) mustBe Some(true)
           saved.get(ReportIdPage) mustBe Some(reportId)
         }
       }

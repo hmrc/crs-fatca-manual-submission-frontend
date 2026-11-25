@@ -54,18 +54,15 @@ class IsCpsoSectionCompleteController @Inject() (
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
     implicit request =>
 
-      implicit val reportId: ReportId = request.reportId
-      val form                        = formProvider(reportId.regime)
+      val reportId: ReportId = request.reportId
+      val form               = formProvider(reportId.regime)
 
-      if (cpsoService.areAllCpsosComplete(request.userAnswers)) {
+      if (cpsoService.areAllCpsosComplete(request.userAnswers, reportId)) {
         viewFIService
           .getFIDetail(request.fatcaId, reportId.fiId)
           .map {
             fiDetail =>
-              val preparedForm = request.userAnswers.get(IsCpsoSectionCompletePage(reportId)) match {
-                case None        => form
-                case Some(value) => form.fill(value)
-              }
+              val preparedForm = request.userAnswers.get(IsCpsoSectionCompletePage(reportId)).fold(form)(form.fill)
 
               Ok(view(preparedForm, mode, reportId.regime.value, fiDetail.FIName))
           }
@@ -88,7 +85,7 @@ class IsCpsoSectionCompleteController @Inject() (
       implicit val reportId: ReportId = request.reportId
       val form                        = formProvider(reportId.regime)
 
-      if (cpsoService.areAllCpsosComplete(request.userAnswers)) {
+      if (cpsoService.areAllCpsosComplete(request.userAnswers, reportId)) {
         viewFIService
           .getFIDetail(request.fatcaId, reportId.fiId)
           .flatMap {

@@ -58,7 +58,7 @@ class ControllingPersonsOrSubstantialOwnersControllerSpec extends SpecBase with 
 
   private def mockCpSoService(result: Seq[(CPSOId, ControllingOrSubstantialOwner)] = Seq.empty): CpsoService = {
     val service = mock[CpsoService]
-    when(service.existingCpsos(any())(using any())) thenReturn result
+    when(service.existingCpsos(any(), any())) thenReturn result
     service
   }
 
@@ -91,7 +91,7 @@ class ControllingPersonsOrSubstantialOwnersControllerSpec extends SpecBase with 
 
       implicit val reportId = ReportId(CRS, 2025, None, "TestfiID")
 
-      val userAnswers = ua.set(DoYouWantToAddAnotherCpsoPage(), true).success.value
+      val userAnswers = ua.set(DoYouWantToAddAnotherCpsoPage(reportId), true).success.value
 
       val application = applicationBuilder(maybeUserAnswers = Some(userAnswers))
         .overrides(

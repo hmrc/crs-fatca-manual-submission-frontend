@@ -110,7 +110,7 @@ object CPSONavigator {
       handleAccountHolderNavigation(ua, mode, cpsoId)
     case (IsCpsoSectionCompletePage(_), _, _) =>
       controllers.manual.routes.SendAReportController.onPageLoad()
-    case (DoYouWantToAddAnotherCpsoPage(), mode, ua) =>
+    case (DoYouWantToAddAnotherCpsoPage(_), mode, ua) =>
       handleDoYouWantToAddAnotherCpso(ua, mode)
     case (pages.manual.cpso.RemoveCPSOPage(_, _), mode, ua) =>
       controllers.manual.cpso.routes.ControllingPersonsOrSubstantialOwnersController.onPageLoad(mode)
@@ -194,7 +194,7 @@ object CPSONavigator {
     }
 
   private def handleDoYouWantToAddAnotherCpso(userAnswers: UserAnswers, mode: Mode)(implicit reportId: ReportId) =
-    userAnswers.get(DoYouWantToAddAnotherCpsoPage()) match {
+    userAnswers.get(DoYouWantToAddAnotherCpsoPage(reportId)) match {
       case Some(true)  => controllers.manual.cpso.routes.AccountHolderController.onPageLoad(mode)
       case Some(false) => controllers.manual.cpso.routes.IsCpsoSectionCompleteController.onPageLoad()
       case None        => controllers.routes.JourneyRecoveryController.onPageLoad()

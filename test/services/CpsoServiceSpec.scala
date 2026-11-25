@@ -117,11 +117,11 @@ class CpsoServiceSpec extends SpecBase {
   "CpsoService.existingCpsos" - {
 
     "must return no CPsos when none have been added" in {
-      service.existingCpsos(emptyUserAnswers) mustBe empty
+      service.existingCpsos(emptyUserAnswers, reportId) mustBe empty
     }
 
     "must return no CPsos when the CPSo collection is empty" in {
-      service.existingCpsos(answersWith(Map.empty)) mustBe empty
+      service.existingCpsos(answersWith(Map.empty), reportId) mustBe empty
     }
 
     "must return each CPSo with its id and details unchanged" in {
@@ -143,7 +143,7 @@ class CpsoServiceSpec extends SpecBase {
         )
       )
 
-      service.existingCpsos(answers) must contain theSameElementsAs Seq(
+      service.existingCpsos(answers, reportId) must contain theSameElementsAs Seq(
         CPSOId("21") -> organisationOwner,
         CPSOId("22") -> individualOwner
       )
@@ -158,7 +158,7 @@ class CpsoServiceSpec extends SpecBase {
         )
       )
 
-      service.existingCpsos(answers).map(_._2.name) mustBe Seq(
+      service.existingCpsos(answers, reportId).map(_._2.name) mustBe Seq(
         "Oldest owner",
         "Middle owner",
         "Newest owner"
@@ -174,7 +174,7 @@ class CpsoServiceSpec extends SpecBase {
         )
       )
 
-      service.existingCpsos(answers).map(_._2.name) mustBe Seq(
+      service.existingCpsos(answers, reportId).map(_._2.name) mustBe Seq(
         "Undated owner",
         "Oldest owner",
         "Newest owner"
@@ -192,14 +192,14 @@ class CpsoServiceSpec extends SpecBase {
           ControllingOrSubstantialOwners(None, Map("99" -> owner("FATCA owner")))
         )
 
-      service.existingCpsos(answers).map(_._2.name) mustBe Seq("CRS owner")
-      service.existingCpsos(answers)(using fatcaReportId).map(_._2.name) mustBe Seq("FATCA owner")
+      service.existingCpsos(answers, reportId).map(_._2.name) mustBe Seq("CRS owner")
+      service.existingCpsos(answers, fatcaReportId).map(_._2.name) mustBe Seq("FATCA owner")
     }
   }
   "CpsoService.areAllCpsosComplete" - {
 
     "must return true when no account holders require a CPSo" in {
-      service.areAllCpsosComplete(answersWith())(using reportId) mustBe true
+      service.areAllCpsosComplete(answersWith(), reportId) mustBe true
     }
 
     "must return true when the account holders do not require a CPSo" in {
@@ -210,7 +210,7 @@ class CpsoServiceSpec extends SpecBase {
         )
       )
 
-      service.areAllCpsosComplete(answers)(using reportId) mustBe true
+      service.areAllCpsosComplete(answers, reportId) mustBe true
     }
 
     "must return false for a CRS report when an account holder requires a CPSo but none have been added" in {
@@ -218,7 +218,7 @@ class CpsoServiceSpec extends SpecBase {
         accountHolders = Map("ah-1" -> accountHolderRequiringCpso)
       )
 
-      service.areAllCpsosComplete(answers)(using reportId) mustBe false
+      service.areAllCpsosComplete(answers, reportId) mustBe false
     }
 
     "must return true for a FATCA report when an account holder requires a CPSo but none have been added" in {
@@ -227,7 +227,7 @@ class CpsoServiceSpec extends SpecBase {
         report = fatcaReportId
       )
 
-      service.areAllCpsosComplete(answers)(using fatcaReportId) mustBe true
+      service.areAllCpsosComplete(answers, fatcaReportId) mustBe true
     }
 
     "must return true when every CPSo is complete" - {
@@ -238,7 +238,7 @@ class CpsoServiceSpec extends SpecBase {
           accountHolders = Map("ah-1" -> accountHolderRequiringCpso)
         )
 
-        service.areAllCpsosComplete(answers)(using reportId) mustBe true
+        service.areAllCpsosComplete(answers, reportId) mustBe true
       }
 
       "for a FATCA report" in {
@@ -248,7 +248,7 @@ class CpsoServiceSpec extends SpecBase {
           report = fatcaReportId
         )
 
-        service.areAllCpsosComplete(answers)(using fatcaReportId) mustBe true
+        service.areAllCpsosComplete(answers, fatcaReportId) mustBe true
       }
     }
 
@@ -263,7 +263,7 @@ class CpsoServiceSpec extends SpecBase {
           accountHolders = Map("ah-1" -> accountHolderRequiringCpso)
         )
 
-        service.areAllCpsosComplete(answers)(using reportId) mustBe false
+        service.areAllCpsosComplete(answers, reportId) mustBe false
       }
 
       "for a FATCA report" in {
@@ -276,7 +276,7 @@ class CpsoServiceSpec extends SpecBase {
           report = fatcaReportId
         )
 
-        service.areAllCpsosComplete(answers)(using fatcaReportId) mustBe false
+        service.areAllCpsosComplete(answers, fatcaReportId) mustBe false
       }
     }
 
@@ -286,7 +286,7 @@ class CpsoServiceSpec extends SpecBase {
         accountHolders = Map("ah-1" -> individualAccountHolder)
       )
 
-      service.areAllCpsosComplete(answers)(using reportId) mustBe true
+      service.areAllCpsosComplete(answers, reportId) mustBe true
     }
   }
 
@@ -295,71 +295,71 @@ class CpsoServiceSpec extends SpecBase {
     "must return true when the identified CP-SO is complete" in {
       val answers = answersWith(Map("21" -> completeCpso))
 
-      service.isCpsoComplete(answers, CPSOId("21"))(using reportId) mustBe true
+      service.isCpsoComplete(answers, CPSOId("21"), reportId) mustBe true
     }
 
     "must return true for a FATCA report when the identified CP-SO is complete" in {
       val answers = answersWith(Map("21" -> completeCpso), report = fatcaReportId)
 
-      service.isCpsoComplete(answers, CPSOId("21"))(using fatcaReportId) mustBe true
+      service.isCpsoComplete(answers, CPSOId("21"), fatcaReportId) mustBe true
     }
 
     "must return false when the identified CP-SO is incomplete" in {
       val answers = answersWith(Map("21" -> incompleteCpso))
 
-      service.isCpsoComplete(answers, CPSOId("21"))(using reportId) mustBe false
+      service.isCpsoComplete(answers, CPSOId("21"), reportId) mustBe false
     }
 
     "must return false for a CRS report when the CP-SO has no self certification" in {
       val answers = answersWith(Map("21" -> completeCpso.copy(selfCertification = None)))
 
-      service.isCpsoComplete(answers, CPSOId("21"))(using reportId) mustBe false
+      service.isCpsoComplete(answers, CPSOId("21"), reportId) mustBe false
     }
 
     "must return false for a CRS report when the CP-SO has no controlling person type" in {
       val answers = answersWith(Map("21" -> completeCpso.copy(controllingPersonType = None)))
 
-      service.isCpsoComplete(answers, CPSOId("21"))(using reportId) mustBe false
+      service.isCpsoComplete(answers, CPSOId("21"), reportId) mustBe false
     }
 
     "must not require self certification or controlling person type for a FATCA report" in {
       val cpso    = completeCpso.copy(selfCertification = None, controllingPersonType = None)
       val answers = answersWith(Map("21" -> cpso), report = fatcaReportId)
 
-      service.isCpsoComplete(answers, CPSOId("21"))(using fatcaReportId) mustBe true
+      service.isCpsoComplete(answers, CPSOId("21"), fatcaReportId) mustBe true
     }
 
     "must return true for a CRS report when an organisation CP-SO has all of its own details" in {
       val answers = answersWith(Map("21" -> completeOrganisationCpso))
 
-      service.isCpsoComplete(answers, CPSOId("21"))(using reportId) mustBe true
+      service.isCpsoComplete(answers, CPSOId("21"), reportId) mustBe true
     }
 
     "must return false when the CP-SO is not linked to an account holder" in {
       val answers = answersWith(Map("21" -> completeCpso.copy(accountHolders = Some(Seq.empty))))
 
-      service.isCpsoComplete(answers, CPSOId("21"))(using reportId) mustBe false
+      service.isCpsoComplete(answers, CPSOId("21"), reportId) mustBe false
     }
 
     "must return false when the requested CP-SO does not exist" in {
       val answers = answersWith(Map("21" -> completeCpso))
 
-      service.isCpsoComplete(answers, CPSOId("99"))(using reportId) mustBe false
+      service.isCpsoComplete(answers, CPSOId("99"), reportId) mustBe false
     }
 
     "must return false when no CP-SOs have been added" in {
-      service.isCpsoComplete(answersWith(), CPSOId("21"))(using reportId) mustBe false
+      service.isCpsoComplete(answersWith(), CPSOId("21"), reportId) mustBe false
     }
 
     "must return false when there are no user answers at all" in {
-      service.isCpsoComplete(emptyUserAnswers, CPSOId("21"))(using reportId) mustBe false
+      service.isCpsoComplete(emptyUserAnswers, CPSOId("21"), reportId) mustBe false
     }
 
     "must only consider the requested CP-SO, not the others in the report" in {
       val answers = answersWith(Map("21" -> completeCpso, "22" -> incompleteCpso))
 
-      service.isCpsoComplete(answers, CPSOId("21"))(using reportId) mustBe true
-      service.isCpsoComplete(answers, CPSOId("22"))(using reportId) mustBe false
+      service.isCpsoComplete(answers, CPSOId("21"), reportId) mustBe true
+      service.isCpsoComplete(answers, CPSOId("22"), reportId) mustBe false
     }
   }
 
