@@ -18,6 +18,8 @@ package models.mapping
 
 case class MappingNode(
                         path: Option[String] = None,
+                        valuePath: Option[String] = None,
                         repeat: Option[String] = None,
+                        attributes: Map[String, String] = Map.empty,
                         children: Map[String, MappingNode] = Map.empty
                       )

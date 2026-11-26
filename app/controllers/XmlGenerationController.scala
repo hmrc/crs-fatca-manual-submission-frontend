@@ -30,13 +30,9 @@ class XmlGenerationController @Inject()(
   def generateCrs: Action[JsValue] =
     Action(parse.json) { request =>
 
-      val payload =
-        (request.body \ "payload")
-          .as[JsValue]
+      val payload = (request.body \ "payload").as[JsValue]
 
-      val xml =
-        crsXmlService.generate(payload)
+      val xml = crsXmlService.generate(payload)
 
-      Ok(xml.toString)
-        .as("application/xml")
+      Ok(xml.toString).as("application/xml")
     }

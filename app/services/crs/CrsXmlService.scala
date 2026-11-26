@@ -31,5 +31,5 @@ class CrsXmlService @Inject()(
 
     xmlGenerator.generate(
       json,
-      "/mapping/crs/crs_v2.yaml"
+      "/mapping/crs/crs_v3.yaml"
     )

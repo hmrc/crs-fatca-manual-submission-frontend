@@ -39,11 +39,10 @@ class XmlBuilder:
       ),
       TopScope,
       true,
-      mapping.children.toSeq
-        .flatMap {
-          case (name, node) =>
-            buildNode(name, node, json)
-        }*
+      mapping.children.toSeq.flatMap {
+        case (name, node) =>
+          buildNode(name, node, json)
+      }*
     )
 
   private def buildNode(
@@ -54,35 +53,72 @@ class XmlBuilder:
 
     node.repeat match
 
-      case Some("$.accounts[*]") =>
+      case Some(repeatPath) =>
 
-        val accounts =
-          (json \ "accounts")
-            .asOpt[JsArray]
-            .map(_.value.toSeq)
-            .getOrElse(Seq.empty)
+        JsonPathExtractor
+          .readArray(json, repeatPath)
+          .flatMap { item =>
 
-        accounts.map { account =>
-
-          Elem(
-            null,
-            name,
-            Null,
-            TopScope,
-            true,
-            node.children.toSeq
-              .flatMap {
+            val children =
+              node.children.toSeq.flatMap {
                 case (childName, childNode) =>
                   buildNode(
                     childName,
                     childNode,
-                    account
+                    item
                   )
-              }*
-          )
-        }
+              }
 
-      case _ =>
+            if children.isEmpty then
+              Seq.empty
+            else
+              Seq(
+                Elem(
+                  null,
+                  name,
+                  buildAttributes(node, item),
+                  TopScope,
+                  true,
+                  children*
+                )
+              )
+          }
+
+      case None =>
+
+        buildSingleNode(
+          name,
+          node,
+          json
+        )
+
+  private def buildSingleNode(
+                               name: String,
+                               node: MappingNode,
+                               json: JsValue
+                             ): Seq[Node] =
+
+    node.valuePath match
+
+      case Some(valuePath) =>
+
+        JsonPathExtractor
+          .read(json, valuePath)
+          .map { value =>
+
+            Elem(
+              null,
+              name,
+              buildAttributes(node, json),
+              TopScope,
+              true,
+              Text(value)
+            )
+
+          }
+          .toSeq
+
+      case None =>
 
         node.path match
 
@@ -95,31 +131,58 @@ class XmlBuilder:
                 Elem(
                   null,
                   name,
-                  Null,
+                  buildAttributes(node, json),
                   TopScope,
                   true,
                   Text(value)
                 )
+
               }
               .toSeq
 
           case None =>
 
-            Seq(
-              Elem(
-                null,
-                name,
-                Null,
-                TopScope,
-                true,
-                node.children.toSeq
-                  .flatMap {
-                    case (childName, childNode) =>
-                      buildNode(
-                        childName,
-                        childNode,
-                        json
-                      )
-                  }*
+            val children =
+              node.children.toSeq.flatMap {
+                case (childName, childNode) =>
+                  buildNode(
+                    childName,
+                    childNode,
+                    json
+                  )
+              }
+
+            if children.isEmpty then
+              Seq.empty
+            else
+              Seq(
+                Elem(
+                  null,
+                  name,
+                  buildAttributes(node, json),
+                  TopScope,
+                  true,
+                  children*
+                )
               )
+
+  private def buildAttributes(
+                               node: MappingNode,
+                               json: JsValue
+                             ): MetaData =
+
+    node.attributes.foldLeft(Null: MetaData) {
+      case (meta, (attributeName, jsonPath)) =>
+
+        JsonPathExtractor
+          .read(json, jsonPath)
+          .map { value =>
+
+            new UnprefixedAttribute(
+              attributeName,
+              value,
+              meta
             )
+          }
+          .getOrElse(meta)
+    }

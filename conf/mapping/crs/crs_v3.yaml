@@ -1,0 +1,243 @@
+root:
+  name: CRS_OECD
+  namespace: urn:oecd:ties:crs:v3
+
+children:
+
+  MessageSpec:
+
+    children:
+
+      SendingCompanyIN:
+        path: $.messageSpec.sendingCompanyIN
+
+      TransmittingCountry:
+        path: $.messageSpec.transmittingCountry
+
+      ReceivingCountry:
+        path: $.messageSpec.receivingCountry
+
+      MessageType:
+        path: $.messageSpec.messageType
+
+      Warning:
+        path: $.messageSpec.warning
+
+      Contact:
+        path: $.messageSpec.contact
+
+      MessageRefId:
+        path: $.messageSpec.messageRefId
+
+      MessageTypeIndic:
+        path: $.messageSpec.messageTypeIndic
+
+      ReportingPeriod:
+        path: $.messageSpec.reportingPeriod
+
+      Timestamp:
+        path: $.messageSpec.timestamp
+
+  CrsBody:
+
+    children:
+
+      ReportingFI:
+
+        children:
+
+          ResCountryCode:
+            path: $.reportingFI.resCountryCode
+
+          IN:
+
+            valuePath: $.reportingFI.identifier.value
+
+            attributes:
+              issuedBy: $.reportingFI.identifier.issuedBy
+              INType: $.reportingFI.identifier.inType
+
+          Name:
+
+            valuePath: $.reportingFI.name.value
+
+            attributes:
+              nameType: $.reportingFI.name.nameType
+
+          DocSpec:
+
+            children:
+
+              DocTypeIndic:
+                path: $.reportingFI.docSpec.docTypeIndic
+
+              DocRefId:
+                path: $.reportingFI.docSpec.docRefId
+
+      ReportingGroup:
+
+        children:
+
+          AccountReport:
+
+            repeat: $.accounts[*]
+
+            children:
+
+              DocSpec:
+
+                children:
+
+                  DocTypeIndic:
+                    path: $.docSpec.docTypeIndic
+
+                  DocRefId:
+                    path: $.docSpec.docRefId
+
+              AccountNumber:
+
+                valuePath: $.accountNumber.value
+
+                attributes:
+                  AcctNumberType: $.accountNumber.acctNumberType
+                  UndocumentedAccount: $.accountNumber.undocumentedAccount
+                  ClosedAccount: $.accountNumber.closedAccount
+                  DormantAccount: $.accountNumber.dormantAccount
+
+              AccountHolder:
+
+                children:
+
+                  EquityInterestType:
+                    path: $.accountHolder.equityInterestType
+
+                  SelfCert:
+                    path: $.accountHolder.selfCert
+
+                  AcctHolderType:
+                    path: $.accountHolder.acctHolderType
+
+                  Organisation:
+
+                    children:
+
+                      ResCountryCode:
+                        path: $.accountHolder.organisation.resCountryCode
+
+                      IN:
+
+                        valuePath: $.accountHolder.organisation.identifier.value
+
+                        attributes:
+                          issuedBy: $.accountHolder.organisation.identifier.issuedBy
+                          INType: $.accountHolder.organisation.identifier.inType
+
+                      Name:
+
+                        valuePath: $.accountHolder.organisation.name.value
+
+                        attributes:
+                          nameType: $.accountHolder.organisation.name.nameType
+
+              ControllingPerson:
+
+                repeat: $.controllingPersons[*]
+
+                children:
+
+                  CtrlgPersonType:
+                    path: $.ctrlgPersonType
+
+                  SelfCert:
+                    path: $.selfCert
+
+                  Individual:
+
+                    children:
+
+                      ResCountryCode:
+                        path: $.individual.resCountryCode
+
+                      TIN:
+
+                        valuePath: $.individual.tin.value
+
+                        attributes:
+                          issuedBy: $.individual.tin.issuedBy
+
+                      Name:
+
+                        attributes:
+                          nameType: $.individual.name.nameType
+
+                        children:
+
+                          Title:
+                            path: $.individual.name.title
+
+                          FirstName:
+                            path: $.individual.name.firstName
+
+                          MiddleName:
+                            path: $.individual.name.middleName
+
+                          LastName:
+                            path: $.individual.name.lastName
+
+                          Suffix:
+                            path: $.individual.name.suffix
+
+                          GeneralSuffix:
+                            path: $.individual.name.generalSuffix
+
+                      BirthInfo:
+
+                        children:
+
+                          BirthDate:
+                            path: $.individual.birthInfo.birthDate
+
+                          City:
+                            path: $.individual.birthInfo.city
+
+                          CitySubentity:
+                            path: $.individual.birthInfo.citySubentity
+
+                          CountryCode:
+                            path: $.individual.birthInfo.countryCode
+
+              AccountBalance:
+
+                valuePath: $.accountBalance.value
+
+                attributes:
+                  currCode: $.accountBalance.currency
+
+              Payment:
+
+                repeat: $.payments[*]
+
+                children:
+
+                  Type:
+                    path: $.type
+
+                  PaymentAmnt:
+
+                    valuePath: $.amount
+
+                    attributes:
+                      currCode: $.currency
+
+              DDProcedure:
+                path: $.ddProcedure
+
+              AccountType:
+                path: $.accountType
+
+              JointAccount:
+
+                children:
+
+                  Number:
+                    path: $.jointAccount.number

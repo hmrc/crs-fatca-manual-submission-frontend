@@ -1,0 +1,124 @@
+{
+  "schemaType": "CRS",
+  "schemaVersion": "v2",
+  "payload": {
+    "messageSpec": {
+      "sendingCompanyIN": "TES7389121134",
+      "transmittingCountry": "GB",
+      "receivingCountry": "MK",
+      "messageType": "CRS",
+      "warning": "a",
+      "contact": "a",
+      "messageRefId": "GB2013CA123456789",
+      "messageTypeIndic": "CRS701",
+      "reportingPeriod": "2025-08-13",
+      "timestamp": "2025-12-17T09:30:47Z"
+    },
+    "reportingFI": {
+      "resCountryCode": "GB",
+      "identifier": {
+        "value": "789456789",
+        "issuedBy": "SX",
+        "inType": "TIN"
+      },
+      "name": {
+        "value": "Test FI Name",
+        "nameType": "OECD202"
+      },
+      "address": {
+        "legalAddressType": "OECD301",
+        "countryCode": "HK",
+        "street": "123 street",
+        "buildingIdentifier": "Building13",
+        "suiteIdentifier": "Suite12",
+        "floorIdentifier": "floor12",
+        "districtName": "district",
+        "pob": "POB1234",
+        "postCode": "75244",
+        "city": "Test",
+        "countrySubentity": "TX",
+        "addressFree": "123 street/Building13/Suite12/Test/HK/75244"
+      },
+      "docSpec": {
+        "docTypeIndic": "OECD1",
+        "docRefId": "GBFI286abc123xyz"
+      }
+    },
+    "accounts": [
+      {
+        "docSpec": {
+          "docTypeIndic": "OECD1",
+          "docRefId": "GBFI286abc123xyY"
+        },
+        "accountNumber": {
+          "value": "AC1243246537",
+          "acctNumberType": "OECD604",
+          "undocumentedAccount": true,
+          "closedAccount": true,
+          "dormantAccount": true
+        },
+        "accountHolder": {
+          "equityInterestType": "CRS406",
+          "selfCert": "CRS902",
+          "acctHolderType": "CRS103",
+          "organisation": {
+            "resCountryCode": "CL",
+            "identifier": {
+              "value": "123125126",
+              "issuedBy": "BJ",
+              "inType": "TIN"
+            },
+            "name": {
+              "value": "Test FI Name",
+              "nameType": "OECD206"
+            }
+          }
+        },
+        "controllingPersons": [
+          {
+            "ctrlgPersonType": "CRS812",
+            "selfCert": "CRS1002",
+            "individual": {
+              "resCountryCode": "LY",
+              "tin": {
+                "value": "456143211",
+                "issuedBy": "VG"
+              },
+              "name": {
+                "nameType": "OECD207",
+                "title": "MR",
+                "firstName": "John",
+                "middleName": "Murphy",
+                "lastName": "Hazelwood",
+                "suffix": "JR",
+                "generalSuffix": "JR"
+              },
+              "birthInfo": {
+                "birthDate": "1957-08-13",
+                "city": "Test",
+                "citySubentity": "WestMinister",
+                "countryCode": "GB"
+              }
+            }
+          }
+        ],
+        "accountBalance": {
+          "value": 1230,
+          "currency": "CAD"
+        },
+        "payments": [
+          {
+            "type": "CRS504",
+            "amount": 3240,
+            "currency": "XPF"
+          }
+        ],
+        "ddProcedure": "CRS1202",
+        "accountType": "CRS1101",
+        "jointAccount": {
+          "number": 5
+        }
+      }
+    ]
+  }
+}

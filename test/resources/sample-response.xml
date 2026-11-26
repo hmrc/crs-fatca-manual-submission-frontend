@@ -1,0 +1,78 @@
+<CRS_OECD xmlns="urn:oecd:ties:crs:v3">
+    <MessageSpec>
+        <MessageRefId>GB2013CA123456789</MessageRefId>
+        <Warning>a</Warning>
+        <Contact>a</Contact>
+        <TransmittingCountry>GB</TransmittingCountry>
+        <MessageType>CRS</MessageType>
+        <Timestamp>2025-12-17T09:30:47Z</Timestamp>
+        <SendingCompanyIN>TES7389121134</SendingCompanyIN>
+        <ReceivingCountry>MK</ReceivingCountry>
+        <ReportingPeriod>2025-08-13</ReportingPeriod>
+        <MessageTypeIndic>CRS701</MessageTypeIndic>
+    </MessageSpec>
+    <CrsBody>
+        <ReportingFI>
+            <ResCountryCode>GB</ResCountryCode>
+            <IN INType="TIN" issuedBy="SX">789456789</IN>
+            <Name nameType="OECD202">Test FI Name</Name>
+            <DocSpec>
+                <DocTypeIndic>OECD1</DocTypeIndic>
+                <DocRefId>GBFI286abc123xyz</DocRefId>
+            </DocSpec>
+        </ReportingFI>
+        <ReportingGroup>
+            <AccountReport>
+                <AccountNumber DormantAccount="true" ClosedAccount="true" UndocumentedAccount="true"
+                               AcctNumberType="OECD604">AC1243246537
+                </AccountNumber>
+                <AccountBalance currCode="CAD">1230</AccountBalance>
+                <DocSpec>
+                    <DocTypeIndic>OECD1</DocTypeIndic>
+                    <DocRefId>GBFI286abc123xyY</DocRefId>
+                </DocSpec>
+                <ControllingPerson>
+                    <CtrlgPersonType>CRS812</CtrlgPersonType>
+                    <SelfCert>CRS1002</SelfCert>
+                    <Individual>
+                        <ResCountryCode>LY</ResCountryCode>
+                        <TIN issuedBy="VG">456143211</TIN>
+                        <Name nameType="OECD207">
+                            <LastName>Hazelwood</LastName>
+                            <MiddleName>Murphy</MiddleName>
+                            <Title>MR</Title>
+                            <FirstName>John</FirstName>
+                            <Suffix>JR</Suffix>
+                            <GeneralSuffix>JR</GeneralSuffix>
+                        </Name>
+                        <BirthInfo>
+                            <BirthDate>1957-08-13</BirthDate>
+                            <City>Test</City>
+                            <CitySubentity>WestMinister</CitySubentity>
+                            <CountryCode>GB</CountryCode>
+                        </BirthInfo>
+                    </Individual>
+                </ControllingPerson>
+                <DDProcedure>CRS1202</DDProcedure>
+                <AccountType>CRS1101</AccountType>
+                <Payment>
+                    <Type>CRS504</Type>
+                    <PaymentAmnt currCode="XPF">3240</PaymentAmnt>
+                </Payment>
+                <AccountHolder>
+                    <EquityInterestType>CRS406</EquityInterestType>
+                    <SelfCert>CRS902</SelfCert>
+                    <AcctHolderType>CRS103</AcctHolderType>
+                    <Organisation>
+                        <ResCountryCode>CL</ResCountryCode>
+                        <IN INType="TIN" issuedBy="BJ">123125126</IN>
+                        <Name nameType="OECD206">Test FI Name</Name>
+                    </Organisation>
+                </AccountHolder>
+                <JointAccount>
+                    <Number>5</Number>
+                </JointAccount>
+            </AccountReport>
+        </ReportingGroup>
+    </CrsBody>
+</CRS_OECD>

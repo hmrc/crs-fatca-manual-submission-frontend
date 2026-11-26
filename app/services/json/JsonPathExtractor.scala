@@ -37,3 +37,24 @@ object JsonPathExtractor:
     } catch {
       case _: Throwable => None
     }
+
+  def readArray(
+                 json: JsValue,
+                 path: String
+               ): Seq[JsValue] =
+
+    try {
+
+      val fieldName =
+        path
+          .stripPrefix("$.")
+          .stripSuffix("[*]")
+
+      (json \ fieldName)
+        .asOpt[JsArray]
+        .map(_.value.toSeq)
+        .getOrElse(Seq.empty)
+
+    } catch {
+      case _: Throwable => Seq.empty
+    }
