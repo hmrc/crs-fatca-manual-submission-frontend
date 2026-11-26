@@ -29,12 +29,12 @@
 @layout(pageTitle = title(form, messages("isAccountHoldersSectionComplete.title"))) {
 
     @formHelper(action = controllers.manual.accountHolders.routes.IsAccountHoldersSectionCompleteController.onSubmit(), Symbol("autoComplete") -> "off") {
-        @heading(headingContent = messages("isAccountHoldersSectionComplete.heading", fiName))
-        @para("isAccountHoldersSectionComplete.para.1")
-
-        @if(form.errors.nonEmpty) {
+         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
+       
+        @heading(headingContent = messages("isAccountHoldersSectionComplete.heading", fiName))
+        @para("isAccountHoldersSectionComplete.para.1")
 
         @govukRadios(
             RadiosViewModel.yesNo(

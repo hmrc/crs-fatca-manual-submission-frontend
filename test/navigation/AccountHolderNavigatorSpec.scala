@@ -918,6 +918,22 @@ class AccountHolderNavigatorSpec extends SpecBase {
 
         }
 
+        "IsAccountHoldersSectionCompletePage" - {
+          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+          val ua                          = UserAnswers("id")
+
+          "must go to SendAReport when answer is Yes" in {
+            ua.withPage(IsAccountHoldersSectionCompletePage(reportId), true)
+            navigator.nextPage(IsAccountHoldersSectionCompletePage(reportId), NormalMode, ua) mustBe
+              controllers.manual.routes.SendAReportController.onPageLoad()
+          }
+          "must go to SendAReport when answer is No" in {
+            ua.withPage(IsAccountHoldersSectionCompletePage(reportId), false)
+            navigator.nextPage(IsAccountHoldersSectionCompletePage(reportId), NormalMode, ua) mustBe
+              controllers.manual.routes.SendAReportController.onPageLoad()
+          }
+        }
+
         "Equity interest routing" - {
 
           val accountHolderId = AccountHolderId("equity-holder")

@@ -37,6 +37,7 @@ import pages.manual.accountHolders.{
   IndividualHavePlaceOfBirthPage,
   IndividualOrOrganisationPage,
   IndividualPlaceOfBirthPage,
+  IsAccountHoldersSectionCompletePage,
   IsThisTheAddressForAccountHoldersPage,
   OrganisationCrsPage,
   OrganisationFatcaPage,
@@ -165,9 +166,10 @@ object AccountHolderNavigator {
         case Some(false) => controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
         case None        => routes.JourneyRecoveryController.onPageLoad()
       }
-    case (EquityInterestTypePage(_, _), mode, _)          => controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
-    case (DoYouWantToAddAnotherAccountHolder(), mode, ua) => handleDoYouWantToAddAnotherAccountHolderNavigation(mode, ua)
-    case (RemoveAccountHolderPage(), mode, ua)            => controllers.manual.accountHolders.routes.AccountHolderListController.onPageLoad(mode)
+    case (EquityInterestTypePage(_, _), mode, _)                   => controllers.manual.accountHolders.routes.SelfCertificationController.onPageLoad(mode)
+    case (DoYouWantToAddAnotherAccountHolder(), mode, ua)          => handleDoYouWantToAddAnotherAccountHolderNavigation(mode, ua)
+    case (RemoveAccountHolderPage(), mode, ua)                     => controllers.manual.accountHolders.routes.AccountHolderListController.onPageLoad(mode)
+    case (IsAccountHoldersSectionCompletePage(reportId), mode, ua) => controllers.manual.routes.SendAReportController.onPageLoad()
   }
 
   private def handleDoYouWantToAddAnotherAccountHolderNavigation(mode: Mode, userAnswers: UserAnswers)(implicit reportId: ReportId) =
