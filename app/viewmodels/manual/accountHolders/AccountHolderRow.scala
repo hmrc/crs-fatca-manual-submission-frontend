@@ -16,6 +16,7 @@
 
 package viewmodels.manual.accountHolders
 
+import models.NormalMode
 import models.SubmissionsConstants.RegimeType
 import models.viewModels.{AccountHolder, AccountHolderId}
 
@@ -26,11 +27,15 @@ object AccountHolderRow {
   def rows(accountInfoList: Seq[(AccountHolderId, AccountHolder)], regimeType: RegimeType): Seq[AccountHolderRow] =
     accountInfoList.map {
       case (accountHolderId, accountHolder) =>
+        val isIncomplete = !accountHolder.isComplete(regimeType)
+        val changeLinkRoute =
+          if (isIncomplete) controllers.manual.accountHolders.routes.AccountController.onPageLoad(NormalMode).url
+          else controllers.manual.accountHolders.routes.CurrentAccountHolderIdController.onChangeRedirect(accountHolderId.value).url
         AccountHolderRow(
-          accountHolder.organisationName.getOrElse(accountHolder.getName()),
-          controllers.manual.accountHolders.routes.CurrentAccountHolderIdController.onChangeRedirect(accountHolderId.value).url,
-          controllers.manual.accountHolders.routes.CurrentAccountHolderIdController.onRemoveRedirect(accountHolderId.value).url,
-          isIncomplete = !accountHolder.isComplete(regimeType)
+          accountHolderName = accountHolder.organisationName.getOrElse(accountHolder.getName()),
+          changeUrl = changeLinkRoute,
+          removeUrl = controllers.manual.accountHolders.routes.CurrentAccountHolderIdController.onRemoveRedirect(accountHolderId.value).url,
+          isIncomplete = isIncomplete
         )
     }
 }
