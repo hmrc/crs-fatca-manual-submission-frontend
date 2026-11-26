@@ -68,6 +68,7 @@ class IsAccountHoldersSectionCompleteController @Inject() (
               Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
           }
       } else {
+        logger.info(s"Account Holders are not complete for FiID ${reportId.fiId}")
         Future.successful(
           Redirect(controllers.manual.routes.SendAReportController.onPageLoad())
         )
