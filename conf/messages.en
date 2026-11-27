@@ -1262,6 +1262,11 @@ cpso.accountHolder.error.required = Select at least one account holder
 accountHolders.checkAnswers.title = Check your answers for the account holder
 accountHolders.checkAnswers.heading = Check your answers for the account holder
 
+isAccountHoldersSectionComplete.title = Have you finished adding the account holders for the financial institution?
+isAccountHoldersSectionComplete.heading = Have you finished adding the account holders for {0}?
+isAccountHoldersSectionComplete.error.required = Select yes if you have finished adding the account holders for the financial institution
+isAccountHoldersSectionComplete.para.1 = You can still change the information for the account holders later.
+
 account.remove.account.title = Remove this account
 account.remove.account.heading = Remove this account
 account.remove.account.paragraph.crs = If you remove this account, we’ll keep its account holders and controlling persons. You’ll need to link them to another account or remove them.

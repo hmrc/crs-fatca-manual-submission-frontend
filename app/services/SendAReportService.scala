@@ -17,20 +17,21 @@
 package services
 
 import models.CrsOrFatca.reads
-import models.viewModels.{AccountId, TaskStatus}
 import models.viewModels.TaskStatus.{CannotStartYet, Completed, Incomplete, NotStarted}
+import models.viewModels.{AccountId, TaskStatus}
 import models.{viewModels, ReportId, UserAnswers}
 import pages.QuestionPage
 import pages.manual.account.{AccountsPage, IsAccountsSectionCompletedPage}
+import pages.manual.accountHolders.IsAccountHoldersSectionCompletePage
+import pages.manual.cpso.IsCpsoSectionCompletePage
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportingFI.HaveYouFinishedCheckingFIDetailsPage
-import pages.manual.cpso.IsCpsoSectionCompletePage
 import pages.manual.sponsor.*
 import services.manual.account.AccountsService
 
 import javax.inject.Inject
 
-class SendAReportService @Inject() (accountsService: AccountsService, cpsoService: CpsoService) {
+class SendAReportService @Inject() (accountsService: AccountsService, cpsoService: CpsoService, accountHolderService: AccountHolderService) {
 
   def reportingFIStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
     userAnswers
@@ -45,6 +46,17 @@ class SendAReportService @Inject() (accountsService: AccountsService, cpsoServic
       .fold(Incomplete) {
         value => if value && cpsoService.areAllCpsosComplete(userAnswers, reportId) then Completed else Incomplete
       }
+
+  def accountHoldersCompleteStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus = {
+    val noAccountHoldersAdded: Boolean     = accountHolderService.accountHolders(userAnswers)(reportId).isEmpty
+    val sectionIsDeclaredComplete: Boolean = userAnswers.get(IsAccountHoldersSectionCompletePage(reportId)).contains(true)
+    val accountHoldersAreComplete: Boolean = accountHolderService.areAllAccountHoldersComplete(userAnswers, reportId)
+
+    if (noAccountHoldersAdded) NotStarted
+    else if (sectionIsDeclaredComplete && accountHoldersAreComplete) Completed
+    else Incomplete
+
+  }
 
   def fillerStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
     userAnswers.get(HaveSponsorPage()(reportId)).fold[TaskStatus](CannotStartYet) {

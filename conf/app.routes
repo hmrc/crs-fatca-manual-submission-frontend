@@ -517,6 +517,14 @@ POST        /manual/cp-so/change-account-holder                 controllers.manu
 
 GET        /manual/cp-so/check-cpso-add-or-allowed      controllers.manual.cpso.CheckCPSOAddedOrAllowedController.onChangeRedirect(mode: Mode = NormalMode)
 
+GET        /manual/is-account-holders-section-completed                        controllers.manual.accountHolders.IsAccountHoldersSectionCompleteController.onPageLoad(mode: Mode = NormalMode)
+POST       /manual/is-account-holders-section-completed                        controllers.manual.accountHolders.IsAccountHoldersSectionCompleteController.onSubmit(mode: Mode = NormalMode)
+
+GET         /manual/cp-so/account-holder                       controllers.manual.cpso.AccountHolderController.onPageLoad(mode: Mode = NormalMode)
+POST        /manual/cp-so/account-holder                       controllers.manual.cpso.AccountHolderController.onSubmit(mode: Mode = NormalMode)
+GET         /manual/cp-so/change-account-holder                 controllers.manual.cpso.AccountHolderController.onPageLoad(mode: Mode = CheckMode)
+POST        /manual/cp-so/change-account-holder                 controllers.manual.cpso.AccountHolderController.onSubmit(mode: Mode = CheckMode)
+
 GET        /manual/cp-so/check-answers                                      controllers.manual.cpso.CPSOCheckAnswersController.onPageLoad()
 POST       /manual/cp-so/check-answers                                      controllers.manual.cpso.CPSOCheckAnswersController.onSubmit()
 
@@ -540,6 +548,7 @@ GET        /manual/account-holder/change-clear-account-holder-id      controller
 
 GET         /manual/is-cp-so-section-completed                        controllers.manual.cpso.IsCpsoSectionCompleteController.onPageLoad(mode: Mode = NormalMode)
 POST        /manual/is-cp-so-section-completed                         controllers.manual.cpso.IsCpsoSectionCompleteController.onSubmit(mode: Mode = NormalMode)
+
 GET        /manual/is-accounts-section-completed       controllers.manual.account.IsAccountsSectionCompletedController.onPageLoad()
 POST       /manual/is-accounts-section-completed       controllers.manual.account.IsAccountsSectionCompletedController.onSubmit()
 
