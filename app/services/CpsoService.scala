@@ -39,6 +39,9 @@ class CpsoService {
       .getOrElse(Seq.empty)
       .sortBy(_._2.creationDateTime)(Ordering.Option[Instant].reverse)
       .reverse
+      .filter(
+        (_, cpso) => cpso.name.nonEmpty
+      )
 
   def isCpsoComplete(userAnswers: UserAnswers, cpsoId: CPSOId, reportId: ReportId): Boolean =
     existingCpsos(userAnswers, reportId)

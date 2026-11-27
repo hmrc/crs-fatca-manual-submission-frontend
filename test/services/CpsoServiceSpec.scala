@@ -58,7 +58,7 @@ class CpsoServiceSpec extends SpecBase {
     controllingPersonType = Some(ControllingPersonTypes(Seq(ControllingPersonType.OwnershipOfLegalPerson)))
   )
 
-  private val incompleteCpso = completeCpso.copy(individualName = None)
+  private val incompleteCpso = completeCpso.copy(accountHolders = None)
 
   private val completeOrganisationCpso = ControllingOrSubstantialOwner(
     individualOrOrganisation = Some(CpsoOrganisation),
