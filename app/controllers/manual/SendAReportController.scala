@@ -64,7 +64,7 @@ class SendAReportController @Inject() (
             ),
             accounts = Option.unless(isNilReport)(accountsStatus),
             accountHolders = Option.unless(isNilReport)(
-              service.accountHolderStatus(accountsStatus)
+              service.accountHolderStatus(request.userAnswers, request.reportId, accountsStatus)
             ),
             controllingPersons = Option
               .unless(isNilReport)(

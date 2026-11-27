@@ -33,10 +33,10 @@ import services.manual.account.AccountsService
 import javax.inject.Inject
 
 class SendAReportService @Inject() (
-                                     accountsService: AccountsService,
-                                     cpsoService: CpsoService,
-                                     accountHolderService: AccountHolderService
-                                   ) {
+  accountsService: AccountsService,
+  cpsoService: CpsoService,
+  accountHolderService: AccountHolderService
+) {
 
   def reportingFIStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
     userAnswers
@@ -55,9 +55,9 @@ class SendAReportService @Inject() (
       }
 
   def accountHoldersCompleteStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus = {
-    val noAccountHoldersAdded      = accountHolderService.accountHolders(userAnswers)(reportId).isEmpty
+    val noAccountHoldersAdded     = accountHolderService.accountHolders(userAnswers)(reportId).isEmpty
     val sectionIsDeclaredComplete = userAnswers.get(IsAccountHoldersSectionCompletePage(reportId)).contains(true)
-    val accountHoldersAreComplete  = accountHolderService.areAllAccountHoldersComplete(userAnswers, reportId)
+    val accountHoldersAreComplete = accountHolderService.areAllAccountHoldersComplete(userAnswers, reportId)
 
     if (noAccountHoldersAdded) NotStarted
     else if (sectionIsDeclaredComplete && accountHoldersAreComplete) Completed
@@ -93,15 +93,15 @@ class SendAReportService @Inject() (
   def accountStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
     if (
       userAnswers.get(IsAccountsSectionCompletedPage(reportId)).contains(true) &&
-        accountsService.allAccountsComplete(userAnswers, reportId)
+      accountsService.allAccountsComplete(userAnswers, reportId)
     ) Completed
     else Incomplete
 
   def accountHolderStatus(
-                           userAnswers: UserAnswers,
-                           reportId: ReportId,
-                           accountsStatus: TaskStatus
-                         ): TaskStatus =
+    userAnswers: UserAnswers,
+    reportId: ReportId,
+    accountsStatus: TaskStatus
+  ): TaskStatus =
     if (accountsStatus != Completed) {
       CannotStartYet
     } else {
@@ -118,22 +118,22 @@ class SendAReportService @Inject() (
           holders.accountHolders.valuesIterator.exists {
             holder =>
               holder.individualOrOrganisation.contains(IndividualOrOrganisation.Organisation) &&
-                (reportId.regime match {
-                  case CRS =>
-                    holder.accountHolderType.contains(
-                      AccountHolderTypes.PassiveNonFinancialWithOneOrMoreControllingPerson
-                    )
+              (reportId.regime match {
+                case CRS =>
+                  holder.accountHolderType.contains(
+                    AccountHolderTypes.PassiveNonFinancialWithOneOrMoreControllingPerson
+                  )
 
-                  case FATCA =>
-                    holder.accountHolderType.contains(
-                      AccountHolderTypes.OwnerDocumentedForeignFinancialInstitution
-                    ) ||
-                      holder.accountHolderType.contains(
-                        AccountHolderTypes.PassiveNFFEWithSubstantial
-                      )
+                case FATCA =>
+                  holder.accountHolderType.contains(
+                    AccountHolderTypes.OwnerDocumentedForeignFinancialInstitution
+                  ) ||
+                  holder.accountHolderType.contains(
+                    AccountHolderTypes.PassiveNFFEWithSubstantial
+                  )
 
-                  case _ => false
-                })
+                case _ => false
+              })
           }
       }
     ) {
@@ -155,14 +155,14 @@ class SendAReportService @Inject() (
     )
 
   private def pageAnswered(
-                            page: QuestionPage[?],
-                            userAnswers: UserAnswers
-                          ): Boolean =
+    page: QuestionPage[?],
+    userAnswers: UserAnswers
+  ): Boolean =
     page.path.asSingleJsResult(userAnswers.data).isSuccess
 
   private def allSponsorPagesAnswered(
-                                       userAnswers: UserAnswers
-                                     )(using reportId: ReportId): Boolean = {
+    userAnswers: UserAnswers
+  )(using reportId: ReportId): Boolean = {
     val requiredPagesPresent = sponsorRequiredPages.forall(pageAnswered(_, userAnswers))
     val addressPresent       = sponsorAddressPages.exists(pageAnswered(_, userAnswers))
 

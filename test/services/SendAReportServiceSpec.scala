@@ -112,7 +112,7 @@ class SendAReportServiceSpec extends SpecBase {
       }
 
       "should return incomplete when page is answered as false even if all CP/SOs are complete" in {
-        val answers = emptyUserAnswers.withPage(IsCpsoSectionCompletePage(reportId), false)
+        val answers     = emptyUserAnswers.withPage(IsCpsoSectionCompletePage(reportId), false)
         val cpsoService = mock[CpsoService]
 
         when(cpsoService.areAllCpsosComplete(answers, reportId)).thenReturn(true)
@@ -127,7 +127,7 @@ class SendAReportServiceSpec extends SpecBase {
       }
 
       "should return completed when page is answered as true and all CP/SOs are complete" in {
-        val answers = emptyUserAnswers.withPage(IsCpsoSectionCompletePage(reportId), true)
+        val answers     = emptyUserAnswers.withPage(IsCpsoSectionCompletePage(reportId), true)
         val cpsoService = mock[CpsoService]
 
         when(cpsoService.areAllCpsosComplete(answers, reportId)).thenReturn(true)
@@ -142,7 +142,7 @@ class SendAReportServiceSpec extends SpecBase {
       }
 
       "should return incomplete when page is answered as true but CP/SOs are incomplete" in {
-        val answers = emptyUserAnswers.withPage(IsCpsoSectionCompletePage(reportId), true)
+        val answers     = emptyUserAnswers.withPage(IsCpsoSectionCompletePage(reportId), true)
         val cpsoService = mock[CpsoService]
 
         when(cpsoService.areAllCpsosComplete(answers, reportId)).thenReturn(false)
@@ -561,8 +561,8 @@ class SendAReportServiceSpec extends SpecBase {
           AccountHolders(None, Map("1" -> holder))
         )
 
-        val confirmed = answers.withPage(IsCpsoSectionCompletePage(report), true)
-        val declined  = answers.withPage(IsCpsoSectionCompletePage(report), false)
+        val confirmed   = answers.withPage(IsCpsoSectionCompletePage(report), true)
+        val declined    = answers.withPage(IsCpsoSectionCompletePage(report), false)
         val cpsoService = mock[CpsoService]
 
         when(cpsoService.areAllCpsosComplete(confirmed, report)).thenReturn(true)
