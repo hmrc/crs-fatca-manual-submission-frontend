@@ -133,6 +133,27 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester {
         (result.last \ "@issuedBy").text.trim mustEqual "USA"
         result.last.text.trim mustEqual "1111"
       }
+
+      "taxId shouldnt contain escape characters" in {
+        val taxIdToXml = PrivateMethod[NodeSeq](Symbol("taxIdToXml"))
+        val testCases = Seq(
+          "1111'"  -> "1111&apos;",
+          "1111’"  -> "1111&apos;",
+          "1111`"  -> "1111&apos;",
+          "1111\"" -> "1111&quot;",
+          "1111&"  -> "1111&amp;",
+          "1111<"  -> "1111&lt;",
+          "1111>"  -> "1111&gt;"
+        )
+
+        testCases.foreach {
+          case (escapeChar, expected) =>
+            val residency = TaxResidentInformation(Country("USA", "United Kingdom"), taxIdentifierNumber = Some(escapeChar))
+            val reportId  = ReportId(CRS, 2020, None, "fi12")
+            val result    = XmlMarshaller invokePrivate taxIdToXml(residency, reportId)
+            result.last.text.trim mustEqual expected
+        }
+      }
     }
 
     "ukAddressToAddressFix" - {
@@ -140,7 +161,6 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester {
       "must create a valid AddressFix with the correct prefixes for CRS" in {
         val reportId = ReportId(CRS, 2020, None, "fi12")
         val result   = XmlMarshaller invokePrivate ukAddressToAddressFix(ukAddress, reportId)
-        println(result.toString)
         result.head.prefix mustEqual "crs"
         (result \ "AddressFix").head.prefix mustEqual "cfc"
         (result \ "CountryCode").text.trim mustEqual "UK"
@@ -173,6 +193,35 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester {
         (result \ "AddressFix" \ "PoB") mustBe empty
         (result \ "AddressFix" \ "PostCode").text.trim mustEqual "D17"
         (result \ "AddressFix" \ "City").text.trim mustEqual "Bradford"
+      }
+
+      "must escape special characters" in {
+        val testCases = Seq(
+          UkAddress(addressLine1 = "line1'", addressLine2 = Some("line2'"), city = "Bradford'", county = Some("county'"), postcode = "D17", country = "UK")
+            -> "&apos;",
+          UkAddress(addressLine1 = "line1’", addressLine2 = Some("line2’"), city = "Bradford’", county = Some("county’"), postcode = "D17", country = "UK")
+            -> "&apos;",
+          UkAddress(addressLine1 = "line1`", addressLine2 = Some("line2`"), city = "Bradford`", county = Some("county`"), postcode = "D17", country = "UK")
+            -> "&apos;",
+          UkAddress(addressLine1 = "line1\"", addressLine2 = Some("line2\""), city = "Bradford\"", county = Some("county\""), postcode = "D17", country = "UK")
+            -> "&quot;",
+          UkAddress(addressLine1 = "line1&", addressLine2 = Some("line2&"), city = "Bradford&", county = Some("county&"), postcode = "D17", country = "UK")
+            -> "&amp;",
+          UkAddress(addressLine1 = "line1<", addressLine2 = Some("line2<"), city = "Bradford<", county = Some("county<"), postcode = "D17", country = "UK")
+            -> "&lt;",
+          UkAddress(addressLine1 = "line1>", addressLine2 = Some("line2>"), city = "Bradford>", county = Some("county>"), postcode = "D17", country = "UK")
+            -> "&gt;"
+        )
+        testCases.foreach {
+          case (escapeChar, expected) =>
+            val reportId = ReportId(FATCA, 2020, None, "fi12")
+            val result   = XmlMarshaller invokePrivate ukAddressToAddressFix(escapeChar, reportId)
+            (result \ "AddressFree").text.trim mustEqual s"line1$expected, line2$expected, Bradford$expected, county$expected, D17, UK"
+            (result \ "AddressFix" \ "Street").text.trim mustEqual s"line1$expected"
+            (result \ "AddressFix" \ "DistrictName").text.trim mustEqual s"county$expected"
+            (result \ "AddressFix" \ "PostCode").text.trim mustEqual "D17"
+            (result \ "AddressFix" \ "City").text.trim mustEqual s"Bradford$expected"
+        }
       }
     }
 
@@ -210,6 +259,76 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester {
         (result \ "AddressFix" \ "DistrictName") mustBe empty
         (result \ "AddressFix" \ "PostCode") mustBe empty
         (result \ "AddressFix" \ "City").text.trim mustEqual "bad place"
+      }
+
+      "must escape special characters" in {
+        val testCases = Seq(
+          AddressNonUk(
+            addressLine1 = "Middle of nowhere'",
+            addressLine2 = Some("line2'"),
+            addressLine3 = "bad place'",
+            addressLine4 = Some("line4'"),
+            postcode = Some("Hell22"),
+            country = "HE"
+          ) -> "&apos;",
+          AddressNonUk(
+            addressLine1 = "Middle of nowhere’",
+            addressLine2 = Some("line2’"),
+            addressLine3 = "bad place’",
+            addressLine4 = Some("line4’"),
+            postcode = Some("Hell22"),
+            country = "HE"
+          ) -> "&apos;",
+          AddressNonUk(
+            addressLine1 = "Middle of nowhere`",
+            addressLine2 = Some("line2`"),
+            addressLine3 = "bad place`",
+            addressLine4 = Some("line4`"),
+            postcode = Some("Hell22"),
+            country = "HE"
+          ) -> "&apos;",
+          AddressNonUk(
+            addressLine1 = "Middle of nowhere\"",
+            addressLine2 = Some("line2\""),
+            addressLine3 = "bad place\"",
+            addressLine4 = Some("line4\""),
+            postcode = Some("Hell22"),
+            country = "HE"
+          ) -> "&quot;",
+          AddressNonUk(
+            addressLine1 = "Middle of nowhere&",
+            addressLine2 = Some("line2&"),
+            addressLine3 = "bad place&",
+            addressLine4 = Some("line4&"),
+            postcode = Some("Hell22"),
+            country = "HE"
+          ) -> "&amp;",
+          AddressNonUk(
+            addressLine1 = "Middle of nowhere<",
+            addressLine2 = Some("line2<"),
+            addressLine3 = "bad place<",
+            addressLine4 = Some("line4<"),
+            postcode = Some("Hell22"),
+            country = "HE"
+          ) -> "&lt;",
+          AddressNonUk(
+            addressLine1 = "Middle of nowhere>",
+            addressLine2 = Some("line2>"),
+            addressLine3 = "bad place>",
+            addressLine4 = Some("line4>"),
+            postcode = Some("Hell22"),
+            country = "HE"
+          ) -> "&gt;"
+        )
+        testCases.foreach {
+          case (escapeChar, expected) =>
+            val reportId = ReportId(FATCA, 2020, None, "fi12")
+            val result   = XmlMarshaller invokePrivate nonUkAddressToAddressFix(escapeChar, reportId)
+            (result \ "AddressFree").text.trim mustEqual
+              s"Middle of nowhere$expected, line2$expected, bad place$expected, line4$expected, Hell22, HE"
+            (result \ "AddressFix" \ "Street").text.trim mustEqual s"Middle of nowhere$expected"
+            (result \ "AddressFix" \ "City").text.trim mustEqual s"bad place$expected"
+        }
       }
     }
 
@@ -270,6 +389,25 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester {
         (result \ "FirstName").head.text.trim mustEqual "firstName"
         (result \ "LastName").head.text.trim mustEqual "lastName"
       }
+
+      "must escape special characters" in {
+        val reportId = ReportId(FATCA, 2020, None, "fi12")
+        val testCases = Seq(
+          "'"  -> "&apos;",
+          "’"  -> "&apos;",
+          "`"  -> "&apos;",
+          "\"" -> "&quot;",
+          "&"  -> "&amp;",
+          "<"  -> "&lt;",
+          ">"  -> "&gt;"
+        )
+        testCases.foreach {
+          case (escapeChar, expected) =>
+            val result = XmlMarshaller invokePrivate createNameType(s"firstName$escapeChar", s"lastName$escapeChar", reportId)
+            (result \ "FirstName").head.text.trim mustEqual s"firstName$expected"
+            (result \ "LastName").head.text.trim mustEqual s"lastName$expected"
+        }
+      }
     }
 
     "createBirthInfo" - {
@@ -283,7 +421,6 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester {
         val reportId = ReportId(FATCA, 2020, None, "fi12")
         val date     = LocalDate.now()
         val result   = XmlMarshaller invokePrivate createBirthInfo(reportId, Some(date), None, None, None)
-        println(result.toString)
         result.size mustEqual 1
         result.head.prefix mustEqual "sfa"
         (result \ "BirthDate").text.trim mustEqual date.toString
@@ -321,7 +458,26 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester {
         (result \ "City") mustBe empty
         (result \ "CountryInfo") mustBe empty
       }
+
+      "must escape special characters" in {
+        val reportId = ReportId(FATCA, 2020, None, "fi12")
+        val testCases = Seq(
+          "'"  -> "&apos;",
+          "’"  -> "&apos;",
+          "`"  -> "&apos;",
+          "\"" -> "&quot;",
+          "&"  -> "&amp;",
+          "<"  -> "&lt;",
+          ">"  -> "&gt;"
+        )
+        testCases.foreach {
+          case (escapeChar, expected) =>
+            val result = XmlMarshaller invokePrivate createBirthInfo(reportId, None, None, None, Some(RegionBirthInfo(s"north east$escapeChar")))
+            (result \ "CitySubEntity").text.trim mustEqual s"north east$expected"
+        }
+      }
     }
+
     "createCPInfo" - {
       val createCPInfo = PrivateMethod[NodeSeq](Symbol("createCPInfo"))
       "must create controlling person type and self cert when called" in {
@@ -440,6 +596,35 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester {
         (result \ "SelfCert") mustBe empty
         (result \ "FilerCategory").text.trim mustEqual Registered.xmlValue
         (result \ "FilerCategory").head.prefix mustEqual "ftc"
+      }
+
+      "must escape special character" in {
+
+        val testCases = Seq(
+          "'"  -> "&apos;",
+          "’"  -> "&apos;",
+          "`"  -> "&apos;",
+          "\"" -> "&quot;",
+          "&"  -> "&amp;",
+          "<"  -> "&lt;",
+          ">"  -> "&gt;"
+        )
+        testCases.foreach {
+          case (escapeChar, expected) =>
+            val crsAh = CrsAccountHolder(
+              name = s"CRS Org Ltd$escapeChar",
+              address = ukAddress,
+              residency = Seq(residency),
+              reportId = reportId,
+              accountHolderType = PassiveWithMultiplePersons,
+              interestType = Some(BeneficiaryEquivalent),
+              selfCert = Yes
+            )
+
+            val result = XmlMarshaller.toOrganisationPartyType(crsAh)
+
+            (result \ "Organisation" \ "Name").text.trim mustEqual s"CRS Org Ltd$expected"
+        }
       }
     }
     "toIndividualType" - {
@@ -562,6 +747,64 @@ class XmlMarshallerSpec extends SpecBase with PrivateMethodTester {
         (result \ "AccountReport" \ "AccountHolder").head.prefix mustEqual "crs"
         (result \ "AccountReport" \ "AccountHolder" \ "Individual").size mustEqual 1
         (result \ "AccountReport" \ "AccountHolder").size mustEqual 1
+      }
+
+      "must escape special character - fatca account number" in {
+        val testCases = Seq(
+          "'"  -> "&apos;",
+          "’"  -> "&apos;",
+          "`"  -> "&apos;",
+          "\"" -> "&quot;",
+          "&"  -> "&amp;",
+          "<"  -> "&lt;",
+          ">"  -> "&gt;"
+        )
+        testCases.foreach {
+          case (escapeChar, expected) =>
+            val fatcaAccountHolder = XmlMarshaller.toOrganisationPartyType(fatcaAh)
+            val so                 = XmlMarshaller.toIndividualType(substantialOwner)
+            val fatcAccount = FatcaAccount(
+              numberType = Some(Iban),
+              accountIdentifier = AccountNumber(id = s"account1$escapeChar"),
+              balance = accountBalance,
+              isClosed = true,
+              payments = payments
+            )
+            val result = XmlMarshaller.toAccountReport(fatcAccount, repId)(fatcaAccountHolder ++ so)
+            (result \ "AccountReport" \ "AccountNumber").head.text.trim mustEqual s"account1$expected"
+        }
+      }
+
+      "must escape special character - crs account number" in {
+        val testCases = Seq(
+          "'"  -> "&apos;",
+          "’"  -> "&apos;",
+          "`"  -> "&apos;",
+          "\"" -> "&quot;",
+          "&"  -> "&amp;",
+          "<"  -> "&lt;",
+          ">"  -> "&gt;"
+        )
+        testCases.foreach {
+          case (escapeChar, expected) =>
+            val crsAccountHolder = XmlMarshaller.toIndividualType(crsIndividualAccountHolder)
+            val cp               = XmlMarshaller.toIndividualType(controllingPerson)
+            val crsAccount = CrsAccount(
+              numberType = Some(Iban),
+              accountIdentifier = AccountNumber(id = s"account1$escapeChar"),
+              accountBalance = accountBalance,
+              isClosed = true, // if accountClosed then account balance must be 0
+              isUndocumented = true,
+              isDormant = false,
+              wasOpenInRP = models.manual.account.WasAccountOpen.Yes,
+              howManyJointHolders = Some(2),
+              accountType = Depository,
+              payments = payments :+ Payment(CRSDividends, AccountPaymentsAmount(Currency.GBP, "100"))
+            )
+            val result = XmlMarshaller.toAccountReport(crsAccount, repId.copy(regime = CRS))(crsAccountHolder ++ cp)
+            (result \ "AccountReport" \ "AccountNumber").head.text.trim mustEqual s"account1$expected"
+        }
+
       }
     }
 
