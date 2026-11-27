@@ -40,6 +40,14 @@ object XmlMarshaller {
         }
       )
 
+  extension (value: String)
+
+    private def escapeSpecialCharacters: Unparsed =
+      val escaped = Utility
+        .escape(value)
+        .replaceAll("['’`]", "&apos;")
+      Unparsed(escaped)
+
   private def taxIdToXml(residency: TaxResidentInformation, repId: ReportId): NodeSeq =
     <sfa:ResCountryCode>
       {residency.country.code}
@@ -48,7 +56,7 @@ object XmlMarshaller {
         .map(
           taxId =>
             <sfa:TIN issuedBy={residency.country.code}>
-          {taxId}
+          {taxId.escapeSpecialCharacters}
         </sfa:TIN>
               .copy(prefix = repId.getChildPrefix(true), label = repId.tinLabel)
         )
@@ -72,12 +80,12 @@ object XmlMarshaller {
       </sfa:CountryCode>
       <sfa:AddressFix>
         <sfa:Street>
-          {address.addressLine1}
+          {address.addressLine1.escapeSpecialCharacters}
         </sfa:Street>{
       address.county
         .map(
           coun => <sfa:DistrictName>
-        {coun}
+        {coun.escapeSpecialCharacters}
       </sfa:DistrictName>
         )
         .getOrElse(NodeSeq.Empty)
@@ -85,11 +93,11 @@ object XmlMarshaller {
         {address.postcode}
       </sfa:PostCode>
         <sfa:City>
-          {address.city}
+          {address.city.escapeSpecialCharacters}
         </sfa:City>
       </sfa:AddressFix>
       <sfa:AddressFree>
-        {address.addressFreeFormat}
+        {address.addressFreeFormat.escapeSpecialCharacters}
       </sfa:AddressFree>
     </sfa:Address>.withPrefixRecursive(newPrefix = repId.getChildPrefix(false)).copy(prefix = repId.getChildPrefix(true))
 
@@ -100,12 +108,12 @@ object XmlMarshaller {
       </sfa:CountryCode>
       <sfa:AddressFix>
         <sfa:Street>
-          {address.addressLine1}
+          {address.addressLine1.escapeSpecialCharacters}
         </sfa:Street>{
       address.addressLine4
         .map(
           reg => <sfa:DistrictName>
-        {reg}
+        {reg.escapeSpecialCharacters}
       </sfa:DistrictName>
         )
         .getOrElse(NodeSeq.Empty)
@@ -118,11 +126,11 @@ object XmlMarshaller {
         )
         .getOrElse(NodeSeq.Empty)
     }<sfa:City>
-        {address.addressLine3}
+        {address.addressLine3.escapeSpecialCharacters}
       </sfa:City>
       </sfa:AddressFix>
       <sfa:AddressFree>
-        {address.addressFreeFormat}
+        {address.addressFreeFormat.escapeSpecialCharacters}
       </sfa:AddressFree>
     </sfa:Address>.withPrefixRecursive(newPrefix = repId.getChildPrefix(false)).copy(prefix = repId.getChildPrefix(true))
 
@@ -152,7 +160,7 @@ object XmlMarshaller {
       case uk: UkAddress        => ukAddressToAddressFix(uk, organisation.reportId)
       case abroad: AddressNonUk => nonUkAddressToAddressFix(abroad, organisation.reportId)
     }
-    val orgName         = <sfa:Name>{organisation.name}</sfa:Name>.copy(prefix = organisation.reportId.getChildPrefix(true))
+    val orgName         = <sfa:Name>{organisation.name.escapeSpecialCharacters}</sfa:Name>.copy(prefix = organisation.reportId.getChildPrefix(true))
     val taxIds: NodeSeq = NodeSeq.fromSeq(organisation.residency.flatMap(taxIdToXml(_, organisation.reportId)))
     val additionalInfo = organisation match {
       case ah: CrsAccountHolder     => accountHolderToXml(ah.accountHolderType.toString, ah.reportId) ++ crsAccountHolderToXml(ah.selfCert, ah.interestType)
@@ -168,10 +176,10 @@ object XmlMarshaller {
   private def createNameType(firstName: String, lastName: String, reportId: ReportId) =
     <sfa:Name>
       <sfa:FirstName>
-        {firstName}
+        {firstName.escapeSpecialCharacters}
       </sfa:FirstName>
       <sfa:LastName>
-        {lastName}
+        {lastName.escapeSpecialCharacters}
       </sfa:LastName>
     </sfa:Name>.withPrefixRecursive(newPrefix = reportId.getChildPrefix(true))
 
@@ -195,7 +203,7 @@ object XmlMarshaller {
         city
           .map(
             cityOfBirth => <sfa:City>
-        {cityOfBirth.city}
+        {cityOfBirth.city.escapeSpecialCharacters}
       </sfa:City>
           )
           .getOrElse(NodeSeq.Empty)
@@ -203,7 +211,7 @@ object XmlMarshaller {
         region
           .map(
             citySubEntity => <sfa:CitySubEntity>
-        {citySubEntity.region}
+        {citySubEntity.region.escapeSpecialCharacters}
       </sfa:CitySubEntity>
           )
           .getOrElse(NodeSeq.Empty)
@@ -263,7 +271,7 @@ object XmlMarshaller {
           <crs:AccountNumber AcctNumberType={numType.xmlValue} UndocumentedAccount={account.isUndocumented.toString} ClosedAccount={
             account.isClosed.toString
           } DormantAccount={account.isDormant.toString}>
-        {account.accountIdentifier.id}</crs:AccountNumber>
+        {account.accountIdentifier.id.escapeSpecialCharacters}</crs:AccountNumber>
       )
       .getOrElse(<crs:AccountNumber UndocumentedAccount={account.isUndocumented.toString} ClosedAccount={account.isClosed.toString} DormantAccount={
         account.isDormant.toString
@@ -287,9 +295,9 @@ object XmlMarshaller {
   private def getFatcaAccountNumber(ac: FatcaAccount, reportId: ReportId): NodeSeq =
     ac.numberType
       .map(
-        numType => <ftc:AccountNumber AcctNumberType={numType.xmlValue}>{ac.accountNumber}</ftc:AccountNumber>
+        numType => <ftc:AccountNumber AcctNumberType={numType.xmlValue}>{ac.accountNumber.escapeSpecialCharacters}</ftc:AccountNumber>
       )
-      .getOrElse(<ftc:AccountNumber>{ac.accountNumber}</ftc:AccountNumber>) ++ <ftc:AccountClosed>
+      .getOrElse(<ftc:AccountNumber>{ac.accountNumber.escapeSpecialCharacters}</ftc:AccountNumber>) ++ <ftc:AccountClosed>
       {ac.isClosed}</ftc:AccountClosed>.flatMap(
       _ ++ <ftc:AccountBalance currCode={ac.balance.currency.code}>
       {ac.balance.amount}</ftc:AccountBalance>
