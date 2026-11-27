@@ -21,7 +21,6 @@ import connectors.DatabaseConnector
 import models.CrsOrFatca.Crs
 import models.FiIdentifiers
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito
 import org.mockito.Mockito.{verify, when}
 import pages.FiDetailsPage
 import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage}
@@ -29,9 +28,9 @@ import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import uk.gov.hmrc.http.InternalServerException
+import viewmodels.checkAnswers.manual.CheckAnswersViewModel
 import viewmodels.govuk.all.SummaryListViewModel
 import views.html.ReportDetailsCheckAnswersView
-import viewmodels.checkAnswers.manual.CheckAnswersViewModel
 
 import scala.concurrent.Future
 
@@ -42,10 +41,12 @@ class ReportDetailsCheckAnswersControllerSpec extends SpecBase {
     val fiName = "name"
     val fiId   = "TestfiID"
     val list   = SummaryListViewModel(Seq.empty)
+
     val ua = emptyUserAnswers
       .withPage(FiDetailsPage, FiIdentifiers(fiId, fiName))
       .withPage(ReportingYearPage, year)
       .withPage(CrsOrFatcaPage, Crs)
+      .withPage(pages.manual.reportdetails.TypeOfReportPage, models.TypeOfReport.Information)
 
     "must return OK and the correct view for a GET" in {
       val mockUtil = mock[CheckAnswersViewModel]
@@ -56,9 +57,13 @@ class ReportDetailsCheckAnswersControllerSpec extends SpecBase {
         .build()
 
       running(application) {
-        val request = FakeRequest(GET, controllers.manual.reportdetails.routes.ReportDetailsCheckAnswersController.onPageLoad().url)
-        val result  = route(application, request).value
-        val view    = application.injector.instanceOf[ReportDetailsCheckAnswersView]
+        val request = FakeRequest(
+          GET,
+          controllers.manual.reportdetails.routes.ReportDetailsCheckAnswersController.onPageLoad().url
+        )
+
+        val result = route(application, request).value
+        val view   = application.injector.instanceOf[ReportDetailsCheckAnswersView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(list, fiName)(request, messages(application)).toString
@@ -68,8 +73,8 @@ class ReportDetailsCheckAnswersControllerSpec extends SpecBase {
     "onSaveAndContinue" - {
 
       "must redirect to /send-a-report when saving data succeeds" in {
-
         val mockDatabaseConnector = mock[DatabaseConnector]
+
         when(mockDatabaseConnector.get()(any())).thenReturn(Future(None))
         when(mockDatabaseConnector.set(any())(any())).thenReturn(Future.successful(()))
         when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
@@ -79,8 +84,12 @@ class ReportDetailsCheckAnswersControllerSpec extends SpecBase {
           .build()
 
         running(application) {
-          val request = FakeRequest(POST, controllers.manual.reportdetails.routes.ReportDetailsCheckAnswersController.onSaveAndContinue().url)
-          val result  = route(application, request).value
+          val request = FakeRequest(
+            POST,
+            controllers.manual.reportdetails.routes.ReportDetailsCheckAnswersController.onSaveAndContinue().url
+          )
+
+          val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual controllers.manual.routes.SendAReportController.onPageLoad().url
@@ -90,8 +99,8 @@ class ReportDetailsCheckAnswersControllerSpec extends SpecBase {
       }
 
       "must redirect to JourneyRecoveryController when saving data fails" in {
-
         val mockDatabaseConnector = mock[DatabaseConnector]
+
         when(mockDatabaseConnector.get()(any())).thenReturn(Future(None))
         when(mockDatabaseConnector.set(any())(any()))
           .thenReturn(Future.failed(new InternalServerException("Unable to save UserAnswer")))
@@ -101,8 +110,12 @@ class ReportDetailsCheckAnswersControllerSpec extends SpecBase {
           .build()
 
         running(application) {
-          val request = FakeRequest(POST, controllers.manual.reportdetails.routes.ReportDetailsCheckAnswersController.onSaveAndContinue().url)
-          val result  = route(application, request).value
+          val request = FakeRequest(
+            POST,
+            controllers.manual.reportdetails.routes.ReportDetailsCheckAnswersController.onSaveAndContinue().url
+          )
+
+          val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url

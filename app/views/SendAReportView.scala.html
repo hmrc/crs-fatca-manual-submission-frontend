@@ -20,16 +20,13 @@
 @import models.viewModels.TaskStatus._
 
 @this(
-        layout: templates.Layout,
-        govukTaskList: GovukTaskList,
-        govukButton: GovukButton,
-        para: components.Paragraph,
-        link: components.Link
+  layout: templates.Layout,
+  appConfig: config.FrontendAppConfig,
+  govukTaskList: GovukTaskList,
+  link: components.Link
 )
 
 @(model: SendAReportSections)(implicit request: Request[_], messages: Messages)
-
-@underConstructionUrl = @{controllers.routes.UnderConstructionController.onPageLoad().url}
 
 @taskStatus(status: TaskStatus) = @{
  status match {
@@ -52,10 +49,16 @@
    )
 
   case CannotStartYet =>
-    TaskListItemStatus(
-        content = Text(messages("sendAReport.status.cannotstartyet")),
-        classes = "govuk-task-list__status--cannot-start-yet"
-    )
+   TaskListItemStatus(
+    content = Text(messages("sendAReport.status.cannotstartyet")),
+    classes = "govuk-task-list__status--cannot-start-yet"
+   )
+
+  case NotRequired =>
+   TaskListItemStatus(
+    content = Text(messages("sendAReport.status.notRequired")),
+    classes = "govuk-task-list__status--cannot-start-yet"
+   )
 
   case NoStatus =>
    TaskListItemStatus(
@@ -68,7 +71,7 @@
  section.tasks.map { task =>
   TaskListItem(
    title = TaskListItemTitle(
-    content = Text(messages(task.titleKey))
+    content = Text(messages(task.titleKey, model.fiName))
    ),
    href = task.href,
    status = taskStatus(task.status)
@@ -84,12 +87,46 @@
  }
 }
 
-@layout(pageTitle = titleNoForm(messages("sendAReport.title"))) {
+@heading = @{
+ messages(
+  if (model.isNilReport) "sendAReport.nil.heading" else "sendAReport.heading",
+  model.reportId.regime,
+  model.fiName,
+  model.reportId.reportingYear.toString
+ )
+}
 
- <h1 class="govuk-heading-l">@messages("sendAReport.heading")</h1>
+@pageTitle = @{
+ messages(
+  if (model.isNilReport) "sendAReport.nil.title" else "sendAReport.title",
+  model.reportId.regime,
+  model.reportId.reportingYear.toString
+ )
+}
 
- @para("sendAReport.p1")
+@* Agreed behaviour: use the backend expiry timestamp.
+   Reads and saves both refresh that timestamp; retain the existing policy. *@
+@deletionDate = @{
+ java.time.format.DateTimeFormatter
+   .ofPattern("EEEE d MMMM uuuu 'at' h:mma", java.util.Locale.UK)
+   .withZone(java.time.ZoneId.of("Europe/London"))
+   .format(
+    model.userAnswers.lastUpdated.plus(
+     appConfig.draftRetentionDays,
+     java.time.temporal.ChronoUnit.DAYS
+    )
+   )
+   .replace("AM", "am")
+   .replace("PM", "pm")
+}
 
+@layout(pageTitle = titleNoForm(pageTitle)) {
+
+ <h1 class="govuk-heading-l">@heading</h1>
+
+ <p class="govuk-body govuk-!-padding-bottom-2">
+  @messages("sendAReport.expires", deletionDate)
+ </p>
 
  @for((section, index) <- model.sections.zipWithIndex) {
   <h2 class="@sectionHeadingClass(index)">@messages(section.headingKey)</h2>
@@ -99,8 +136,15 @@
    items = taskListItems(section)
   ))
  }
- @link(href=controllers.routes.UnderConstructionController.onPageLoad().url, message = messages("sendAReport.link.1"))
- @link(href=controllers.routes.UnderConstructionController.onPageLoad().url, message = messages("sendAReport.link.2"))
- @link(href=controllers.routes.UnderConstructionController.onPageLoad().url, message = messages("sendAReport.link.3", "FI name"))
 
+ @link(
+  href = controllers.routes.UnderConstructionController.onPageLoad().url,
+  message = messages("sendAReport.link.1"),
+  paraClasses = "govuk-!-margin-bottom-2"
+ )
+
+ @link(
+  href = controllers.routes.UnderConstructionController.onPageLoad().url,
+  message = messages("sendAReport.link.3", model.fiName)
+ )
 }

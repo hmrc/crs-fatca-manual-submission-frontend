@@ -18,8 +18,8 @@ package models.viewModels
 
 import models.SubmissionsConstants.{CRS, FATCA}
 import models.{NormalMode, ReportId, UserAnswers}
-import pages.manual.accountHolders.AccountHoldersPage
 import pages.manual.account.AccountsPage
+import pages.manual.accountHolders.AccountHoldersPage
 import pages.manual.sponsor.HaveSponsorPage
 
 sealed trait TaskStatus
@@ -29,28 +29,26 @@ object TaskStatus {
   case object Completed extends TaskStatus
   case object Incomplete extends TaskStatus
   case object NoStatus extends TaskStatus
+  case object NotRequired extends TaskStatus
   case object CannotStartYet extends TaskStatus
 }
 
 def handleAccountHolderNavigation(userAnswers: UserAnswers, reportId: ReportId) =
   userAnswers.get(AccountHoldersPage()(reportId)) match {
     case Some(accountHolderList) =>
-      val accountHolderCount = accountHolderList.accountHolders
-        .map(
-          (_, value) => value
-        )
-        .count(_.getName().nonEmpty)
-      if accountHolderCount > 0 then Some(controllers.manual.accountHolders.routes.AccountHolderListController.onPageLoad(NormalMode).url)
-      else Some(controllers.manual.accountHolders.routes.AccountController.onPageLoad(NormalMode).url)
+      if (accountHolderList.accountHolders.valuesIterator.exists(_.getName().nonEmpty))
+        Some(controllers.manual.accountHolders.routes.AccountHolderListController.onPageLoad(NormalMode).url)
+      else
+        Some(controllers.manual.accountHolders.routes.AccountController.onPageLoad(NormalMode).url)
 
-    case None => Some(controllers.manual.accountHolders.routes.AccountController.onPageLoad(NormalMode).url)
+    case None =>
+      Some(controllers.manual.accountHolders.routes.AccountController.onPageLoad(NormalMode).url)
   }
 
 def handleAccountNavigation(
   userAnswers: UserAnswers,
   reportId: ReportId
 ): Option[String] = {
-
   val hasAccounts = userAnswers
     .get(AccountsPage(reportId))
     .exists(_.accounts.nonEmpty)
@@ -66,32 +64,49 @@ def handleAccountNavigation(
 }
 
 final case class SendAReportSections(
-  reportDetails: Option[TaskStatus],
   financialInstitutionDetails: Option[TaskStatus],
   sponsorDetails: Option[TaskStatus],
   filerCategory: Option[TaskStatus],
   accounts: Option[TaskStatus],
   accountHolders: Option[TaskStatus],
   controllingPersons: Option[TaskStatus],
-  tbc1: Option[TaskStatus],
-  tbc2: Option[TaskStatus],
   userAnswers: UserAnswers,
-  reportId: ReportId
+  reportId: ReportId,
+  isNilReport: Boolean = false,
+  fiName: String = ""
 ) {
 
-  private def task(titleKey: String, status: Option[TaskStatus], href: Option[String]): Seq[SendAReportTask] =
-    status.map(SendAReportTask(titleKey, _, href)).toSeq
+  private def task(
+    titleKey: String,
+    status: Option[TaskStatus],
+    href: Option[String]
+  ): Seq[SendAReportTask] =
+    status.map {
+      value =>
+        SendAReportTask(
+          titleKey,
+          value,
+          if (value == TaskStatus.CannotStartYet || value == TaskStatus.NotRequired) None
+          else href
+        )
+    }.toSeq
 
   private val fillerSection = {
     val redirectionLink = filerCategory match {
-      case Some(TaskStatus.Completed) => Some(controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad().url)
+      case Some(TaskStatus.Completed) =>
+        Some(controllers.manual.filercategory.routes.FilerCategoryCheckAnswersController.onPageLoad().url)
+
       case _ =>
         userAnswers
           .get(HaveSponsorPage()(reportId))
           .fold(None)(
-            _ => Some(controllers.manual.filercategory.routes.WhatTypeOfFilerIsSponsorController.onPageLoad(NormalMode).url)
+            _ =>
+              Some(
+                controllers.manual.filercategory.routes.WhatTypeOfFilerIsSponsorController.onPageLoad(NormalMode).url
+              )
           )
     }
+
     SendAReportSection(
       headingKey = "sendAReport.filerCategory.heading",
       idPrefix = "filer-category",
@@ -105,35 +120,39 @@ final case class SendAReportSections(
 
   private val sponsorSection = {
     val redirectionLink = sponsorDetails match {
-      case Some(TaskStatus.Completed) => Some(controllers.manual.sponsor.routes.CheckAnswersController.onPageLoad().url)
-      case _                          => Some(controllers.manual.sponsor.routes.HaveSponsorController.onPageLoad(NormalMode).url)
+      case Some(TaskStatus.Completed) =>
+        Some(controllers.manual.sponsor.routes.CheckAnswersController.onPageLoad().url)
+
+      case _ =>
+        Some(controllers.manual.sponsor.routes.HaveSponsorController.onPageLoad(NormalMode).url)
     }
+
     SendAReportSection(
       headingKey = "sendAReport.sponsor.heading",
       idPrefix = "sponsor",
-      tasks = task("sendAReport.sponsor.subHeading", sponsorDetails, href = redirectionLink)
+      tasks = task(
+        "sendAReport.sponsor.subHeading",
+        sponsorDetails,
+        href = redirectionLink
+      )
     )
   }
 
-  val sections: Seq[SendAReportSection] =
+  private val detailSections: Seq[SendAReportSection] =
     Seq(
-      SendAReportSection(
-        headingKey = "sendAReport.reportDetails.heading",
-        idPrefix = "report-details",
-        tasks = task("sendAReport.reportDetails.subHeading", reportDetails, href = Some(controllers.routes.UnderConstructionController.onPageLoad().url))
-      ),
       SendAReportSection(
         headingKey = "sendAReport.financialInstitution.heading",
         idPrefix = "financial-institution",
         tasks = task(
           "sendAReport.financialInstitution.subHeading",
           financialInstitutionDetails,
-          href = Some(controllers.manual.reportingFI.routes.CheckDetailsForFinancialInstitutionController.onPageLoad().url)
+          href = Some(
+            controllers.manual.reportingFI.routes.CheckDetailsForFinancialInstitutionController.onPageLoad().url
+          )
         )
       )
     ) ++
-      (if (reportId.regime == FATCA) Seq(sponsorSection, fillerSection) else Seq.empty)
-      ++
+      (if (reportId.regime == FATCA) Seq(sponsorSection, fillerSection) else Seq.empty) ++
       Seq(
         SendAReportSection(
           headingKey = "sendAReport.accountsInformation.heading",
@@ -144,20 +163,44 @@ final case class SendAReportSections(
               accounts,
               href = handleAccountNavigation(userAnswers, reportId)
             ),
-            task("sendAReport.accountsInformation.accountHolders", accountHolders, href = handleAccountHolderNavigation(userAnswers, reportId)),
+            task(
+              "sendAReport.accountsInformation.accountHolders",
+              accountHolders,
+              href = handleAccountHolderNavigation(userAnswers, reportId)
+            ),
             task(
               controllingPersonsOrSubstantialOwnerMessageKey,
               controllingPersons,
-              href = Some(controllers.manual.cpso.routes.CheckCPSOAddedOrAllowedController.onChangeRedirect().url)
-            ),
-            task("sendAReport.accountsInformation.tbc1", tbc1, href = Some(controllers.routes.UnderConstructionController.onPageLoad().url)),
-            task("sendAReport.accountsInformation.tbc2", tbc2, href = Some(controllers.routes.UnderConstructionController.onPageLoad().url))
+              href = Some(
+                controllers.manual.cpso.routes.CheckCPSOAddedOrAllowedController.onChangeRedirect().url
+              )
+            )
           ).flatten
         )
-      ).filter(_.tasks.nonEmpty)
+      )
+
+  val sections: Seq[SendAReportSection] =
+    detailSections.filter(_.tasks.nonEmpty) :+ SendAReportSection(
+      if (isNilReport) "sendAReport.sendNil.heading" else "sendAReport.send.heading",
+      "send-report",
+      task(
+        if (isNilReport) "sendAReport.sendNil.task" else "sendAReport.send.task",
+        Some(
+          if (
+            detailSections.flatMap(_.tasks).forall {
+              task =>
+                task.status == TaskStatus.Completed || task.status == TaskStatus.NotRequired
+            }
+          ) TaskStatus.Incomplete
+          else TaskStatus.CannotStartYet
+        ),
+        Some(controllers.routes.UnderConstructionController.onPageLoad().url)
+      )
+    )
 
   private def controllingPersonsOrSubstantialOwnerMessageKey =
-    if reportId.regime == CRS then "sendAReport.accountsInformation.controllingPersons" else "sendAReport.accountsInformation.substantialOwner"
+    if reportId.regime == CRS then "sendAReport.accountsInformation.controllingPersons"
+    else "sendAReport.accountsInformation.substantialOwner"
 }
 
 final case class SendAReportSection(

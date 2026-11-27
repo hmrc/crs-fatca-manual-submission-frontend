@@ -16,15 +16,17 @@
 
 package services
 
-import models.CrsOrFatca.reads
-import models.viewModels.{AccountId, TaskStatus}
-import models.viewModels.TaskStatus.{CannotStartYet, Completed, Incomplete, NotStarted}
-import models.{viewModels, ReportId, UserAnswers}
+import models.SubmissionsConstants.{CRS, FATCA}
+import models.manual.accountHolders.{AccountHolderTypes, IndividualOrOrganisation}
+import models.viewModels.TaskStatus
+import models.viewModels.TaskStatus.{CannotStartYet, Completed, Incomplete}
+import models.{ReportId, UserAnswers}
 import pages.QuestionPage
-import pages.manual.account.{AccountsPage, IsAccountsSectionCompletedPage}
+import pages.manual.account.IsAccountsSectionCompletedPage
+import pages.manual.accountHolders.AccountHoldersPage
+import pages.manual.cpso.IsCpsoSectionCompletePage
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportingFI.HaveYouFinishedCheckingFIDetailsPage
-import pages.manual.cpso.IsCpsoSectionCompletePage
 import pages.manual.sponsor.*
 import services.manual.account.AccountsService
 
@@ -73,7 +75,43 @@ class SendAReportService @Inject() (accountsService: AccountsService) {
     }
 
   def accountStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
-    getAccountStatus(userAnswers, reportId)
+    if (
+      userAnswers.get(IsAccountsSectionCompletedPage(reportId)).contains(true) &&
+      accountsService.allAccountsComplete(userAnswers, reportId)
+    ) Completed
+    else Incomplete
+
+  def accountHolderStatus(accountsStatus: TaskStatus): TaskStatus =
+    if (accountsStatus == Completed) Incomplete else CannotStartYet
+
+  def cpsoStatus(userAnswers: UserAnswers, reportId: ReportId): Option[TaskStatus] =
+    Option.when(
+      userAnswers.get(AccountHoldersPage()(reportId)).exists {
+        holders =>
+          holders.accountHolders.valuesIterator.exists {
+            holder =>
+              holder.individualOrOrganisation.contains(IndividualOrOrganisation.Organisation) &&
+              (reportId.regime match {
+                case CRS =>
+                  holder.accountHolderType.contains(
+                    AccountHolderTypes.PassiveNonFinancialWithOneOrMoreControllingPerson
+                  )
+
+                case FATCA =>
+                  holder.accountHolderType.contains(
+                    AccountHolderTypes.OwnerDocumentedForeignFinancialInstitution
+                  ) ||
+                  holder.accountHolderType.contains(
+                    AccountHolderTypes.PassiveNFFEWithSubstantial
+                  )
+
+                case _ => false
+              })
+          }
+      }
+    ) {
+      reportingCPSOCompleteStatus(userAnswers, reportId)
+    }
 
   private def sponsorRequiredPages(using reportId: ReportId): Seq[QuestionPage[_]] =
     List(
@@ -100,35 +138,8 @@ class SendAReportService @Inject() (accountsService: AccountsService) {
   )(using reportId: ReportId): Boolean = {
 
     val requiredPagesPresent = sponsorRequiredPages.forall(pageAnswered(_, userAnswers))
-
-    val addressPresent = sponsorAddressPages.exists(pageAnswered(_, userAnswers))
+    val addressPresent       = sponsorAddressPages.exists(pageAnswered(_, userAnswers))
 
     requiredPagesPresent && addressPresent
   }
-
-  private def getAccountStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus = {
-    val accountIds = userAnswers
-      .get(AccountsPage(reportId))
-      .map(_.accounts.keys.toSeq.map(AccountId.apply))
-      .getOrElse(Seq.empty)
-
-    if (accountIds.isEmpty) {
-      NotStarted
-    } else if (
-      userAnswers.get(IsAccountsSectionCompletedPage(reportId)).contains(true) &&
-      accountIds.forall {
-        accountId =>
-          accountsService.isComplete(
-            userAnswers,
-            reportId,
-            accountId
-          )
-      }
-    ) {
-      Completed
-    } else {
-      Incomplete
-    }
-  }
-
 }

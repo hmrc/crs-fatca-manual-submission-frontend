@@ -21,14 +21,14 @@ import controllers.actions.*
 import models.{ReportId, UserAnswers}
 import pages.*
 import pages.manual.FINamePage
-import pages.manual.reportdetails.{CrsOrFatcaPage, ReportingYearPage}
+import pages.manual.reportdetails.{CrsOrFatcaPage, DraftReportTypePage, ReportingYearPage, TypeOfReportPage}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.ReportDetailsCheckAnswersView
 import viewmodels.checkAnswers.manual.CheckAnswersViewModel
+import views.html.ReportDetailsCheckAnswersView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -56,25 +56,29 @@ class ReportDetailsCheckAnswersController @Inject() (
         list = util.getReportDetailsRows(request.userAnswers)
       } yield Ok(view(list, fiDetail.fiName)))
         .getOrElse(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad().url))
-
   }
 
   def onSaveAndContinue: Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-
       val reportData = for {
         fiDetail   <- request.userAnswers.get(FiDetailsPage)
         crsOrFatca <- request.userAnswers.get(CrsOrFatcaPage)
         year       <- request.userAnswers.get(ReportingYearPage)
-      } yield (ReportId(crsOrFatca.toRegime, year, None, fiDetail.fiId), fiDetail.fiName)
+        reportType <- request.userAnswers.get(TypeOfReportPage)
+      } yield (
+        ReportId(crsOrFatca.toRegime, year, None, fiDetail.fiId),
+        fiDetail.fiName,
+        reportType
+      )
 
       reportData.fold(Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))) {
-        (reportId, fiName) =>
+        (reportId, fiName, reportType) =>
           (for {
             dbAnswers           <- dbConnector.get().map(_.getOrElse(UserAnswers(request.fatcaId)))
             dbAnswersWithFiName <- Future.fromTry(dbAnswers.set(FINamePage()(reportId), fiName))
+            dbAnswersWithType   <- Future.fromTry(dbAnswersWithFiName.set(DraftReportTypePage(reportId), reportType))
             updatedFeAnswer     <- Future.fromTry(request.userAnswers.set(ReportIdPage, reportId))
-            _                   <- dbConnector.set(dbAnswersWithFiName)
+            _                   <- dbConnector.set(dbAnswersWithType)
             _                   <- sessionRepository.set(updatedFeAnswer)
           } yield Redirect(controllers.manual.routes.SendAReportController.onPageLoad().url))
             .recover {
@@ -84,5 +88,4 @@ class ReportDetailsCheckAnswersController @Inject() (
             }
       }
   }
-
 }
