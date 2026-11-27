@@ -25,7 +25,7 @@ import scala.util.{Success, Try}
 
 final case class AddressUkPage(currentId: CPSOId, reportId: ReportId) extends QuestionPage[UkAddress]:
 
-  override def path: JsPath = JsPath \ reportId.mongoKey \ "cp-so" \ currentId.value \ "ukAddress"
+  override def path: JsPath = JsPath \ reportId.mongoKey \ "cp-so" \ currentId.value \ "ukAddressManual"
 
   override def cleanupWithReportId(
     value: Option[UkAddress],

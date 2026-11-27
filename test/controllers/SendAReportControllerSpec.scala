@@ -23,7 +23,7 @@ import models.SubmissionsConstants.{CRS, FATCA}
 import models.viewModels.SendAReportSections
 import models.viewModels.TaskStatus.*
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{verify, when}
 import pages.ReportIdPage
 import pages.manual.sponsor.HaveSponsorPage
 import play.api.inject.bind
@@ -63,7 +63,7 @@ class SendAReportControllerSpec extends SpecBase {
       when(mockService.sponsorStatus(any(), any())).thenReturn(Incomplete)
       when(mockService.cpsoStatus(any(), any())).thenReturn(Some(Completed))
       when(mockService.accountStatus(any(), any())).thenReturn(Incomplete)
-      when(mockService.accountHolderStatus(any())).thenReturn(CannotStartYet)
+      when(mockService.accountHolderStatus(any(), any(), any())).thenReturn(CannotStartYet)
       when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(ua)))
 
       val application = applicationBuilder(maybeUserAnswers = Some(ua))
@@ -77,6 +77,8 @@ class SendAReportControllerSpec extends SpecBase {
 
         status(result) mustBe OK
         contentAsString(result) mustEqual view(sections)(request, messages(application)).toString
+
+        verify(mockService).accountHolderStatus(ua, fatcaReportId, Incomplete)
       }
     }
 
@@ -104,7 +106,7 @@ class SendAReportControllerSpec extends SpecBase {
       when(mockService.sponsorStatus(any(), any())).thenReturn(Incomplete)
       when(mockService.cpsoStatus(any(), any())).thenReturn(Some(Completed))
       when(mockService.accountStatus(any(), any())).thenReturn(Incomplete)
-      when(mockService.accountHolderStatus(any())).thenReturn(CannotStartYet)
+      when(mockService.accountHolderStatus(any(), any(), any())).thenReturn(CannotStartYet)
       when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(ua)))
 
       val application = applicationBuilder(maybeUserAnswers = Some(ua))
@@ -118,6 +120,8 @@ class SendAReportControllerSpec extends SpecBase {
 
         status(result) mustBe OK
         contentAsString(result) mustEqual view(sections)(request, messages(application)).toString
+
+        verify(mockService).accountHolderStatus(ua, reportId, Incomplete)
       }
     }
 
@@ -217,7 +221,7 @@ class SendAReportControllerSpec extends SpecBase {
       when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(answers)))
       when(service.reportingFIStatus(any(), any())).thenReturn(Completed)
       when(service.accountStatus(any(), any())).thenReturn(Completed)
-      when(service.accountHolderStatus(any())).thenReturn(Completed)
+      when(service.accountHolderStatus(any(), any(), any())).thenReturn(Completed)
       when(service.cpsoStatus(any(), any())).thenReturn(None)
 
       val application = applicationBuilder(Some(answers))
@@ -235,6 +239,8 @@ class SendAReportControllerSpec extends SpecBase {
         page.select(".govuk-task-list").text() must not include "Controlling persons"
         send.select(".govuk-task-list__status").text() mustBe "Incomplete"
         send.select("a").attr("href") mustBe controllers.routes.UnderConstructionController.onPageLoad().url
+
+        verify(service).accountHolderStatus(answers, report, Completed)
       }
     }
   }

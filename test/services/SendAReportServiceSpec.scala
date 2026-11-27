@@ -17,16 +17,21 @@
 package services
 
 import base.SpecBase
-import models.SubmissionsConstants.FATCA
+import models.SubmissionsConstants.{CRS, FATCA}
+import models.manual.TaxResidentInformation
+import models.manual.accountHolders.{AccountHolderTypes, IndividualName, IndividualOrOrganisation, SelfCertification}
+import models.manual.accountHolders.IndividualOrOrganisation.{Individual, Organisation}
 import models.manual.filercategory.WhatTypeOfFiler.Foreign
 import models.manual.filercategory.WhatTypeOfFilerIsSponsor.ForeignFI
 import models.response.{Address, Country}
-import models.viewModels.AccountId
-import models.viewModels.TaskStatus.{CannotStartYet, Completed, Incomplete}
+import models.viewModels.{AccountHolder, AccountHolders, AccountId}
+import models.viewModels.TaskStatus.{CannotStartYet, Completed, Incomplete, NotStarted}
 import models.{AccountBalance, AddressNonUk, Currency, ReportId, UkAddress}
+import org.mockito.Mockito.when
 import pages.ReportIdPage
 import pages.manual.FINamePage
 import pages.manual.account.*
+import pages.manual.accountHolders.{AccountHoldersPage, IsAccountHoldersSectionCompletePage}
 import pages.manual.cpso.IsCpsoSectionCompletePage
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportingFI.HaveYouFinishedCheckingFIDetailsPage
@@ -35,7 +40,47 @@ import services.manual.account.AccountsService
 
 class SendAReportServiceSpec extends SpecBase {
 
-  private val service = new SendAReportService(new AccountsService())
+  private val service = new SendAReportService(
+    new AccountsService(),
+    new CpsoService(),
+    new AccountHolderService()
+  )
+
+  private val completeOrgAccountHolder = AccountHolder(
+    individualOrOrganisation = Some(Organisation),
+    organisationName = Some("someOrg"),
+    accountHolderType = Some(AccountHolderTypes.PassiveNonFinancialWithOneOrMoreControllingPerson),
+    areTheyBasedInTheUk = Some(true),
+    addressNonUk = None,
+    selfCertification = Some(SelfCertification.Yes),
+    taxResidentCountries = Some(
+      Seq(TaxResidentInformation(Country.GB, Some(true), Some("someTin")))
+    ),
+    ukAddressManual = Some(UkAddress("test", None, "test", None, "ABC 123", "GB")),
+    account = Some(Seq("accountId")),
+    checkEquityInterestTypeRequired = Some(false)
+  )
+
+  private val completeIndividualAccountHolder = AccountHolder(
+    individualOrOrganisation = Some(Individual),
+    individualName = Some(IndividualName("First", "Last")),
+    individualHavePlaceOfBirth = Some(false),
+    individualHaveDateOfBirth = Some(false),
+    areTheyBasedInTheUk = Some(true),
+    selfCertification = Some(SelfCertification.Yes),
+    taxResidentCountries = Some(
+      Seq(TaxResidentInformation(Country.GB, Some(true), Some("someTin")))
+    ),
+    ukAddressManual = Some(UkAddress("test", None, "test", None, "ABC 123", "GB")),
+    account = Some(Seq("accountId")),
+    checkEquityInterestTypeRequired = Some(false)
+  )
+
+  private def userAnswersWithAccountHolder(accountHolder: AccountHolder) =
+    emptyUserAnswers.withPage(
+      AccountHoldersPage()(reportId),
+      AccountHolders(None, Map("holder-id" -> accountHolder))
+    )
 
   "SendAReportService" - {
 
@@ -66,16 +111,101 @@ class SendAReportServiceSpec extends SpecBase {
         service.reportingCPSOCompleteStatus(emptyUserAnswers, reportId) mustBe Incomplete
       }
 
+      "should return incomplete when page is answered as false even if all CP/SOs are complete" in {
+        val answers = emptyUserAnswers.withPage(IsCpsoSectionCompletePage(reportId), false)
+        val cpsoService = mock[CpsoService]
+
+        when(cpsoService.areAllCpsosComplete(answers, reportId)).thenReturn(true)
+
+        val service = new SendAReportService(
+          new AccountsService(),
+          cpsoService,
+          new AccountHolderService()
+        )
+
+        service.reportingCPSOCompleteStatus(answers, reportId) mustBe Incomplete
+      }
+
+      "should return completed when page is answered as true and all CP/SOs are complete" in {
+        val answers = emptyUserAnswers.withPage(IsCpsoSectionCompletePage(reportId), true)
+        val cpsoService = mock[CpsoService]
+
+        when(cpsoService.areAllCpsosComplete(answers, reportId)).thenReturn(true)
+
+        val service = new SendAReportService(
+          new AccountsService(),
+          cpsoService,
+          new AccountHolderService()
+        )
+
+        service.reportingCPSOCompleteStatus(answers, reportId) mustBe Completed
+      }
+
+      "should return incomplete when page is answered as true but CP/SOs are incomplete" in {
+        val answers = emptyUserAnswers.withPage(IsCpsoSectionCompletePage(reportId), true)
+        val cpsoService = mock[CpsoService]
+
+        when(cpsoService.areAllCpsosComplete(answers, reportId)).thenReturn(false)
+
+        val service = new SendAReportService(
+          new AccountsService(),
+          cpsoService,
+          new AccountHolderService()
+        )
+
+        service.reportingCPSOCompleteStatus(answers, reportId) mustBe Incomplete
+      }
+    }
+
+    "accountHoldersCompleteStatus" - {
+
+      "should return not started when there are no account holders" in {
+        service.accountHoldersCompleteStatus(emptyUserAnswers, reportId) mustBe NotStarted
+      }
+
+      "should return incomplete when account holders exist but the completion page is not answered" in {
+        val answers = userAnswersWithAccountHolder(completeOrgAccountHolder)
+
+        service.accountHoldersCompleteStatus(answers, reportId) mustBe Incomplete
+      }
+
       "should return incomplete when page is answered as false" in {
-        service.reportingCPSOCompleteStatus(
-          emptyUserAnswers.withPage(IsCpsoSectionCompletePage(reportId), false),
+        service.accountHoldersCompleteStatus(
+          userAnswersWithAccountHolder(completeOrgAccountHolder)
+            .withPage(IsAccountHoldersSectionCompletePage(reportId), false),
           reportId
         ) mustBe Incomplete
       }
 
-      "should return completed when page is answered as true" in {
-        service.reportingCPSOCompleteStatus(
-          emptyUserAnswers.withPage(IsCpsoSectionCompletePage(reportId), true),
+      "should return not started when the completion page is true but no holders exist" in {
+        service.accountHoldersCompleteStatus(
+          emptyUserAnswers.withPage(IsAccountHoldersSectionCompletePage(reportId), true),
+          reportId
+        ) mustBe NotStarted
+      }
+
+      "should return incomplete when the completion page is true but an account holder is incomplete" in {
+        val incompleteAccountHolder = completeOrgAccountHolder.copy(individualOrOrganisation = None)
+
+        service.accountHoldersCompleteStatus(
+          userAnswersWithAccountHolder(incompleteAccountHolder)
+            .withPage(IsAccountHoldersSectionCompletePage(reportId), true),
+          reportId
+        ) mustBe Incomplete
+      }
+
+      "should return completed when the completion page is true and all account holders are complete" in {
+        val answers = userAnswersWithAccountHolder(completeOrgAccountHolder)
+          .withPage(IsAccountHoldersSectionCompletePage(reportId), true)
+
+        new AccountHolderService().accountHolders(answers)(reportId).map(_._2.getName()) mustBe Seq("someOrg")
+        service.accountHoldersCompleteStatus(answers, reportId) mustBe Completed
+      }
+
+      "should return completed when the completion page is true and an individual account holder is complete" in {
+        service.accountHoldersCompleteStatus(
+          userAnswersWithAccountHolder(completeIndividualAccountHolder)
+            .withPage(IsAccountHoldersSectionCompletePage(reportId), true),
           reportId
         ) mustBe Completed
       }
@@ -309,19 +439,96 @@ class SendAReportServiceSpec extends SpecBase {
       }
     }
 
-    "accountHolderStatus pending DAC6-4525" - {
+    "accountHolderStatus" - {
 
-      "must unlock only after accounts are completed" in {
-        service.accountHolderStatus(Incomplete) mustBe CannotStartYet
-        service.accountHolderStatus(Completed) mustBe Incomplete
+      "must remain locked until accounts are completed" in {
+        service.accountHolderStatus(emptyUserAnswers, reportId, NotStarted) mustBe CannotStartYet
+        service.accountHolderStatus(emptyUserAnswers, reportId, Incomplete) mustBe CannotStartYet
+      }
+
+      "must remain locked even when holders are complete and confirmed if accounts are incomplete" in {
+        val answers = userAnswersWithAccountHolder(completeOrgAccountHolder)
+          .withPage(IsAccountHoldersSectionCompletePage(reportId), true)
+
+        service.accountHolderStatus(answers, reportId, Incomplete) mustBe CannotStartYet
+      }
+
+      "must show Incomplete once accounts are completed when no holders exist" in {
+        service.accountHolderStatus(emptyUserAnswers, reportId, Completed) mustBe Incomplete
+      }
+
+      "must show Incomplete when no holders exist despite a saved Yes" in {
+        val answers = emptyUserAnswers
+          .withPage(IsAccountHoldersSectionCompletePage(reportId), true)
+
+        service.accountHolderStatus(answers, reportId, Completed) mustBe Incomplete
+      }
+
+      "must show Incomplete when holders are complete but confirmation is unanswered" in {
+        val answers = userAnswersWithAccountHolder(completeOrgAccountHolder)
+
+        service.accountHolderStatus(answers, reportId, Completed) mustBe Incomplete
+      }
+
+      "must show Incomplete when holders are complete but confirmation is No" in {
+        val answers = userAnswersWithAccountHolder(completeOrgAccountHolder)
+          .withPage(IsAccountHoldersSectionCompletePage(reportId), false)
+
+        service.accountHolderStatus(answers, reportId, Completed) mustBe Incomplete
+      }
+
+      "must show Completed when holders are complete and confirmation is Yes" in {
+        val answers = userAnswersWithAccountHolder(completeOrgAccountHolder)
+          .withPage(IsAccountHoldersSectionCompletePage(reportId), true)
+
+        service.accountHolderStatus(answers, reportId, Completed) mustBe Completed
+      }
+
+      "must return to Incomplete when a confirmed holder becomes incomplete" in {
+        val confirmed = userAnswersWithAccountHolder(completeOrgAccountHolder)
+          .withPage(IsAccountHoldersSectionCompletePage(reportId), true)
+
+        service.accountHolderStatus(confirmed, reportId, Completed) mustBe Completed
+
+        val updated = confirmed.withPage(
+          AccountHoldersPage()(reportId),
+          AccountHolders(
+            None,
+            Map("holder-id" -> completeOrgAccountHolder.copy(individualOrOrganisation = None))
+          )
+        )
+
+        service.accountHolderStatus(updated, reportId, Completed) mustBe Incomplete
+      }
+
+      "must show Incomplete when one of multiple holders is incomplete despite a saved Yes" in {
+        val answers = emptyUserAnswers
+          .withPage(
+            AccountHoldersPage()(reportId),
+            AccountHolders(
+              None,
+              Map(
+                "complete-holder"   -> completeOrgAccountHolder,
+                "incomplete-holder" -> completeIndividualAccountHolder.copy(individualOrOrganisation = None)
+              )
+            )
+          )
+          .withPage(IsAccountHoldersSectionCompletePage(reportId), true)
+
+        service.accountHolderStatus(answers, reportId, Completed) mustBe Incomplete
+      }
+
+      "must use the confirmation answer for the selected report" in {
+        val otherReport = reportId.copy(fiId = "other-fi")
+
+        val answers = userAnswersWithAccountHolder(completeOrgAccountHolder)
+          .withPage(IsAccountHoldersSectionCompletePage(otherReport), true)
+
+        service.accountHolderStatus(answers, reportId, Completed) mustBe Incomplete
       }
     }
 
     "cpsoStatus" - {
-      import models.SubmissionsConstants.CRS
-      import models.manual.accountHolders.{AccountHolderTypes, IndividualOrOrganisation}
-      import models.viewModels.{AccountHolder, AccountHolders}
-      import pages.manual.accountHolders.AccountHoldersPage
 
       "must hide the row without holders, even with a stale confirmation" in {
         service.cpsoStatus(
@@ -339,9 +546,9 @@ class SendAReportServiceSpec extends SpecBase {
         service.cpsoStatus(answers, reportId) mustBe None
       }
 
-      "must use the merged confirmation behaviour for an eligible holder" in {
+      "must use the confirmation and completeness checks for an eligible holder" in {
         val holder = AccountHolder(
-          individualOrOrganisation = Some(IndividualOrOrganisation.Organisation),
+          individualOrOrganisation = Some(Organisation),
           accountHolderType = Some(
             AccountHolderTypes.PassiveNonFinancialWithOneOrMoreControllingPerson
           )
@@ -354,15 +561,37 @@ class SendAReportServiceSpec extends SpecBase {
           AccountHolders(None, Map("1" -> holder))
         )
 
-        service.cpsoStatus(
-          answers.withPage(IsCpsoSectionCompletePage(report), true),
-          report
-        ) mustBe Some(Completed)
+        val confirmed = answers.withPage(IsCpsoSectionCompletePage(report), true)
+        val declined  = answers.withPage(IsCpsoSectionCompletePage(report), false)
+        val cpsoService = mock[CpsoService]
 
-        service.cpsoStatus(
-          answers.withPage(IsCpsoSectionCompletePage(report), false),
-          report
-        ) mustBe Some(Incomplete)
+        when(cpsoService.areAllCpsosComplete(confirmed, report)).thenReturn(true)
+
+        val service = new SendAReportService(
+          new AccountsService(),
+          cpsoService,
+          new AccountHolderService()
+        )
+
+        service.cpsoStatus(confirmed, report) mustBe Some(Completed)
+        service.cpsoStatus(declined, report) mustBe Some(Incomplete)
+
+        when(cpsoService.areAllCpsosComplete(confirmed, report)).thenReturn(false)
+
+        service.cpsoStatus(confirmed, report) mustBe Some(Incomplete)
+      }
+
+      "must remain Incomplete for an eligible CRS organisation with no controlling persons despite a saved Yes" in {
+        val report = reportId.copy(regime = CRS)
+
+        val answers = emptyUserAnswers
+          .withPage(
+            AccountHoldersPage()(report),
+            AccountHolders(None, Map("holder-id" -> completeOrgAccountHolder))
+          )
+          .withPage(IsCpsoSectionCompletePage(report), true)
+
+        service.cpsoStatus(answers, report) mustBe Some(Incomplete)
       }
 
       Seq(

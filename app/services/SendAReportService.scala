@@ -19,11 +19,11 @@ package services
 import models.SubmissionsConstants.{CRS, FATCA}
 import models.manual.accountHolders.{AccountHolderTypes, IndividualOrOrganisation}
 import models.viewModels.TaskStatus
-import models.viewModels.TaskStatus.{CannotStartYet, Completed, Incomplete}
+import models.viewModels.TaskStatus.{CannotStartYet, Completed, Incomplete, NotStarted}
 import models.{ReportId, UserAnswers}
 import pages.QuestionPage
 import pages.manual.account.IsAccountsSectionCompletedPage
-import pages.manual.accountHolders.AccountHoldersPage
+import pages.manual.accountHolders.{AccountHoldersPage, IsAccountHoldersSectionCompletePage}
 import pages.manual.cpso.IsCpsoSectionCompletePage
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportingFI.HaveYouFinishedCheckingFIDetailsPage
@@ -32,7 +32,11 @@ import services.manual.account.AccountsService
 
 import javax.inject.Inject
 
-class SendAReportService @Inject() (accountsService: AccountsService) {
+class SendAReportService @Inject() (
+                                     accountsService: AccountsService,
+                                     cpsoService: CpsoService,
+                                     accountHolderService: AccountHolderService
+                                   ) {
 
   def reportingFIStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
     userAnswers
@@ -45,8 +49,20 @@ class SendAReportService @Inject() (accountsService: AccountsService) {
     userAnswers
       .get(IsCpsoSectionCompletePage(reportId))
       .fold(Incomplete) {
-        value => if value then Completed else Incomplete
+        value =>
+          if value && cpsoService.areAllCpsosComplete(userAnswers, reportId) then Completed
+          else Incomplete
       }
+
+  def accountHoldersCompleteStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus = {
+    val noAccountHoldersAdded      = accountHolderService.accountHolders(userAnswers)(reportId).isEmpty
+    val sectionIsDeclaredComplete = userAnswers.get(IsAccountHoldersSectionCompletePage(reportId)).contains(true)
+    val accountHoldersAreComplete  = accountHolderService.areAllAccountHoldersComplete(userAnswers, reportId)
+
+    if (noAccountHoldersAdded) NotStarted
+    else if (sectionIsDeclaredComplete && accountHoldersAreComplete) Completed
+    else Incomplete
+  }
 
   def fillerStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
     userAnswers.get(HaveSponsorPage()(reportId)).fold[TaskStatus](CannotStartYet) {
@@ -77,12 +93,23 @@ class SendAReportService @Inject() (accountsService: AccountsService) {
   def accountStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
     if (
       userAnswers.get(IsAccountsSectionCompletedPage(reportId)).contains(true) &&
-      accountsService.allAccountsComplete(userAnswers, reportId)
+        accountsService.allAccountsComplete(userAnswers, reportId)
     ) Completed
     else Incomplete
 
-  def accountHolderStatus(accountsStatus: TaskStatus): TaskStatus =
-    if (accountsStatus == Completed) Incomplete else CannotStartYet
+  def accountHolderStatus(
+                           userAnswers: UserAnswers,
+                           reportId: ReportId,
+                           accountsStatus: TaskStatus
+                         ): TaskStatus =
+    if (accountsStatus != Completed) {
+      CannotStartYet
+    } else {
+      accountHoldersCompleteStatus(userAnswers, reportId) match {
+        case NotStarted => Incomplete
+        case status     => status
+      }
+    }
 
   def cpsoStatus(userAnswers: UserAnswers, reportId: ReportId): Option[TaskStatus] =
     Option.when(
@@ -91,22 +118,22 @@ class SendAReportService @Inject() (accountsService: AccountsService) {
           holders.accountHolders.valuesIterator.exists {
             holder =>
               holder.individualOrOrganisation.contains(IndividualOrOrganisation.Organisation) &&
-              (reportId.regime match {
-                case CRS =>
-                  holder.accountHolderType.contains(
-                    AccountHolderTypes.PassiveNonFinancialWithOneOrMoreControllingPerson
-                  )
+                (reportId.regime match {
+                  case CRS =>
+                    holder.accountHolderType.contains(
+                      AccountHolderTypes.PassiveNonFinancialWithOneOrMoreControllingPerson
+                    )
 
-                case FATCA =>
-                  holder.accountHolderType.contains(
-                    AccountHolderTypes.OwnerDocumentedForeignFinancialInstitution
-                  ) ||
-                  holder.accountHolderType.contains(
-                    AccountHolderTypes.PassiveNFFEWithSubstantial
-                  )
+                  case FATCA =>
+                    holder.accountHolderType.contains(
+                      AccountHolderTypes.OwnerDocumentedForeignFinancialInstitution
+                    ) ||
+                      holder.accountHolderType.contains(
+                        AccountHolderTypes.PassiveNFFEWithSubstantial
+                      )
 
-                case _ => false
-              })
+                  case _ => false
+                })
           }
       }
     ) {
@@ -128,15 +155,14 @@ class SendAReportService @Inject() (accountsService: AccountsService) {
     )
 
   private def pageAnswered(
-    page: QuestionPage[?],
-    userAnswers: UserAnswers
-  ): Boolean =
+                            page: QuestionPage[?],
+                            userAnswers: UserAnswers
+                          ): Boolean =
     page.path.asSingleJsResult(userAnswers.data).isSuccess
 
   private def allSponsorPagesAnswered(
-    userAnswers: UserAnswers
-  )(using reportId: ReportId): Boolean = {
-
+                                       userAnswers: UserAnswers
+                                     )(using reportId: ReportId): Boolean = {
     val requiredPagesPresent = sponsorRequiredPages.forall(pageAnswered(_, userAnswers))
     val addressPresent       = sponsorAddressPages.exists(pageAnswered(_, userAnswers))
 

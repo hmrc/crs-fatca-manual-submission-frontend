@@ -918,6 +918,22 @@ class AccountHolderNavigatorSpec extends SpecBase {
 
         }
 
+        "IsAccountHoldersSectionCompletePage" - {
+          implicit val reportId: ReportId = ReportId(FATCA, 2024, None, "TestFIID")
+          val ua                          = UserAnswers("id")
+
+          "must go to SendAReport when answer is Yes" in {
+            ua.withPage(IsAccountHoldersSectionCompletePage(reportId), true)
+            navigator.nextPage(IsAccountHoldersSectionCompletePage(reportId), NormalMode, ua) mustBe
+              controllers.manual.routes.SendAReportController.onPageLoad()
+          }
+          "must go to SendAReport when answer is No" in {
+            ua.withPage(IsAccountHoldersSectionCompletePage(reportId), false)
+            navigator.nextPage(IsAccountHoldersSectionCompletePage(reportId), NormalMode, ua) mustBe
+              controllers.manual.routes.SendAReportController.onPageLoad()
+          }
+        }
+
         "Equity interest routing" - {
 
           val accountHolderId = AccountHolderId("equity-holder")
@@ -972,10 +988,10 @@ class AccountHolderNavigatorSpec extends SpecBase {
               controllers.manual.accountHolders.routes.AccountController.onPageLoad(NormalMode)
           }
 
-          "must go to under construction page when DoYouWantToAddAnotherAccountHolder is false" in {
+          "must go to IsAccountHoldersSectionComplete page when DoYouWantToAddAnotherAccountHolder is false" in {
             val answers = ua.withPage(DoYouWantToAddAnotherAccountHolder(), false)
             navigator.nextPage(DoYouWantToAddAnotherAccountHolder(), NormalMode, answers) mustBe
-              routes.UnderConstructionController.onPageLoad()
+              controllers.manual.accountHolders.routes.IsAccountHoldersSectionCompleteController.onPageLoad()
           }
 
           "must go to journey recovery page when DoYouWantToAddAnotherAccountHolder is not preset" in {

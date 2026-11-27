@@ -26,7 +26,7 @@ import pages.manual.cpso.IsCpsoSectionCompletePage
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.ViewFIService
+import services.{CpsoService, ViewFIService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.manual.cpso.IsCpsoSectionCompleteView
 
@@ -44,7 +44,8 @@ class IsCpsoSectionCompleteController @Inject() (
   formProvider: IsCpsoSectionCompleteFormProvider,
   val controllerComponents: MessagesControllerComponents,
   viewFIService: ViewFIService,
-  view: IsCpsoSectionCompleteView
+  view: IsCpsoSectionCompleteView,
+  cpsoService: CpsoService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -53,25 +54,28 @@ class IsCpsoSectionCompleteController @Inject() (
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction).async {
     implicit request =>
 
-      implicit val reportId: ReportId = request.reportId
-      val form                        = formProvider(reportId.regime)
+      val reportId: ReportId = request.reportId
+      val form               = formProvider(reportId.regime)
 
-      viewFIService
-        .getFIDetail(request.fatcaId, reportId.fiId)
-        .map {
-          fiDetail =>
-            val preparedForm = request.userAnswers.get(IsCpsoSectionCompletePage(reportId)) match {
-              case None        => form
-              case Some(value) => form.fill(value)
-            }
+      if (cpsoService.areAllCpsosComplete(request.userAnswers, reportId)) {
+        viewFIService
+          .getFIDetail(request.fatcaId, reportId.fiId)
+          .map {
+            fiDetail =>
+              val preparedForm = request.userAnswers.get(IsCpsoSectionCompletePage(reportId)).fold(form)(form.fill)
 
-            Ok(view(preparedForm, mode, reportId.regime.value, fiDetail.FIName))
-        }
-        .recover {
-          case NoFiDetailFound =>
-            logger.error(s"Failed to retrieve FIDetail for FiID ${reportId.fiId}")
-            Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
-        }
+              Ok(view(preparedForm, mode, reportId.regime.value, fiDetail.FIName))
+          }
+          .recover {
+            case NoFiDetailFound =>
+              logger.error(s"Failed to retrieve FIDetail for FiID ${reportId.fiId}")
+              Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+          }
+      } else {
+        Future.successful(
+          Redirect(controllers.manual.routes.SendAReportController.onPageLoad())
+        )
+      }
 
   }
 
@@ -81,26 +85,32 @@ class IsCpsoSectionCompleteController @Inject() (
       implicit val reportId: ReportId = request.reportId
       val form                        = formProvider(reportId.regime)
 
-      viewFIService
-        .getFIDetail(request.fatcaId, reportId.fiId)
-        .flatMap {
-          fiDetail =>
-            form
-              .bindFromRequest()
-              .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, reportId.regime.value, fiDetail.FIName))),
-                value =>
-                  for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(IsCpsoSectionCompletePage(reportId), value))
-                    _              <- repository.set(updatedAnswers)
-                  } yield Redirect(navigator.nextPage(IsCpsoSectionCompletePage(reportId), mode, updatedAnswers))
-              )
-        }
-        .recover {
-          case NoFiDetailFound =>
-            logger.error(s"Failed to retrieve FIDetail for FiID ${reportId.fiId}")
-            Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
-        }
+      if (cpsoService.areAllCpsosComplete(request.userAnswers, reportId)) {
+        viewFIService
+          .getFIDetail(request.fatcaId, reportId.fiId)
+          .flatMap {
+            fiDetail =>
+              form
+                .bindFromRequest()
+                .fold(
+                  formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, reportId.regime.value, fiDetail.FIName))),
+                  value =>
+                    for {
+                      updatedAnswers <- Future.fromTry(request.userAnswers.setWithReportId(IsCpsoSectionCompletePage(reportId), value))
+                      _              <- repository.set(updatedAnswers)
+                    } yield Redirect(navigator.nextPage(IsCpsoSectionCompletePage(reportId), mode, updatedAnswers))
+                )
+          }
+          .recover {
+            case NoFiDetailFound =>
+              logger.error(s"Failed to retrieve FIDetail for FiID ${reportId.fiId}")
+              Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+          }
+      } else {
+        Future.successful(
+          Redirect(controllers.manual.routes.SendAReportController.onPageLoad())
+        )
+      }
 
   }
 }

@@ -21,16 +21,35 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 
-sealed trait NumberType
+sealed trait NumberType {
+  val xmlValue: String
+}
 
 object NumberType extends Enumerable.Implicits {
 
-  case object Iban extends WithName("iBAN") with NumberType
-  case object Oban extends WithName("oBAN") with NumberType
-  case object Isin extends WithName("iSIN") with NumberType
-  case object Osin extends WithName("oSIN") with NumberType
-  case object Semp extends WithName("sEMP") with NumberType
-  case object Other extends WithName("oTHER") with NumberType
+  case object Iban extends WithName("iBAN") with NumberType {
+    val xmlValue = "OECD601"
+  }
+
+  case object Oban extends WithName("oBAN") with NumberType {
+    val xmlValue = "OECD602"
+  }
+
+  case object Isin extends WithName("iSIN") with NumberType {
+    val xmlValue = "OECD603"
+  }
+
+  case object Osin extends WithName("oSIN") with NumberType {
+    val xmlValue = "OECD604"
+  }
+
+  case object Semp extends WithName("sEMP") with NumberType {
+    val xmlValue = "OECD606"
+  }
+
+  case object Other extends WithName("oTHER") with NumberType {
+    val xmlValue = "OECD605"
+  }
 
   val values: Seq[NumberType] = Seq(
     Iban,

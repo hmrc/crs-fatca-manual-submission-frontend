@@ -17,8 +17,9 @@
 package viewmodels.checkAnswers.manual.cpso
 
 import base.SpecBase
-import models.{ReportId, TaxResidentInformation}
+import models.ReportId
 import models.SubmissionsConstants.CRS
+import models.manual.TaxResidentInformation
 import models.response.Country
 import models.viewModels.manual.cpso.CPSOId
 import pages.manual.cpso.{CurrentCPSOIdPage, TaxResidentCountriesListPage}
