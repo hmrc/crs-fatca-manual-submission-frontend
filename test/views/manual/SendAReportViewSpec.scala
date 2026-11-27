@@ -28,68 +28,79 @@ import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
 import views.html.SendAReportView
 
+import scala.jdk.CollectionConverters.*
+
 class SendAReportViewSpec extends SpecBase {
 
   private val application = applicationBuilder().build()
 
-  private val view: SendAReportView                                      = application.injector.instanceOf[SendAReportView]
-  private val messagesControllerComponents: MessagesControllerComponents = application.injector.instanceOf[MessagesControllerComponents]
+  private val view: SendAReportView =
+    application.injector.instanceOf[SendAReportView]
+
+  private val messagesControllerComponents: MessagesControllerComponents =
+    application.injector.instanceOf[MessagesControllerComponents]
 
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
-  implicit private val messages: Messages               = messagesControllerComponents.messagesApi.preferred(Seq(Lang("en")))
+
+  implicit private val messages: Messages =
+    messagesControllerComponents.messagesApi.preferred(Seq(Lang("en")))
 
   private val model = SendAReportSections(
-    reportDetails = Some(NotStarted),
     financialInstitutionDetails = Some(NotStarted),
     sponsorDetails = Some(NotStarted),
     filerCategory = Some(NotStarted),
-    accounts = Some(NotStarted),
+    accounts = Some(Incomplete),
     accountHolders = Some(NoStatus),
     controllingPersons = Some(Completed),
-    tbc1 = Some(Incomplete),
-    tbc2 = Some(Incomplete),
-    userAnswers = emptyUserAnswers,
-    reportId = ReportId(CRS, 2025, None, "testFiid")
+    userAnswers = emptyUserAnswers.copy(
+      lastUpdated = java.time.Instant.parse("2026-11-24T13:00:00Z")
+    ),
+    reportId = ReportId(CRS, 2025, None, "testFiid"),
+    fiName = "Example Bank"
   )
 
   "SendAReportView" - {
 
     "should render page components" - {
-
       val renderedHtml: HtmlFormat.Appendable = view(model)
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
       "must display title" in {
-        doc.title() must include("Manual journey index page - design TBC")
+        doc.title() must startWith("Send a CRS report for the financial institution for 2025")
+        doc.title() must not include "Example Bank"
       }
 
       "must display heading" in {
-        doc.select("h1").text() mustBe "Manual journey index page - design TBC"
+        doc.select("h1").text() mustBe "Send a CRS report for Example Bank for 2025"
       }
 
       "must display draft saved paragraph" in {
         doc.text() must include(
-          "This draft will be saved from 28 days of the date you last saved any manual report information for any financial institution"
+          "We’ll save this draft until Tuesday 22 December 2026 at 1:00pm."
+        )
+
+        doc.text() must include(
+          "If you want to change the type of report, then you’ll need to delete this draft and create a new one."
         )
       }
 
       "must display section headings" in {
         val headings = doc.select("h2").eachText()
 
-        headings must contain("Set up the report")
-        headings must contain("Check the reporting financial institution details")
-        headings must contain("Add accounts information")
+        headings must not contain "Set up the report"
+        headings must contain("Check reporting financial institution details")
+        headings must contain("Add accounts details")
       }
 
       "must display task list rows" in {
         val pageText = doc.text()
 
-        pageText must include("Report details")
+        pageText must not include "Report details"
         pageText must include("Reporting financial institution details")
         pageText must include("Accounts")
         pageText must include("Account holders")
         pageText must include("Controlling persons")
-        pageText must include("TBC")
+        pageText must not include "TBC"
       }
 
       "must display statuses" in {
@@ -107,38 +118,139 @@ class SendAReportViewSpec extends SpecBase {
       "must display action links" in {
         val links = doc.select("a").eachText()
 
-        links must contain("Discard this draft")
-        links must contain("Delete this report")
-        links must contain("Back to manage reports for FI name")
+        links must contain("Delete draft")
+        links must not contain "Delete this report"
+        links must contain("Back to manage reports for Example Bank")
       }
-
     }
 
     "must not display sections when no tasks are present" in {
       val model = SendAReportSections(
-        reportDetails = Some(NotStarted),
         financialInstitutionDetails = Some(NotStarted),
         sponsorDetails = None,
         filerCategory = None,
         accounts = None,
         accountHolders = None,
         controllingPersons = None,
-        tbc1 = None,
-        tbc2 = None,
-        userAnswers = emptyUserAnswers,
+        userAnswers = emptyUserAnswers.copy(
+          lastUpdated = java.time.Instant.parse("2026-11-24T13:00:00Z")
+        ),
         reportId = ReportId(CRS, 2025, None, "testFIID")
       )
 
       val renderedHtml = view(model)
       val doc          = Jsoup.parse(renderedHtml.body)
 
-      doc.text() must include("Set up the report")
-      doc.text() must include("Check the reporting financial institution details")
+      doc.text() must not include "Set up the report"
+      doc.text() must include("Check reporting financial institution details")
       doc.text() must not include "Sponsor details"
-      doc.text() must not include "Add accounts information"
+      doc.text() must not include "Add accounts details"
       doc.text() must not include "Accounts"
       doc.text() must not include "Account holders"
       doc.text() must not include "Controlling persons or substantial owners"
+    }
+
+    "must use the returned timestamp, configured retention and UK daylight-saving time" in {
+      val summer = model.copy(
+        userAnswers = emptyUserAnswers.copy(
+          lastUpdated = java.time.Instant.parse("2026-03-15T12:00:00Z")
+        )
+      )
+
+      Jsoup.parse(view(summer).body).text() must include("Sunday 12 April 2026 at 1:00pm")
+
+      val refreshed = summer.copy(
+        userAnswers = summer.userAnswers.copy(
+          lastUpdated = java.time.Instant.parse("2026-03-16T12:00:00Z")
+        )
+      )
+
+      Jsoup.parse(view(refreshed).body).text() must include("Monday 13 April 2026 at 1:00pm")
+    }
+
+    "must render Not required without a link" in {
+      val page = Jsoup.parse(view(model.copy(controllingPersons = Some(NotRequired))).body)
+
+      val row = page
+        .select(".govuk-task-list__item")
+        .asScala
+        .find(_.text().contains("Controlling persons"))
+        .value
+
+      row.select(".govuk-task-list__status").text() mustBe "Not required"
+      row.select("a").size() mustBe 0
+    }
+
+    "must render new-draft links in separate paragraphs with the required spacing" in {
+      val page = Jsoup.parse(view(model).body)
+
+      val discard = page
+        .select("a")
+        .asScala
+        .find(_.text() == "Delete draft")
+        .value
+
+      val back = page
+        .select("a")
+        .asScala
+        .find(_.text() == "Back to manage reports for Example Bank")
+        .value
+
+      discard.parent().tagName() mustBe "p"
+      discard.parent().hasClass("govuk-!-margin-bottom-2") mustBe true
+      back.parent().tagName() mustBe "p"
+      page.select("a").eachText() must not contain "Delete this report"
+
+      val expiry = page
+        .select("p")
+        .asScala
+        .find(_.text().startsWith("We’ll save this draft until"))
+        .value
+
+      expiry.hasClass("govuk-!-padding-bottom-2") mustBe true
+    }
+
+    "must style Not required and Cannot start yet alike and suppress both links" in {
+      val page = Jsoup.parse(
+        view(
+          model.copy(
+            accountHolders = Some(CannotStartYet),
+            controllingPersons = Some(NotRequired)
+          )
+        ).body
+      )
+
+      Seq("Account holders", "Controlling persons").foreach {
+        name =>
+          val row = page
+            .select(".govuk-task-list__item")
+            .asScala
+            .find(_.text().contains(name))
+            .value
+
+          row.select("a").size() mustBe 0
+
+          row
+            .select(".govuk-task-list__status")
+            .hasClass("govuk-task-list__status--cannot-start-yet") mustBe true
+      }
+    }
+
+    "must use nil wording in the heading, page title and Send row" in {
+      val nil = model.copy(
+        financialInstitutionDetails = None,
+        accounts = None,
+        accountHolders = None,
+        controllingPersons = None,
+        isNilReport = true
+      )
+
+      val page = Jsoup.parse(view(nil).body)
+
+      page.select("h1").text() mustBe "Send a CRS nil report for Example Bank for 2025"
+      page.title() must startWith("Send a CRS nil report for the financial institution for 2025")
+      page.select("main h2").text() mustBe "Send the nil report"
+      page.select(".govuk-task-list__link").text() mustBe "Send the nil report for Example Bank"
     }
   }
 }

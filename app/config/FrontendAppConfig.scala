@@ -40,21 +40,28 @@ class FrontendAppConfig @Inject() (configuration: Configuration, servicesConfig:
   val manageReportsLink: String = configuration.get[String]("urls.manageFI")
   val yourFIsLink: String       = configuration.get[String]("urls.yourFIs")
 
-  private val exitSurveyBaseUrl: String = configuration.get[Service]("microservice.services.feedback-frontend").baseUrl
+  private val exitSurveyBaseUrl: String =
+    configuration.get[Service]("microservice.services.feedback-frontend").baseUrl
 
   val exitSurveyUrl: String = s"$exitSurveyBaseUrl/feedback/crs-fatca-manual-submission-frontend"
   val timeout: Int          = configuration.get[Int]("timeout-dialog.timeout")
 
-  val countdown: Int                           = configuration.get[Int]("timeout-dialog.countdown")
-  val cacheTtl: Long                           = configuration.get[Int]("mongodb.timeToLiveInSeconds")
-  val enrolmentKey: String                     = configuration.get[String]("keys.enrolmentKey.crsFatca")
-  lazy val registerUrl: String                 = configuration.get[String]("urls.register")
-  val crsFatcaManualBackendUrl: String         = servicesConfig.baseUrl("crs-fatca-manual-submission")
-  val crsFatcaReportingBackendUrl: String      = servicesConfig.baseUrl("crs-fatca-reporting")
-  val fIManagementBackendUrl: String           = servicesConfig.baseUrl("crs-fatca-fi-management")
-  val enquiryEmail: String                     = configuration.get[String]("enquiry.email")
-  private lazy val registrationBaseUrl: String = servicesConfig.baseUrl("crs-fatca-registration")
-  lazy val registrationUrl: String             = registrationBaseUrl + configuration.get[String]("microservice.services.crs-fatca-registration.base-path")
-  lazy val addressLookUpUrl: String            = configuration.get[Service]("microservice.services.address-lookup").baseUrl
+  val countdown: Int                      = configuration.get[Int]("timeout-dialog.countdown")
+  val draftRetentionDays: Long            = configuration.get[Long]("draft.retentionDays")
+  val cacheTtl: Long                      = configuration.get[Int]("mongodb.timeToLiveInSeconds")
+  val enrolmentKey: String                = configuration.get[String]("keys.enrolmentKey.crsFatca")
+  lazy val registerUrl: String            = configuration.get[String]("urls.register")
+  val crsFatcaManualBackendUrl: String    = servicesConfig.baseUrl("crs-fatca-manual-submission")
+  val crsFatcaReportingBackendUrl: String = servicesConfig.baseUrl("crs-fatca-reporting")
+  val fIManagementBackendUrl: String      = servicesConfig.baseUrl("crs-fatca-fi-management")
+  val enquiryEmail: String                = configuration.get[String]("enquiry.email")
 
+  private lazy val registrationBaseUrl: String =
+    servicesConfig.baseUrl("crs-fatca-registration")
+
+  lazy val registrationUrl: String =
+    registrationBaseUrl + configuration.get[String]("microservice.services.crs-fatca-registration.base-path")
+
+  lazy val addressLookUpUrl: String =
+    configuration.get[Service]("microservice.services.address-lookup").baseUrl
 }

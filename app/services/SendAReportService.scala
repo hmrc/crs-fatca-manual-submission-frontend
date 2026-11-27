@@ -16,13 +16,14 @@
 
 package services
 
-import models.CrsOrFatca.reads
+import models.SubmissionsConstants.{CRS, FATCA}
+import models.manual.accountHolders.{AccountHolderTypes, IndividualOrOrganisation}
+import models.viewModels.TaskStatus
 import models.viewModels.TaskStatus.{CannotStartYet, Completed, Incomplete, NotStarted}
-import models.viewModels.{AccountId, TaskStatus}
-import models.{viewModels, ReportId, UserAnswers}
+import models.{ReportId, UserAnswers}
 import pages.QuestionPage
-import pages.manual.account.{AccountsPage, IsAccountsSectionCompletedPage}
-import pages.manual.accountHolders.IsAccountHoldersSectionCompletePage
+import pages.manual.account.IsAccountsSectionCompletedPage
+import pages.manual.accountHolders.{AccountHoldersPage, IsAccountHoldersSectionCompletePage}
 import pages.manual.cpso.IsCpsoSectionCompletePage
 import pages.manual.filercategory.{WhatTypeOfFilerIsSponsorPage, WhatTypeOfFilerPage}
 import pages.manual.reportingFI.HaveYouFinishedCheckingFIDetailsPage
@@ -31,7 +32,11 @@ import services.manual.account.AccountsService
 
 import javax.inject.Inject
 
-class SendAReportService @Inject() (accountsService: AccountsService, cpsoService: CpsoService, accountHolderService: AccountHolderService) {
+class SendAReportService @Inject() (
+  accountsService: AccountsService,
+  cpsoService: CpsoService,
+  accountHolderService: AccountHolderService
+) {
 
   def reportingFIStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
     userAnswers
@@ -44,18 +49,19 @@ class SendAReportService @Inject() (accountsService: AccountsService, cpsoServic
     userAnswers
       .get(IsCpsoSectionCompletePage(reportId))
       .fold(Incomplete) {
-        value => if value && cpsoService.areAllCpsosComplete(userAnswers, reportId) then Completed else Incomplete
+        value =>
+          if value && cpsoService.areAllCpsosComplete(userAnswers, reportId) then Completed
+          else Incomplete
       }
 
   def accountHoldersCompleteStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus = {
-    val noAccountHoldersAdded: Boolean     = accountHolderService.accountHolders(userAnswers)(reportId).isEmpty
-    val sectionIsDeclaredComplete: Boolean = userAnswers.get(IsAccountHoldersSectionCompletePage(reportId)).contains(true)
-    val accountHoldersAreComplete: Boolean = accountHolderService.areAllAccountHoldersComplete(userAnswers, reportId)
+    val noAccountHoldersAdded     = accountHolderService.accountHolders(userAnswers)(reportId).isEmpty
+    val sectionIsDeclaredComplete = userAnswers.get(IsAccountHoldersSectionCompletePage(reportId)).contains(true)
+    val accountHoldersAreComplete = accountHolderService.areAllAccountHoldersComplete(userAnswers, reportId)
 
     if (noAccountHoldersAdded) NotStarted
     else if (sectionIsDeclaredComplete && accountHoldersAreComplete) Completed
     else Incomplete
-
   }
 
   def fillerStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
@@ -85,7 +91,54 @@ class SendAReportService @Inject() (accountsService: AccountsService, cpsoServic
     }
 
   def accountStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus =
-    getAccountStatus(userAnswers, reportId)
+    if (
+      userAnswers.get(IsAccountsSectionCompletedPage(reportId)).contains(true) &&
+      accountsService.allAccountsComplete(userAnswers, reportId)
+    ) Completed
+    else Incomplete
+
+  def accountHolderStatus(
+    userAnswers: UserAnswers,
+    reportId: ReportId,
+    accountsStatus: TaskStatus
+  ): TaskStatus =
+    if (accountsStatus != Completed) {
+      CannotStartYet
+    } else {
+      accountHoldersCompleteStatus(userAnswers, reportId) match {
+        case NotStarted => Incomplete
+        case status     => status
+      }
+    }
+
+  def cpsoStatus(userAnswers: UserAnswers, reportId: ReportId): Option[TaskStatus] =
+    Option.when(
+      userAnswers.get(AccountHoldersPage()(reportId)).exists {
+        holders =>
+          holders.accountHolders.valuesIterator.exists {
+            holder =>
+              holder.individualOrOrganisation.contains(IndividualOrOrganisation.Organisation) &&
+              (reportId.regime match {
+                case CRS =>
+                  holder.accountHolderType.contains(
+                    AccountHolderTypes.PassiveNonFinancialWithOneOrMoreControllingPerson
+                  )
+
+                case FATCA =>
+                  holder.accountHolderType.contains(
+                    AccountHolderTypes.OwnerDocumentedForeignFinancialInstitution
+                  ) ||
+                  holder.accountHolderType.contains(
+                    AccountHolderTypes.PassiveNFFEWithSubstantial
+                  )
+
+                case _ => false
+              })
+          }
+      }
+    ) {
+      reportingCPSOCompleteStatus(userAnswers, reportId)
+    }
 
   private def sponsorRequiredPages(using reportId: ReportId): Seq[QuestionPage[_]] =
     List(
@@ -110,37 +163,9 @@ class SendAReportService @Inject() (accountsService: AccountsService, cpsoServic
   private def allSponsorPagesAnswered(
     userAnswers: UserAnswers
   )(using reportId: ReportId): Boolean = {
-
     val requiredPagesPresent = sponsorRequiredPages.forall(pageAnswered(_, userAnswers))
-
-    val addressPresent = sponsorAddressPages.exists(pageAnswered(_, userAnswers))
+    val addressPresent       = sponsorAddressPages.exists(pageAnswered(_, userAnswers))
 
     requiredPagesPresent && addressPresent
   }
-
-  private def getAccountStatus(userAnswers: UserAnswers, reportId: ReportId): TaskStatus = {
-    val accountIds = userAnswers
-      .get(AccountsPage(reportId))
-      .map(_.accounts.keys.toSeq.map(AccountId.apply))
-      .getOrElse(Seq.empty)
-
-    if (accountIds.isEmpty) {
-      NotStarted
-    } else if (
-      userAnswers.get(IsAccountsSectionCompletedPage(reportId)).contains(true) &&
-      accountIds.forall {
-        accountId =>
-          accountsService.isComplete(
-            userAnswers,
-            reportId,
-            accountId
-          )
-      }
-    ) {
-      Completed
-    } else {
-      Incomplete
-    }
-  }
-
 }

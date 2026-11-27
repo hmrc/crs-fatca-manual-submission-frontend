@@ -17,8 +17,11 @@
 package controllers.manual
 
 import controllers.actions.*
+import models.SubmissionsConstants.{CRS, FATCA}
+import models.TypeOfReport
 import models.viewModels.SendAReportSections
-import models.viewModels.TaskStatus.*
+import pages.manual.FINamePage
+import pages.manual.reportdetails.DraftReportTypePage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SendAReportService
@@ -41,27 +44,40 @@ class SendAReportController @Inject() (
 
   def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData andThen reportIdAction) {
     implicit request =>
-      val reportingFIStatus            = service.reportingFIStatus(request.userAnswers, request.reportId)
-      val fillerStatus                 = service.fillerStatus(request.userAnswers, request.reportId)
-      val sponsorStatus                = service.sponsorStatus(request.userAnswers, request.reportId)
-      val cpsoCompleteStatus           = service.reportingCPSOCompleteStatus(request.userAnswers, request.reportId)
-      val accountsStatus               = service.accountStatus(request.userAnswers, request.reportId)
-      val accountHoldersCompleteStatus = service.accountHoldersCompleteStatus(request.userAnswers, request.reportId)
+      request.userAnswers.get(DraftReportTypePage(request.reportId)) match {
+        case None =>
+          Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
 
-      val sections = SendAReportSections(
-        reportDetails = Some(NotStarted),
-        financialInstitutionDetails = Some(reportingFIStatus),
-        sponsorDetails = Some(sponsorStatus),
-        filerCategory = Some(fillerStatus),
-        accounts = Some(accountsStatus),
-        accountHolders = Some(accountHoldersCompleteStatus),
-        controllingPersons = Some(cpsoCompleteStatus),
-        tbc1 = Some(Incomplete),
-        tbc2 = Some(Incomplete),
-        userAnswers = request.userAnswers,
-        reportId = request.reportId
-      )
+        case Some(reportType) =>
+          val isNilReport    = reportType == TypeOfReport.NilReport
+          val accountsStatus = service.accountStatus(request.userAnswers, request.reportId)
 
-      Ok(view(sections))
+          val sections = SendAReportSections(
+            financialInstitutionDetails = Option.unless(isNilReport && request.reportId.regime == CRS)(
+              service.reportingFIStatus(request.userAnswers, request.reportId)
+            ),
+            sponsorDetails = Option.when(request.reportId.regime == FATCA)(
+              service.sponsorStatus(request.userAnswers, request.reportId)
+            ),
+            filerCategory = Option.when(request.reportId.regime == FATCA)(
+              service.fillerStatus(request.userAnswers, request.reportId)
+            ),
+            accounts = Option.unless(isNilReport)(accountsStatus),
+            accountHolders = Option.unless(isNilReport)(
+              service.accountHolderStatus(request.userAnswers, request.reportId, accountsStatus)
+            ),
+            controllingPersons = Option
+              .unless(isNilReport)(
+                service.cpsoStatus(request.userAnswers, request.reportId)
+              )
+              .flatten,
+            userAnswers = request.userAnswers,
+            reportId = request.reportId,
+            isNilReport = isNilReport,
+            fiName = request.userAnswers.get(FINamePage()(request.reportId)).getOrElse("")
+          )
+
+          Ok(view(sections))
+      }
   }
 }
